@@ -2,4 +2,4 @@
 
 ## Structure
 
-  * kvs: Key-Value-Store implementation and tests
+  * kvs: Key-Value-Store implementation and tests [(Crate Documentation)](rust_kvs/index.html)
