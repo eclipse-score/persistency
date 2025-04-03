@@ -11,9 +11,8 @@
 //!
 //! # Verify Snapshot Rotation
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, SnapshotId};
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsValue, OpenNeedDefaults, OpenNeedKvs, SnapshotId};
 use std::collections::HashMap;
-use tinyjson::JsonValue;
 
 mod common;
 use crate::common::TempDir;
@@ -75,7 +74,7 @@ fn create_kvs() -> Result<Kvs, ErrorCode> {
     kvs.set_value(
         "array",
         vec![
-            JsonValue::from(456.0),
+            KvsValue::from(456.0),
             false.into(),
             "Bye".to_string().into(),
         ],
@@ -83,14 +82,14 @@ fn create_kvs() -> Result<Kvs, ErrorCode> {
     kvs.set_value(
         "object",
         HashMap::from([
-            (String::from("sub-number"), JsonValue::from(789.0)),
+            (String::from("sub-number"), KvsValue::from(789.0)),
             ("sub-bool".into(), true.into()),
             ("sub-string".into(), "Hi".to_string().into()),
             ("sub-null".into(), ().into()),
             (
                 "sub-array".into(),
-                JsonValue::from(vec![
-                    JsonValue::from(1246.0),
+                KvsValue::from(vec![
+                    KvsValue::from(1246.0),
                     false.into(),
                     "Moin".to_string().into(),
                 ]),

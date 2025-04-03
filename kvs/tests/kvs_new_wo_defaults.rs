@@ -11,9 +11,8 @@
 //!
 //! # Verify KVS Base Functionality without Defaults
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs};
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsValue, OpenNeedDefaults, OpenNeedKvs};
 use std::collections::HashMap;
-use tinyjson::JsonValue;
 
 mod common;
 use crate::common::TempDir;
@@ -37,7 +36,7 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     kvs.set_value(
         "array",
         vec![
-            JsonValue::from(456.0),
+            KvsValue::from(456.0),
             false.into(),
             "Bye".to_string().into(),
         ],
@@ -45,14 +44,14 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     kvs.set_value(
         "object",
         HashMap::from([
-            (String::from("sub-number"), JsonValue::from(789.0)),
+            (String::from("sub-number"), KvsValue::from(789.0)),
             ("sub-bool".into(), true.into()),
             ("sub-string".into(), "Hi".to_string().into()),
             ("sub-null".into(), ().into()),
             (
                 "sub-array".into(),
-                JsonValue::from(vec![
-                    JsonValue::from(1246.0),
+                KvsValue::from(vec![
+                    KvsValue::from(1246.0),
                     false.into(),
                     "Moin".to_string().into(),
                 ]),
@@ -73,12 +72,12 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     assert_eq!(kvs.get_value::<String>("string")?, "Hello");
     assert_eq!(kvs.get_value::<()>("null"), Ok(()));
 
-    let json_array = kvs.get_value::<Vec<JsonValue>>("array")?;
+    let json_array = kvs.get_value::<Vec<KvsValue>>("array")?;
     assert_eq!(json_array[0].get(), Some(&456.0));
     assert_eq!(json_array[1].get(), Some(&false));
     assert_eq!(json_array[2].get(), Some(&"Bye".to_string()));
 
-    let json_map = kvs.get_value::<HashMap<String, JsonValue>>("object")?;
+    let json_map = kvs.get_value::<HashMap<String, KvsValue>>("object")?;
     assert_eq!(json_map["sub-number"].get(), Some(&789.0));
     assert_eq!(json_map["sub-bool"].get(), Some(&true));
     assert_eq!(json_map["sub-string"].get(), Some(&"Hi".to_string()));

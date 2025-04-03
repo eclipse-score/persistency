@@ -11,7 +11,7 @@
 //!
 //! # Verify KVS Default Value Functionality
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs};
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsValue, OpenNeedDefaults, OpenNeedKvs};
 use std::collections::HashMap;
 use tinyjson::{JsonGenerator, JsonValue};
 
@@ -31,13 +31,14 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     dir.set_current_dir()?;
 
     // create defaults file
-    let defaults: HashMap<String, JsonValue> = HashMap::from([
-        ("number1".to_string(), JsonValue::from(123.0)),
+    let defaults: HashMap<String, KvsValue> = HashMap::from([
+        ("number1".to_string(), KvsValue::from(123.0)),
         ("bool1".to_string(), true.into()),
         ("string1".to_string(), "Hello".to_string().into()),
     ]);
 
-    let json = JsonValue::from(defaults);
+    let json = KvsValue::from(defaults);
+    let json = JsonValue::from(&json);
     let mut buf = Vec::new();
     let mut gen = JsonGenerator::new(&mut buf).indent("  ");
     gen.generate(&json)?;
@@ -99,13 +100,14 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     drop(kvs);
 
     // change default of `number1` and `bool1`
-    let defaults: HashMap<String, JsonValue> = HashMap::from([
-        ("number1".to_string(), JsonValue::from(987.0)),
+    let defaults: HashMap<String, KvsValue> = HashMap::from([
+        ("number1".to_string(), KvsValue::from(987.0)),
         ("bool1".to_string(), false.into()),
         ("string1".to_string(), "Hello".to_string().into()),
     ]);
 
-    let json = JsonValue::from(defaults);
+    let json = KvsValue::from(defaults);
+    let json = JsonValue::from(&json);
     let mut buf = Vec::new();
     let mut gen = JsonGenerator::new(&mut buf).indent("  ");
     gen.generate(&json)?;

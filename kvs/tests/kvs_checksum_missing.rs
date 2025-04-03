@@ -11,8 +11,7 @@
 //!
 //! # Verify KVS Open with missing Checksum
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, SnapshotId};
-use tinyjson::JsonValue;
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsValue, OpenNeedDefaults, OpenNeedKvs, SnapshotId};
 
 mod common;
 use crate::common::TempDir;
@@ -36,7 +35,7 @@ fn kvs_checksum_missing() -> Result<(), ErrorCode> {
     kvs.set_value(
         "array",
         vec![
-            JsonValue::from(456.0),
+            KvsValue::from(456.0),
             false.into(),
             "Bye".to_string().into(),
         ],

@@ -27,18 +27,18 @@
 //!   * `Boolean`: `bool`
 //!   * `String`: `String`
 //!   * `Null`: `()`
-//!   * `Array`: `Vec<JsonValue>`
-//!   * `Object`: `HashMap<String, JsonValue>`
+//!   * `Array`: `Vec<KvsValue>`
+//!   * `Object`: `HashMap<String, KvsValue>`
 //!
 //! Note: JSON arrays are not restricted to only contain values of the same type.
 //!
 //! Writing a value to the KVS can be done by calling [`Kvs::set_value`] with the `key` as first
-//! and a `JsonValue` as second parameter. Either `JsonValue::Number(123.0)` or `123.0` can be
+//! and a `KvsValue` as second parameter. Either `KvsValue::Number(123.0)` or `123.0` can be
 //! used as there will be an auto-Into performed when calling the function.
 //!
 //! To read a value call [`Kvs::get_value::<T>`](Kvs::get_value) with the `key` as first
 //! parameter. `T` represents the type to read and can be `f64`, `bool`, `String`, `()`,
-//! `Vec<JsonValue>`, `HashMap<String, JsonValue` or `JsonValue`. Also `let value: f64 =
+//! `Vec<KvsValue>`, `HashMap<String, KvsValue` or `KvsValue`. Also `let value: f64 =
 //! kvs.get_value()` can be used.
 //!
 //! If a `key` isn't available in the KVS a lookup into the defaults storage will be performed and
@@ -54,9 +54,8 @@
 //! ## Example Usage
 //!
 //! ```
-//! use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs};
+//! use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, KvsValue};
 //! use std::collections::HashMap;
-//! use tinyjson::JsonValue;
 //!
 //! fn main() -> Result<(), ErrorCode> {
 //!     let kvs = Kvs::open(
@@ -71,7 +70,7 @@
 //!     kvs.set_value(
 //!         "array",
 //!         vec![
-//!             JsonValue::from(456.0),
+//!             KvsValue::from(456.0),
 //!             false.into(),
 //!             "Second".to_string().into(),
 //!         ],
@@ -79,14 +78,14 @@
 //!     kvs.set_value(
 //!         "object",
 //!         HashMap::from([
-//!             (String::from("sub-number"), JsonValue::from(789.0)),
+//!             (String::from("sub-number"), KvsValue::from(789.0)),
 //!             ("sub-bool".into(), true.into()),
 //!             ("sub-string".into(), "Third".to_string().into()),
 //!             ("sub-null".into(), ().into()),
 //!             (
 //!                 "sub-array".into(),
-//!                 JsonValue::from(vec![
-//!                     JsonValue::from(1246.0),
+//!                 KvsValue::from(vec![
+//!                     KvsValue::from(1246.0),
 //!                     false.into(),
 //!                     "Fourth".to_string().into(),
 //!                 ]),
@@ -145,6 +144,7 @@ use std::array::TryFromSliceError;
 use std::collections::HashMap;
 use std::fmt;
 use std::fs;
+use std::ops::Index;
 use std::path::Path;
 use std::string::FromUtf8Error;
 use std::sync::{
@@ -230,18 +230,40 @@ pub struct Kvs {
     /// Storage data
     ///
     /// Feature: `FEAT_REQ__KVS__thread_safety` (Mutex)
-    kvs: Mutex<HashMap<String, JsonValue>>,
+    kvs: Mutex<HashMap<String, KvsValue>>,
 
     /// Optional default values
     ///
     /// Feature: `FEAT_REQ__KVS__default_values`
-    default: HashMap<String, JsonValue>,
+    default: HashMap<String, KvsValue>,
 
     /// Filename prefix
     filename_prefix: String,
 
     /// Flush on exit flag
     flush_on_exit: AtomicBool,
+}
+
+/// Key-value-storage value
+#[derive(Clone, Debug)]
+pub enum KvsValue {
+    /// Number
+    Number(f64),
+
+    /// Boolean
+    Boolean(bool),
+
+    /// String
+    String(String),
+
+    /// Null
+    Null,
+
+    /// Array
+    Array(Vec<KvsValue>),
+
+    /// Object
+    Object(HashMap<String, KvsValue>),
 }
 
 /// Need-Defaults flag
@@ -352,8 +374,8 @@ impl From<Vec<u8>> for ErrorCode {
     }
 }
 
-impl From<PoisonError<MutexGuard<'_, HashMap<std::string::String, JsonValue>>>> for ErrorCode {
-    fn from(cause: PoisonError<MutexGuard<'_, HashMap<std::string::String, JsonValue>>>) -> Self {
+impl From<PoisonError<MutexGuard<'_, HashMap<std::string::String, KvsValue>>>> for ErrorCode {
+    fn from(cause: PoisonError<MutexGuard<'_, HashMap<std::string::String, KvsValue>>>) -> Self {
         eprintln!("error: Mutex locking failed: {:#?}", cause);
         ErrorCode::MutexLockFailed
     }
@@ -452,7 +474,7 @@ impl Kvs {
     ///   * `verify_hash`: content is verified against a hash file
     ///
     /// # Return Values
-    ///   * `Ok`: KVS data as `HashMap<String, JsonValue>`
+    ///   * `Ok`: KVS data as `HashMap<String, KvsValue>`
     ///   * `ErrorCode::ValidationFailed`: KVS hash validation failed
     ///   * `ErrorCode::JsonParserError`: JSON parser error
     ///   * `ErrorCode::KvsFileReadError`: KVS file read error
@@ -462,7 +484,7 @@ impl Kvs {
         filename_prefix: &str,
         need_file: T,
         verify_hash: OpenJsonVerifyHash,
-    ) -> Result<HashMap<String, JsonValue>, ErrorCode>
+    ) -> Result<HashMap<String, KvsValue>, ErrorCode>
     where
         T: Into<OpenJsonNeedFile>,
     {
@@ -487,7 +509,9 @@ impl Kvs {
                                 Ok(data
                                     .get::<HashMap<_, _>>()
                                     .ok_or(ErrorCode::JsonParserError)?
-                                    .clone())
+                                    .iter()
+                                    .map(|(key, value)| (key.clone(), value.into()))
+                                    .collect())
                             }
                         }
                         Err(err) => {
@@ -502,7 +526,9 @@ impl Kvs {
                         .parse::<JsonValue>()?
                         .get::<HashMap<_, _>>()
                         .ok_or(ErrorCode::JsonParserError)?
-                        .clone())
+                        .iter()
+                        .map(|(key, value)| (key.clone(), value.into()))
+                        .collect())
                 }
             }
             Err(err) => {
@@ -567,26 +593,28 @@ impl Kvs {
     ///   * `ErrorCode::KeyNotFound`: Key wasn't found in KVS nor in defaults
     pub fn get_value<T>(&self, key: &str) -> Result<T, ErrorCode>
     where
-        T: TryFrom<JsonValue>,
-        <T as TryFrom<JsonValue>>::Error: std::fmt::Debug,
+        for<'a> T: TryFrom<&'a KvsValue> + std::clone::Clone,
+        for<'a> <T as TryFrom<&'a KvsValue>>::Error: std::fmt::Debug,
     {
-        if let Some(value) = self.kvs.lock()?.get(key) {
-            match T::try_from(value.clone()) {
+        let kvs = self.kvs.lock()?;
+
+        if let Some(value) = kvs.get(key) {
+            match T::try_from(value) {
                 Ok(value) => Ok(value),
                 Err(err) => {
                     eprintln!(
-                        "error: get_value could not convert JsonValue from KVS store: {err:#?}"
+                        "error: get_value could not convert KvsValue from KVS store: {err:#?}"
                     );
                     Err(ErrorCode::ConversionFailed)
                 }
             }
         } else if let Some(value) = self.default.get(key) {
             // check if key has a default value
-            match T::try_from(value.clone()) {
+            match T::try_from(value) {
                 Ok(value) => Ok(value),
                 Err(err) => {
                     eprintln!(
-                        "error: get_value could not convert JsonValue from default store: {err:#?}"
+                        "error: get_value could not convert KvsValue from default store: {err:#?}"
                     );
                     Err(ErrorCode::ConversionFailed)
                 }
@@ -608,9 +636,9 @@ impl Kvs {
     ///   * `key`: Key to get the default for
     ///
     /// # Return Values
-    ///   * Ok: `JsonValue` for the key
+    ///   * Ok: `KvsValue` for the key
     ///   * `ErrorCode::KeyNotFound`: Key not found in defaults
-    pub fn get_default_value(&self, key: &str) -> Result<JsonValue, ErrorCode> {
+    pub fn get_default_value(&self, key: &str) -> Result<KvsValue, ErrorCode> {
         if let Some(value) = self.default.get(key) {
             Ok(value.clone())
         } else {
@@ -650,7 +678,7 @@ impl Kvs {
     /// # Return Values
     ///   * Ok: Value was assigned to key
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
-    pub fn set_value<S: Into<String>, J: Into<JsonValue>>(
+    pub fn set_value<S: Into<String>, J: Into<KvsValue>>(
         &self,
         key: S,
         value: J,
@@ -690,7 +718,13 @@ impl Kvs {
     ///   * `ErrorCode::ConversionFailed`: JSON could not serialize into String
     ///   * `ErrorCode::UnmappedError`: Unmapped error
     pub fn flush(&self) -> Result<(), ErrorCode> {
-        let json = JsonValue::from(self.kvs.lock()?.clone());
+        let json: HashMap<String, JsonValue> = self
+            .kvs
+            .lock()?
+            .iter()
+            .map(|(key, value)| (key.clone(), value.into()))
+            .collect();
+        let json = JsonValue::from(json);
         let mut buf = Vec::new();
         let mut gen = JsonGenerator::new(&mut buf).indent("  ");
         gen.generate(&json)?;
@@ -843,5 +877,135 @@ impl Drop for Kvs {
         if self.flush_on_exit.load(atomic::Ordering::Relaxed) {
             self.flush().ok();
         }
+    }
+}
+
+impl From<&JsonValue> for KvsValue {
+    fn from(val: &JsonValue) -> KvsValue {
+        match val {
+            JsonValue::Number(val) => KvsValue::Number(*val),
+            JsonValue::Boolean(val) => KvsValue::Boolean(*val),
+            JsonValue::String(val) => KvsValue::String(val.clone()),
+            JsonValue::Null => KvsValue::Null,
+            JsonValue::Array(val) => KvsValue::Array(val.iter().map(|x| x.into()).collect()),
+            JsonValue::Object(val) => {
+                KvsValue::Object(val.iter().map(|(x, y)| (x.clone(), y.into())).collect())
+            }
+        }
+    }
+}
+
+impl From<&KvsValue> for JsonValue {
+    fn from(val: &KvsValue) -> JsonValue {
+        match val {
+            KvsValue::Number(val) => JsonValue::Number(*val),
+            KvsValue::Boolean(val) => JsonValue::Boolean(*val),
+            KvsValue::String(val) => JsonValue::String(val.clone()),
+            KvsValue::Null => JsonValue::Null,
+            KvsValue::Array(val) => JsonValue::Array(val.iter().map(|x| x.into()).collect()),
+            KvsValue::Object(val) => {
+                JsonValue::Object(val.iter().map(|(x, y)| (x.clone(), y.into())).collect())
+            }
+        }
+    }
+}
+
+macro_rules! impl_from_t_for_kvs_value {
+    ($from:ty, $item:ident) => {
+        impl From<$from> for KvsValue {
+            fn from(val: $from) -> KvsValue {
+                KvsValue::$item(val)
+            }
+        }
+    };
+}
+
+impl_from_t_for_kvs_value!(f64, Number);
+impl_from_t_for_kvs_value!(bool, Boolean);
+impl_from_t_for_kvs_value!(String, String);
+impl_from_t_for_kvs_value!(Vec<KvsValue>, Array);
+impl_from_t_for_kvs_value!(HashMap<String, KvsValue>, Object);
+
+impl From<()> for KvsValue {
+    fn from(_data: ()) -> KvsValue {
+        KvsValue::Null
+    }
+}
+
+macro_rules! impl_from_kvs_value_to_t {
+    ($to:ty, $item:ident) => {
+        impl<'a> From<&'a KvsValue> for $to {
+            fn from(val: &'a KvsValue) -> $to {
+                if let KvsValue::$item(val) = val {
+                    return val.clone();
+                }
+
+                panic!("Invalid KvsValue type");
+            }
+        }
+    };
+}
+
+impl_from_kvs_value_to_t!(f64, Number);
+impl_from_kvs_value_to_t!(bool, Boolean);
+impl_from_kvs_value_to_t!(String, String);
+impl_from_kvs_value_to_t!(Vec<KvsValue>, Array);
+impl_from_kvs_value_to_t!(HashMap<String, KvsValue>, Object);
+
+impl<'a> From<&'a KvsValue> for () {
+    fn from(val: &'a KvsValue) {
+        if let KvsValue::Null = val {
+            return;
+        }
+
+        panic!("Invalid KvsValue type for ()");
+    }
+}
+
+// Note: The following logic was copied and adapted from TinyJSON.
+
+pub trait KvsValueGet {
+    fn get_inner_value(val: &KvsValue) -> Option<&Self>;
+}
+
+impl KvsValue {
+    pub fn get<T: KvsValueGet>(&self) -> Option<&T> {
+        T::get_inner_value(self)
+    }
+}
+
+macro_rules! impl_kvs_get_inner_value {
+    ($to:ty, $pat:pat => $val:expr) => {
+        impl KvsValueGet for $to {
+            fn get_inner_value(v: &KvsValue) -> Option<&$to> {
+                use KvsValue::*;
+                match v {
+                    $pat => Some($val),
+                    _ => None,
+                }
+            }
+        }
+    };
+}
+
+impl_kvs_get_inner_value!(f64, Number(n) => n);
+impl_kvs_get_inner_value!(bool, Boolean(b) => b);
+impl_kvs_get_inner_value!(String, String(s) => s);
+impl_kvs_get_inner_value!((), Null => &());
+impl_kvs_get_inner_value!(Vec<KvsValue>, Array(a) => a);
+impl_kvs_get_inner_value!(HashMap<String, KvsValue>, Object(h) => h);
+
+impl Index<usize> for KvsValue {
+    type Output = KvsValue;
+
+    fn index(&self, index: usize) -> &'_ Self::Output {
+        let array = match self {
+            KvsValue::Array(a) => a,
+            _ => panic!(
+                "Attempted to access to an array with index {} but actually the value was {:?}",
+                index, self,
+            ),
+        };
+        &array[index]
     }
 }
