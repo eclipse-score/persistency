@@ -225,6 +225,18 @@ pub enum ErrorCode {
     MutexLockFailed,
 }
 
+/// Key-value-storage builder
+pub struct KvsBuilder {
+    /// Instance ID
+    instance_id: InstanceId,
+
+    /// Need-defaults flag
+    need_defaults: bool,
+
+    /// Need-KVS flag
+    need_kvs: bool,
+}
+
 /// Key-value-storage data
 pub struct Kvs {
     /// Storage data
@@ -292,6 +304,26 @@ enum OpenJsonNeedFile {
 
     /// Required: The file must already exist
     Required,
+}
+
+impl From<bool> for OpenNeedDefaults {
+    fn from(flag: bool) -> OpenNeedDefaults {
+        if flag {
+            OpenNeedDefaults::Required
+        } else {
+            OpenNeedDefaults::Optional
+        }
+    }
+}
+
+impl From<bool> for OpenNeedKvs {
+    fn from(flag: bool) -> OpenNeedKvs {
+        if flag {
+            OpenNeedKvs::Required
+        } else {
+            OpenNeedKvs::Optional
+        }
+    }
 }
 
 impl From<OpenNeedDefaults> for OpenJsonNeedFile {
@@ -404,6 +436,74 @@ impl SnapshotId {
     /// Create a new Snapshot ID
     pub fn new(id: usize) -> Self {
         SnapshotId(id)
+    }
+}
+
+impl KvsBuilder {
+    /// Create a builder to open the key-value-storage
+    ///
+    /// Only the instance ID must be set. All other settings are using default values until changed
+    /// via the builder API.
+    ///
+    /// # Parameters
+    ///   * `instance_id`: Instance ID
+    ///
+    /// # Return Values
+    ///   * KvsBuilder instance
+    pub fn new(instance_id: InstanceId) -> Self {
+        Self {
+            instance_id,
+            need_defaults: false,
+            need_kvs: false,
+        }
+    }
+
+    /// Configure if defaults must exist when opening the KVS
+    ///
+    /// # Parameters
+    ///   * `flag`: Yes = `true`, no = `false` (default)
+    ///
+    /// # Return Values
+    ///   * KvsBuilder instance
+    pub fn need_defaults(mut self, flag: bool) -> KvsBuilder {
+        self.need_defaults = flag;
+        self
+    }
+
+    /// Configure if KVS must exist when opening the KVS
+    ///
+    /// # Parameters
+    ///   * `flag`: Yes = `true`, no = `false` (default)
+    ///
+    /// # Return Values
+    ///   * KvsBuilder instance
+    pub fn need_kvs(mut self, flag: bool) -> KvsBuilder {
+        self.need_kvs = flag;
+        self
+    }
+
+    /// Finalize the builder and open the key-value-storage
+    ///
+    /// Calls `Kvs::open` with the configured settings.
+    ///
+    /// # Features
+    ///   * `FEAT_REQ__KVS__default_values`
+    ///   * `FEAT_REQ__KVS__multiple_kvs`
+    ///   * `FEAT_REQ__KVS__integrity_check`
+    ///
+    /// # Return Values
+    ///   * Ok: KVS instance
+    ///   * `ErrorCode::ValidationFailed`: KVS hash validation failed
+    ///   * `ErrorCode::JsonParserError`: JSON parser error
+    ///   * `ErrorCode::KvsFileReadError`: KVS file read error
+    ///   * `ErrorCode::KvsHashFileReadError`: KVS hash file read error
+    ///   * `ErrorCode::UnmappedError`: Generic error
+    pub fn build(self) -> Result<Kvs, ErrorCode> {
+        Kvs::open(
+            self.instance_id,
+            self.need_defaults.into(),
+            self.need_kvs.into(),
+        )
     }
 }
 
