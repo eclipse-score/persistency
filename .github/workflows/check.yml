@@ -1,0 +1,55 @@
+name: Check compilation and code
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  cargo-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.83.0
+          components: clippy, rustfmt
+
+      - name: Cargo Clippy
+        run: |
+          cd kvs
+          cargo clippy --all-features
+
+      - name: Cargo Fmt
+        run: |
+          cd kvs
+          cargo fmt --check
+
+      - name: Cargo Build
+        run: |
+          cd kvs
+          cargo build
+
+  cargo-miri:
+    runs-on: ubuntu-latest
+    env:
+      MIRIFLAGS: "-Zmiri-disable-isolation"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly-2024-12-17
+          components: miri, rust-src
+
+      - name: Install Clang
+        run: |
+          sudo apt update
+          sudo apt install -y clang
+
+      - name: Cargo Miri
+        run: |
+          cd kvs
+          cargo +nightly-2024-12-17 miri test
