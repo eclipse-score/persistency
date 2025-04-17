@@ -54,3 +54,9 @@ styles/
 .venv
 __pycache__/
 /.coverage
+
+
+.devenv*
+devenv.local.nix
+.direnv
+target
