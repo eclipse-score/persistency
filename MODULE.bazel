@@ -52,7 +52,7 @@ use_repo(llvm, "llvm_toolchain_llvm")
 register_toolchains("@llvm_toolchain//:all")
 
 # Dash license checker
-bazel_dep(name = "score_dash_license_checker", version = "0.1.1")
+bazel_dep(name = "score_dash_license_checker", version = "0.1.2")
 
 # Format checker
 bazel_dep(name = "score_format_checker", version = "0.1.1")
