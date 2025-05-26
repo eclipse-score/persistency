@@ -7,7 +7,7 @@ load("@score_docs_as_code//:docs.bzl", "docs")
 # - `docs:docs` for building documentation at build-time
 
 docs(
- #   conf_dir = "docs",
+    #   conf_dir = "docs",
     docs_targets = [
         {
             "suffix": "",
@@ -20,6 +20,6 @@ docs(
             ],
         },
     ],
-#    source_dir = "docs",
+    #    source_dir = "docs",
     source_files_to_scan_for_needs_links = [],
 )
