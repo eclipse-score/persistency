@@ -10,6 +10,8 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 ********************************************************************************/
+#ifndef SCORE_LIB_KVS_KVS_HPP
+#define SCORE_LIB_KVS_KVS_HPP
 
 #include <atomic>
 #include <mutex>
@@ -582,3 +584,5 @@ private:
     bool                               need_kvs;      ///< Whether an existing KVS is required
     std::string                        process_name;  ///< Process name for the KVS files
 };
+
+#endif /* SCORE_LIB_KVS_KVS_HPP */

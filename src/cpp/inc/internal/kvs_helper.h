@@ -10,6 +10,8 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 ********************************************************************************/
+#ifndef SCORE_LIB_KVS_INTERNAL_KVS_HELPER_H
+#define SCORE_LIB_KVS_INTERNAL_KVS_HELPER_H
 
 #include <sstream>
 #include <string>
@@ -28,3 +30,5 @@ score::Result<std::unordered_map<std::string, KvsValue>> open_json(const std::st
 score::ResultBlank write_json_data(const std::string& filename_prefix, const std::string& buf);
 score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any);
 score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv);
+
+#endif // SCORE_LIB_KVS_INTERNAL_KVS_HELPER_H
