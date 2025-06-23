@@ -1,44 +1,15 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
-//
-// See the NOTICE file(s) distributed with this work for additional
-// information regarding copyright ownership.
-//
-// This program and the accompanying materials are made available under the
-// terms of the Apache License Version 2.0 which is available at
-// <https://www.apache.org/licenses/LICENSE-2.0>
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// Example code for a Key-Value Store (KVS) in C++
-/**
-* \brief Example Usage
+/********************************************************************************
+* Copyright (c) 2025 Contributors to the Eclipse Foundation
 *
-* \code
-*#include <iostream>
-*#include "Kvs.hpp"
+* See the NOTICE file(s) distributed with this work for additional
+* information regarding copyright ownership.
 *
-*int main() {
-*    // Open kvs
-*    auto open_res = KvsBuilder("Process_Name", 0)
-*                        .need_defaults_flag(true)
-*                        .need_kvs_flag(true)
-*                        .build();
-*    if (!open_res) return 1;
-*    Kvs kvs = std::move(open_res.value());
+* This program and the accompanying materials are made available under the
+* terms of the Apache License Version 2.0 which is available at
+* https://www.apache.org/licenses/LICENSE-2.0
 *
-*    // Set and get a value
-*    kvs.set_value("pi", KvsValue(3.14));
-*    auto get_res = kvs.get_value("pi");
-*
-*    // Delete a key
-*    kvs.remove_key("pi");
-*    std::cout << "has pi? " << (kvs.key_exists("pi").value_or(false) ? "yes" : "no") << "\n";
-*
-*
-*    return 0;
-*}
-* \endcode
-*/
+* SPDX-License-Identifier: Apache-2.0
+********************************************************************************/
 
 #include <atomic>
 #include <mutex>
@@ -280,10 +251,37 @@ private:
  * - `flush_on_exit`: An atomic boolean flag indicating whether to flush on exit.
  * 
  * ----------------Notice----------------
- * Blank should be used instead of void for Result class
+ * - Blank should be used instead of void for Result class
  * Refer: "Blank and score::ResultBlank shall be used for `T` instead of `void`" in result.h
  * A KVS Object is not copyable, but it can be moved.
- */
+ * 
+ * \brief Example Usage
+ * \code
+ *  #include <iostream>
+ *  #include "Kvs.hpp"
+ *
+ *  int main() {
+ *    // Open kvs
+ *    auto open_res = KvsBuilder("Process_Name", 0)
+ *                        .need_defaults_flag(true)
+ *                        .need_kvs_flag(true)
+ *                        .build();
+ *    if (!open_res) return 1;
+ *    Kvs kvs = std::move(open_res.value());
+ *
+ *    // Set and get a value
+ *    kvs.set_value("pi", KvsValue(3.14));
+ *    auto get_res = kvs.get_value("pi");
+ *
+ *    // Delete a key
+ *    kvs.remove_key("pi");
+ *    std::cout << "has pi? " << (kvs.key_exists("pi").value_or(false) ? "yes" : "no") << "\n";
+ *
+ *
+ *    return 0;
+ *  }
+ * \endcode
+*/
 
 class Kvs final {
     public:
