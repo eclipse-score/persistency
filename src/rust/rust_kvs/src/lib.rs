@@ -233,7 +233,7 @@ pub enum ErrorCode {
 }
 
 /// Key-value-storage builder
-struct KvsBuilder<T: KvsApi = Kvs> {
+pub struct KvsBuilder<T: KvsApi = Kvs> {
     /// Instance ID
     instance_id: InstanceId,
 

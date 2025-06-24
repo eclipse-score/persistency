@@ -1,0 +1,14 @@
+[package]
+name = "rust_kvs_tool"
+version.workspace = true
+edition.workspace = true
+
+
+[[bin]]
+name = "kvs_tool"
+path = "src/kvs_tool.rs"
+
+[dependencies]
+rust_kvs.workspace = true
+tinyjson.workspace = true
+pico-args.workspace = true

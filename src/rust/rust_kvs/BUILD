@@ -15,29 +15,10 @@ load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 
 rust_library(
     name = "rust_kvs",
-    srcs = ["lib.rs"],
-    crate_name = "rust_kvs",
+    srcs = ["src/lib.rs"],
     visibility = ["//visibility:public"],
     deps = all_crate_deps(
         normal = True,
     ),
 )
 
-rust_binary(
-    name = "kvs_tool",
-    srcs = [
-        "kvs_tool.rs",
-    ],
-    crate_name = "rust_kvs",
-    visibility = ["//visibility:public"],
-    deps = all_crate_deps(
-        normal = True,
-    ) + [
-        ":rust_kvs",
-    ],
-)
-
-rust_test(
-    name = "tests",
-    crate = ":rust_kvs",
-)

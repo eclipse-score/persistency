@@ -1,0 +1,8 @@
+[package]
+name = "rust_kvs"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+adler32.workspace = true
+tinyjson.workspace = true

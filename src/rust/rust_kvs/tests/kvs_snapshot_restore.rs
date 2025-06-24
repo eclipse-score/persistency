@@ -11,7 +11,7 @@
 
 //! # Verify Snapshot Recovery
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, SnapshotId};
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, OpenNeedDefaults, OpenNeedKvs, SnapshotId};
 
 mod common;
 use crate::common::TempDir;
