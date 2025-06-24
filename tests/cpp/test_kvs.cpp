@@ -25,7 +25,7 @@
 #include "kvs.hpp"
 #undef private
 #undef final
-#include "internal/kvs_helper.h"
+#include "internal/kvs_helper.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 

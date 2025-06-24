@@ -15,7 +15,7 @@
 #include <iostream>
 #include <sstream>
 #include "kvs.hpp"
-#include "internal/kvs_helper.h"
+#include "internal/kvs_helper.hpp"
 
 
 //TODO Default Value Handling TBD

@@ -16,7 +16,6 @@ filegroup(
     name = "kvs_srcs",
     srcs = glob([
         "src/*.cpp",
-        "inc/**/*.h",
         "inc/**/*.hpp",
     ]),
     visibility = [
@@ -28,11 +27,10 @@ cc_library(
     name = "kvs_cpp",
     srcs = glob(["src/*.cpp"]),
     hdrs = glob([
-        "inc/**/*.h",
         "inc/**/*.hpp",
     ]),
     includes = ["inc"],
-    visibility = ["//visibility:public"],
+    visibility = ["//:__pkg__"],
     deps = [
         "@score-baselibs//score/filesystem:filesystem",
         "@score-baselibs//score/json:interface",

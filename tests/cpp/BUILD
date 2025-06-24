@@ -29,7 +29,7 @@ cc_test(
     copts = [
         "-Isrc/cpp/inc",
     ],
-    visibility = ["//visibility:public"],
+    visibility = ["//:__pkg__"],
     deps = [
         ":json_stubs",
         "@googletest//:gtest_main",
