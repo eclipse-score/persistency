@@ -21,4 +21,3 @@ rust_library(
         normal = True,
     ),
 )
-

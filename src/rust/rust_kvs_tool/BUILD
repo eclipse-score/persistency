@@ -13,7 +13,6 @@
 load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 
-
 rust_binary(
     name = "kvs_tool",
     srcs = [
@@ -24,7 +23,6 @@ rust_binary(
     deps = all_crate_deps(
         normal = True,
     ) + [
-        "//src/rust_kvs:rust_kvs",
+        "//src/rust_kvs",
     ],
 )
-
