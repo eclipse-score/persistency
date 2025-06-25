@@ -23,6 +23,6 @@ rust_binary(
     deps = all_crate_deps(
         normal = True,
     ) + [
-        "//src/rust_kvs",
+        "//src/rust/rust_kvs",
     ],
 )

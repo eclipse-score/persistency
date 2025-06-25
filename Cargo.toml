@@ -11,7 +11,7 @@ edition = "2021"
 
 
 [workspace.dependencies]
-rust-kvs = { path = "src/rust/rust_kvs" }
+rust_kvs = { path = "src/rust/rust_kvs" }
 rust_kvs_tool = { path = "src/rust/rust_kvs_tool" }
 
 adler32 = "1.2.0"
