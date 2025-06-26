@@ -49,3 +49,30 @@ jobs:
       - name: Cargo Miri
         run: |
           cargo +nightly-2024-12-17 miri test
+
+  cpp-bazel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Bazel 7.4.0
+        run: |
+          curl -LO https://github.com/bazelbuild/bazel/releases/download/7.4.0/bazel-7.4.0-installer-linux-x86_64.sh
+          chmod +x bazel-7.4.0-installer-linux-x86_64.sh
+          ./bazel-7.4.0-installer-linux-x86_64.sh --user
+          echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: Bazel Build
+        run: bazel build //:kvs_cpp
+
+      - name: Bazel Unit Test with Coverage
+        run: |
+          bazel coverage //:test_kvs_cpp \
+            --collect_code_coverage \
+            --instrument_test_targets \
+            --combined_report=lcov \
+            --experimental_generate_llvm_lcov \
+            --nocache_test_results \
+            --nostamp
+
