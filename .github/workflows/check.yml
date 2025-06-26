@@ -56,12 +56,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Bazel 7.4.0
-        run: |
-          curl -LO https://github.com/bazelbuild/bazel/releases/download/7.4.0/bazel-7.4.0-installer-linux-x86_64.sh
-          chmod +x bazel-7.4.0-installer-linux-x86_64.sh
-          ./bazel-7.4.0-installer-linux-x86_64.sh --user
-          echo "$HOME/bin" >> $GITHUB_PATH
+      - name: Setup Bazel with shared caching
+        uses: bazel-contrib/setup-bazel@0.14.0
+        with:
+          disk-cache: true
+          repository-cache: true
+          bazelisk-cache: true
 
       - name: Bazel Build
         run: bazel build //:kvs_cpp
