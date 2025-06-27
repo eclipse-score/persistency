@@ -54,7 +54,7 @@
 //! ## Example Usage
 //!
 //! ```
-//! use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, KvsValue};
+//! use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, KvsValue,KvsApi};
 //! use std::collections::HashMap;
 //!
 //! fn main() -> Result<(), ErrorCode> {
@@ -139,18 +139,25 @@
 //!     directory
 #![forbid(unsafe_code)]
 
-use adler32::RollingAdler32;
-use std::array::TryFromSliceError;
+extern crate alloc;
+
+//core and alloc libs
+use alloc::string::FromUtf8Error;
+use core::array::TryFromSliceError;
+use core::fmt;
+use core::ops::Index;
+
+//std libs
 use std::collections::HashMap;
-use std::fmt;
 use std::fs;
-use std::ops::Index;
 use std::path::Path;
-use std::string::FromUtf8Error;
 use std::sync::{
     atomic::{self, AtomicBool},
     Mutex, MutexGuard, PoisonError,
 };
+
+//external libs
+use adler32::RollingAdler32;
 use tinyjson::{JsonGenerateError, JsonGenerator, JsonParseError, JsonValue};
 
 /// Maximum number of snapshots
@@ -226,7 +233,7 @@ pub enum ErrorCode {
 }
 
 /// Key-value-storage builder
-pub struct KvsBuilder {
+pub struct KvsBuilder<T: KvsApi = Kvs> {
     /// Instance ID
     instance_id: InstanceId,
 
@@ -235,6 +242,7 @@ pub struct KvsBuilder {
 
     /// Need-KVS flag
     need_kvs: bool,
+    _phantom: std::marker::PhantomData<T>,
 }
 
 /// Key-value-storage data
@@ -439,7 +447,45 @@ impl SnapshotId {
     }
 }
 
-impl KvsBuilder {
+pub trait KvsApi {
+    fn open(
+        instance_id: InstanceId,
+        need_defaults: OpenNeedDefaults,
+        need_kvs: OpenNeedKvs,
+    ) -> Result<Self, ErrorCode>
+    where
+        Self: Sized;
+
+    fn reset(&self) -> Result<(), ErrorCode>;
+    fn get_all_keys(&self) -> Result<Vec<String>, ErrorCode>;
+    fn key_exists(&self, key: &str) -> Result<bool, ErrorCode>;
+    fn get_value<T>(&self, key: &str) -> Result<T, ErrorCode>
+    where
+        for<'a> T: TryFrom<&'a KvsValue> + Clone,
+        for<'a> <T as TryFrom<&'a KvsValue>>::Error: std::fmt::Debug;
+    fn get_default_value(&self, key: &str) -> Result<KvsValue, ErrorCode>;
+    fn is_value_default(&self, key: &str) -> Result<bool, ErrorCode>;
+    fn set_value<S: Into<String>, J: Into<KvsValue>>(
+        &self,
+        key: S,
+        value: J,
+    ) -> Result<(), ErrorCode>;
+    fn remove_key(&self, key: &str) -> Result<(), ErrorCode>;
+    fn flush_on_exit(self, flush_on_exit: bool);
+    fn flush(&self) -> Result<(), ErrorCode>;
+    fn snapshot_count(&self) -> usize;
+    fn snapshot_max_count() -> usize
+    where
+        Self: Sized;
+    fn snapshot_restore(&self, id: SnapshotId) -> Result<(), ErrorCode>;
+    fn get_kvs_filename(&self, id: SnapshotId) -> String;
+    fn get_hash_filename(&self, id: SnapshotId) -> String;
+}
+
+impl<T> KvsBuilder<T>
+where
+    T: KvsApi,
+{
     /// Create a builder to open the key-value-storage
     ///
     /// Only the instance ID must be set. All other settings are using default values until changed
@@ -455,6 +501,7 @@ impl KvsBuilder {
             instance_id,
             need_defaults: false,
             need_kvs: false,
+            _phantom: std::marker::PhantomData,
         }
     }
 
@@ -465,7 +512,7 @@ impl KvsBuilder {
     ///
     /// # Return Values
     ///   * KvsBuilder instance
-    pub fn need_defaults(mut self, flag: bool) -> KvsBuilder {
+    pub fn need_defaults(mut self, flag: bool) -> KvsBuilder<T> {
         self.need_defaults = flag;
         self
     }
@@ -477,7 +524,7 @@ impl KvsBuilder {
     ///
     /// # Return Values
     ///   * KvsBuilder instance
-    pub fn need_kvs(mut self, flag: bool) -> KvsBuilder {
+    pub fn need_kvs(mut self, flag: bool) -> KvsBuilder<T> {
         self.need_kvs = flag;
         self
     }
@@ -498,8 +545,8 @@ impl KvsBuilder {
     ///   * `ErrorCode::KvsFileReadError`: KVS file read error
     ///   * `ErrorCode::KvsHashFileReadError`: KVS hash file read error
     ///   * `ErrorCode::UnmappedError`: Generic error
-    pub fn build(self) -> Result<Kvs, ErrorCode> {
-        Kvs::open(
+    pub fn build(self) -> Result<T, ErrorCode> {
+        T::open(
             self.instance_id,
             self.need_defaults.into(),
             self.need_kvs.into(),
@@ -508,60 +555,6 @@ impl KvsBuilder {
 }
 
 impl Kvs {
-    /// Open the key-value-storage
-    ///
-    /// Checks and opens a key-value-storage. Flush on exit is enabled by default and can be
-    /// controlled with [`flush_on_exit`](Self::flush_on_exit).
-    ///
-    /// # Features
-    ///   * `FEAT_REQ__KVS__default_values`
-    ///   * `FEAT_REQ__KVS__multiple_kvs`
-    ///   * `FEAT_REQ__KVS__integrity_check`
-    ///
-    /// # Parameters
-    ///   * `instance_id`: Instance ID
-    ///   * `need_defaults`: Fail when no default file was found
-    ///   * `need_kvs`: Fail when no KVS file was found
-    ///
-    /// # Return Values
-    ///   * Ok: KVS instance
-    ///   * `ErrorCode::ValidationFailed`: KVS hash validation failed
-    ///   * `ErrorCode::JsonParserError`: JSON parser error
-    ///   * `ErrorCode::KvsFileReadError`: KVS file read error
-    ///   * `ErrorCode::KvsHashFileReadError`: KVS hash file read error
-    ///   * `ErrorCode::UnmappedError`: Generic error
-    pub fn open(
-        instance_id: InstanceId,
-        need_defaults: OpenNeedDefaults,
-        need_kvs: OpenNeedKvs,
-    ) -> Result<Kvs, ErrorCode> {
-        let filename_default = format!("kvs_{instance_id}_default");
-        let filename_prefix = format!("kvs_{instance_id}");
-        let filename_kvs = format!("{filename_prefix}_0");
-
-        let default = Self::open_json(&filename_default, need_defaults, OpenJsonVerifyHash::No)?;
-        let kvs = Self::open_json(&filename_kvs, need_kvs, OpenJsonVerifyHash::Yes)?;
-
-        println!("opened KVS: instance '{instance_id}'");
-        println!("max snapshot count: {KVS_MAX_SNAPSHOTS}");
-
-        Ok(Self {
-            kvs: Mutex::new(kvs),
-            default,
-            filename_prefix,
-            flush_on_exit: AtomicBool::new(true),
-        })
-    }
-
-    /// Control the flush on exit behaviour
-    ///
-    /// # Parameters
-    ///   * `flush_on_exit`: Flag to control flush-on-exit behaviour
-    pub fn flush_on_exit(self, flush_on_exit: bool) {
-        self.flush_on_exit
-            .store(flush_on_exit, atomic::Ordering::Relaxed);
-    }
-
     /// Open and parse a JSON file
     ///
     /// Return an empty hash when no file was found.
@@ -643,12 +636,103 @@ impl Kvs {
         }
     }
 
+    /// Rotate snapshots
+    ///
+    /// # Features
+    ///   * `FEAT_REQ__KVS__snapshots`
+    ///
+    /// # Return Values
+    ///   * Ok: Rotation successful, also if no rotation was needed
+    ///   * `ErrorCode::UnmappedError`: Unmapped error
+    fn snapshot_rotate(&self) -> Result<(), ErrorCode> {
+        for idx in (1..=KVS_MAX_SNAPSHOTS).rev() {
+            let hash_old = format!("{}_{}.hash", self.filename_prefix, idx - 1);
+            let hash_new = format!("{}_{}.hash", self.filename_prefix, idx);
+            let snap_old = format!("{}_{}.json", self.filename_prefix, idx - 1);
+            let snap_new = format!("{}_{}.json", self.filename_prefix, idx);
+
+            println!("rotating: {snap_old} -> {snap_new}");
+
+            let res = fs::rename(hash_old, hash_new);
+            if let Err(err) = res {
+                if err.kind() != std::io::ErrorKind::NotFound {
+                    return Err(err.into());
+                }
+            }
+
+            let res = fs::rename(snap_old, snap_new);
+            if let Err(err) = res {
+                if err.kind() != std::io::ErrorKind::NotFound {
+                    return Err(err.into());
+                }
+            }
+        }
+
+        Ok(())
+    }
+}
+
+impl KvsApi for Kvs {
+    /// Open the key-value-storage
+    ///
+    /// Checks and opens a key-value-storage. Flush on exit is enabled by default and can be
+    /// controlled with [`flush_on_exit`](Self::flush_on_exit).
+    ///
+    /// # Features
+    ///   * `FEAT_REQ__KVS__default_values`
+    ///   * `FEAT_REQ__KVS__multiple_kvs`
+    ///   * `FEAT_REQ__KVS__integrity_check`
+    ///
+    /// # Parameters
+    ///   * `instance_id`: Instance ID
+    ///   * `need_defaults`: Fail when no default file was found
+    ///   * `need_kvs`: Fail when no KVS file was found
+    ///
+    /// # Return Values
+    ///   * Ok: KVS instance
+    ///   * `ErrorCode::ValidationFailed`: KVS hash validation failed
+    ///   * `ErrorCode::JsonParserError`: JSON parser error
+    ///   * `ErrorCode::KvsFileReadError`: KVS file read error
+    ///   * `ErrorCode::KvsHashFileReadError`: KVS hash file read error
+    ///   * `ErrorCode::UnmappedError`: Generic error
+    fn open(
+        instance_id: InstanceId,
+        need_defaults: OpenNeedDefaults,
+        need_kvs: OpenNeedKvs,
+    ) -> Result<Kvs, ErrorCode> {
+        let filename_default = format!("kvs_{instance_id}_default");
+        let filename_prefix = format!("kvs_{instance_id}");
+        let filename_kvs = format!("{filename_prefix}_0");
+
+        let default = Self::open_json(&filename_default, need_defaults, OpenJsonVerifyHash::No)?;
+        let kvs = Self::open_json(&filename_kvs, need_kvs, OpenJsonVerifyHash::Yes)?;
+
+        println!("opened KVS: instance '{instance_id}'");
+        println!("max snapshot count: {KVS_MAX_SNAPSHOTS}");
+
+        Ok(Self {
+            kvs: Mutex::new(kvs),
+            default,
+            filename_prefix,
+            flush_on_exit: AtomicBool::new(true),
+        })
+    }
+
+    /// Control the flush on exit behaviour
+    ///
+    /// # Parameters
+    ///   * `flush_on_exit`: Flag to control flush-on-exit behaviour
+    fn flush_on_exit(self, flush_on_exit: bool) {
+        self.flush_on_exit
+            .store(flush_on_exit, atomic::Ordering::Relaxed);
+    }
+
     /// Resets a key-value-storage to its initial state
     ///
     /// # Return Values
     ///   * Ok: Reset of the KVS was successful
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
-    pub fn reset(&self) -> Result<(), ErrorCode> {
+    fn reset(&self) -> Result<(), ErrorCode> {
         *self.kvs.lock()? = HashMap::new();
         Ok(())
     }
@@ -658,7 +742,7 @@ impl Kvs {
     /// # Return Values
     ///   * Ok: List of all keys
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
-    pub fn get_all_keys(&self) -> Result<Vec<String>, ErrorCode> {
+    fn get_all_keys(&self) -> Result<Vec<String>, ErrorCode> {
         Ok(self.kvs.lock()?.keys().map(|x| x.to_string()).collect())
     }
 
@@ -671,7 +755,7 @@ impl Kvs {
     ///   * Ok(`true`): Key exists
     ///   * Ok(`false`): Key doesn't exist
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
-    pub fn key_exists(&self, key: &str) -> Result<bool, ErrorCode> {
+    fn key_exists(&self, key: &str) -> Result<bool, ErrorCode> {
         Ok(self.kvs.lock()?.contains_key(key))
     }
 
@@ -691,7 +775,7 @@ impl Kvs {
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
     ///   * `ErrorCode::ConversionFailed`: Type conversion failed
     ///   * `ErrorCode::KeyNotFound`: Key wasn't found in KVS nor in defaults
-    pub fn get_value<T>(&self, key: &str) -> Result<T, ErrorCode>
+    fn get_value<T>(&self, key: &str) -> Result<T, ErrorCode>
     where
         for<'a> T: TryFrom<&'a KvsValue> + std::clone::Clone,
         for<'a> <T as TryFrom<&'a KvsValue>>::Error: std::fmt::Debug,
@@ -738,7 +822,7 @@ impl Kvs {
     /// # Return Values
     ///   * Ok: `KvsValue` for the key
     ///   * `ErrorCode::KeyNotFound`: Key not found in defaults
-    pub fn get_default_value(&self, key: &str) -> Result<KvsValue, ErrorCode> {
+    fn get_default_value(&self, key: &str) -> Result<KvsValue, ErrorCode> {
         if let Some(value) = self.default.get(key) {
             Ok(value.clone())
         } else {
@@ -759,7 +843,7 @@ impl Kvs {
     ///   * Ok(false): Key returns the set value
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
     ///   * `ErrorCode::KeyNotFound`: Key wasn't found
-    pub fn is_value_default(&self, key: &str) -> Result<bool, ErrorCode> {
+    fn is_value_default(&self, key: &str) -> Result<bool, ErrorCode> {
         if self.kvs.lock()?.contains_key(key) {
             Ok(false)
         } else if self.default.contains_key(key) {
@@ -778,7 +862,7 @@ impl Kvs {
     /// # Return Values
     ///   * Ok: Value was assigned to key
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
-    pub fn set_value<S: Into<String>, J: Into<KvsValue>>(
+    fn set_value<S: Into<String>, J: Into<KvsValue>>(
         &self,
         key: S,
         value: J,
@@ -796,7 +880,7 @@ impl Kvs {
     ///   * Ok: Key removed successfully
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
     ///   * `ErrorCode::KeyNotFound`: Key not found
-    pub fn remove_key(&self, key: &str) -> Result<(), ErrorCode> {
+    fn remove_key(&self, key: &str) -> Result<(), ErrorCode> {
         if self.kvs.lock()?.remove(key).is_some() {
             Ok(())
         } else {
@@ -817,7 +901,7 @@ impl Kvs {
     ///   * `ErrorCode::JsonGeneratorError`: Failed to serialize to JSON
     ///   * `ErrorCode::ConversionFailed`: JSON could not serialize into String
     ///   * `ErrorCode::UnmappedError`: Unmapped error
-    pub fn flush(&self) -> Result<(), ErrorCode> {
+    fn flush(&self) -> Result<(), ErrorCode> {
         let json: HashMap<String, JsonValue> = self
             .kvs
             .lock()?
@@ -847,7 +931,7 @@ impl Kvs {
     ///
     /// # Return Values
     ///   * usize: Count of found snapshots
-    pub fn snapshot_count(&self) -> usize {
+    fn snapshot_count(&self) -> usize {
         let mut count = 0;
 
         for idx in 0..=KVS_MAX_SNAPSHOTS {
@@ -870,7 +954,7 @@ impl Kvs {
     ///
     /// # Return Values
     ///   * usize: Maximum count of snapshots
-    pub fn snapshot_max_count() -> usize {
+    fn snapshot_max_count() -> usize {
         KVS_MAX_SNAPSHOTS
     }
 
@@ -892,7 +976,7 @@ impl Kvs {
     ///   * `ErrorCode::KvsFileReadError`: KVS file not found
     ///   * `ErrorCode::KvsHashFileReadError`: KVS hash file read error
     ///   * `ErrorCode::UnmappedError`: Generic error
-    pub fn snapshot_restore(&self, id: SnapshotId) -> Result<(), ErrorCode> {
+    fn snapshot_restore(&self, id: SnapshotId) -> Result<(), ErrorCode> {
         // fail if the snapshot ID is the current KVS
         if id.0 == 0 {
             eprintln!("error: tried to restore current KVS as snapshot");
@@ -914,41 +998,6 @@ impl Kvs {
         Ok(())
     }
 
-    /// Rotate snapshots
-    ///
-    /// # Features
-    ///   * `FEAT_REQ__KVS__snapshots`
-    ///
-    /// # Return Values
-    ///   * Ok: Rotation successful, also if no rotation was needed
-    ///   * `ErrorCode::UnmappedError`: Unmapped error
-    fn snapshot_rotate(&self) -> Result<(), ErrorCode> {
-        for idx in (1..=KVS_MAX_SNAPSHOTS).rev() {
-            let hash_old = format!("{}_{}.hash", self.filename_prefix, idx - 1);
-            let hash_new = format!("{}_{}.hash", self.filename_prefix, idx);
-            let snap_old = format!("{}_{}.json", self.filename_prefix, idx - 1);
-            let snap_new = format!("{}_{}.json", self.filename_prefix, idx);
-
-            println!("rotating: {snap_old} -> {snap_new}");
-
-            let res = fs::rename(hash_old, hash_new);
-            if let Err(err) = res {
-                if err.kind() != std::io::ErrorKind::NotFound {
-                    return Err(err.into());
-                }
-            }
-
-            let res = fs::rename(snap_old, snap_new);
-            if let Err(err) = res {
-                if err.kind() != std::io::ErrorKind::NotFound {
-                    return Err(err.into());
-                }
-            }
-        }
-
-        Ok(())
-    }
-
     /// Return the KVS-filename for a given snapshot ID
     ///
     /// # Parameters
@@ -956,7 +1005,7 @@ impl Kvs {
     ///
     /// # Return Values
     ///   * String: Filename for ID
-    pub fn get_kvs_filename(&self, id: SnapshotId) -> String {
+    fn get_kvs_filename(&self, id: SnapshotId) -> String {
         format!("{}_{}.json", self.filename_prefix, id)
     }
 
@@ -967,7 +1016,7 @@ impl Kvs {
     ///
     /// # Return Values
     ///   * String: Hash filename for ID
-    pub fn get_hash_filename(&self, id: SnapshotId) -> String {
+    fn get_hash_filename(&self, id: SnapshotId) -> String {
         format!("{}_{}.hash", self.filename_prefix, id)
     }
 }

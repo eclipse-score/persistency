@@ -19,7 +19,6 @@ copyright_checker(
     name = "copyright",
     srcs = [
         "src",
-        "tests",
         "//:BUILD",
         "//:MODULE.bazel",
     ],
@@ -37,10 +36,6 @@ dash_license_checker(
 
 # Add target for formatting checks
 use_format_targets()
-
-exports_files([
-    "MODULE.bazel",
-])
 
 alias(
     name = "kvs_cpp",

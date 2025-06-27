@@ -11,7 +11,9 @@
 
 //! # Verify KVS Open with wrong Checksum
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsValue, OpenNeedDefaults, OpenNeedKvs, SnapshotId};
+use rust_kvs::{
+    ErrorCode, InstanceId, Kvs, KvsApi, KvsValue, OpenNeedDefaults, OpenNeedKvs, SnapshotId,
+};
 
 mod common;
 use crate::common::TempDir;

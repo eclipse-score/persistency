@@ -76,7 +76,8 @@ crate.from_cargo(
     cargo_lockfile = "//:Cargo.lock",
     manifests = [
         "//:Cargo.toml",
-        "//src/rust:Cargo.toml",
+        "//src/rust/rust_kvs:Cargo.toml",
+        "//src/rust/rust_kvs_tool:Cargo.toml",
     ],
 )
 use_repo(crate, "crates")

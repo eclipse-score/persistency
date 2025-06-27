@@ -11,15 +11,17 @@
 
 //! # Verify KVS Base Functionality without Defaults
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsValue, OpenNeedDefaults, OpenNeedKvs};
+use rust_kvs::{
+    ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue, OpenNeedDefaults, OpenNeedKvs,
+};
 use std::collections::HashMap;
 
 mod common;
 use crate::common::TempDir;
 
-/// Create a key-value-storage without defaults
+/// Create a key-value-storage without defaults via builder
 #[test]
-fn kvs_without_defaults() -> Result<(), ErrorCode> {
+fn kvs_without_defaults_builder() -> Result<(), ErrorCode> {
     let dir = TempDir::create()?;
     dir.set_current_dir()?;
 
@@ -61,11 +63,11 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
 
     // drop the current instance with flush-on-exit enabled and reopen storage
     drop(kvs);
-    let kvs = Kvs::open(
-        InstanceId::new(0),
-        OpenNeedDefaults::Optional,
-        OpenNeedKvs::Required,
-    )?;
+
+    let builder = KvsBuilder::new(InstanceId::new(0));
+    let builder = builder.need_defaults(false);
+    let builder = builder.need_kvs(true);
+    let kvs: Kvs = builder.build()?;
 
     assert_eq!(kvs.get_value::<f64>("number")?, 123.0);
     assert!(kvs.get_value::<bool>("bool")?);

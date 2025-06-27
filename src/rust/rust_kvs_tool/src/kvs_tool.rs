@@ -80,7 +80,9 @@
 //!
 
 use pico_args::Arguments;
-use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsValue, OpenNeedDefaults, OpenNeedKvs, SnapshotId};
+use rust_kvs::{
+    ErrorCode, InstanceId, Kvs, KvsApi, KvsValue, OpenNeedDefaults, OpenNeedKvs, SnapshotId,
+};
 use std::collections::HashMap;
 use tinyjson::JsonValue;
 
