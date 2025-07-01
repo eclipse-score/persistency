@@ -1450,6 +1450,7 @@ mod tests {
         }
     }
 
+    #[cfg_attr(miri, ignore)]
     #[test]
     fn test_get_value_try_from_error() {
         let instance_id = InstanceId::new(0);
