@@ -11,9 +11,7 @@
 
 //! # Verify KVS Open with missing Checksum
 
-use rust_kvs::{
-    ErrorCode, InstanceId, Kvs, KvsApi, KvsValue, OpenNeedDefaults, OpenNeedKvs, SnapshotId,
-};
+use rust_kvs::{ErrorCode, InstanceId,Kvs, KvsBuilder,KvsApi, KvsValue, SnapshotId};
 
 mod common;
 use crate::common::TempDir;
@@ -24,11 +22,10 @@ fn kvs_checksum_missing() -> Result<(), ErrorCode> {
     let dir = TempDir::create()?;
     dir.set_current_dir()?;
 
-    let kvs = Kvs::open(
-        InstanceId::new(0),
-        OpenNeedDefaults::Optional,
-        OpenNeedKvs::Optional,
-    )?;
+    let kvs = KvsBuilder::<Kvs>::new(InstanceId::new(0))
+        .need_defaults(false)
+        .need_kvs(false)
+        .build()?;
 
     kvs.set_value("number", 123.0)?;
     kvs.set_value("bool", true)?;
@@ -53,11 +50,11 @@ fn kvs_checksum_missing() -> Result<(), ErrorCode> {
     std::fs::remove_file(hash_filename)?;
 
     // opening must fail because of the missing checksum file
-    let kvs = Kvs::open(
-        InstanceId::new(0),
-        OpenNeedDefaults::Optional,
-        OpenNeedKvs::Required,
-    );
+    let kvs = KvsBuilder::<Kvs>::new(InstanceId::new(0))
+        .need_defaults(false)
+        .need_kvs(true)
+        .build();
+
     assert_eq!(kvs.err(), Some(ErrorCode::KvsHashFileReadError));
 
     Ok(())

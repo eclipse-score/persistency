@@ -18,9 +18,11 @@
 //! [Adler32](https://crates.io/crates/adler32) crate. No other direct dependencies are used
 //! besides the Rust `std` library.
 //!
-//! The key-value-storage is opened or initialized with [`Kvs::open`] and automatically flushed on
-//! exit by default. This can be controlled by [`Kvs::flush_on_exit`]. It is possible to manually
-//! flush the KVS by calling [`Kvs::flush`].
+//! The key-value-storage is opened or initialized with [`KvsBuilder::new`] where various settings
+//! can be applied before the KVS instance is created.
+//!
+//! Without configuration the KVS is flushed on exit by default. This can be controlled by
+//! [`Kvs::flush_on_exit`]. It is possible to manually flush the KVS by calling [`Kvs::flush`].
 //!
 //! All `TinyJSON` provided datatypes can be used:
 //!   * `Number`: `f64`
@@ -54,14 +56,13 @@
 //! ## Example Usage
 //!
 //! ```
-//! use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, KvsValue,KvsApi};
+//! use rust_kvs::{ErrorCode, InstanceId,Kvs,KvsApi, KvsBuilder, KvsValue};
 //! use std::collections::HashMap;
 //!
 //! fn main() -> Result<(), ErrorCode> {
-//!     let kvs = Kvs::open(
-//!         InstanceId::new(0),
-//!         OpenNeedDefaults::Optional,
-//!         OpenNeedKvs::Optional)?;
+//!    
+//!     
+//!     let kvs = KvsBuilder::<Kvs>::new(InstanceId::new(0)).dir("").build()?;
 //!
 //!     kvs.set_value("number", 123.0)?;
 //!     kvs.set_value("bool", true)?;
@@ -131,12 +132,6 @@
 //!     defines that `String` and `str` are always valid UTF-8.
 //!   * Feature `FEAT_REQ__KVS__supported_datatypes_values` is matched by using the same types that
 //!     the IPC will use for the Rust implementation.
-//!
-//! ## Todos
-//!
-//!   * Store the current working directory in the KVS struct to make sure snapshots are created at
-//!     the same place as the KVS was opened in case of the application changes the working
-//!     directory
 #![forbid(unsafe_code)]
 
 extern crate alloc;
@@ -519,7 +514,7 @@ where
     ///
     /// # Return Values
     ///   * KvsBuilder instance
-    pub fn need_defaults(mut self, flag: bool) -> KvsBuilder<T> {
+    pub fn need_defaults(mut self, flag: bool) -> Self {
         self.need_defaults = flag;
         self
     }
@@ -531,7 +526,7 @@ where
     ///
     /// # Return Values
     ///   * KvsBuilder instance
-    pub fn need_kvs(mut self, flag: bool) -> KvsBuilder<T> {
+    pub fn need_kvs(mut self, flag: bool) -> Self {
         self.need_kvs = flag;
         self
     }
@@ -542,7 +537,7 @@ where
     ///   * `dir`: Path to permanent storage
     ///
     /// # Return Values
-    pub fn dir<P: Into<String>>(mut self, dir: P) -> KvsBuilder<T> {
+    pub fn dir<P: Into<String>>(mut self, dir: P) -> Self {
         self.dir = Some(dir.into());
         self
     }
