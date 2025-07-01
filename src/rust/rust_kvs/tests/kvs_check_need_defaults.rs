@@ -11,7 +11,7 @@
 
 //! # Verify File Check for non-existing Defaults File
 
-use rust_kvs::{ErrorCode, InstanceId,Kvs, KvsBuilder};
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsBuilder};
 
 mod common;
 use crate::common::TempDir;

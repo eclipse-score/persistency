@@ -11,7 +11,7 @@
 
 //! # Verify KVS Default Value Functionality
 
-use rust_kvs::{ErrorCode, InstanceId,Kvs,KvsApi, KvsBuilder, KvsValue};
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue};
 use std::collections::HashMap;
 use tinyjson::{JsonGenerator, JsonValue};
 

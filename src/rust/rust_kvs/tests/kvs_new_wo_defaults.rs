@@ -11,7 +11,7 @@
 
 //! # Verify KVS Base Functionality without Defaults
 
-use rust_kvs::{ErrorCode, InstanceId,Kvs,KvsApi, KvsBuilder, KvsValue};
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue};
 use std::collections::HashMap;
 
 mod common;

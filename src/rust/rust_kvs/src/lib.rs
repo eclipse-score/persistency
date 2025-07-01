@@ -133,6 +133,7 @@
 //!   * Feature `FEAT_REQ__KVS__supported_datatypes_values` is matched by using the same types that
 //!     the IPC will use for the Rust implementation.
 #![forbid(unsafe_code)]
+#![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 extern crate alloc;
 
@@ -453,7 +454,7 @@ pub trait KvsApi {
         instance_id: InstanceId,
         need_defaults: OpenNeedDefaults,
         need_kvs: OpenNeedKvs,
-        dir: Option<String>
+        dir: Option<String>,
     ) -> Result<Self, ErrorCode>
     where
         Self: Sized;
@@ -1179,7 +1180,6 @@ impl Index<usize> for KvsValue {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1259,7 +1259,9 @@ mod tests {
             .unwrap();
 
         // positive
-        let builder = KvsBuilder::<Kvs>::new(instance_id).dir(temp_dir.1).need_kvs(true);
+        let builder = KvsBuilder::<Kvs>::new(instance_id)
+            .dir(temp_dir.1)
+            .need_kvs(true);
         builder.build().unwrap();
     }
 
@@ -1358,7 +1360,10 @@ mod tests {
         let keys = kvs.get_all_keys();
         assert!(keys.is_ok(), "Expected Ok for get_all_keys");
         let keys = keys.unwrap();
-        assert!(keys.contains(&"test".to_string()), "Expected 'test' key in get_all_keys");
+        assert!(
+            keys.contains(&"test".to_string()),
+            "Expected 'test' key in get_all_keys"
+        );
     }
 
     #[test]
@@ -1387,7 +1392,10 @@ mod tests {
             .build()
             .unwrap();
         let filename = kvs.get_kvs_filename(SnapshotId::new(0));
-        assert!(filename.ends_with("_0.json"), "Expected filename to end with _0.json");
+        assert!(
+            filename.ends_with("_0.json"),
+            "Expected filename to end with _0.json"
+        );
     }
 
     #[test]
@@ -1402,7 +1410,11 @@ mod tests {
         );
         let _ = kvs.set_value("test", KvsValue::Number(123.0));
         let value = kvs.get_value::<f64>("test");
-        assert_eq!(value.unwrap(), 123.0, "Expected to retrieve the inserted value");
+        assert_eq!(
+            value.unwrap(),
+            123.0,
+            "Expected to retrieve the inserted value"
+        );
     }
 
     #[test]
@@ -1424,7 +1436,10 @@ mod tests {
         );
         kvs.flush_on_exit(false);
         // Drop is called automatically, but we can check that flush_on_exit is set to false
-        assert!(!kvs.flush_on_exit.load(std::sync::atomic::Ordering::Relaxed), "Expected flush_on_exit to be false");
+        assert!(
+            !kvs.flush_on_exit.load(std::sync::atomic::Ordering::Relaxed),
+            "Expected flush_on_exit to be false"
+        );
     }
 
     impl<'a> TryFrom<&'a KvsValue> for u64 {
@@ -1458,10 +1473,16 @@ mod tests {
 
         // stored value: should return ConversionFailed
         let result = kvs.get_value::<u64>("test");
-        assert!(matches!(result, Err(ErrorCode::ConversionFailed)), "Expected ConversionFailed for stored value");
+        assert!(
+            matches!(result, Err(ErrorCode::ConversionFailed)),
+            "Expected ConversionFailed for stored value"
+        );
 
         // default value: should return ConversionFailed
         let result = kvs.get_value::<u64>("bool1");
-        assert!(matches!(result, Err(ErrorCode::ConversionFailed)), "Expected ConversionFailed for default value");
+        assert!(
+            matches!(result, Err(ErrorCode::ConversionFailed)),
+            "Expected ConversionFailed for default value"
+        );
     }
 }

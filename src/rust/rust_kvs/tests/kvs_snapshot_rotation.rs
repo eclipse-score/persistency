@@ -11,7 +11,7 @@
 
 //! # Verify Snapshot Rotation
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs,KvsApi, KvsBuilder, KvsValue, SnapshotId};
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue, SnapshotId};
 use std::collections::HashMap;
 
 mod common;

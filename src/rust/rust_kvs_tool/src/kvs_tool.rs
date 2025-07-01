@@ -81,7 +81,8 @@
 
 use pico_args::Arguments;
 use rust_kvs::{
-    ErrorCode, InstanceId, Kvs, KvsApi, KvsValue, OpenNeedDefaults, OpenNeedKvs, SnapshotId,
+    ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue, OpenNeedDefaults, OpenNeedKvs,
+    SnapshotId,
 };
 use std::collections::HashMap;
 use tinyjson::JsonValue;
@@ -529,11 +530,11 @@ fn _createtestdata(kvs: Kvs) -> Result<(), ErrorCode> {
 fn main() -> Result<(), ErrorCode> {
     let mut args = Arguments::from_env();
 
-    let kvs = match Kvs::open(
-        InstanceId::new(0),
-        OpenNeedDefaults::Optional,
-        OpenNeedKvs::Optional,
-    ) {
+    let builder = KvsBuilder::new(InstanceId::new(0))
+        .need_defaults(false)
+        .need_kvs(false);
+
+    let kvs = match builder.build() {
         Ok(kvs) => kvs,
         Err(e) => {
             eprintln!("Error opening KVS: {:?}", e);

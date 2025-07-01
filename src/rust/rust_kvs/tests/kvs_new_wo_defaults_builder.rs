@@ -11,7 +11,7 @@
 
 //! # Verify KVS Base Functionality without Defaults
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs,KvsApi, KvsBuilder, KvsValue};
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue};
 use std::collections::HashMap;
 
 mod common;
@@ -19,7 +19,6 @@ mod common;
 /// Create a key-value-storage without defaults via builder
 #[test]
 fn kvs_without_defaults_builder() -> Result<(), ErrorCode> {
-
     let kvs = KvsBuilder::<Kvs>::new(InstanceId::new(0))
         .need_defaults(false)
         .need_kvs(false)
