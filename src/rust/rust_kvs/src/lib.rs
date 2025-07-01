@@ -242,6 +242,11 @@ pub struct KvsBuilder<T: KvsApi = Kvs> {
 
     /// Need-KVS flag
     need_kvs: bool,
+
+    /// Working directory
+    dir: Option<String>,
+
+    /// Phantom data for drop check
     _phantom: std::marker::PhantomData<T>,
 }
 
@@ -395,14 +400,14 @@ impl From<JsonGenerateError> for ErrorCode {
 
 impl From<FromUtf8Error> for ErrorCode {
     fn from(cause: FromUtf8Error) -> Self {
-        eprintln!("error: UTF-8 conversion failed: {:#?}", cause);
+        eprintln!("error: UTF-8 conversion failed: {cause:#?}");
         ErrorCode::ConversionFailed
     }
 }
 
 impl From<TryFromSliceError> for ErrorCode {
     fn from(cause: TryFromSliceError) -> Self {
-        eprintln!("error: try_into from slice failed: {:#?}", cause);
+        eprintln!("error: try_into from slice failed: {cause:#?}");
         ErrorCode::ConversionFailed
     }
 }
@@ -416,7 +421,7 @@ impl From<Vec<u8>> for ErrorCode {
 
 impl From<PoisonError<MutexGuard<'_, HashMap<std::string::String, KvsValue>>>> for ErrorCode {
     fn from(cause: PoisonError<MutexGuard<'_, HashMap<std::string::String, KvsValue>>>) -> Self {
-        eprintln!("error: Mutex locking failed: {:#?}", cause);
+        eprintln!("error: Mutex locking failed: {cause:#?}");
         ErrorCode::MutexLockFailed
     }
 }
@@ -452,6 +457,7 @@ pub trait KvsApi {
         instance_id: InstanceId,
         need_defaults: OpenNeedDefaults,
         need_kvs: OpenNeedKvs,
+        dir: Option<String>
     ) -> Result<Self, ErrorCode>
     where
         Self: Sized;
@@ -471,7 +477,7 @@ pub trait KvsApi {
         value: J,
     ) -> Result<(), ErrorCode>;
     fn remove_key(&self, key: &str) -> Result<(), ErrorCode>;
-    fn flush_on_exit(self, flush_on_exit: bool);
+    fn flush_on_exit(&self, flush_on_exit: bool);
     fn flush(&self) -> Result<(), ErrorCode>;
     fn snapshot_count(&self) -> usize;
     fn snapshot_max_count() -> usize
@@ -501,6 +507,7 @@ where
             instance_id,
             need_defaults: false,
             need_kvs: false,
+            dir: None,
             _phantom: std::marker::PhantomData,
         }
     }
@@ -529,6 +536,17 @@ where
         self
     }
 
+    /// Set the key-value-storage permanent storage directory
+    ///
+    /// # Parameters
+    ///   * `dir`: Path to permanent storage
+    ///
+    /// # Return Values
+    pub fn dir<P: Into<String>>(mut self, dir: P) -> KvsBuilder<T> {
+        self.dir = Some(dir.into());
+        self
+    }
+
     /// Finalize the builder and open the key-value-storage
     ///
     /// Calls `Kvs::open` with the configured settings.
@@ -550,6 +568,7 @@ where
             self.instance_id,
             self.need_defaults.into(),
             self.need_kvs.into(),
+            self.dir,
         )
     }
 }
@@ -657,14 +676,14 @@ impl Kvs {
             if let Err(err) = res {
                 if err.kind() != std::io::ErrorKind::NotFound {
                     return Err(err.into());
+                } else {
+                    continue;
                 }
             }
 
             let res = fs::rename(snap_old, snap_new);
             if let Err(err) = res {
-                if err.kind() != std::io::ErrorKind::NotFound {
-                    return Err(err.into());
-                }
+                return Err(err.into());
             }
         }
 
@@ -699,9 +718,15 @@ impl KvsApi for Kvs {
         instance_id: InstanceId,
         need_defaults: OpenNeedDefaults,
         need_kvs: OpenNeedKvs,
+        dir: Option<String>,
     ) -> Result<Kvs, ErrorCode> {
-        let filename_default = format!("kvs_{instance_id}_default");
-        let filename_prefix = format!("kvs_{instance_id}");
+        let dir = if let Some(dir) = dir {
+            format!("{dir}/")
+        } else {
+            "".to_string()
+        };
+        let filename_default = format!("{dir}kvs_{instance_id}_default");
+        let filename_prefix = format!("{dir}kvs_{instance_id}");
         let filename_kvs = format!("{filename_prefix}_0");
 
         let default = Self::open_json(&filename_default, need_defaults, OpenJsonVerifyHash::No)?;
@@ -722,7 +747,7 @@ impl KvsApi for Kvs {
     ///
     /// # Parameters
     ///   * `flush_on_exit`: Flag to control flush-on-exit behaviour
-    fn flush_on_exit(self, flush_on_exit: bool) {
+    fn flush_on_exit(&self, flush_on_exit: bool) {
         self.flush_on_exit
             .store(flush_on_exit, atomic::Ordering::Relaxed);
     }
@@ -1151,8 +1176,7 @@ impl Index<usize> for KvsValue {
         let array = match self {
             KvsValue::Array(a) => a,
             _ => panic!(
-                "Attempted to access to an array with index {} but actually the value was {:?}",
-                index, self,
+                "Attempted to access to an array with index {index} but actually the value was {self:?}",
             ),
         };
         &array[index]
