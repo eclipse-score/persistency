@@ -11,8 +11,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 module(
-    name = "inc_mw_per",
-    version = "1.0",
+    name = "score_persistency",
+    version = "0.1.0",
+    compatibility_level = 0,
 )
 
 bazel_dep(name = "rules_python", version = "1.4.1")

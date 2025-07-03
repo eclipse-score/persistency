@@ -19,10 +19,9 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-
-project = "Persistency Project"
+project = "Persistency"
+version = "0.1.0"
 author = "S-CORE"
-version = "0.1"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
