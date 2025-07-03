@@ -15,10 +15,13 @@ use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue};
 use std::collections::HashMap;
 
 mod common;
-
+use crate::common::TempDir;
 /// Create a key-value-storage without defaults via builder
 #[test]
 fn kvs_without_defaults_builder() -> Result<(), ErrorCode> {
+    let dir = TempDir::create()?;
+    dir.set_current_dir()?;
+
     let kvs = KvsBuilder::<Kvs>::new(InstanceId::new(0))
         .need_defaults(false)
         .need_kvs(false)

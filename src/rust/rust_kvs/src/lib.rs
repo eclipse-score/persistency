@@ -1486,4 +1486,99 @@ mod tests {
             "Expected ConversionFailed for default value"
         );
     }
+
+    #[test]
+    fn test_kvs_open_and_set_get_value() {
+        let instance_id = InstanceId::new(42);
+        let temp_dir = test_dir();
+        let kvs = Kvs::open(
+            instance_id.clone(),
+            OpenNeedDefaults::Optional,
+            OpenNeedKvs::Optional,
+            Some(temp_dir.1.clone()),
+        )
+        .unwrap();
+        let _ = kvs.set_value("direct", KvsValue::String("abc".to_string()));
+        let value = kvs.get_value::<String>("direct");
+        assert_eq!(value.unwrap(), "abc");
+    }
+
+    #[test]
+    fn test_kvs_reset() {
+        let instance_id = InstanceId::new(43);
+        let temp_dir = test_dir();
+        let kvs = Kvs::open(
+            instance_id.clone(),
+            OpenNeedDefaults::Optional,
+            OpenNeedKvs::Optional,
+            Some(temp_dir.1.clone()),
+        )
+        .unwrap();
+        let _ = kvs.set_value("reset", KvsValue::Number(1.0));
+        assert!(kvs.get_value::<f64>("reset").is_ok());
+        kvs.reset().unwrap();
+        assert!(matches!(
+            kvs.get_value::<f64>("reset"),
+            Err(ErrorCode::KeyNotFound)
+        ));
+    }
+
+    #[test]
+    fn test_kvs_key_exists_and_get_all_keys() {
+        let instance_id = InstanceId::new(44);
+        let temp_dir = test_dir();
+        let kvs = Kvs::open(
+            instance_id.clone(),
+            OpenNeedDefaults::Optional,
+            OpenNeedKvs::Optional,
+            Some(temp_dir.1.clone()),
+        )
+        .unwrap();
+        assert!(!kvs.key_exists("foo").unwrap());
+        let _ = kvs.set_value("foo", KvsValue::Boolean(true));
+        assert!(kvs.key_exists("foo").unwrap());
+        let keys = kvs.get_all_keys().unwrap();
+        assert!(keys.contains(&"foo".to_string()));
+    }
+
+    #[test]
+    fn test_kvs_remove_key() {
+        let instance_id = InstanceId::new(45);
+        let temp_dir = test_dir();
+        let kvs = Kvs::open(
+            instance_id.clone(),
+            OpenNeedDefaults::Optional,
+            OpenNeedKvs::Optional,
+            Some(temp_dir.1.clone()),
+        )
+        .unwrap();
+        let _ = kvs.set_value("bar", KvsValue::Number(2.0));
+        assert!(kvs.key_exists("bar").unwrap());
+        kvs.remove_key("bar").unwrap();
+        assert!(!kvs.key_exists("bar").unwrap());
+    }
+
+    #[test]
+    fn test_kvs_flush_and_snapshot() {
+        let instance_id = InstanceId::new(46);
+        let temp_dir = test_dir();
+        let kvs = Kvs::open(
+            instance_id.clone(),
+            OpenNeedDefaults::Optional,
+            OpenNeedKvs::Optional,
+            Some(temp_dir.1.clone()),
+        )
+        .unwrap();
+        let _ = kvs.set_value("snap", KvsValue::Number(3.0));
+        kvs.flush().unwrap();
+        // After flush, snapshot count should be 0 (no old snapshots yet)
+        assert_eq!(kvs.snapshot_count(), 0);
+        // Call flush again to rotate and create a snapshot
+        kvs.flush().unwrap();
+        assert!(kvs.snapshot_count() >= 1);
+        // Restore from snapshot if available
+        if kvs.snapshot_count() > 0 {
+            kvs.snapshot_restore(SnapshotId::new(1)).unwrap();
+        }
+    }
 }
