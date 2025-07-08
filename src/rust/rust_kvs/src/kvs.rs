@@ -260,24 +260,24 @@ impl<J: KvsBackend> KvsApi for GenericKvs<J> {
     }
 
     /// Reset a key-value pair in the storage to its initial state
-    /// 
+    ///
     /// # Parameters
     ///    * 'key': Key being reset to default
-    /// 
+    ///
     /// # Return Values
     ///    * Ok: Reset of the key-value pair was successful
     ///    * `ErrorCode::MutexLockFailed`: Mutex locking failed
-    ///    * `ErrorCode::KeyDefaultNotFound`: Key has no default value 
+    ///    * `ErrorCode::KeyDefaultNotFound`: Key has no default value
     fn reset_key(&self, key: &str) -> Result<(), ErrorCode> {
         let should_remove = {
-            let kvs = self.kvs.lock()?; 
+            let kvs = self.kvs.lock()?;
 
             if let Some(value) = kvs.get(key) {
                 if let Some(def_value) = self.default.get(key) {
                     if def_value == value {
                         return Ok(());
                     }
-                    true 
+                    true
                 } else {
                     eprintln!("error: resetting key without a default value");
                     return Err(ErrorCode::KeyDefaultNotFound);
@@ -290,7 +290,7 @@ impl<J: KvsBackend> KvsApi for GenericKvs<J> {
                     Err(ErrorCode::KeyDefaultNotFound)
                 };
             }
-        }; 
+        };
 
         if should_remove {
             self.remove_key(key)
