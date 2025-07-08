@@ -259,6 +259,46 @@ impl<J: KvsBackend> KvsApi for GenericKvs<J> {
         Ok(())
     }
 
+    /// Reset a key-value pair in the storage to its initial state
+    /// 
+    /// # Parameters
+    ///    * 'key': Key being reset to default
+    /// 
+    /// # Return Values
+    ///    * Ok: Reset of the key-value pair was successful
+    ///    * `ErrorCode::MutexLockFailed`: Mutex locking failed
+    ///    * `ErrorCode::KeyDefaultNotFound`: Key has no default value 
+    fn reset_key(&self, key: &str) -> Result<(), ErrorCode> {
+        let should_remove = {
+            let kvs = self.kvs.lock()?; 
+
+            if let Some(value) = kvs.get(key) {
+                if let Some(def_value) = self.default.get(key) {
+                    if def_value == value {
+                        return Ok(());
+                    }
+                    true 
+                } else {
+                    eprintln!("error: resetting key without a default value");
+                    return Err(ErrorCode::KeyDefaultNotFound);
+                }
+            } else {
+                return if self.default.get(key).is_some() {
+                    Ok(())
+                } else {
+                    eprintln!("error: resetting key without a default value");
+                    Err(ErrorCode::KeyDefaultNotFound)
+                };
+            }
+        }; 
+
+        if should_remove {
+            self.remove_key(key)
+        } else {
+            Ok(())
+        }
+    }
+
     /// Get list of all keys
     ///
     /// # Return Values
@@ -596,6 +636,7 @@ mod tests {
     use super::*;
     use crate::Kvs;
     use tempfile::tempdir;
+    use crate::kvs_builder::KvsBuilder;
 
     mod mock_backend {
         use super::*;
@@ -956,5 +997,46 @@ mod tests {
             !kvs.flush_on_exit.load(std::sync::atomic::Ordering::Relaxed),
             "Expected flush_on_exit to be false"
         );
+    }
+
+    #[cfg_attr(miri, ignore)]
+    #[test]
+    fn test_kvs_reset_single() {
+        let instance_id = InstanceId::new(0);
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_string_lossy().to_string();
+
+        std::fs::copy(
+            "tests/kvs_0_default.json",
+            format!("{}/kvs_0_default.json", dir_path.clone()),
+        )
+        .unwrap();
+        let kvs = KvsBuilder::<Kvs>::new(instance_id.clone())
+            .dir(dir_path.clone())
+            .need_defaults(true)
+            .build()
+            .unwrap();
+
+        let _ = kvs.set_value("number1", KvsValue::Number(987f64));
+        let _ = kvs.reset_key("number1");
+        assert_eq!(kvs.get_value_as::<f64>("number1").unwrap(), 987f64);
+
+        let _ = kvs.set_value("string1", KvsValue::String("Testing".to_string()));
+        let _ = kvs.reset_key("string1");
+        assert_eq!(kvs.get_value_as::<String>("string1").unwrap(), "Hello");
+
+        let _ = kvs.set_value("bool", KvsValue::Boolean(true));
+        assert!(matches!(
+            kvs.reset_key("bool"),
+            Err(ErrorCode::KeyDefaultNotFound)
+        ));
+
+        let _ = kvs.reset_key("bool1");
+        assert_eq!(kvs.get_value_as::<bool>("bool1").unwrap(), false);
+
+        assert!(matches!(
+            kvs.reset_key("fail"),
+            Err(ErrorCode::KeyDefaultNotFound)
+        ));
     }
 }
