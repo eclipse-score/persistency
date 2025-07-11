@@ -12,7 +12,7 @@ use std::iter::zip;
 use tempfile::tempdir;
 
 fn cmp_match(left: &KvsValue, right: &KvsValue) -> bool {
-    return match (left, right) {
+    match (left, right) {
         (KvsValue::Number(l), KvsValue::Number(r)) => l == r,
         (KvsValue::Boolean(l), KvsValue::Boolean(r)) => l == r,
         (KvsValue::String(l), KvsValue::String(r)) => l == r,
@@ -54,7 +54,7 @@ fn cmp_match(left: &KvsValue, right: &KvsValue) -> bool {
             true
         }
         (_, _) => false,
-    };
+    }
 }
 
 fn cmp_object(left: HashMap<String, KvsValue>, right: HashMap<String, KvsValue>) -> bool {
