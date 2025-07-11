@@ -411,7 +411,7 @@ impl From<TryFromSliceError> for ErrorCode {
 
 impl From<Vec<u8>> for ErrorCode {
     fn from(cause: Vec<u8>) -> Self {
-        eprintln!("error: try_into from u8 vector failed: {:#?}", cause);
+        eprintln!("error: try_into from u8 vector failed: {cause:#?}");
         ErrorCode::ConversionFailed
     }
 }
