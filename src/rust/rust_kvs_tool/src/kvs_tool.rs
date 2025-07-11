@@ -80,10 +80,7 @@
 //!
 
 use pico_args::Arguments;
-use rust_kvs::{
-    ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue, OpenNeedDefaults, OpenNeedKvs,
-    SnapshotId,
-};
+use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue, SnapshotId};
 use std::collections::HashMap;
 use tinyjson::JsonValue;
 
@@ -154,19 +151,19 @@ fn _getkey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
     println!("Read Key {}", &key);
 
     let key_exist = kvs.key_exists(&key).map_err(|e| {
-        eprintln!("KVS get:key_exists failed: {:?}", e);
+        eprintln!("KVS get:key_exists failed: {e:?}");
         e
     })?;
 
     let is_default = kvs.is_value_default(&key).map_err(|e| {
-        eprintln!("KVS get:is_value_default failed: {:?}", e);
+        eprintln!("KVS get:is_value_default failed: {e:?}");
         e
     })?;
 
     if key_exist {
-        println!("Key '{}' exists!", key);
+        println!("Key '{key}' exists!");
     } else {
-        println!("Key '{}' does not exist!", key);
+        println!("Key '{key}' does not exist!");
         if is_default {
             println!("Key is default value!");
         } else {
@@ -177,10 +174,10 @@ fn _getkey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
 
     match kvs.get_default_value(&key) {
         Ok(value) => {
-            println!("Default Value: {:?}", value);
+            println!("Default Value: {value:?}");
         }
         Err(e) => {
-            eprintln!("Default Value Error: {:?}", e);
+            eprintln!("Default Value Error: {e:?}");
         }
     };
 
@@ -212,48 +209,48 @@ fn _getkey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
     match get_mode {
         SupportedTypes::Number => {
             let value = kvs.get_value::<f64>(&key).map_err(|e| {
-                eprintln!("KVS get failed: {:?}", e);
+                eprintln!("KVS get failed: {e:?}");
                 e
             })?;
-            println!("Key:'{}' \nValue: {}", key, value);
+            println!("Key:'{key}' \nValue: {value}");
         }
         SupportedTypes::Bool => {
             let value = kvs.get_value::<bool>(&key).map_err(|e| {
-                eprintln!("KVS get failed: {:?}", e);
+                eprintln!("KVS get failed: {e:?}");
                 e
             })?;
-            println!("Key:'{}' \nValue: {}", key, value);
+            println!("Key:'{key}' \nValue: {value}");
         }
         SupportedTypes::String => {
             let value = kvs.get_value::<String>(&key).map_err(|e| {
-                eprintln!("KVS get failed: {:?}", e);
+                eprintln!("KVS get failed: {e:?}");
                 e
             })?;
-            println!("Key:'{}' \nValue: {}", key, value);
+            println!("Key:'{key}' \nValue: {value}");
         }
         // Different Syntax to be compliant with "clippy::let_unit_value"
         SupportedTypes::Null => {
             kvs.get_value::<()>(&key).map_err(|e| {
-                eprintln!("KVS get failed: {:?}", e);
+                eprintln!("KVS get failed: {e:?}");
                 e
             })?;
             println!("Key:'{}' \nValue: {:?}", key, ());
         }
         SupportedTypes::Array => {
             let value = kvs.get_value::<Vec<KvsValue>>(&key).map_err(|e| {
-                eprintln!("KVS get failed: {:?}", e);
+                eprintln!("KVS get failed: {e:?}");
                 e
             })?;
-            println!("Key:'{}' \nValue: {:?}", key, value);
+            println!("Key:'{key}' \nValue: {value:?}");
         }
         SupportedTypes::Object => {
             let value = kvs
                 .get_value::<HashMap<String, KvsValue>>(&key)
                 .map_err(|e| {
-                    eprintln!("KVS get failed: {:?}", e);
+                    eprintln!("KVS get failed: {e:?}");
                     e
                 })?;
-            println!("Key:'{}' \nValue: {:?}", key, value);
+            println!("Key:'{key}' \nValue: {value:?}");
         }
 
         SupportedTypes::Invalid => {
@@ -302,20 +299,20 @@ fn _setkey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
                 let kvs_val = from_tinyjson(&json_val);
                 println!("Key:'{}' \nParsed as JSON Value: {:?}", &key, kvs_val);
                 kvs.set_value(key, kvs_val).map_err(|e| {
-                    eprintln!("KVS set failed: {:?}", e);
+                    eprintln!("KVS set failed: {e:?}");
                     e
                 })?;
             } else {
                 println!("Key:'{}' \nParsed as String Value: {}", &key, value);
                 kvs.set_value(key, KvsValue::String(value)).map_err(|e| {
-                    eprintln!("KVS set failed: {:?}", e);
+                    eprintln!("KVS set failed: {e:?}");
                     e
                 })?;
             }
         }
         None => {
             kvs.set_value(key, KvsValue::Null).map_err(|e| {
-                eprintln!("KVS set failed: {:?}", e);
+                eprintln!("KVS set failed: {e:?}");
                 e
             })?;
         }
@@ -340,7 +337,7 @@ fn _removekey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
     };
     println!("Remove Key {}", &key);
     kvs.remove_key(&key).map_err(|e| {
-        eprintln!("KVS remove failed: {:?}", e);
+        eprintln!("KVS remove failed: {e:?}");
         e
     })?;
     println!("----------------------");
@@ -354,12 +351,12 @@ fn _listkeys(kvs: Kvs) -> Result<(), ErrorCode> {
     println!("List Keys");
 
     let keys = kvs.get_all_keys().map_err(|e| {
-        eprintln!("KVS list failed: {:?}", e);
+        eprintln!("KVS list failed: {e:?}");
         e
     })?;
 
     for key in keys {
-        println!("{}", key);
+        println!("{key}");
     }
 
     println!("----------------------");
@@ -371,7 +368,7 @@ fn _reset(kvs: Kvs) -> Result<(), ErrorCode> {
     println!("----------------------");
     println!("Reset KVS");
     kvs.reset().map_err(|e| {
-        eprintln!("KVS set failed: {:?}", e);
+        eprintln!("KVS set failed: {e:?}");
         e
     })?;
     println!("----------------------");
@@ -383,7 +380,7 @@ fn _snapshotcount(kvs: Kvs) -> Result<(), ErrorCode> {
     println!("----------------------");
     println!("Snapshot Count");
     let count = kvs.snapshot_count();
-    println!("Snapshot Count: {}", count);
+    println!("Snapshot Count: {count}");
     println!("----------------------");
     Ok(())
 }
@@ -393,7 +390,7 @@ fn _snapshotmaxcount() -> Result<(), ErrorCode> {
     println!("----------------------");
     println!("Snapshots Max Count");
     let max = Kvs::snapshot_max_count();
-    println!("Snapshots Maximum Count: {}", max);
+    println!("Snapshots Maximum Count: {max}");
     println!("----------------------");
     Ok(())
 }
@@ -417,7 +414,7 @@ fn _snapshotrestore(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
     println!("Restore Snapshot {}", &snapshot_id);
     let snapshot_id = SnapshotId::new(snapshot_id as usize);
     kvs.snapshot_restore(snapshot_id).map_err(|e| {
-        eprintln!("KVS restore failed: {:?}", e);
+        eprintln!("KVS restore failed: {e:?}");
         e
     })?;
     println!("----------------------");
@@ -440,7 +437,7 @@ fn _getkvsfilename(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
     };
     let snapshot_id = SnapshotId::new(snapshot_id as usize);
     let filename = kvs.get_kvs_filename(snapshot_id);
-    println!("KVS Filename: {}", filename);
+    println!("KVS Filename: {filename}");
     println!("----------------------");
     Ok(())
 }
@@ -462,7 +459,7 @@ fn _gethashfilename(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
     };
     let snapshot_id = SnapshotId::new(snapshot_id as usize);
     let filename = kvs.get_hash_filename(snapshot_id);
-    println!("Hash Filename: {}", filename);
+    println!("Hash Filename: {filename}");
     println!("----------------------");
     Ok(())
 }
@@ -473,19 +470,19 @@ fn _createtestdata(kvs: Kvs) -> Result<(), ErrorCode> {
     println!("Create Test Data");
 
     kvs.set_value("number", 123.0).map_err(|e| {
-        eprintln!("KVS Create Test Data Error (number): {:?}", e);
+        eprintln!("KVS Create Test Data Error (number): {e:?}");
         e
     })?;
     kvs.set_value("bool", true).map_err(|e| {
-        eprintln!("KVS Create Test Data Error (bool): {:?}", e);
+        eprintln!("KVS Create Test Data Error (bool): {e:?}");
         e
     })?;
     kvs.set_value("string", "First".to_string()).map_err(|e| {
-        eprintln!("KVS Create Test Data Error (string): {:?}", e);
+        eprintln!("KVS Create Test Data Error (string): {e:?}");
         e
     })?;
     kvs.set_value("null", ()).map_err(|e| {
-        eprintln!("KVS Create Test Data Error (null): {:?}", e);
+        eprintln!("KVS Create Test Data Error (null): {e:?}");
         e
     })?;
     kvs.set_value(
@@ -497,7 +494,7 @@ fn _createtestdata(kvs: Kvs) -> Result<(), ErrorCode> {
         ],
     )
     .map_err(|e| {
-        eprintln!("KVS Create Test Data Error (array): {:?}", e);
+        eprintln!("KVS Create Test Data Error (array): {e:?}");
         e
     })?;
     kvs.set_value(
@@ -518,7 +515,7 @@ fn _createtestdata(kvs: Kvs) -> Result<(), ErrorCode> {
         ]),
     )
     .map_err(|e| {
-        eprintln!("KVS Create Test Data Error (object): {:?}", e);
+        eprintln!("KVS Create Test Data Error (object): {e:?}");
         e
     })?;
     println!("Done!");
@@ -537,7 +534,7 @@ fn main() -> Result<(), ErrorCode> {
     let kvs = match builder.build() {
         Ok(kvs) => kvs,
         Err(e) => {
-            eprintln!("Error opening KVS: {:?}", e);
+            eprintln!("Error opening KVS: {e:?}");
             return Err(e);
         }
     };
@@ -611,7 +608,7 @@ fn main() -> Result<(), ErrorCode> {
         ---------------------------------------
 
         "#;
-        println!("{}", HELP);
+        println!("{HELP}");
         return Ok(());
     }
     let operation: Option<String> = match args.opt_value_from_str("--operation") {
