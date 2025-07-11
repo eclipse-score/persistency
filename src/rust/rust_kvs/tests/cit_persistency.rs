@@ -6,56 +6,11 @@
 //! - Store persistent data (feat_req__persistency__persist_data)
 //! The KVS shall support storing and loading its data to and from persistent storage.
 
+mod common;
+use common::compare_kvs_values;
 use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, KvsValue, OpenNeedDefaults, OpenNeedKvs};
 use std::collections::HashMap;
-use std::iter::zip;
 use tempfile::tempdir;
-
-fn compare_kvs_values(left: &KvsValue, right: &KvsValue) -> bool {
-    match (left, right) {
-        (KvsValue::Number(l), KvsValue::Number(r)) => l == r,
-        (KvsValue::Boolean(l), KvsValue::Boolean(r)) => l == r,
-        (KvsValue::String(l), KvsValue::String(r)) => l == r,
-        (KvsValue::Null, KvsValue::Null) => true,
-        (KvsValue::Array(l), KvsValue::Array(r)) => {
-            // Check size.
-            if l.len() != r.len() {
-                return false;
-            }
-
-            // Iterate over elements.
-            for (lv, rv) in zip(l, r) {
-                if !compare_kvs_values(lv, rv) {
-                    return false;
-                }
-            }
-
-            true
-        }
-        (KvsValue::Object(l), KvsValue::Object(r)) => {
-            // Check size.
-            if l.len() != r.len() {
-                return false;
-            }
-
-            // Check keys.
-            if l.keys().ne(r.keys()) {
-                return false;
-            }
-
-            // Iterate over elements.
-            let keys = l.keys();
-            for k in keys {
-                if !compare_kvs_values(&l[k], &r[k]) {
-                    return false;
-                }
-            }
-
-            true
-        }
-        (_, _) => false,
-    }
-}
 
 /// Flush on exit is enabled by default.
 /// Data will be flushed on `kvs` being dropped.
