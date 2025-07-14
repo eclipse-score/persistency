@@ -11,7 +11,7 @@
 
 //! # Verify KVS Open with missing Checksum
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue, SnapshotId};
+use rust_kvs::prelude::*;
 use std::env::set_current_dir;
 use tempfile::tempdir;
 

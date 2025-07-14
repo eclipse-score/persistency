@@ -11,7 +11,7 @@
 
 //! # Verify File Check for non-existing KVS File
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsBuilder};
+use rust_kvs::prelude::*;
 use std::env::set_current_dir;
 use tempfile::tempdir;
 
