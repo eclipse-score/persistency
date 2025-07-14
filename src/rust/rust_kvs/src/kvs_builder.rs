@@ -10,9 +10,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::error_code::ErrorCode;
-use crate::kvs::{InstanceId, Kvs};
+use crate::kvs::{InstanceId};
 use crate::kvs_api::KvsApi;
-
+use super::Kvs;
 /// Key-value-storage builder
 pub struct KvsBuilder<T: KvsApi = Kvs> {
     /// Instance ID
@@ -364,7 +364,7 @@ mod tests {
         let instance_id = InstanceId::new(0);
 
         // Create the test JSON file locally instead of copying
-        let test_json_path = format!("{}/kvs_0_default.json", dir_path.clone());
+        let test_json_path = format!("{}/kvs_0_default", dir_path.clone());
         let test_json_content = r#"{
             "bool1": true,
             "test": 123.0

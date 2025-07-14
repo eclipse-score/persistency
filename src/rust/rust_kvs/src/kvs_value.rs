@@ -14,6 +14,10 @@ use std::ops::Index;
 
 use tinyjson::JsonValue;
 
+
+/// Key-value storage map type
+pub type KvsMap = std::collections::HashMap<String, KvsValue>;
+
 /// Key-value-storage value
 #[derive(Clone, Debug)]
 pub enum KvsValue {
@@ -36,35 +40,6 @@ pub enum KvsValue {
     Object(HashMap<String, KvsValue>),
 }
 
-impl From<&JsonValue> for KvsValue {
-    fn from(val: &JsonValue) -> KvsValue {
-        match val {
-            JsonValue::Number(val) => KvsValue::Number(*val),
-            JsonValue::Boolean(val) => KvsValue::Boolean(*val),
-            JsonValue::String(val) => KvsValue::String(val.clone()),
-            JsonValue::Null => KvsValue::Null,
-            JsonValue::Array(val) => KvsValue::Array(val.iter().map(|x| x.into()).collect()),
-            JsonValue::Object(val) => {
-                KvsValue::Object(val.iter().map(|(x, y)| (x.clone(), y.into())).collect())
-            }
-        }
-    }
-}
-
-impl From<&KvsValue> for JsonValue {
-    fn from(val: &KvsValue) -> JsonValue {
-        match val {
-            KvsValue::Number(val) => JsonValue::Number(*val),
-            KvsValue::Boolean(val) => JsonValue::Boolean(*val),
-            KvsValue::String(val) => JsonValue::String(val.clone()),
-            KvsValue::Null => JsonValue::Null,
-            KvsValue::Array(val) => JsonValue::Array(val.iter().map(|x| x.into()).collect()),
-            KvsValue::Object(val) => {
-                JsonValue::Object(val.iter().map(|(x, y)| (x.clone(), y.into())).collect())
-            }
-        }
-    }
-}
 
 macro_rules! impl_from_t_for_kvs_value {
     ($from:ty, $item:ident) => {
