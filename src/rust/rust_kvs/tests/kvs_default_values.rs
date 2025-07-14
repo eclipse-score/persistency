@@ -11,7 +11,7 @@
 
 //! # Verify KVS Default Value Functionality
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, KvsBuilder, KvsValue};
+use rust_kvs::prelude::*;
 use std::collections::HashMap;
 use std::env::set_current_dir;
 use tempfile::tempdir;

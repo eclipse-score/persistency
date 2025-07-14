@@ -8,7 +8,7 @@
 
 mod common;
 use common::compare_kvs_values;
-use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, KvsValue, OpenNeedDefaults, OpenNeedKvs};
+use rust_kvs::prelude::*;
 use std::collections::HashMap;
 use tempfile::tempdir;
 

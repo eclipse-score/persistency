@@ -5,7 +5,7 @@
 //! The KVS system shall support explicit creation of snapshots identified by unique IDs and allow rollback to previous snapshots.
 //! Snapshots shall also be deletable.
 
-use rust_kvs::{ErrorCode, InstanceId, Kvs, KvsApi, OpenNeedDefaults, OpenNeedKvs, SnapshotId};
+use rust_kvs::prelude::*;
 use std::cmp::min;
 use std::path::PathBuf;
 use tempfile::tempdir;

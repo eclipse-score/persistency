@@ -1,6 +1,6 @@
 //! Common test utilities.
 
-use rust_kvs::KvsValue;
+use rust_kvs::kvs_value::KvsValue;
 use std::iter::zip;
 
 /// Compare `KvsValue` objects.
