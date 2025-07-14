@@ -17,4 +17,4 @@ jobs:
           toolchain: 1.83.0
 
       - name: Run tests
-        run: cargo test --package rust_kvs --test cit_*
+        run: cargo test --no-fail-fast --package rust_kvs --test cit_*
