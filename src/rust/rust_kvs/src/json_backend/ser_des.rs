@@ -13,7 +13,9 @@ impl From<&JsonValue> for KvsValue {
             JsonValue::Null => KvsValue::Null,
             JsonValue::Array(arr) => KvsValue::Array(arr.iter().map(KvsValue::from).collect()),
             JsonValue::Object(obj) => KvsValue::Object(
-                obj.iter().map(|(k, v)| (k.clone(), KvsValue::from(v))).collect()
+                obj.iter()
+                    .map(|(k, v)| (k.clone(), KvsValue::from(v)))
+                    .collect(),
             ),
         }
     }
@@ -28,7 +30,9 @@ impl From<&KvsValue> for JsonValue {
             KvsValue::Null => JsonValue::Null,
             KvsValue::Array(arr) => JsonValue::Array(arr.iter().map(JsonValue::from).collect()),
             KvsValue::Object(map) => JsonValue::Object(
-                map.iter().map(|(k, v)| (k.clone(), JsonValue::from(v))).collect()
+                map.iter()
+                    .map(|(k, v)| (k.clone(), JsonValue::from(v)))
+                    .collect(),
             ),
         }
     }

@@ -136,22 +136,20 @@
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 pub mod error_code;
+mod json_backend;
 pub mod kvs;
 pub mod kvs_api;
+mod kvs_backend;
 pub mod kvs_builder;
 pub mod kvs_value;
-mod kvs_backend;
-mod json_backend;
-
 
 pub type Kvs = kvs::GenericKvs<kvs_backend::DefaultPersistKvs>;
-pub type DefaultKvsBuilder = kvs_builder::KvsBuilder<Kvs>;
 
 /// Prelude module for convenient imports
 pub mod prelude {
     pub use crate::error_code::ErrorCode;
-    pub use crate::kvs::InstanceId;
     pub use crate::kvs::GenericKvs;
+    pub use crate::kvs::InstanceId;
     pub use crate::kvs::OpenNeedDefaults;
     pub use crate::kvs::OpenNeedKvs;
     pub use crate::kvs::SnapshotId;
@@ -159,5 +157,4 @@ pub mod prelude {
     pub use crate::kvs_builder::KvsBuilder;
     pub use crate::kvs_value::KvsValue;
     pub use crate::Kvs;
-    pub use crate::DefaultKvsBuilder;
 }

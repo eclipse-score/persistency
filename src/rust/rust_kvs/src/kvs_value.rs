@@ -12,9 +12,6 @@
 use std::collections::HashMap;
 use std::ops::Index;
 
-use tinyjson::JsonValue;
-
-
 /// Key-value storage map type
 pub type KvsMap = std::collections::HashMap<String, KvsValue>;
 
@@ -39,7 +36,6 @@ pub enum KvsValue {
     /// Object
     Object(HashMap<String, KvsValue>),
 }
-
 
 macro_rules! impl_from_t_for_kvs_value {
     ($from:ty, $item:ident) => {
