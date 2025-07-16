@@ -48,3 +48,9 @@ test_suite(
     tests = ["//tests/cpp:test_kvs_cpp"],
     visibility = ["//visibility:public"],
 )
+
+test_suite(
+    name = "bm_kvs_cpp",
+    tests = ["//tests/cpp:bm_kvs_cpp"],
+    visibility = ["//visibility:public"],
+)

@@ -29,6 +29,7 @@ use_repo(python)
 
 # Add GoogleTest dependency
 bazel_dep(name = "googletest", version = "1.14.0")
+bazel_dep(name = "google_benchmark", version = "1.9.4")
 
 # Rust rules for Bazel
 bazel_dep(name = "rules_rust", version = "0.56.0")

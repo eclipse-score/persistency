@@ -38,3 +38,22 @@ cc_test(
         "@score-baselibs//score/result:result",
     ],
 )
+
+cc_test(
+    name = "bm_kvs_cpp",
+    srcs = [
+        "bm_kvs.cpp",
+        "//src/cpp:kvs_srcs",
+    ],
+    copts = [
+        "-Isrc/cpp/inc",
+    ],
+    visibility = ["//:__pkg__"],
+    deps = [
+        "@google_benchmark//:benchmark",
+        "@score-baselibs//score/filesystem:filesystem",
+        "@score-baselibs//score/json:interface",
+        "@score-baselibs//score/json:json_parser",
+        "@score-baselibs//score/result:result",
+    ],
+)
