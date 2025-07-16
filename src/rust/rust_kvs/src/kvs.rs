@@ -9,9 +9,6 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-//core and alloc libs
-use core::fmt;
-
 //std dependencies
 use std::collections::HashMap;
 use std::fs;
@@ -20,7 +17,8 @@ use std::sync::atomic::{self, AtomicBool};
 use std::sync::Mutex;
 
 use crate::error_code::ErrorCode;
-use crate::kvs_api::KvsApi;
+use crate::kvs_api::{InstanceId, KvsApi, SnapshotId};
+use crate::kvs_api::{OpenNeedDefaults, OpenNeedKvs};
 use crate::kvs_backend::{DefaultPersistKvs, PersistKvs};
 use crate::kvs_value::{KvsMap, KvsValue};
 
@@ -29,25 +27,17 @@ use crate::kvs_value::{KvsMap, KvsValue};
 /// Feature: `FEAT_REQ__KVS__snapshots`
 const KVS_MAX_SNAPSHOTS: usize = 3;
 
-/// Instance ID
-#[derive(Clone, Debug, PartialEq)]
-pub struct InstanceId(usize);
-
-/// Snapshot ID
-#[derive(Clone, Debug, PartialEq)]
-pub struct SnapshotId(usize);
-
 /// Key-value-storage data
 pub struct GenericKvs<J: PersistKvs + Default = DefaultPersistKvs> {
     /// Storage data
     ///
     /// Feature: `FEAT_REQ__KVS__thread_safety` (Mutex)
-    kvs: Mutex<HashMap<String, KvsValue>>,
+    kvs: Mutex<KvsMap>,
 
     /// Optional default values
     ///
     /// Feature: `FEAT_REQ__KVS__default_values`
-    default: HashMap<String, KvsValue>,
+    default: KvsMap,
 
     /// Filename prefix
     filename_prefix: PathBuf,
@@ -58,24 +48,6 @@ pub struct GenericKvs<J: PersistKvs + Default = DefaultPersistKvs> {
     _backend: std::marker::PhantomData<J>,
 }
 
-/// Need-Defaults flag
-pub enum OpenNeedDefaults {
-    /// Optional: Open defaults only if available
-    Optional,
-
-    /// Required: Defaults must be available
-    Required,
-}
-
-/// Need-KVS flag
-pub enum OpenNeedKvs {
-    /// Optional: Use an empty KVS if no KVS is available
-    Optional,
-
-    /// Required: KVS must be already exist
-    Required,
-}
-
 /// Need-File flag
 #[derive(PartialEq)]
 enum OpenKvsNeedFile {
@@ -84,26 +56,6 @@ enum OpenKvsNeedFile {
 
     /// Required: The file must already exist
     Required,
-}
-
-impl From<bool> for OpenNeedDefaults {
-    fn from(flag: bool) -> OpenNeedDefaults {
-        if flag {
-            OpenNeedDefaults::Required
-        } else {
-            OpenNeedDefaults::Optional
-        }
-    }
-}
-
-impl From<bool> for OpenNeedKvs {
-    fn from(flag: bool) -> OpenNeedKvs {
-        if flag {
-            OpenNeedKvs::Required
-        } else {
-            OpenNeedKvs::Optional
-        }
-    }
 }
 
 impl From<OpenNeedDefaults> for OpenKvsNeedFile {
@@ -132,32 +84,6 @@ enum OpenKvsVerifyHash {
 
     /// Yes: Parse the file with the hash
     Yes,
-}
-
-impl fmt::Display for InstanceId {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl fmt::Display for SnapshotId {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl InstanceId {
-    /// Create a new instance ID
-    pub fn new(id: usize) -> Self {
-        Self(id)
-    }
-}
-
-impl SnapshotId {
-    /// Create a new Snapshot ID
-    pub fn new(id: usize) -> Self {
-        SnapshotId(id)
-    }
 }
 
 impl<J: PersistKvs + Default> GenericKvs<J> {
@@ -672,30 +598,240 @@ impl<J: PersistKvs + Default> Drop for GenericKvs<J> {
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
     use tempfile::tempdir;
 
-    #[test]
-    fn test_drop() {
-        let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_string_lossy().to_string();
+    mod mock_backend {
+        use super::*;
+        use crate::kvs_backend::PersistKvs;
 
-        let instance_id = InstanceId::new(0);
+        #[derive(Default, Clone)]
+        pub struct KvsMockBackend {}
 
-        let kvs = GenericKvs::<DefaultPersistKvs>::open(
-            instance_id.clone(),
+        impl PersistKvs for KvsMockBackend {
+            fn load_kvs(
+                filename: PathBuf,
+                map: &mut KvsMap,
+                _do_hash: bool,
+                _hash_filename: Option<PathBuf>,
+            ) -> Result<(), ErrorCode> {
+                let fname = filename.display().to_string();
+                if fname.ends_with("default") {
+                    map.insert("mock_default_key".to_string(), KvsValue::from(111.0));
+                } else {
+                    map.insert("mock_key".to_string(), KvsValue::from(123.0));
+                }
+                Ok(())
+            }
+
+            fn save_kvs(
+                _map: &KvsMap,
+                _filename: PathBuf,
+                _do_hash: bool,
+            ) -> Result<(), ErrorCode> {
+                Ok(())
+            }
+        }
+
+        #[derive(Default, Clone)]
+        pub struct KvsMockBackendFail;
+
+        impl PersistKvs for KvsMockBackendFail {
+            fn load_kvs(
+                _filename: PathBuf,
+                _map: &mut KvsMap,
+                _do_hash: bool,
+                _hash_filename: Option<PathBuf>,
+            ) -> Result<(), ErrorCode> {
+                Err(ErrorCode::UnmappedError)
+            }
+
+            fn save_kvs(
+                _map: &KvsMap,
+                _filename: PathBuf,
+                _do_hash: bool,
+            ) -> Result<(), ErrorCode> {
+                Err(ErrorCode::UnmappedError)
+            }
+        }
+    }
+
+    use mock_backend::KvsMockBackend;
+    use mock_backend::KvsMockBackendFail;
+
+    fn new_kvs_with_mock() -> GenericKvs<KvsMockBackend> {
+        let instance_id = InstanceId::new(100);
+        // Directory is not used by mock backend
+        GenericKvs::<KvsMockBackend>::open(
+            instance_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
-            Some(dir_path.clone()),
+            None,
         )
-        .unwrap();
+        .unwrap()
+    }
 
-        kvs.flush_on_exit(false);
-        // Drop is called automatically, but we can check that flush_on_exit is set to false
-        assert!(
-            !kvs.flush_on_exit.load(std::sync::atomic::Ordering::Relaxed),
-            "Expected flush_on_exit to be false"
-        );
+    fn new_kvs_with_mock_required() -> GenericKvs<KvsMockBackend> {
+        let instance_id = InstanceId::new(101);
+        GenericKvs::<KvsMockBackend>::open(
+            instance_id,
+            OpenNeedDefaults::Required,
+            OpenNeedKvs::Required,
+            None,
+        )
+        .unwrap()
+    }
+
+    fn new_kvs_with_mock_required_fail() -> Result<GenericKvs<KvsMockBackendFail>, ErrorCode> {
+        let instance_id = InstanceId::new(102);
+        GenericKvs::<KvsMockBackendFail>::open(
+            instance_id,
+            OpenNeedDefaults::Required,
+            OpenNeedKvs::Required,
+            None,
+        )
+    }
+
+    #[test]
+    fn test_open_kvs_with_mock_required_success() {
+        let kvs = new_kvs_with_mock_required();
+        // Should contain the mock_key from mock backend
+        assert!(kvs.key_exists("mock_key").unwrap());
+        let value = kvs.get_value("mock_key").unwrap();
+        assert_eq!(*value.get::<f64>().unwrap(), 123.0);
+    }
+
+    #[test]
+    fn test_open_kvs_with_mock_required_fail() {
+        let res = new_kvs_with_mock_required_fail();
+        assert!(res.is_err());
+        // Should be ErrorCode::UnmappedError
+        assert!(matches!(res, Err(ErrorCode::UnmappedError)));
+    }
+
+    #[test]
+    fn test_open_kvs_with_mock_backend() {
+        let kvs = new_kvs_with_mock();
+        // Should contain the mock_key from mock backend
+        assert!(kvs.key_exists("mock_key").unwrap());
+        let value = kvs.get_value("mock_key").unwrap();
+        assert_eq!(*value.get::<f64>().unwrap(), 123.0);
+    }
+
+    #[test]
+    fn test_set_and_get_value() {
+        let kvs = new_kvs_with_mock();
+        kvs.set_value("foo", 42.0).unwrap();
+        let value = kvs.get_value("foo").unwrap();
+        assert_eq!(*value.get::<f64>().unwrap(), 42.0);
+    }
+
+    #[test]
+    fn test_get_value_as() {
+        let kvs = new_kvs_with_mock();
+        kvs.set_value("bar", 99.0).unwrap();
+        let v: f64 = kvs.get_value_as("bar").unwrap();
+        assert_eq!(v, 99.0);
+    }
+
+    #[test]
+    fn test_get_default_value_and_is_value_default() {
+        let kvs = new_kvs_with_mock_required();
+        println!("{:?}", kvs.default);
+        // mock_key is always present as default in mock backend
+        assert!(kvs.is_value_default("mock_default_key").unwrap());
+        let def = kvs.get_default_value("mock_default_key").unwrap();
+        assert_eq!(*def.get::<f64>().unwrap(), 111.0);
+
+        // mock_key is always present as default in mock backend
+        assert!(!kvs.is_value_default("mock_key").unwrap());
+    }
+
+    #[test]
+    fn test_key_exists_and_get_all_keys() {
+        let kvs = new_kvs_with_mock();
+        assert!(kvs.key_exists("mock_key").unwrap());
+        kvs.set_value("foo", true).unwrap();
+        assert!(kvs.key_exists("foo").unwrap());
+        let keys = kvs.get_all_keys().unwrap();
+        assert!(keys.contains(&"foo".to_string()));
+        assert!(keys.contains(&"mock_key".to_string()));
+    }
+
+    #[test]
+    fn test_remove_key() {
+        let kvs = new_kvs_with_mock();
+        kvs.set_value("baz", 1.0).unwrap();
+        assert!(kvs.key_exists("baz").unwrap());
+        kvs.remove_key("baz").unwrap();
+        assert!(!kvs.key_exists("baz").unwrap());
+    }
+
+    #[test]
+    fn test_reset() {
+        let kvs = new_kvs_with_mock();
+        kvs.set_value("reset_me", 5.0).unwrap();
+        assert!(kvs.key_exists("reset_me").unwrap());
+        kvs.reset().unwrap();
+        assert!(!kvs.key_exists("reset_me").unwrap());
+    }
+
+    #[test]
+    fn test_flush_with_mock_backend() {
+        let kvs = new_kvs_with_mock();
+        // Should not error, even though nothing is written
+        kvs.flush().unwrap();
+    }
+
+    #[test]
+    fn test_snapshot_count_and_max_count() {
+        let kvs = new_kvs_with_mock();
+        // No real snapshots, so count should be 0
+        assert_eq!(kvs.snapshot_count(), 0);
+        assert_eq!(GenericKvs::<KvsMockBackend>::snapshot_max_count(), 3);
+    }
+
+    #[test]
+    fn test_snapshot_restore_invalid_id() {
+        let kvs = new_kvs_with_mock();
+        // id 1 is always invalid in this mock (no real snapshots)
+        let res = kvs.snapshot_restore(SnapshotId::new(1));
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_get_kvs_filename_and_hash_filename() {
+        let kvs = new_kvs_with_mock();
+        // No files exist, so should return FileNotFound
+        let res = kvs.get_kvs_filename(SnapshotId::new(1));
+        assert!(matches!(res, Err(ErrorCode::FileNotFound)));
+        let res = kvs.get_hash_filename(SnapshotId::new(1));
+        assert!(matches!(res, Err(ErrorCode::FileNotFound)));
+    }
+
+    #[test]
+    fn test_get_value_error_cases() {
+        let kvs = new_kvs_with_mock();
+        // Key does not exist
+        let res = kvs.get_value("not_found");
+        assert!(matches!(res, Err(ErrorCode::KeyNotFound)));
+    }
+
+    #[test]
+    fn test_get_value_as_conversion_error() {
+        let kvs = new_kvs_with_mock();
+        kvs.set_value("str_key", "string".to_string()).unwrap();
+        // Try to get as f64, should fail
+        let res: Result<f64, _> = kvs.get_value_as("str_key");
+        assert!(matches!(res, Err(ErrorCode::ConversionFailed)));
+    }
+
+    #[test]
+    fn test_is_value_default_error() {
+        let kvs = new_kvs_with_mock();
+        let res = kvs.is_value_default("not_found");
+        assert!(matches!(res, Err(ErrorCode::KeyNotFound)));
     }
 
     #[test]
@@ -803,5 +939,28 @@ mod tests {
         if kvs.snapshot_count() > 0 {
             kvs.snapshot_restore(SnapshotId::new(1)).unwrap();
         }
+    }
+
+    #[test]
+    fn test_drop() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_string_lossy().to_string();
+
+        let instance_id = InstanceId::new(0);
+
+        let kvs = GenericKvs::<DefaultPersistKvs>::open(
+            instance_id.clone(),
+            OpenNeedDefaults::Optional,
+            OpenNeedKvs::Optional,
+            Some(dir_path.clone()),
+        )
+        .unwrap();
+
+        kvs.flush_on_exit(false);
+        // Drop is called automatically, but we can check that flush_on_exit is set to false
+        assert!(
+            !kvs.flush_on_exit.load(std::sync::atomic::Ordering::Relaxed),
+            "Expected flush_on_exit to be false"
+        );
     }
 }

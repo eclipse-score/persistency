@@ -143,17 +143,19 @@ mod kvs_backend;
 pub mod kvs_builder;
 pub mod kvs_value;
 
+pub mod kvs_mock;
+
 pub type Kvs = kvs::GenericKvs<kvs_backend::DefaultPersistKvs>;
 
 /// Prelude module for convenient imports
 pub mod prelude {
     pub use crate::error_code::ErrorCode;
     pub use crate::kvs::GenericKvs;
-    pub use crate::kvs::InstanceId;
-    pub use crate::kvs::OpenNeedDefaults;
-    pub use crate::kvs::OpenNeedKvs;
-    pub use crate::kvs::SnapshotId;
+    pub use crate::kvs_api::InstanceId;
     pub use crate::kvs_api::KvsApi;
+    pub use crate::kvs_api::OpenNeedDefaults;
+    pub use crate::kvs_api::OpenNeedKvs;
+    pub use crate::kvs_api::SnapshotId;
     pub use crate::kvs_builder::KvsBuilder;
     pub use crate::kvs_value::KvsValue;
     pub use crate::Kvs;
