@@ -19,10 +19,6 @@ use std::path::PathBuf;
 use std::sync::atomic::{self, AtomicBool};
 use std::sync::Mutex;
 
-//external crates
-use adler32::RollingAdler32;
-use tinyjson::{JsonGenerator, JsonValue};
-
 use crate::error_code::ErrorCode;
 use crate::kvs_api::KvsApi;
 use crate::kvs_backend::{DefaultPersistKvs, PersistKvs};
@@ -54,7 +50,7 @@ pub struct GenericKvs<J: PersistKvs + Default = DefaultPersistKvs> {
     default: HashMap<String, KvsValue>,
 
     /// Filename prefix
-    filename_prefix: String,
+    filename_prefix: PathBuf,
 
     /// Flush on exit flag
     flush_on_exit: AtomicBool,
@@ -184,20 +180,26 @@ impl<J: PersistKvs + Default> GenericKvs<J> {
     ///   * `ErrorCode::KvsHashFileReadError`: KVS hash file read error (hash file missing or unreadable)
     ///   * `ErrorCode::UnmappedError`: Generic error
     fn open_kvs<T>(
-        filename: &str,
+        filename: &PathBuf,
         need_file: T,
         verify_hash: OpenKvsVerifyHash,
-        hash_filename: &str,
+        hash_filename: Option<&PathBuf>,
     ) -> Result<KvsMap, ErrorCode>
     where
         T: Into<OpenKvsNeedFile>,
     {
-        // Pass hash check parameters to get_kvs_from_file
         let do_hash = matches!(verify_hash, OpenKvsVerifyHash::Yes);
-        match J::get_kvs_from_file(&filename, &mut KvsMap::new(), do_hash, hash_filename) {
+        let filename_path = filename.clone();
+        let hash_filename_path = hash_filename.cloned();
+        match J::load_kvs(
+            filename_path.clone(),
+            &mut KvsMap::new(),
+            do_hash,
+            hash_filename_path.clone(),
+        ) {
             Ok(()) => {
                 let mut map = KvsMap::new();
-                J::get_kvs_from_file(&filename, &mut map, do_hash, hash_filename).map_err(|e| {
+                J::load_kvs(filename_path, &mut map, do_hash, hash_filename_path).map_err(|e| {
                     eprintln!("error: {e}");
                     ErrorCode::from(e)
                 })?;
@@ -206,10 +208,10 @@ impl<J: PersistKvs + Default> GenericKvs<J> {
             Err(e) => {
                 let code = ErrorCode::from(e);
                 if need_file.into() == OpenKvsNeedFile::Required {
-                    eprintln!("error: file {filename} could not be read: {code:?}");
+                    eprintln!("error: file {filename:?} could not be read: {code:?}");
                     Err(code)
                 } else {
-                    println!("file {filename} not found, using empty data");
+                    println!("file {filename:?} not found, using empty data");
                     Ok(KvsMap::new())
                 }
             }
@@ -226,10 +228,10 @@ impl<J: PersistKvs + Default> GenericKvs<J> {
     ///   * `ErrorCode::UnmappedError`: Unmapped error
     fn snapshot_rotate(&self) -> Result<(), ErrorCode> {
         for idx in (1..=KVS_MAX_SNAPSHOTS).rev() {
-            let hash_old = format!("{}_{}.hash", self.filename_prefix, idx - 1);
-            let hash_new = format!("{}_{}.hash", self.filename_prefix, idx);
-            let snap_old = format!("{}_{}.json", self.filename_prefix, idx - 1);
-            let snap_new = format!("{}_{}.json", self.filename_prefix, idx);
+            let hash_old = format!("{}_{}.hash", self.filename_prefix.display(), idx - 1);
+            let hash_new = format!("{}_{}.hash", self.filename_prefix.display(), idx);
+            let snap_old = format!("{}_{}.json", self.filename_prefix.display(), idx - 1);
+            let snap_new = format!("{}_{}.json", self.filename_prefix.display(), idx);
 
             println!("rotating: {snap_old} -> {snap_new}");
 
@@ -286,18 +288,25 @@ impl<J: PersistKvs + Default> KvsApi for GenericKvs<J> {
         } else {
             "".to_string()
         };
-        let filename_default = format!("{dir}kvs_{instance_id}_default");
-        let filename_prefix = format!("{dir}kvs_{instance_id}");
-        let filename_kvs = format!("{filename_prefix}_0");
+        let filename_default = PathBuf::from(format!("{dir}kvs_{instance_id}_default"));
+        let filename_prefix = PathBuf::from(format!("{dir}kvs_{instance_id}"));
+        let filename_kvs =
+            filename_prefix.with_file_name(format!("{}_0", filename_prefix.display()));
 
-        let default =
-            GenericKvs::<J>::open_kvs(&filename_default, need_defaults, OpenKvsVerifyHash::No, "")?;
+        let default = GenericKvs::<J>::open_kvs(
+            &filename_default,
+            need_defaults,
+            OpenKvsVerifyHash::No,
+            None,
+        )?;
         // Use hash checking for the main KVS file
+        let hash_path =
+            filename_prefix.with_file_name(format!("{}_0.hash", filename_prefix.display()));
         let kvs = GenericKvs::<J>::open_kvs(
             &filename_kvs,
             need_kvs,
             OpenKvsVerifyHash::Yes,
-            &format!("{filename_prefix}_0.hash"),
+            Some(&hash_path),
         )?;
 
         println!("opened KVS: instance '{instance_id}'");
@@ -529,8 +538,8 @@ impl<J: PersistKvs + Default> KvsApi for GenericKvs<J> {
             eprintln!("error: Mutex lock failed: {e:?}");
             ErrorCode::MutexLockFailed
         })?;
-        J::persist_kvs_to_file(&*kvs, &self.filename_prefix, true).map_err(|e| {
-            eprintln!("error: persist_kvs_to_file failed: {e:?}");
+        J::save_kvs(&kvs, self.filename_prefix.clone(), true).map_err(|e| {
+            eprintln!("error: save_kvs failed: {e:?}");
             e
         })?;
         Ok(())
@@ -544,7 +553,11 @@ impl<J: PersistKvs + Default> KvsApi for GenericKvs<J> {
         let mut count = 0;
 
         for idx in 0..KVS_MAX_SNAPSHOTS {
-            let snapshot_path = PathBuf::from(format!("{}_{}.json", self.filename_prefix, idx));
+            let snapshot_path = self.filename_prefix.with_file_name(format!(
+                "{}_{}.json",
+                self.filename_prefix.display(),
+                idx
+            ));
             if !snapshot_path.exists() {
                 break;
             }
@@ -593,11 +606,12 @@ impl<J: PersistKvs + Default> KvsApi for GenericKvs<J> {
             return Err(ErrorCode::InvalidSnapshotId);
         }
 
+        let snap_path = PathBuf::from(format!("{}_{}", self.filename_prefix.display(), id.0));
         let kvs = Self::open_kvs(
-            &format!("{}_{}", self.filename_prefix, id.0),
+            &snap_path,
             OpenKvsNeedFile::Required,
             OpenKvsVerifyHash::Yes,
-            "",
+            None,
         )?;
         *self.kvs.lock()? = kvs;
 
@@ -613,7 +627,11 @@ impl<J: PersistKvs + Default> KvsApi for GenericKvs<J> {
     ///   * `Ok`: Filename for ID
     ///   * `ErrorCode::FileNotFound`: KVS file for snapshot ID not found
     fn get_kvs_filename(&self, id: SnapshotId) -> Result<PathBuf, ErrorCode> {
-        let path = PathBuf::from(format!("{}_{}.json", self.filename_prefix, id));
+        let path = self.filename_prefix.with_file_name(format!(
+            "{}_{}.json",
+            self.filename_prefix.display(),
+            id
+        ));
         if !path.exists() {
             Err(ErrorCode::FileNotFound)
         } else {
@@ -630,7 +648,11 @@ impl<J: PersistKvs + Default> KvsApi for GenericKvs<J> {
     ///   * `Ok`: Hash filename for ID
     ///   * `ErrorCode::FileNotFound`: Hash file for snapshot ID not found
     fn get_hash_filename(&self, id: SnapshotId) -> Result<PathBuf, ErrorCode> {
-        let path = PathBuf::from(format!("{}_{}.hash", self.filename_prefix, id));
+        let path = self.filename_prefix.with_file_name(format!(
+            "{}_{}.hash",
+            self.filename_prefix.display(),
+            id
+        ));
         if !path.exists() {
             Err(ErrorCode::FileNotFound)
         } else {
@@ -643,7 +665,7 @@ impl<J: PersistKvs + Default> Drop for GenericKvs<J> {
     fn drop(&mut self) {
         if self.flush_on_exit.load(atomic::Ordering::Relaxed) {
             if let Err(e) = self.flush() {
-                eprintln!("GenericKvs::flush() failed in Drop: {:?}", e);
+                eprintln!("GenericKvs::flush() failed in Drop: {e:?}");
             }
         }
     }
@@ -677,14 +699,6 @@ mod tests {
         );
     }
 
-    impl<'a> TryFrom<&'a KvsValue> for u64 {
-        type Error = ErrorCode;
-
-        fn try_from(_val: &'a KvsValue) -> Result<u64, Self::Error> {
-            Err(ErrorCode::ConversionFailed)
-        }
-    }
-
     #[test]
     fn test_kvs_open_and_set_get_value() {
         let dir = tempdir().unwrap();
@@ -716,7 +730,7 @@ mod tests {
             Some(dir_path.clone()),
         )
         .unwrap();
-        let _ = kvs.set_value("reset", KvsValue::Number(1.0));
+        let _ = kvs.set_value("reset", 1.0);
         assert!(kvs.get_value("reset").is_ok());
         kvs.reset().unwrap();
         assert!(matches!(
@@ -758,7 +772,7 @@ mod tests {
             Some(dir_path.clone()),
         )
         .unwrap();
-        let _ = kvs.set_value("bar", KvsValue::Number(2.0));
+        let _ = kvs.set_value("bar", 2.0);
         assert!(kvs.key_exists("bar").unwrap());
         kvs.remove_key("bar").unwrap();
         assert!(!kvs.key_exists("bar").unwrap());
@@ -777,7 +791,7 @@ mod tests {
             Some(dir_path.clone()),
         )
         .unwrap();
-        let _ = kvs.set_value("snap", KvsValue::Number(3.0));
+        let _ = kvs.set_value("snap", 3.0);
         // Before flush, snapshot count should be 0 (no snapshots yet)
         assert_eq!(kvs.snapshot_count(), 0);
         kvs.flush().unwrap();

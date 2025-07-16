@@ -13,6 +13,24 @@ use tinyjson::{JsonGenerateError, JsonParseError};
 #[derive(Default)]
 pub struct TinyJson;
 
+// Conversion between KvsValue and JsonValue
+use crate::kvs_value::KvsValue;
+
+pub trait KvsJson {
+    type Value;
+    fn parse(s: &str) -> Result<Self::Value, KvsBackendError>;
+    fn stringify(val: &Self::Value) -> Result<String, KvsBackendError>;
+    fn get_object(val: &Self::Value) -> Option<&HashMap<String, Self::Value>>;
+    fn get_array(val: &Self::Value) -> Option<&Vec<Self::Value>>;
+    fn get_f64(val: &Self::Value) -> Option<f64>;
+    fn get_bool(val: &Self::Value) -> Option<bool>;
+    fn get_string(val: &Self::Value) -> Option<&str>;
+    fn is_null(val: &Self::Value) -> bool;
+    fn to_kvs_value(val: Self::Value) -> KvsValue;
+    /// Convert a &KvsValue into the backend's JSON value type
+    fn from_kvs_value(val: &KvsValue) -> Self::Value;
+}
+
 impl KvsJson for TinyJson {
     type Value = JsonValue;
     fn parse(s: &str) -> Result<Self::Value, KvsBackendError> {
@@ -48,22 +66,4 @@ impl KvsJson for TinyJson {
     fn from_kvs_value(val: &KvsValue) -> Self::Value {
         JsonValue::from(val)
     }
-}
-
-// Conversion between KvsValue and JsonValue
-use crate::kvs_value::KvsValue;
-
-pub trait KvsJson {
-    type Value;
-    fn parse(s: &str) -> Result<Self::Value, KvsBackendError>;
-    fn stringify(val: &Self::Value) -> Result<String, KvsBackendError>;
-    fn get_object(val: &Self::Value) -> Option<&HashMap<String, Self::Value>>;
-    fn get_array(val: &Self::Value) -> Option<&Vec<Self::Value>>;
-    fn get_f64(val: &Self::Value) -> Option<f64>;
-    fn get_bool(val: &Self::Value) -> Option<bool>;
-    fn get_string(val: &Self::Value) -> Option<&str>;
-    fn is_null(val: &Self::Value) -> bool;
-    fn to_kvs_value(val: Self::Value) -> KvsValue;
-    /// Convert a &KvsValue into the backend's JSON value type
-    fn from_kvs_value(val: &KvsValue) -> Self::Value;
 }

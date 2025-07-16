@@ -2,7 +2,6 @@
 
 use super::json_value::JsonValue;
 use crate::kvs_value::KvsValue;
-use std::collections::HashMap;
 
 impl From<&JsonValue> for KvsValue {
     fn from(val: &JsonValue) -> KvsValue {
