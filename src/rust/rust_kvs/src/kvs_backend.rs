@@ -16,44 +16,6 @@ use crate::kvs_value::{KvsMap, KvsValue};
 use std::fs;
 use std::path::PathBuf;
 
-// Unified error type for all backend and JSON errors
-#[derive(Debug)]
-pub enum KvsBackendError {
-    Io(std::io::Error),
-    Json(String),
-    JsonParserError,
-    ValidationFailed,
-    KvsHashFileReadError,
-    MutexLockFailed,
-    KeyNotFound,
-    ConversionFailed,
-    UnmappedError,
-}
-
-impl std::fmt::Display for KvsBackendError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            KvsBackendError::Io(e) => write!(f, "IO error: {e}"),
-            KvsBackendError::Json(e) => write!(f, "JSON error: {e}"),
-            KvsBackendError::JsonParserError => write!(f, "JSON parser error"),
-            KvsBackendError::ValidationFailed => write!(f, "Validation failed"),
-            KvsBackendError::KvsHashFileReadError => write!(f, "KVS hash file read error"),
-            KvsBackendError::MutexLockFailed => write!(f, "Mutex lock failed"),
-            KvsBackendError::KeyNotFound => write!(f, "Key not found"),
-            KvsBackendError::ConversionFailed => write!(f, "Conversion failed"),
-            KvsBackendError::UnmappedError => write!(f, "Unmapped error"),
-        }
-    }
-}
-
-impl std::error::Error for KvsBackendError {}
-
-impl From<std::io::Error> for KvsBackendError {
-    fn from(e: std::io::Error) -> Self {
-        KvsBackendError::Io(e)
-    }
-}
-
 // Backend-agnostic trait for persisting and loading KvsMap from any source/sink
 pub trait PersistKvs {
     fn load_kvs(
@@ -61,9 +23,9 @@ pub trait PersistKvs {
         kvs: &mut KvsMap,
         verify_hash: bool,
         hash_source: Option<PathBuf>,
-    ) -> Result<(), KvsBackendError>;
+    ) -> Result<(), ErrorCode>;
 
-    fn save_kvs(kvs: &KvsMap, sink: PathBuf, add_hash: bool) -> Result<(), KvsBackendError>;
+    fn save_kvs(kvs: &KvsMap, sink: PathBuf, add_hash: bool) -> Result<(), ErrorCode>;
 }
 
 #[derive(Default)]
@@ -77,10 +39,10 @@ impl<J: KvsJson> PersistKvs for DefaultPersistKvs<J> {
         kvs: &mut KvsMap,
         verify_hash: bool,
         hash_source: Option<PathBuf>,
-    ) -> Result<(), KvsBackendError> {
+    ) -> Result<(), ErrorCode> {
         let filename = source.with_extension("json");
-        let data = fs::read_to_string(&filename).map_err(KvsBackendError::Io)?;
-        let json_val = J::parse(&data).map_err(|e| KvsBackendError::Json(e.to_string()))?;
+        let data = fs::read_to_string(&filename).map_err(|_| ErrorCode::KvsFileReadError)?;
+        let json_val = J::parse(&data).map_err(|_| ErrorCode::JsonParserError)?;
         // Hash check logic (use parsed data)
         if verify_hash {
             if let Some(hash_filename) = hash_source {
@@ -97,14 +59,14 @@ impl<J: KvsJson> PersistKvs for DefaultPersistKvs<J> {
                                     hash_bytes[3],
                                 ]);
                                 if hash_kvs != file_hash {
-                                    return Err(KvsBackendError::ValidationFailed);
+                                    return Err(ErrorCode::ValidationFailed);
                                 }
                             } else {
-                                return Err(KvsBackendError::ValidationFailed);
+                                return Err(ErrorCode::ValidationFailed);
                             }
                         }
                         Err(_) => {
-                            return Err(KvsBackendError::KvsHashFileReadError);
+                            return Err(ErrorCode::KvsHashFileReadError);
                         }
                     }
                 }
@@ -116,17 +78,17 @@ impl<J: KvsJson> PersistKvs for DefaultPersistKvs<J> {
             kvs.extend(map);
             Ok(())
         } else {
-            Err(KvsBackendError::JsonParserError)
+            Err(ErrorCode::JsonParserError)
         }
     }
 
-    fn save_kvs(kvs: &KvsMap, sink: PathBuf, add_hash: bool) -> Result<(), KvsBackendError> {
+    fn save_kvs(kvs: &KvsMap, sink: PathBuf, add_hash: bool) -> Result<(), ErrorCode> {
         let filename = sink.with_extension("json");
         let filename = filename.with_file_name(format!("{}_0.json", sink.display()));
         let kvs_val = KvsValue::Object(kvs.clone());
         let json_val = J::from_kvs_value(&kvs_val);
-        let json_str = J::stringify(&json_val).map_err(|e| KvsBackendError::Json(e.to_string()))?;
-        fs::write(&filename, &json_str).map_err(KvsBackendError::from)?;
+        let json_str = J::stringify(&json_val).map_err(|_| ErrorCode::JsonParserError)?;
+        fs::write(&filename, &json_str).map_err(|_| ErrorCode::KvsFileReadError)?;
         if add_hash {
             // Compute hash and write to hash file
             let hash = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
@@ -140,24 +102,9 @@ impl<J: KvsJson> PersistKvs for DefaultPersistKvs<J> {
                 hash_path.set_extension("hash");
                 hash_path
             };
-            fs::write(&filename_hash, hash.to_be_bytes()).map_err(KvsBackendError::from)?;
+            fs::write(&filename_hash, hash.to_be_bytes())
+                .map_err(|_| ErrorCode::KvsFileReadError)?;
         }
         Ok(())
-    }
-}
-
-impl From<KvsBackendError> for ErrorCode {
-    fn from(e: KvsBackendError) -> Self {
-        match e {
-            KvsBackendError::Io(_) => ErrorCode::KvsFileReadError,
-            KvsBackendError::Json(_) => ErrorCode::JsonParserError,
-            KvsBackendError::JsonParserError => ErrorCode::JsonParserError,
-            KvsBackendError::ValidationFailed => ErrorCode::ValidationFailed,
-            KvsBackendError::KvsHashFileReadError => ErrorCode::KvsHashFileReadError,
-            KvsBackendError::MutexLockFailed => ErrorCode::MutexLockFailed,
-            KvsBackendError::KeyNotFound => ErrorCode::KeyNotFound,
-            KvsBackendError::ConversionFailed => ErrorCode::ConversionFailed,
-            KvsBackendError::UnmappedError => ErrorCode::UnmappedError,
-        }
     }
 }

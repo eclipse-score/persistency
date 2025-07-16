@@ -3,8 +3,6 @@
 
 use std::collections::HashMap;
 
-use crate::kvs_backend::KvsBackendError;
-
 pub type JsonValue = tinyjson::JsonValue;
 
 // Implementation for tinyjson
@@ -18,8 +16,8 @@ use crate::kvs_value::KvsValue;
 
 pub trait KvsJson {
     type Value;
-    fn parse(s: &str) -> Result<Self::Value, KvsBackendError>;
-    fn stringify(val: &Self::Value) -> Result<String, KvsBackendError>;
+    fn parse(s: &str) -> Result<Self::Value, crate::error_code::ErrorCode>;
+    fn stringify(val: &Self::Value) -> Result<String, crate::error_code::ErrorCode>;
     fn get_object(val: &Self::Value) -> Option<&HashMap<String, Self::Value>>;
     fn get_array(val: &Self::Value) -> Option<&Vec<Self::Value>>;
     fn get_f64(val: &Self::Value) -> Option<f64>;
@@ -33,14 +31,13 @@ pub trait KvsJson {
 
 impl KvsJson for TinyJson {
     type Value = JsonValue;
-    fn parse(s: &str) -> Result<Self::Value, KvsBackendError> {
+    fn parse(s: &str) -> Result<Self::Value, crate::error_code::ErrorCode> {
         s.parse()
-            .map_err(|e: JsonParseError| KvsBackendError::Json(format!("parse error: {e:?}")))
+            .map_err(|_e: JsonParseError| crate::error_code::ErrorCode::JsonParserError)
     }
-    fn stringify(val: &Self::Value) -> Result<String, KvsBackendError> {
-        val.stringify().map_err(|e: JsonGenerateError| {
-            KvsBackendError::Json(format!("stringify: {}", e.message()))
-        })
+    fn stringify(val: &Self::Value) -> Result<String, crate::error_code::ErrorCode> {
+        val.stringify()
+            .map_err(|_e: JsonGenerateError| crate::error_code::ErrorCode::JsonParserError)
     }
     fn get_object(val: &Self::Value) -> Option<&HashMap<String, Self::Value>> {
         val.get::<HashMap<String, JsonValue>>()

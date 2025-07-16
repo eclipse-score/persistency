@@ -200,16 +200,15 @@ impl<J: PersistKvs + Default> GenericKvs<J> {
             Ok(()) => {
                 let mut map = KvsMap::new();
                 J::load_kvs(filename_path, &mut map, do_hash, hash_filename_path).map_err(|e| {
-                    eprintln!("error: {e}");
-                    ErrorCode::from(e)
+                    eprintln!("error: {e:?}");
+                    e
                 })?;
                 Ok(map)
             }
             Err(e) => {
-                let code = ErrorCode::from(e);
                 if need_file.into() == OpenKvsNeedFile::Required {
-                    eprintln!("error: file {filename:?} could not be read: {code:?}");
-                    Err(code)
+                    eprintln!("error: file {filename:?} could not be read: {e:?}");
+                    Err(e)
                 } else {
                     println!("file {filename:?} not found, using empty data");
                     Ok(KvsMap::new())
