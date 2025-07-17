@@ -147,6 +147,14 @@ TEST(kvs_calculate_hash_adler32, calculate_hash_adler32) {
 
 }
 
+TEST(kvs_calculate_hash_adler32, calculate_hash_adler32_large_data) {
+    // Create Teststring with more than 5552 characters to ensure that the hash is calculated correctly
+    std::string large_data(6000, 'A');
+    uint32_t hash = calculate_hash_adler32(large_data);
+
+    EXPECT_EQ(adler32(large_data), hash);
+}
+
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_bool) {
 
     score::json::Any any_bool(true);

@@ -22,6 +22,7 @@ cc_library(
 
 cc_test(
     name = "test_kvs_cpp",
+    size = "small",
     srcs = [
         "test_kvs.cpp",
         "//src/cpp:kvs_srcs",
@@ -41,6 +42,7 @@ cc_test(
 
 cc_test(
     name = "bm_kvs_cpp",
+    size = "small",
     srcs = [
         "bm_kvs.cpp",
         "//src/cpp:kvs_srcs",
