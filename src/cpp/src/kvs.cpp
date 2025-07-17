@@ -27,12 +27,24 @@ using namespace std;
 
 /*********************** Hash Functions *********************/
 /*Adler 32 checksum algorithm*/ 
+// Optimized version: processes data in blocks to reduce modulo operations
 uint32_t calculate_hash_adler32(const string& data) {
-    const uint32_t mod = 65521;
+    constexpr size_t ADLER32_NMAX = 5552;
+    constexpr uint32_t ADLER32_BASE = 65521;
     uint32_t a = 1, b = 0;
-    for (unsigned char c : data) {
-        a = (a + c) % mod;
-        b = (b + a) % mod;
+    size_t len = data.size();
+    size_t i = 0;
+
+    // Process in blocks of 5552 bytes (as recommended for Adler-32)
+    while (len > 0) {
+        size_t tlen = len > ADLER32_NMAX ? ADLER32_NMAX : len;
+        len -= tlen;
+        for (size_t j = 0; j < tlen; ++j, ++i) {
+            a += static_cast<unsigned char>(data[i]);
+            b += a;
+        }
+        a %= ADLER32_BASE;
+        b %= ADLER32_BASE;
     }
     return (b << 16) | a;
 }
