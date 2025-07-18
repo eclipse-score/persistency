@@ -9,11 +9,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-use super::Kvs;
 use crate::error_code::ErrorCode;
 use crate::kvs_api::{InstanceId, KvsApi};
+
 /// Key-value-storage builder
-pub struct KvsBuilder<T: KvsApi = Kvs> {
+pub struct KvsBuilder<T: KvsApi> {
     /// Instance ID
     instance_id: InstanceId,
 
@@ -30,10 +30,7 @@ pub struct KvsBuilder<T: KvsApi = Kvs> {
     _phantom: std::marker::PhantomData<T>,
 }
 
-impl<T> KvsBuilder<T>
-where
-    T: KvsApi,
-{
+impl<T: KvsApi> KvsBuilder<T> {
     /// Create a builder to open the key-value-storage
     ///
     /// Only the instance ID must be set. All other settings are using default values until changed

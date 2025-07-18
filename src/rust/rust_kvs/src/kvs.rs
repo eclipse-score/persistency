@@ -19,7 +19,7 @@ use std::sync::Mutex;
 use crate::error_code::ErrorCode;
 use crate::kvs_api::{InstanceId, KvsApi, SnapshotId};
 use crate::kvs_api::{OpenNeedDefaults, OpenNeedKvs};
-use crate::kvs_backend::{DefaultPersistKvs, PersistKvs};
+use crate::kvs_backend::KvsBackend;
 use crate::kvs_value::{KvsMap, KvsValue};
 
 /// Maximum number of snapshots
@@ -28,7 +28,7 @@ use crate::kvs_value::{KvsMap, KvsValue};
 const KVS_MAX_SNAPSHOTS: usize = 3;
 
 /// Key-value-storage data
-pub struct GenericKvs<J: PersistKvs + Default = DefaultPersistKvs> {
+pub struct GenericKvs<J: KvsBackend> {
     /// Storage data
     ///
     /// Feature: `FEAT_REQ__KVS__thread_safety` (Mutex)
@@ -86,7 +86,7 @@ enum OpenKvsVerifyHash {
     Yes,
 }
 
-impl<J: PersistKvs + Default> GenericKvs<J> {
+impl<J: KvsBackend> GenericKvs<J> {
     /// Open and parse a JSON file
     ///
     /// Return an empty hash when no file was found.
@@ -117,15 +117,9 @@ impl<J: PersistKvs + Default> GenericKvs<J> {
         let do_hash = matches!(verify_hash, OpenKvsVerifyHash::Yes);
         let filename_path = filename.clone();
         let hash_filename_path = hash_filename.cloned();
-        match J::load_kvs(
-            filename_path.clone(),
-            &mut KvsMap::new(),
-            do_hash,
-            hash_filename_path.clone(),
-        ) {
-            Ok(()) => {
-                let mut map = KvsMap::new();
-                J::load_kvs(filename_path, &mut map, do_hash, hash_filename_path).map_err(|e| {
+        match J::load_kvs(filename_path.clone(), do_hash, hash_filename_path.clone()) {
+            Ok(_) => {
+                let map = J::load_kvs(filename_path, do_hash, hash_filename_path).map_err(|e| {
                     eprintln!("error: {e:?}");
                     e
                 })?;
@@ -179,7 +173,7 @@ impl<J: PersistKvs + Default> GenericKvs<J> {
     }
 }
 
-impl<J: PersistKvs + Default> KvsApi for GenericKvs<J> {
+impl<J: KvsBackend> KvsApi for GenericKvs<J> {
     /// Open the key-value-storage
     ///
     /// Checks and opens a key-value-storage. Flush on exit is enabled by default and can be
@@ -586,7 +580,7 @@ impl<J: PersistKvs + Default> KvsApi for GenericKvs<J> {
     }
 }
 
-impl<J: PersistKvs + Default> Drop for GenericKvs<J> {
+impl<J: KvsBackend> Drop for GenericKvs<J> {
     fn drop(&mut self) {
         if self.flush_on_exit.load(atomic::Ordering::Relaxed) {
             if let Err(e) = self.flush() {
@@ -600,35 +594,36 @@ impl<J: PersistKvs + Default> Drop for GenericKvs<J> {
 mod tests {
 
     use super::*;
+    use crate::Kvs;
     use tempfile::tempdir;
 
     mod mock_backend {
         use super::*;
-        use crate::kvs_backend::PersistKvs;
+        use crate::kvs_backend::KvsBackend;
 
         #[derive(Default, Clone)]
         pub struct KvsMockBackend {}
 
-        impl PersistKvs for KvsMockBackend {
+        impl KvsBackend for KvsMockBackend {
             fn load_kvs(
-                filename: PathBuf,
-                map: &mut KvsMap,
-                _do_hash: bool,
-                _hash_filename: Option<PathBuf>,
-            ) -> Result<(), ErrorCode> {
-                let fname = filename.display().to_string();
+                source_path: PathBuf,
+                _verify_hash: bool,
+                _hash_source: Option<PathBuf>,
+            ) -> Result<KvsMap, ErrorCode> {
+                let mut map = KvsMap::new();
+                let fname = source_path.display().to_string();
                 if fname.ends_with("default") {
                     map.insert("mock_default_key".to_string(), KvsValue::from(111.0));
                 } else {
                     map.insert("mock_key".to_string(), KvsValue::from(123.0));
                 }
-                Ok(())
+                Ok(map)
             }
 
             fn save_kvs(
-                _map: &KvsMap,
-                _filename: PathBuf,
-                _do_hash: bool,
+                _kvs: &KvsMap,
+                _destination_path: PathBuf,
+                _add_hash: bool,
             ) -> Result<(), ErrorCode> {
                 Ok(())
             }
@@ -637,20 +632,19 @@ mod tests {
         #[derive(Default, Clone)]
         pub struct KvsMockBackendFail;
 
-        impl PersistKvs for KvsMockBackendFail {
+        impl KvsBackend for KvsMockBackendFail {
             fn load_kvs(
-                _filename: PathBuf,
-                _map: &mut KvsMap,
-                _do_hash: bool,
-                _hash_filename: Option<PathBuf>,
-            ) -> Result<(), ErrorCode> {
+                _source_path: PathBuf,
+                _verify_hash: bool,
+                _hash_source: Option<PathBuf>,
+            ) -> Result<KvsMap, ErrorCode> {
                 Err(ErrorCode::UnmappedError)
             }
 
             fn save_kvs(
-                _map: &KvsMap,
-                _filename: PathBuf,
-                _do_hash: bool,
+                _kvs: &KvsMap,
+                _destination_path: PathBuf,
+                _add_hash: bool,
             ) -> Result<(), ErrorCode> {
                 Err(ErrorCode::UnmappedError)
             }
@@ -840,7 +834,7 @@ mod tests {
         let dir_path = dir.path().to_string_lossy().to_string();
 
         let instance_id = InstanceId::new(42);
-        let kvs = GenericKvs::<DefaultPersistKvs>::open(
+        let kvs = Kvs::open(
             instance_id.clone(),
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
@@ -858,7 +852,7 @@ mod tests {
         let dir_path = dir.path().to_string_lossy().to_string();
 
         let instance_id = InstanceId::new(43);
-        let kvs = GenericKvs::<DefaultPersistKvs>::open(
+        let kvs = Kvs::open(
             instance_id.clone(),
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
@@ -880,7 +874,7 @@ mod tests {
         let dir_path = dir.path().to_string_lossy().to_string();
 
         let instance_id = InstanceId::new(44);
-        let kvs = GenericKvs::<DefaultPersistKvs>::open(
+        let kvs = Kvs::open(
             instance_id.clone(),
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
@@ -900,7 +894,7 @@ mod tests {
         let dir_path = dir.path().to_string_lossy().to_string();
 
         let instance_id = InstanceId::new(45);
-        let kvs = GenericKvs::<DefaultPersistKvs>::open(
+        let kvs = Kvs::open(
             instance_id.clone(),
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
@@ -919,7 +913,7 @@ mod tests {
         let dir_path = dir.path().to_string_lossy().to_string();
 
         let instance_id = InstanceId::new(46);
-        let kvs = GenericKvs::<DefaultPersistKvs>::open(
+        let kvs = Kvs::open(
             instance_id.clone(),
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
@@ -948,7 +942,7 @@ mod tests {
 
         let instance_id = InstanceId::new(0);
 
-        let kvs = GenericKvs::<DefaultPersistKvs>::open(
+        let kvs = Kvs::open(
             instance_id.clone(),
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
