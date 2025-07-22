@@ -1,3 +1,14 @@
+// Copyright (c) 2025 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+
 use crate::error_code::ErrorCode;
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_value::{KvsMap, KvsValue};
@@ -8,6 +19,17 @@ use std::path::PathBuf;
 use std::collections::HashMap;
 
 use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
+
+// Example of how KvsValue is stored in the JSON file (type-tagged format):
+// {
+//   "my_int": { "type": "I32", "value": 42 },
+//   "my_float": { "type": "F64", "value": 3.1415 },
+//   "my_bool": { "type": "Boolean", "value": true },
+//   "my_string": { "type": "String", "value": "hello" },
+//   "my_array": { "type": "Array", "value": [ ... ] },
+//   "my_object": { "type": "Object", "value": { ... } },
+//   "my_null": { "type": "Null", "value": null }
+// }
 
 /// Backend-specific JsonValue -> KvsValue conversion.
 impl From<&JsonValue> for KvsValue {
