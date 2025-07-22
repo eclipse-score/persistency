@@ -19,7 +19,7 @@ jobs:
 
       - name: Cargo Clippy
         run: |
-          cargo clippy --all-features
+          cargo clippy --all-targets --all-features
 
       - name: Cargo Fmt
         run: |
