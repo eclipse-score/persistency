@@ -2,9 +2,9 @@
 //!
 //! Requirements verified:
 //! - Persistency (feat_req__persistency__persistency)
-//! The KVS system shall persist stored data and provide an API to explicitly trigger persistence.
+//!   The KVS system shall persist stored data and provide an API to explicitly trigger persistence.
 //! - Store persistent data (feat_req__persistency__persist_data)
-//! The KVS shall support storing and loading its data to and from persistent storage.
+//!   The KVS shall support storing and loading its data to and from persistent storage.
 
 mod common;
 use common::compare_kvs_values;
@@ -66,7 +66,7 @@ fn cit_persistency_flush_on_exit_enabled() -> Result<(), ErrorCode> {
 
         // Compare values.
         for (key, expected_value) in kv_values.iter() {
-            let actual_value = kvs.get_value(&key).unwrap();
+            let actual_value = kvs.get_value(key).unwrap();
             assert!(compare_kvs_values(expected_value, &actual_value))
         }
     }
@@ -188,7 +188,7 @@ fn cit_persistency_flush_on_exit_disabled_manual_flush() -> Result<(), ErrorCode
 
         // Compare values.
         for (key, expected_value) in kv_values.iter() {
-            let actual_value = kvs.get_value(&key).unwrap();
+            let actual_value = kvs.get_value(key).unwrap();
             assert!(compare_kvs_values(expected_value, &actual_value))
         }
     }

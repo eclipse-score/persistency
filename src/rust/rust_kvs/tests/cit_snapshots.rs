@@ -2,8 +2,8 @@
 //!
 //! Requirements verified:
 //! - Snapshots (feat_req__persistency__snapshots)
-//! The KVS system shall support explicit creation of snapshots identified by unique IDs and allow rollback to previous snapshots.
-//! Snapshots shall also be deletable.
+//!   The KVS system shall support explicit creation of snapshots identified by unique IDs and allow rollback to previous snapshots.
+//!   Snapshots shall also be deletable.
 
 use rust_kvs::prelude::*;
 use std::cmp::min;

@@ -2,23 +2,24 @@
 //!
 //! Requirements verified:
 //! - Default Values (feat_req__persistency__default_values)
-//! The KVS system shall support predefined default values for keys.
+//!   The KVS system shall support predefined default values for keys.
 //! - Default Values Retrieval (feat_req__persistency__default_value_get)
-//! The KVS system shall support retrieving the default value associated with a key.
+//!   The KVS system shall support retrieving the default value associated with a key.
 //! - Set default key values via file (feat_req__persistency__default_value_file)
-//! The KVS shall support the configuration of default key values using an external file.
+//!   The KVS shall support the configuration of default key values using an external file.
 //!
 use rust_kvs::prelude::*;
 use std::collections::HashMap;
+use std::path::Path;
 use tempfile::tempdir;
 use tinyjson::{JsonGenerator, JsonValue};
 
 fn write_defaults_file(
-    dir_string: &std::path::PathBuf,
+    dir_string: &Path,
     data: HashMap<String, JsonValue>,
     instance: &InstanceId,
 ) -> Result<(), ErrorCode> {
-    let filepath = dir_string.join(format!("kvs_{}_default.json", instance));
+    let filepath = dir_string.join(format!("kvs_{instance}_default.json"));
 
     let json = JsonValue::from(data);
     let mut buf = Vec::new();
@@ -45,7 +46,7 @@ fn cit_persistency_default_values() -> Result<(), ErrorCode> {
     let default_id = InstanceId::new(0);
     let non_default_id = InstanceId::new(1);
     write_defaults_file(
-        &dir.path().to_path_buf(),
+        dir.path(),
         HashMap::from([(keyname.clone(), JsonValue::from(default_value))]),
         &default_id,
     )?;
@@ -69,31 +70,26 @@ fn cit_persistency_default_values() -> Result<(), ErrorCode> {
         // Check defaults.
         assert!(
             kvs_with_defaults.is_value_default(&keyname)?,
-            "kvs_with_defaults: key '{}' should be default",
-            keyname
+            "kvs_with_defaults: key '{keyname}' should be default"
         );
         assert_eq!(
             kvs_without_defaults.is_value_default(&keyname).unwrap_err(),
             ErrorCode::KeyNotFound,
-            "kvs_without_defaults: key '{}' should not exist and return KeyNotFound",
-            keyname
+            "kvs_without_defaults: key '{keyname}' should not exist and return KeyNotFound"
         );
 
         // Check values.
         assert_eq!(
             kvs_with_defaults.get_value_as::<f64>(&keyname)?,
             default_value,
-            "kvs_with_defaults: key '{}' should have default value {}",
-            keyname,
-            default_value
+            "kvs_with_defaults: key '{keyname}' should have default value {default_value}"
         );
         assert_eq!(
             kvs_without_defaults
                 .get_value_as::<f64>(&keyname)
                 .unwrap_err(),
             ErrorCode::KeyNotFound,
-            "kvs_without_defaults: key '{}' should not exist and return KeyNotFound",
-            keyname
+            "kvs_without_defaults: key '{keyname}' should not exist and return KeyNotFound"
         );
         // Set non-default value to both KVS instances.
         kvs_with_defaults.set_value(&keyname, non_default_value)?;
@@ -101,13 +97,11 @@ fn cit_persistency_default_values() -> Result<(), ErrorCode> {
         // Check that the value is non-default.
         assert!(
             !kvs_with_defaults.is_value_default(&keyname)?,
-            "kvs_with_defaults: key '{}' should NOT be default after set",
-            keyname
+            "kvs_with_defaults: key '{keyname}' should NOT be default after set"
         );
         assert!(
             !kvs_without_defaults.is_value_default(&keyname)?,
-            "kvs_without_defaults: key '{}' should NOT be default after set",
-            keyname
+            "kvs_without_defaults: key '{keyname}' should NOT be default after set"
         );
     }
     // Flush and reopen KVS instances to ensure persistency.
@@ -130,16 +124,12 @@ fn cit_persistency_default_values() -> Result<(), ErrorCode> {
         assert_eq!(
             kvs_with_defaults.get_value_as::<f64>(&keyname)?,
             non_default_value,
-            "kvs_with_defaults: key '{}' should persist non-default value {} after reopen",
-            keyname,
-            non_default_value
+            "kvs_with_defaults: key '{keyname}' should persist non-default value {non_default_value} after reopen"
         );
         assert_eq!(
             kvs_without_defaults.get_value_as::<f64>(&keyname)?,
             non_default_value,
-            "kvs_without_defaults: key '{}' should persist non-default value {} after reopen",
-            keyname,
-            non_default_value
+            "kvs_without_defaults: key '{keyname}' should persist non-default value {non_default_value} after reopen"
         );
     }
 
@@ -159,7 +149,7 @@ fn cit_persistency_default_values_optional() -> Result<(), ErrorCode> {
     // Create defaults file for instance 0.
     let default_id = InstanceId::new(0);
     write_defaults_file(
-        &dir.path().to_path_buf(),
+        dir.path(),
         HashMap::from([(keyname.clone(), JsonValue::from(default_value))]),
         &default_id,
     )
@@ -179,15 +169,12 @@ fn cit_persistency_default_values_optional() -> Result<(), ErrorCode> {
         // Check defaults.
         assert!(
             kvs_optional_defaults.is_value_default(&keyname)?,
-            "kvs_optional_defaults: key '{}' should be default",
-            keyname
+            "kvs_optional_defaults: key '{keyname}' should be default"
         );
         assert_eq!(
             kvs_optional_defaults.get_value_as::<f64>(&keyname)?,
             default_value,
-            "kvs_optional_defaults: key '{}' should have default value {}",
-            keyname,
-            default_value
+            "kvs_optional_defaults: key '{keyname}' should have default value {default_value}"
         );
     }
 
@@ -208,7 +195,7 @@ fn cit_persistency_defaults_enabled_values_removal() -> Result<(), ErrorCode> {
     // Create defaults file for instance 0.
     let default_id = InstanceId::new(0);
     write_defaults_file(
-        &dir.path().to_path_buf(),
+        dir.path(),
         HashMap::from([(keyname.clone(), JsonValue::from(default_value))]),
         &default_id,
     )?;
@@ -226,9 +213,7 @@ fn cit_persistency_defaults_enabled_values_removal() -> Result<(), ErrorCode> {
         assert_eq!(
             kvs_with_defaults.get_value_as::<f64>(&keyname)?,
             default_value,
-            "kvs_with_defaults: key '{}' should have default value {}",
-            keyname,
-            default_value
+            "kvs_with_defaults: key '{keyname}' should have default value {default_value}"
         );
 
         // Set non-default value and check it.
@@ -236,9 +221,7 @@ fn cit_persistency_defaults_enabled_values_removal() -> Result<(), ErrorCode> {
         assert_eq!(
             kvs_with_defaults.get_value_as::<f64>(&keyname)?,
             non_default_value,
-            "kvs_with_defaults: key '{}' should have non-default value {} after set",
-            keyname,
-            non_default_value
+            "kvs_with_defaults: key '{keyname}' should have non-default value {non_default_value} after set"
         );
 
         // Remove key and check that the value is back to default.
@@ -246,14 +229,11 @@ fn cit_persistency_defaults_enabled_values_removal() -> Result<(), ErrorCode> {
         assert_eq!(
             kvs_with_defaults.get_value_as::<f64>(&keyname)?,
             default_value,
-            "kvs_with_defaults: key '{}' should revert to default value {} after remove",
-            keyname,
-            default_value
+            "kvs_with_defaults: key '{keyname}' should revert to default value {default_value} after remove"
         );
         assert!(
             kvs_with_defaults.is_value_default(&keyname)?,
-            "kvs_with_defaults: key '{}' should be default after remove",
-            keyname
+            "kvs_with_defaults: key '{keyname}' should be default after remove"
         );
     }
 
@@ -284,9 +264,7 @@ fn cit_persistency_defaults_disabled_values_removal() -> Result<(), ErrorCode> {
         assert_eq!(
             kvs_without_defaults.get_value_as::<f64>(&keyname)?,
             non_default_value,
-            "kvs_without_defaults: key '{}' should have non-default value {} after set",
-            keyname,
-            non_default_value
+            "kvs_without_defaults: key '{keyname}' should have non-default value {non_default_value} after set"
         );
 
         // Remove key and check that KeyNotFound is raised.
@@ -294,8 +272,7 @@ fn cit_persistency_defaults_disabled_values_removal() -> Result<(), ErrorCode> {
         assert_eq!(
             kvs_without_defaults.is_value_default(&keyname).unwrap_err(),
             ErrorCode::KeyNotFound,
-            "kvs_without_defaults: key '{}' should not exist and return KeyNotFound",
-            keyname
+            "kvs_without_defaults: key '{keyname}' should not exist and return KeyNotFound"
         );
     }
 
@@ -311,8 +288,8 @@ fn cit_persistency_invalid_default_values() -> Result<(), ErrorCode> {
     // Write invalid JSON directly
     let keyname = "test_bool";
     let default_id = InstanceId::new(0);
-    let filename = dir.path().join(format!("kvs_{}_default.json", default_id));
-    let invalid_json = format!(r#"{{"{}": True}}"#, keyname);
+    let filename = dir.path().join(format!("kvs_{default_id}_default.json"));
+    let invalid_json = format!(r#"{{"{keyname}": True}}"#);
     std::fs::write(&filename, invalid_json)?;
 
     // Assertions: opening should fail due to invalid JSON
@@ -345,7 +322,7 @@ fn cit_persistency_reset_all_default_values() -> Result<(), ErrorCode> {
     // Create defaults file for instance 0.
     let default_id = InstanceId::new(0);
     write_defaults_file(
-        &dir.path().to_path_buf(),
+        dir.path(),
         HashMap::from([
             (keyname1.clone(), JsonValue::from(default_value)),
             (keyname2.clone(), JsonValue::from(default_value)),
@@ -366,13 +343,11 @@ fn cit_persistency_reset_all_default_values() -> Result<(), ErrorCode> {
         // Check defaults.
         assert!(
             kvs_with_defaults.is_value_default(&keyname1)?,
-            "kvs_with_defaults: key '{}' should be default",
-            keyname1
+            "kvs_with_defaults: key '{keyname1}' should be default"
         );
         assert!(
             kvs_with_defaults.is_value_default(&keyname2)?,
-            "kvs_with_defaults: key '{}' should be default",
-            keyname2
+            "kvs_with_defaults: key '{keyname2}' should be default"
         );
 
         // Set non-default value
@@ -381,13 +356,11 @@ fn cit_persistency_reset_all_default_values() -> Result<(), ErrorCode> {
         // Check that the value is non-default.
         assert!(
             !kvs_with_defaults.is_value_default(&keyname1)?,
-            "kvs_with_defaults: key '{}' should NOT be default after set",
-            keyname1
+            "kvs_with_defaults: key '{keyname1}' should NOT be default after set"
         );
         assert!(
             !kvs_with_defaults.is_value_default(&keyname2)?,
-            "kvs_with_defaults: key '{}' should NOT be default after set",
-            keyname2
+            "kvs_with_defaults: key '{keyname2}' should NOT be default after set"
         );
 
         // Reset the KVS instance - all keys should revert to default values.
@@ -395,13 +368,11 @@ fn cit_persistency_reset_all_default_values() -> Result<(), ErrorCode> {
         // Check that the value is default again.
         assert!(
             kvs_with_defaults.is_value_default(&keyname1)?,
-            "kvs_with_defaults: key '{}' should be default",
-            keyname1
+            "kvs_with_defaults: key '{keyname1}' should be default"
         );
         assert!(
             kvs_with_defaults.is_value_default(&keyname2)?,
-            "kvs_with_defaults: key '{}' should be default",
-            keyname2
+            "kvs_with_defaults: key '{keyname2}' should be default"
         );
     }
 
