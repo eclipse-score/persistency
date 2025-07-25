@@ -666,7 +666,7 @@ TEST(kvs_MessageFor, MessageFor) {
 
 }
 
-TEST(kvs_kvsbuilder, kvsbuilder) {
+TEST(kvs_kvsbuilder, kvsbuilder_success) {
     /* This test also checks the kvs open function with the KvsBuilder */
     
     /* Test the KvsBuilder constructor */
@@ -699,7 +699,22 @@ TEST(kvs_kvsbuilder, kvsbuilder) {
     result_build.value().flush_on_exit = false;
     std::string expected_filename_prefix = "./kvsbuilder/kvs_"+std::to_string(instance_id.id);
     EXPECT_EQ(result_build.value().filename_prefix, expected_filename_prefix);
+}
 
+TEST(kvs_kvsbuilder, kvsbuilder_directory_invalid) {
+
+    /* Test the KvsBuilder with an empty directory */
+    KvsBuilder builder(instance_id);
+    builder.dir("");
+    auto result_build = builder.build();
+    EXPECT_FALSE(result_build);
+    EXPECT_EQ(static_cast<MyErrorCode>(*result_build.error()), MyErrorCode::InvalidArgument);
+
+    /* Test the KvsBuilder with an string which doesnt end with / */
+    builder.dir("./kvsbuilder");
+    result_build = builder.build();
+    EXPECT_FALSE(result_build);
+    EXPECT_EQ(static_cast<MyErrorCode>(*result_build.error()), MyErrorCode::InvalidArgument);
 }
 
 TEST(kvs_constructor, move_constructor) {

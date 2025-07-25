@@ -90,7 +90,10 @@ enum class MyErrorCode : score::result::ErrorCode {
     MutexLockFailed,
 
     /* Invalid value type*/
-    InvalidValueType
+    InvalidValueType,
+
+    /* Invalid argument*/
+    InvalidArgument
 };
 
 class MyErrorDomain final : public score::result::ErrorDomain
@@ -579,6 +582,9 @@ public:
     /**
      * @brief Specify the directory where KVS files are stored.
      * @param dir The directory path as a string.
+     * Important: The directory path must end with a '/' to be valid.
+     * Use "./" for the current directory.
+     *   
      * @return Reference to this builder (for chaining).
      */
     KvsBuilder& dir(std::string&& dir_path);

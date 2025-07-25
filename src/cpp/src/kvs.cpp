@@ -435,12 +435,20 @@ KvsBuilder& KvsBuilder::dir(std::string&& dir_path) {
 
 
 score::Result<Kvs> KvsBuilder::build() const {
-    auto result = Kvs::open(
-        instance_id,
-        need_defaults ? OpenNeedDefaults::Required : OpenNeedDefaults::Optional,
-        need_kvs      ? OpenNeedKvs::Required      : OpenNeedKvs::Optional,
-        std::move(directory)
-    );
+    score::Result<Kvs> result = score::MakeUnexpected(MyErrorCode::UnmappedError);
+
+    /* Check if directory argument is valid */
+    if (directory.empty() || directory.back() != '/') {
+        result = score::MakeUnexpected(MyErrorCode::InvalidArgument);
+    } else {
+        result = Kvs::open(
+            instance_id,
+            need_defaults ? OpenNeedDefaults::Required : OpenNeedDefaults::Optional,
+            need_kvs      ? OpenNeedKvs::Required      : OpenNeedKvs::Optional,
+            std::move(directory)
+        );
+    }
+    
     return result;
 }
 
