@@ -25,16 +25,14 @@ cc_test(
     size = "small",
     srcs = [
         "test_kvs.cpp",
-        "//src/cpp:kvs_srcs",
-    ],
-    copts = [
-        "-Isrc/cpp/inc",
     ],
     visibility = ["//:__pkg__"],
     deps = [
-        ":json_stubs",
+        "//:kvs_cpp",
         "@googletest//:gtest_main",
         "@score-baselibs//score/filesystem:filesystem",
+        "@score-baselibs//score/json",
+        "@score-baselibs//score/json:mock",
         "@score-baselibs//score/memory:string_comparison_adaptor",
         "@score-baselibs//score/result:result",
     ],

@@ -12,16 +12,6 @@
 # *******************************************************************************
 
 # The filegroup is used to collect all source files for the tests.
-filegroup(
-    name = "kvs_srcs",
-    srcs = glob([
-        "src/*.cpp",
-        "inc/**/*.hpp",
-    ]),
-    visibility = [
-        "//src/cpp/tests:__pkg__",
-    ],
-)
 
 cc_library(
     name = "kvs_cpp",
@@ -33,8 +23,7 @@ cc_library(
     visibility = ["//:__pkg__"],
     deps = [
         "@score-baselibs//score/filesystem:filesystem",
-        "@score-baselibs//score/json:interface",
-        "@score-baselibs//score/json:json_parser",
+        "@score-baselibs//score/json",
         "@score-baselibs//score/result:result",
     ],
 )
