@@ -549,7 +549,14 @@ class Kvs final {
     
         /* Flush on exit flag for written Keys */
         std::atomic<bool> flush_on_exit;
-   
+
+        /* Json handling */
+        std::unique_ptr<score::json::JsonParser> parser;
+        std::unique_ptr<score::json::JsonWriter> writer;
+
+        score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
+        score::Result<std::unordered_map<std::string, KvsValue>> open_json(const std::string& prefix, OpenJsonNeedFile need_file);
+        score::ResultBlank write_json_data(const std::string& filename_prefix, const std::string& buf);
 };
 
 

@@ -106,14 +106,14 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any){
     score::Result<KvsValue> result = score::MakeUnexpected(MyErrorCode::UnmappedError);
     if (auto o = any.As<score::json::Object>(); o.has_value()) {
         const auto& objAny = o.value().get();
-        auto type  = objAny.find("type");
-        auto value = objAny.find("value");
+        auto type  = objAny.find("t");
+        auto value = objAny.find("v");
         if (type != objAny.end() && value != objAny.end()) {
             if (auto typeStr = type->second.As<std::string>(); typeStr.has_value()) {
                 const std::string_view typeStrV = typeStr.value().get();
                 const score::json::Any& valueAny = value->second;
 
-                if (typeStrV == "I32") {
+                if (typeStrV == "i32") {
                     if (auto n = valueAny.As<int32_t>(); n.has_value()){
                         result = KvsValue(static_cast<int32_t>(n.value()));
                     }
@@ -121,7 +121,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any){
                         result = score::MakeUnexpected(MyErrorCode::InvalidValueType);
                     }
                 }
-                else if (typeStrV == "U32") {
+                else if (typeStrV == "u32") {
                     if (auto n = valueAny.As<uint32_t>(); n.has_value()) {
                         result = KvsValue(static_cast<uint32_t>(n.value()));
                     }
@@ -129,7 +129,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any){
                         result = score::MakeUnexpected(MyErrorCode::InvalidValueType);
                     }
                 }
-                else if (typeStrV == "I64") {
+                else if (typeStrV == "i64") {
                     if (auto n = valueAny.As<int64_t>(); n.has_value()) {
                         result = KvsValue(static_cast<int64_t>(n.value()));
                     }
@@ -137,7 +137,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any){
                         result = score::MakeUnexpected(MyErrorCode::InvalidValueType);
                     }
                 }
-                else if (typeStrV == "U64") {
+                else if (typeStrV == "u64") {
                     if (auto n = valueAny.As<uint64_t>(); n.has_value()) {
                         result = KvsValue(static_cast<uint64_t>(n.value()));
                     }
@@ -145,7 +145,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any){
                         result = score::MakeUnexpected(MyErrorCode::InvalidValueType);
                     }
                 }
-                else if (typeStrV == "F64") {
+                else if (typeStrV == "f64") {
                     if (auto n = valueAny.As<double>(); n.has_value()) {
                         result = KvsValue(n.value());
                     }
@@ -153,7 +153,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any){
                         result = score::MakeUnexpected(MyErrorCode::InvalidValueType);
                     }
                 }
-                else if (typeStrV == "Boolean") {
+                else if (typeStrV == "bool") {
                     if (auto b = valueAny.As<bool>(); b.has_value()) {
                         result = KvsValue(b.value());
                     }
@@ -161,7 +161,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any){
                         result = score::MakeUnexpected(MyErrorCode::InvalidValueType);
                     }
                 }
-                else if (typeStrV == "String") {
+                else if (typeStrV == "str") {
                     if (auto s = valueAny.As<std::string>(); s.has_value()) {
                         result = KvsValue(s.value().get());
                     }
@@ -169,7 +169,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any){
                         result = score::MakeUnexpected(MyErrorCode::InvalidValueType);
                     }
                 }
-                else if (typeStrV == "Null") {
+                else if (typeStrV == "null") {
                     if (valueAny.As<score::json::Null>().has_value()) {
                         result = KvsValue(nullptr);
                     }
@@ -177,7 +177,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any){
                         result = score::MakeUnexpected(MyErrorCode::InvalidValueType);
                     }
                 }
-                else if (typeStrV == "Array") {
+                else if (typeStrV == "arr") {
                     if (auto l = valueAny.As<score::json::List>(); l.has_value()) {
                         KvsValue::Array arr;
                         bool error = false;
@@ -197,7 +197,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any){
                         result = score::MakeUnexpected(MyErrorCode::InvalidValueType);
                     }
                 }
-                else if (typeStrV == "Object") {
+                else if (typeStrV == "obj") {
                     if (auto obj = valueAny.As<score::json::Object>(); obj.has_value()) {
                         KvsValue::Object map;
                         bool error = false;
@@ -239,47 +239,47 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) {
     score::json::Object obj;
     switch (kv.getType()) {
         case KvsValue::Type::I32: {
-            obj.emplace("type", score::json::Any(std::string("I32")));
-            obj.emplace("value", score::json::Any(static_cast<int32_t>(std::get<int32_t>(kv.getValue()))));
+            obj.emplace("t", score::json::Any(std::string("i32")));
+            obj.emplace("v", score::json::Any(static_cast<int32_t>(std::get<int32_t>(kv.getValue()))));
             break;
         }
         case KvsValue::Type::U32: {
-            obj.emplace("type", score::json::Any(std::string("U32")));
-            obj.emplace("value", score::json::Any(static_cast<uint32_t>(std::get<uint32_t>(kv.getValue()))));
+            obj.emplace("t", score::json::Any(std::string("u32")));
+            obj.emplace("v", score::json::Any(static_cast<uint32_t>(std::get<uint32_t>(kv.getValue()))));
             break;
         }
         case KvsValue::Type::I64: {
-            obj.emplace("type", score::json::Any(std::string("I64")));
-            obj.emplace("value", score::json::Any(static_cast<int64_t>(std::get<int64_t>(kv.getValue()))));
+            obj.emplace("t", score::json::Any(std::string("i64")));
+            obj.emplace("v", score::json::Any(static_cast<int64_t>(std::get<int64_t>(kv.getValue()))));
             break;
         }
         case KvsValue::Type::U64: {
-            obj.emplace("type", score::json::Any(std::string("U64")));
-            obj.emplace("value", score::json::Any(static_cast<uint64_t>(std::get<uint64_t>(kv.getValue()))));
+            obj.emplace("t", score::json::Any(std::string("u64")));
+            obj.emplace("v", score::json::Any(static_cast<uint64_t>(std::get<uint64_t>(kv.getValue()))));
             break;
         }
         case KvsValue::Type::F64: {
-            obj.emplace("type", score::json::Any(std::string("F64")));
-            obj.emplace("value", score::json::Any(std::get<double>(kv.getValue())));
+            obj.emplace("t", score::json::Any(std::string("f64")));
+            obj.emplace("v", score::json::Any(std::get<double>(kv.getValue())));
             break;
         }
         case KvsValue::Type::Boolean: {
-            obj.emplace("type", score::json::Any(std::string("Boolean")));
-            obj.emplace("value", score::json::Any(std::get<bool>(kv.getValue())));
+            obj.emplace("t", score::json::Any(std::string("bool")));
+            obj.emplace("v", score::json::Any(std::get<bool>(kv.getValue())));
             break;
         }
         case KvsValue::Type::String: {
-            obj.emplace("type", score::json::Any(std::string("String")));
-            obj.emplace("value", score::json::Any(std::get<std::string>(kv.getValue())));
+            obj.emplace("t", score::json::Any(std::string("str")));
+            obj.emplace("v", score::json::Any(std::get<std::string>(kv.getValue())));
             break;
         }
         case KvsValue::Type::Null: {
-            obj.emplace("type", score::json::Any(std::string("Null")));
-            obj.emplace("value", score::json::Any(score::json::Null{}));
+            obj.emplace("t", score::json::Any(std::string("null")));
+            obj.emplace("v", score::json::Any(score::json::Null{}));
             break;
         }
         case KvsValue::Type::Array: {
-            obj.emplace("type", score::json::Any(std::string("Array")));
+            obj.emplace("t", score::json::Any(std::string("arr")));
             score::json::List list;
             for (auto& elem : std::get<KvsValue::Array>(kv.getValue())) {
                 auto conv = kvsvalue_to_any(elem);
@@ -291,12 +291,12 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) {
                 list.push_back(std::move(conv.value()));
             }
             if (!error) {
-                obj.emplace("value", score::json::Any(std::move(list)));
+                obj.emplace("v", score::json::Any(std::move(list)));
             }
             break;
         }
         case KvsValue::Type::Object: {
-            obj.emplace("type", score::json::Any(std::string("Object")));
+            obj.emplace("t", score::json::Any(std::string("obj")));
             score::json::Object inner_obj;
             for (auto& [key, value] : std::get<KvsValue::Object>(kv.getValue())) {
                 auto conv = kvsvalue_to_any(value);
@@ -308,7 +308,7 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) {
                 inner_obj.emplace(key, std::move(conv.value()));
             }
             if (!error) {
-                obj.emplace("value", score::json::Any(std::move(inner_obj)));
+                obj.emplace("v", score::json::Any(std::move(inner_obj)));
             }
             break;
         }
@@ -396,6 +396,9 @@ std::string_view MyErrorDomain::MessageFor(score::result::ErrorCode const& code)
         case MyErrorCode::InvalidValueType:
             msg = "Invalid value type";
             break;
+        case MyErrorCode::InvalidArgument:
+            msg = "Invalid argument";
+            break;
         default:
             msg = "Unknown Error!";
             break;
@@ -462,12 +465,16 @@ Kvs::~Kvs(){
 
 Kvs::Kvs()
     : flush_on_exit(false)
+    , parser(std::make_unique<score::json::JsonParser>())
+    , writer(std::make_unique<score::json::JsonWriter>())
 {
 }
 
 Kvs::Kvs(Kvs&& other) noexcept
     : filename_prefix(std::move(other.filename_prefix))
     , flush_on_exit(other.flush_on_exit.load(std::memory_order_relaxed))
+    , parser(std::move(other.parser)) /* Not absolutely necessary, because a new JSON writer/parser object would also be okay*/
+    , writer(std::move(other.writer))
 {
     {
         std::lock_guard<std::mutex> lock(other.kvs_mutex);
@@ -501,16 +508,20 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
             kvs = std::move(other.kvs);
         }
         default_values = std::move(other.default_values);
+
+        /* Transfer ownership of JSON parser and writer
+            Not absolutely necessary, because a new JSON writer/parser object would also be okay*/
+        parser = std::move(other.parser);
+        writer = std::move(other.writer);
     }
     return *this;
 }
 
 /* Helper Function to parse JSON data for open_json*/
-score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data) {
+score::Result<std::unordered_map<std::string, KvsValue>> Kvs::parse_json_data(const std::string& data) {
     
     score::Result<unordered_map<std::string, KvsValue>> result = score::MakeUnexpected(MyErrorCode::UnmappedError);
-    score::json::JsonParser parser;
-    auto any_res = parser.FromBuffer(data);
+    auto any_res = parser->FromBuffer(data);
 
     if (!any_res) {
         result = score::MakeUnexpected(MyErrorCode::JsonParserError);
@@ -545,7 +556,7 @@ score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const s
 }
 
 /* Open and read JSON File */
-score::Result<std::unordered_map<string, KvsValue>> open_json(const string& prefix, OpenJsonNeedFile need_file)
+score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const string& prefix, OpenJsonNeedFile need_file)
 {   
     string json_file = prefix + ".json";
     string hash_file = prefix + ".hash";
@@ -616,15 +627,15 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id, OpenNeedDefaults nee
 
     score::Result<Kvs> result = score::MakeUnexpected(MyErrorCode::UnmappedError); /* Redundant initialization needed, since Resul<KVS> would call the implicitly-deleted default constructor of KVS */
     
-    
-    auto default_res = open_json(
+    Kvs kvs; /* Create KVS instance */
+    auto default_res = kvs.open_json(
         filename_default,
         need_defaults == OpenNeedDefaults::Required ? OpenJsonNeedFile::Required : OpenJsonNeedFile::Optional);
     if (!default_res){
         result = score::MakeUnexpected(static_cast<MyErrorCode>(*default_res.error())); /* Dereferences the Error class to its underlying code -> error.h*/
     }
     else{
-        auto kvs_res = open_json(
+        auto kvs_res = kvs.open_json(
             filename_kvs,
             need_kvs == OpenNeedKvs::Required ? OpenJsonNeedFile::Required : OpenJsonNeedFile::Optional);
         if (!kvs_res){
@@ -633,7 +644,6 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id, OpenNeedDefaults nee
             cout << "opened KVS: instance '" << instance_id.id << "'" << endl;
             cout << "max snapshot count: " << KVS_MAX_SNAPSHOTS << endl;
             
-            Kvs kvs;
             kvs.kvs = std::move(kvs_res.value());
             kvs.default_values = std::move(default_res.value());
             kvs.filename_prefix = filename_prefix;
@@ -813,7 +823,7 @@ score::ResultBlank Kvs::remove_key(const string_view key) {
 }
 
 /* Helper Function to write JSON data to a file for flush process (also adds Hash file)*/
-score::ResultBlank write_json_data(const std::string& filename_prefix, const std::string& buf)
+score::ResultBlank Kvs::write_json_data(const std::string& filename_prefix, const std::string& buf)
 {
     score::ResultBlank result = score::MakeUnexpected(MyErrorCode::UnmappedError);
     const std::string fn_json = filename_prefix + "_0.json";
@@ -878,8 +888,7 @@ score::ResultBlank Kvs::flush() {
     
     if(!error){
         /* Serialize Buffer */
-        score::json::JsonWriter writer;
-        auto buf_res = writer.ToBuffer(root_obj);
+        auto buf_res = writer->ToBuffer(root_obj);
         if (!buf_res) {
             result = score::MakeUnexpected(MyErrorCode::JsonGeneratorError);
         }else{
