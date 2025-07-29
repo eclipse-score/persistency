@@ -29,16 +29,21 @@
 #include "internal/kvs_helper.hpp"
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
+#include "score/filesystem/filesystem_mock.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-
 /* Test Environment Setup - Standard Variables for tests*/
+
 const std::uint32_t instance = 123;
 const InstanceId instance_id{instance};
+
+/* Notice: score::filesystem::Path could be constructed implicitly from std::string, but for readability, 
+           we mostly use explicit construction from those strings in the testcode */
 const std::string data_dir = "./data_folder/";
 const std::string default_prefix = data_dir + "kvs_"+std::to_string(instance)+"_default";
 const std::string kvs_prefix     = data_dir + "kvs_"+std::to_string(instance)+"_0";
 const std::string filename_prefix = data_dir + "kvs_"+std::to_string(instance);
+
 const std::string default_json = R"({
     "default": {
         "t": "i32",
@@ -651,7 +656,6 @@ TEST(kvs_MessageFor, MessageFor) {
         {MyErrorCode::ConversionFailed,       "Conversion failed"},
         {MyErrorCode::MutexLockFailed,        "Mutex failed"},
         {MyErrorCode::InvalidValueType,       "Invalid value type"},
-        {MyErrorCode::InvalidArgument,        "Invalid argument"}
     };
     for (const auto& test : test_cases) {
         SCOPED_TRACE(static_cast<int>(test.code));
@@ -664,7 +668,7 @@ TEST(kvs_MessageFor, MessageFor) {
 
 }
 
-TEST(kvs_kvsbuilder, kvsbuilder_success) {
+TEST(kvs_kvsbuilder, kvsbuilder_build) {
     /* This test also checks the kvs open function with the KvsBuilder */
     
     /* Test the KvsBuilder constructor */
@@ -695,24 +699,28 @@ TEST(kvs_kvsbuilder, kvsbuilder_success) {
     result_build = builder.build();
     EXPECT_TRUE(result_build);
     result_build.value().flush_on_exit = false;
-    std::string expected_filename_prefix = "./kvsbuilder/kvs_"+std::to_string(instance_id.id);
-    EXPECT_EQ(result_build.value().filename_prefix, expected_filename_prefix);
+    EXPECT_EQ(result_build.value().filename_prefix.CStr(), "./kvsbuilder/kvs_"+std::to_string(instance_id.id));
 }
 
-TEST(kvs_kvsbuilder, kvsbuilder_directory_invalid) {
+TEST(kvs_kvsbuilder, kvsbuilder_directory_check) {
 
-    /* Test the KvsBuilder with an empty directory */
+    /* Test the KvsBuilder with all configurations for the current working directory */    
     KvsBuilder builder(instance_id);
     builder.dir("");
     auto result_build = builder.build();
-    EXPECT_FALSE(result_build);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result_build.error()), MyErrorCode::InvalidArgument);
+    EXPECT_TRUE(result_build);
+    EXPECT_EQ(result_build.value().filename_prefix.CStr(), "./kvs_"+std::to_string(instance_id.id));
 
-    /* Test the KvsBuilder with an string which doesnt end with / */
-    builder.dir("./kvsbuilder");
+    builder.dir("./");
     result_build = builder.build();
-    EXPECT_FALSE(result_build);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result_build.error()), MyErrorCode::InvalidArgument);
+    EXPECT_TRUE(result_build);
+    EXPECT_EQ(result_build.value().filename_prefix.CStr(), "./kvs_"+std::to_string(instance_id.id));
+
+    builder.dir(".");
+    result_build = builder.build();
+    EXPECT_TRUE(result_build);
+    EXPECT_EQ(result_build.value().filename_prefix.CStr(), "./kvs_"+std::to_string(instance_id.id));
+
 }
 
 TEST(kvs_constructor, move_constructor) {
@@ -761,7 +769,7 @@ TEST(kvs_constructor, move_constructor) {
     EXPECT_EQ(kvs_a.flush_on_exit, true);
     ASSERT_EQ(kvs_b.flush_on_exit, false);
 
-    EXPECT_EQ(kvs_a.filename_prefix, data_dir + "kvs_"+std::to_string(instance));
+    EXPECT_EQ(kvs_a.filename_prefix.CStr(), data_dir + "kvs_"+std::to_string(instance));
 
     EXPECT_TRUE(kvs_a.kvs.count("test_kvs"));
     EXPECT_TRUE(kvs_a.default_values.count("test_default"));
@@ -871,9 +879,9 @@ TEST(kvs_open_json, open_json_success) {
     auto kvs = Kvs::open(InstanceId(instance_id), OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
     ASSERT_TRUE(kvs);
 
-    auto result = kvs->open_json(kvs_prefix , OpenJsonNeedFile::Required);
+    auto result = kvs->open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Required);
     EXPECT_TRUE(result);
-    result = kvs->open_json(kvs_prefix, OpenJsonNeedFile::Optional);
+    result = kvs->open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Optional);
     EXPECT_TRUE(result);
 
     cleanup_environment();
@@ -906,13 +914,13 @@ TEST(kvs_open_json, open_json_json_invalid) {
         });
     kvs.parser = std::move(mock_parser);
 
-    auto result = kvs.open_json(kvs_prefix, OpenJsonNeedFile::Required);
+    auto result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Required);
     ASSERT_FALSE(result);
     EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::JsonParserError); /* Errorcode passed by parse json function*/
 
     /* JSON not existing */
     system(("rm -rf " + kvs_prefix + ".json").c_str());
-    result = kvs.open_json(kvs_prefix, OpenJsonNeedFile::Required);
+    result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Required);
     ASSERT_FALSE(result);
     EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::KvsFileReadError);
 
@@ -930,19 +938,19 @@ TEST(kvs_open_json, open_json_hash_invalid) {
 
     Kvs kvs = Kvs(); /* Create Kvs instance without any data (this constructor is normally private) */
 
-    auto result = kvs.open_json(kvs_prefix, OpenJsonNeedFile::Optional);
+    auto result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Optional);
     ASSERT_FALSE(result);
     EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::ValidationFailed);
 
     /* Hash not existing */
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
-    result = kvs.open_json(kvs_prefix, OpenJsonNeedFile::Optional);
+    result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Optional);
     ASSERT_FALSE(result);
     EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::KvsHashFileReadError);
 
     /* JSON not existing */
     system(("rm -rf " + kvs_prefix + ".json").c_str());
-    result = kvs.open_json(kvs_prefix, OpenJsonNeedFile::Required);
+    result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Required);
     ASSERT_FALSE(result);
     EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::KvsFileReadError);
 
@@ -1374,7 +1382,7 @@ TEST(kvs_write_json_data, write_json_data_success){
     auto kvs = Kvs::open(InstanceId(instance_id), OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
     ASSERT_TRUE(kvs);
 
-    kvs->filename_prefix = filename_prefix; /* Set the filename prefix to the test prefix */
+    kvs->filename_prefix = score::filesystem::Path(filename_prefix); /* Set the filename prefix to the test prefix */
     auto result = kvs->write_json_data(json_test_data);
     EXPECT_TRUE(result);
     EXPECT_TRUE(std::filesystem::exists(kvs_prefix + ".json"));
@@ -1401,28 +1409,53 @@ TEST(kvs_write_json_data, write_json_data_success){
     cleanup_environment();
 }
 
-TEST(kvs_write_json_data, write_json_data_failure){
+TEST(kvs_write_json_data, write_json_data_filesystem_failure){
 
     prepare_environment();
-    /* Test writing to a non-writable directory */
+    /* Test CreateDirectories fails */
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
-    std::string unwritable_dir = "/root/unwritable_dir/";
 
     auto kvs = Kvs::open(InstanceId(instance_id), OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
     ASSERT_TRUE(kvs);
-    kvs->filename_prefix = unwritable_dir + "/kvs_" + std::to_string(instance); /* Set the filename prefix to the test prefix */
+
+    /* Mock Filesystem */
+    score::filesystem::Filesystem mock_filesystem = score::filesystem::CreateMockFileSystem();
+    auto standard_mock = std::dynamic_pointer_cast<score::filesystem::StandardFilesystemMock>(mock_filesystem.standard);
+    ASSERT_NE(standard_mock, nullptr);
+    EXPECT_CALL(*standard_mock, CreateDirectories(::testing::_))
+        .WillOnce(::testing::Return(score::ResultBlank(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotCreateDirectory))));
+    kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
+
     auto result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
 
-    /* Test writing to a non-writable hash file */
+   
+    /* Test if path argument is missing parent path (will only occur if semantic errors will be done in flush() )*/
+    kvs->filename_prefix = score::filesystem::Path("no_parent_path"); /* Set the filename prefix to the test prefix */
+    result = kvs->write_json_data(kvs_json);
+    EXPECT_FALSE(result);
+    EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
+
+    cleanup_environment();
+}
+TEST(kvs_write_json_data, write_json_data_permissions_failure){
+    prepare_environment();
+    /* Test CreateDirectories fails */
+    system(("rm -rf " + kvs_prefix + ".json").c_str());
+    system(("rm -rf " + kvs_prefix + ".hash").c_str());
+
+    auto kvs = Kvs::open(InstanceId(instance_id), OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    ASSERT_TRUE(kvs);
+
+     /* Test writing to a non-writable hash file */
     std::ofstream out_hash(kvs_prefix + ".hash");
     out_hash << "data";
     out_hash.close();
     std::filesystem::permissions(kvs_prefix + ".hash", std::filesystem::perms::owner_read, std::filesystem::perm_options::replace);
-    kvs->filename_prefix = filename_prefix; /* Reset the filename prefix to the test prefix */
-    result = kvs->write_json_data(kvs_json);
+    kvs->filename_prefix = score::filesystem::Path(filename_prefix); /* Reset the filename prefix to the test prefix */
+    auto result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
 
@@ -1431,18 +1464,13 @@ TEST(kvs_write_json_data, write_json_data_failure){
     out_json << "data";
     out_json.close();
     std::filesystem::permissions(kvs_prefix + ".json", std::filesystem::perms::owner_read, std::filesystem::perm_options::replace);
-    kvs->filename_prefix = filename_prefix; /* Reset the filename prefix to the test prefix */
+    kvs->filename_prefix = score::filesystem::Path(filename_prefix); /* Reset the filename prefix to the test prefix */
     result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
 
-    /* Test if path argument is missing parent path (will only occur if semantic errors will be done in flush() )*/
-    kvs->filename_prefix =  "no_parent_path"; /* Set the filename prefix to the test prefix */
-    result = kvs->write_json_data(kvs_json);
-    EXPECT_FALSE(result);
-    EXPECT_EQ(result.error(), MyErrorCode::UnmappedError);
-
     cleanup_environment();
+
 }
 
 TEST(kvs_snapshot_rotate, snapshot_rotate_success){
@@ -1457,7 +1485,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success){
     for (size_t i = 1; i < KVS_MAX_SNAPSHOTS; i++) {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count(), i);
+        EXPECT_EQ(result.value().snapshot_count().value(), i);
     }
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS) + ".json"));
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS) + ".hash"));
@@ -1487,7 +1515,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_max_snapshots){
     for (size_t i = 1; i < KVS_MAX_SNAPSHOTS; i++) {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count(), i);
+        EXPECT_EQ(result.value().snapshot_count().value(), i);
     }
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS) + ".json"));
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS) + ".hash"));
@@ -1513,7 +1541,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_json){
     for (size_t i = 1; i < KVS_MAX_SNAPSHOTS; i++) {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count(), i);
+        EXPECT_EQ(result.value().snapshot_count().value(), i);
     }
 
     /* Snapshot (JSON) Renaming failed (Create directorys instead of json files to trigger rename error)*/
@@ -1537,7 +1565,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_hash){
     for (size_t i = 1; i < KVS_MAX_SNAPSHOTS; i++) {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count(), i);
+        EXPECT_EQ(result.value().snapshot_count().value(), i);
     }
 
     /* Hash Renaming failed (Create directorys instead of json files to trigger rename error)*/
@@ -1690,7 +1718,7 @@ TEST(kvs_flush, flush_failure_json_writer){
     cleanup_environment();
 }
 
-TEST(kvs_snapshot_count, snapshot_count){
+TEST(kvs_snapshot_count, snapshot_count_success){
     
     prepare_environment();
 
@@ -1701,14 +1729,39 @@ TEST(kvs_snapshot_count, snapshot_count){
     /* Create empty Test-Snapshot Files */
     for (size_t i = 1; i <= KVS_MAX_SNAPSHOTS; i++) {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
-        EXPECT_EQ(result.value().snapshot_count(), i);
+        auto count = result.value().snapshot_count();
+        EXPECT_TRUE(count);
+        EXPECT_EQ(count.value(), i);
     }
     /* Test maximum capacity */
     std::ofstream(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS + 1) + ".json") << "{}";
-    EXPECT_EQ(result.value().snapshot_count(), KVS_MAX_SNAPSHOTS);
-    
+    auto count = result.value().snapshot_count();
+    EXPECT_TRUE(count);
+    EXPECT_EQ(count.value(), KVS_MAX_SNAPSHOTS);
+
     cleanup_environment();
 }
+
+TEST(kvs_snapshot_count, snapshot_count_invalid){
+    prepare_environment();
+
+    auto kvs = Kvs::open(instance_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    ASSERT_TRUE(kvs);
+    kvs.value().flush_on_exit = false;
+
+    /* Mock Filesystem */
+    score::filesystem::Filesystem mock_filesystem = score::filesystem::CreateMockFileSystem();
+    auto standard_mock = std::dynamic_pointer_cast<score::filesystem::StandardFilesystemMock>(mock_filesystem.standard);
+    ASSERT_NE(standard_mock, nullptr);
+    EXPECT_CALL(*standard_mock, Exists(::testing::_))
+        .WillOnce(::testing::Return(score::Result<bool>(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRetrieveStatus))));
+    kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
+
+    auto result = kvs.value().snapshot_count();
+    EXPECT_FALSE(result);
+    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::PhysicalStorageFailure);
+}
+
 
 TEST(kvs_snapshot_restore, snapshot_restore_success){
 
@@ -1809,6 +1862,28 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_mutex){
     cleanup_environment();
 }
 
+TEST(kvs_snapshot_restore, snapshot_restore_failure_snapshot_count){
+
+    prepare_environment();
+
+    auto kvs = Kvs::open(instance_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    ASSERT_TRUE(kvs);
+    kvs.value().flush_on_exit = false;
+
+    /* Mock Filesystem */
+    score::filesystem::Filesystem mock_filesystem = score::filesystem::CreateMockFileSystem();
+    auto standard_mock = std::dynamic_pointer_cast<score::filesystem::StandardFilesystemMock>(mock_filesystem.standard);
+    ASSERT_NE(standard_mock, nullptr);
+    EXPECT_CALL(*standard_mock, Exists(::testing::_))
+        .WillOnce(::testing::Return(score::Result<bool>(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRetrieveStatus))));
+    kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
+
+    auto result = kvs.value().snapshot_restore(1);
+    EXPECT_FALSE(result);
+
+    cleanup_environment();
+}
+
 TEST(kvs_snapshot_max_count, snapshot_max_count){
     
     prepare_environment();
@@ -1821,7 +1896,7 @@ TEST(kvs_snapshot_max_count, snapshot_max_count){
     cleanup_environment();
 }
 
-TEST(kvs_get_filename, get_kvs_filename){
+TEST(kvs_get_filename, get_kvs_filename_success){
     
     prepare_environment();
 
@@ -1829,14 +1904,49 @@ TEST(kvs_get_filename, get_kvs_filename){
     ASSERT_TRUE(result);
     result.value().flush_on_exit = false;
 
+    /* Generate Testfiles */
+    for (size_t i = 0; i < KVS_MAX_SNAPSHOTS; i++) {
+        std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
+    }
+
     for(int i = 0; i< KVS_MAX_SNAPSHOTS; i++) {
-        EXPECT_EQ(result.value().get_kvs_filename(i), filename_prefix + "_" + std::to_string(i) + ".json");
+        auto filename = result.value().get_kvs_filename(SnapshotId(i));
+        EXPECT_TRUE(filename);
+        EXPECT_EQ(filename.value().CStr(), filename_prefix + "_" + std::to_string(i) + ".json");
     }
     
     cleanup_environment();
 }
 
-TEST(kvs_get_filename, get_kvs_hash_filename){
+TEST(kvs_get_filename, get_kvs_filename_failure){
+    
+    prepare_environment();
+
+    auto kvs = Kvs::open(instance_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    ASSERT_TRUE(kvs);
+    kvs.value().flush_on_exit = false;
+
+    /* Testfiles not available */
+    auto result = kvs.value().get_kvs_filename(SnapshotId(1));
+    EXPECT_FALSE(result);
+    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::FileNotFound);
+
+    /* Filesystem exists error */
+    /* Mock Filesystem */
+    score::filesystem::Filesystem mock_filesystem = score::filesystem::CreateMockFileSystem();
+    auto standard_mock = std::dynamic_pointer_cast<score::filesystem::StandardFilesystemMock>(mock_filesystem.standard);
+    ASSERT_NE(standard_mock, nullptr);
+    EXPECT_CALL(*standard_mock, Exists(::testing::_))
+        .WillOnce(::testing::Return(score::Result<bool>(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRetrieveStatus))));
+    kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
+
+    result = kvs.value().get_kvs_filename(SnapshotId(1));
+    EXPECT_FALSE(result);
+
+    cleanup_environment();
+}
+
+TEST(kvs_get_filename, get_hashname_success){
     
     prepare_environment();
 
@@ -1844,12 +1954,50 @@ TEST(kvs_get_filename, get_kvs_hash_filename){
     ASSERT_TRUE(result);
     result.value().flush_on_exit = false;
 
-    for(int i = 0; i< KVS_MAX_SNAPSHOTS; i++) {
-        EXPECT_EQ(result.value().get_kvs_hash_filename(i), filename_prefix + "_" + std::to_string(i) + ".hash");
+    /* Generate Testfiles */
+    for (size_t i = 0; i < KVS_MAX_SNAPSHOTS; i++) {
+        std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
     }
+
+    for(int i = 0; i< KVS_MAX_SNAPSHOTS; i++) {
+        auto hashname = result.value().get_hash_filename(SnapshotId(i));
+        system("ls -l ./data_folder/");
+        EXPECT_TRUE(hashname);
+        EXPECT_EQ(hashname.value().CStr(), filename_prefix + "_" + std::to_string(i) + ".hash");
+    }
+    
+    cleanup_environment();
+}
+
+TEST(kvs_get_filename, get_hashname_failure){
+    
+    prepare_environment();
+
+    auto kvs = Kvs::open(instance_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    ASSERT_TRUE(kvs);
+    kvs.value().flush_on_exit = false;
+
+    /* Testfiles not available */
+    auto result = kvs.value().get_hash_filename(SnapshotId(1));
+    EXPECT_FALSE(result);
+    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::FileNotFound);
+
+    /* Filesystem exists error */
+    /* Mock Filesystem */
+    score::filesystem::Filesystem mock_filesystem = score::filesystem::CreateMockFileSystem();
+    auto standard_mock = std::dynamic_pointer_cast<score::filesystem::StandardFilesystemMock>(mock_filesystem.standard);
+    ASSERT_NE(standard_mock, nullptr);
+    EXPECT_CALL(*standard_mock, Exists(::testing::_))
+        .WillOnce(::testing::Return(score::Result<bool>(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRetrieveStatus))));
+    kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
+
+    result = kvs.value().get_hash_filename(SnapshotId(1));
+    EXPECT_FALSE(result);
 
     cleanup_environment();
 }
+
+
 
 TEST(kvs_destructor, destructor) {
 

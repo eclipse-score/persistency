@@ -31,6 +31,7 @@ cc_test(
         "//:kvs_cpp",
         "@googletest//:gtest_main",
         "@score-baselibs//score/filesystem:filesystem",
+        "@score-baselibs//score/filesystem:mock",
         "@score-baselibs//score/json",
         "@score-baselibs//score/json:mock",
         "@score-baselibs//score/memory:string_comparison_adaptor",

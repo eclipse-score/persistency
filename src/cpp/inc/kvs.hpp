@@ -252,7 +252,7 @@ private:
  * - `snapshot_max_count`: Retrieves the maximum number of snapshots allowed.
  * - `snapshot_restore`: Restores the KVS from a specified snapshot.
  * - `get_kvs_filename`: Retrieves the filename associated with a snapshot.
- * - `get_kvs_hash_filename`: Retrieves the hash filename associated with a snapshot.
+ * - `get_hash_filename`: Retrieves the hash filename associated with a snapshot.
  * 
  * Private Members:
  * - `kvs_mutex`: A mutex for ensuring thread safety.
@@ -324,7 +324,7 @@ class Kvs final {
          *                 - OpenNeedKvs::Required: The KVS must already exist.
          *                 - OpenNeedKvs::Optional: An empty KVS will be used if no KVS exists.
          * @param dir The directory path where the KVS files are located. It is passed as an rvalue reference to avoid unnecessary copying.
-         *            Important: It needs to end with "/" to be a valid directory path.
+         *            Use "" or "." for the current directory.
          * @return A Result object containing either:
          *         - A Kvs object if the operation is successful.
          *         - An ErrorCode if an error occurs during the operation.
@@ -478,9 +478,11 @@ class Kvs final {
         /**
          * @brief Retrieves the number of snapshots currently stored in the key-value store.
          * 
-         * @return The total count of snapshots as a size_t value.
+         * @return A score::Result object that indicates the success or failure of the operation.
+         *         - On success: The total count of snapshots as a size_t value.
+         *         - On failure: Returns an ErrorCode describing the error.
          */
-        size_t snapshot_count() const;
+        score::Result<size_t> snapshot_count() const;
 
 
         /**
@@ -513,9 +515,11 @@ class Kvs final {
          * @brief Retrieves the filename associated with a given snapshot ID in the key-value store.
          * 
          * @param snapshot_id The identifier of the snapshot for which the filename is to be retrieved.
-         * @return A String with the filename associated with the snapshot ID.
+         * @return score::ResultBlank 
+         *         - On success: A score::filesystem::Path with the filename (path) associated with the snapshot ID.
+         *         - On failure: An error code describing the reason for the failure.
          */
-        std::string get_kvs_filename(const SnapshotId& snapshot_id) const;
+        score::Result<score::filesystem::Path> get_kvs_filename(const SnapshotId& snapshot_id) const;
 
 
         /**
@@ -526,9 +530,11 @@ class Kvs final {
          * store metadata or integrity information for the snapshot.
          * 
          * @param snapshot_id The identifier of the snapshot for which the hash filename is requested.
-         * @return A String with the filename of the hash file associated with the snapshot ID.
+         * @return score::ResultBlank 
+         *         - On success: A score::filesystem::Path with the filename (path) of the hash file associated with the snapshot ID.
+         *         - On failure: An error code describing the reason for the failure.
          */
-        std::string get_kvs_hash_filename(const SnapshotId& snapshot_id) const;
+        score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const;
 
     private:
         /* Private constructor to prevent direct instantiation */
@@ -545,17 +551,20 @@ class Kvs final {
         std::unordered_map<std::string, KvsValue> default_values;
     
         /* Filename prefix */
-        std::string filename_prefix;
+        score::filesystem::Path filename_prefix;
     
         /* Flush on exit flag for written Keys */
         std::atomic<bool> flush_on_exit;
+
+        /* Filesystem handling */
+        std::unique_ptr<score::filesystem::Filesystem> filesystem;
 
         /* Json handling */
         std::unique_ptr<score::json::IJsonParser> parser;
         std::unique_ptr<score::json::IJsonWriter> writer;
 
         score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
-        score::Result<std::unordered_map<std::string, KvsValue>> open_json(const std::string& prefix, OpenJsonNeedFile need_file);
+        score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix, OpenJsonNeedFile need_file);
         score::ResultBlank write_json_data(const std::string& buf);
 };
 
@@ -589,9 +598,8 @@ public:
     /**
      * @brief Specify the directory where KVS files are stored.
      * @param dir The directory path as a string.
-     * Important: The directory path must end with a '/' to be valid.
-     * Use "./" for the current directory.
-     *   
+     * Use "" or "." for the current directory.
+     *
      * @return Reference to this builder (for chaining).
      */
     KvsBuilder& dir(std::string&& dir_path);
@@ -603,7 +611,7 @@ public:
      *
      * @return A score::Result<Kvs> containing the opened store or an ErrorCode.
      */
-    score::Result<Kvs> build() const;
+    score::Result<Kvs> build();
 
 private:
     InstanceId                         instance_id;   ///< ID of the KVS instance

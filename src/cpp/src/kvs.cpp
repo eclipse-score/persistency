@@ -396,9 +396,6 @@ std::string_view MyErrorDomain::MessageFor(score::result::ErrorCode const& code)
         case MyErrorCode::InvalidValueType:
             msg = "Invalid value type";
             break;
-        case MyErrorCode::InvalidArgument:
-            msg = "Invalid argument";
-            break;
         default:
             msg = "Unknown Error!";
             break;
@@ -437,20 +434,20 @@ KvsBuilder& KvsBuilder::dir(std::string&& dir_path) {
 }
 
 
-score::Result<Kvs> KvsBuilder::build() const {
+score::Result<Kvs> KvsBuilder::build() {
     score::Result<Kvs> result = score::MakeUnexpected(MyErrorCode::UnmappedError);
 
-    /* Check if directory argument is valid */
-    if (directory.empty() || directory.back() != '/') {
-        result = score::MakeUnexpected(MyErrorCode::InvalidArgument);
-    } else {
-        result = Kvs::open(
-            instance_id,
-            need_defaults ? OpenNeedDefaults::Required : OpenNeedDefaults::Optional,
-            need_kvs      ? OpenNeedKvs::Required      : OpenNeedKvs::Optional,
-            std::move(directory)
-        );
+    /* Use current directory if empty */
+    if ("" == directory) {
+        directory = "./";
     }
+    
+    result = Kvs::open(
+        instance_id,
+        need_defaults ? OpenNeedDefaults::Required : OpenNeedDefaults::Optional,
+        need_kvs      ? OpenNeedKvs::Required      : OpenNeedKvs::Optional,
+        std::move(directory)
+    );
     
     return result;
 }
@@ -465,6 +462,7 @@ Kvs::~Kvs(){
 
 Kvs::Kvs()
     : flush_on_exit(false)
+    , filesystem(std::make_unique<score::filesystem::Filesystem>(score::filesystem::FilesystemFactory{}.CreateInstance())) /* Create Filesystem instance, noexcept call */
     , parser(std::make_unique<score::json::JsonParser>())
     , writer(std::make_unique<score::json::JsonWriter>())
 {
@@ -473,6 +471,7 @@ Kvs::Kvs()
 Kvs::Kvs(Kvs&& other) noexcept
     : filename_prefix(std::move(other.filename_prefix))
     , flush_on_exit(other.flush_on_exit.load(std::memory_order_relaxed))
+    , filesystem(std::move(other.filesystem))
     , parser(std::move(other.parser)) /* Not absolutely necessary, because a new JSON writer/parser object would also be okay*/
     , writer(std::move(other.writer))
 {
@@ -509,6 +508,7 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
         }
         default_values = std::move(other.default_values);
 
+        filesystem = std::move(other.filesystem);
         /* Transfer ownership of JSON parser and writer
             Not absolutely necessary, because a new JSON writer/parser object would also be okay*/
         parser = std::move(other.parser);
@@ -556,17 +556,17 @@ score::Result<std::unordered_map<std::string, KvsValue>> Kvs::parse_json_data(co
 }
 
 /* Open and read JSON File */
-score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const string& prefix, OpenJsonNeedFile need_file)
+score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const score::filesystem::Path& prefix, OpenJsonNeedFile need_file)
 {   
-    string json_file = prefix + ".json";
-    string hash_file = prefix + ".hash";
+    score::filesystem::Path json_file = prefix.Native() + ".json";
+    score::filesystem::Path hash_file = prefix.Native() + ".hash";
     string data;
     bool error = false; /* Error flag */
     bool new_kvs = false; /* Flag to check if new KVS file is created*/
     score::Result<std::unordered_map<string, KvsValue>> result = score::MakeUnexpected(MyErrorCode::UnmappedError);
     
     /* Read JSON file */
-    ifstream in(json_file);
+    ifstream in(json_file.CStr());
     if (!in) {
         if (need_file == OpenJsonNeedFile::Required) {
             cerr << "error: file " << json_file << " could not be read" << endl;
@@ -585,7 +585,7 @@ score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const string&
 
     /* Verify JSON Hash */
     if((!error) && (!new_kvs)){
-        ifstream hin(hash_file, ios::binary);
+        ifstream hin(hash_file.CStr(), ios::binary);
         if (!hin) {
             cerr << "error: hash file " << hash_file << " could not be read" << endl;
             error = true;
@@ -621,11 +621,12 @@ score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const string&
 /* Open KVS Instance */
 score::Result<Kvs> Kvs::open(const InstanceId& instance_id, OpenNeedDefaults need_defaults, OpenNeedKvs need_kvs, const std::string&& dir)
 {
-    const string filename_default = dir + "kvs_" + to_string(instance_id.id) + "_default";
-    const string filename_prefix = dir + "kvs_" + to_string(instance_id.id);
-    const string filename_kvs = filename_prefix + "_0";
-
     score::Result<Kvs> result = score::MakeUnexpected(MyErrorCode::UnmappedError); /* Redundant initialization needed, since Resul<KVS> would call the implicitly-deleted default constructor of KVS */
+
+    score::filesystem::Path base_path(dir);
+    score::filesystem::Path filename_prefix = base_path / ("kvs_" + std::to_string(instance_id.id));
+    const score::filesystem::Path filename_default = filename_prefix.Native() + "_default";
+    const score::filesystem::Path filename_kvs = filename_prefix.Native() + "_0";
     
     Kvs kvs; /* Create KVS instance */
     auto default_res = kvs.open_json(
@@ -826,23 +827,21 @@ score::ResultBlank Kvs::remove_key(const string_view key) {
 score::ResultBlank Kvs::write_json_data(const std::string& buf)
 {
     score::ResultBlank result = score::MakeUnexpected(MyErrorCode::UnmappedError);
-    const std::string fn_json = filename_prefix + "_0.json";
-    score::filesystem::Path json_path{fn_json};
+    score::filesystem::Path json_path{filename_prefix.Native() + "_0.json"};
     score::filesystem::Path dir = json_path.ParentPath();
     if  (!dir.Empty()) {
-        score::filesystem::Filesystem fs = score::filesystem::FilesystemFactory{}.CreateInstance(); /* noexcept call*/
-        const auto create_path_res = fs.standard->CreateDirectories(dir);
+        const auto create_path_res = filesystem->standard->CreateDirectories(dir);
         if(!create_path_res.has_value()) {
             result = score::MakeUnexpected(MyErrorCode::PhysicalStorageFailure);
         } else {
-            std::ofstream out(fn_json, std::ios::binary);
+            std::ofstream out(json_path.CStr(), std::ios::binary);
             if (!out.write(buf.data(), buf.size())) {
                 result = score::MakeUnexpected(MyErrorCode::PhysicalStorageFailure);
             } else {
                 /* Write Hash File */
                 std::array<uint8_t, 4> hash_bytes = get_hash_bytes(buf);
-                const std::string fn_hash = filename_prefix + "_0.hash";
-                std::ofstream hout(fn_hash, std::ios::binary);
+                score::filesystem::Path fn_hash = filename_prefix.Native() + "_0.hash";
+                std::ofstream hout(fn_hash.CStr(), std::ios::binary);
                 if (!hout.write(reinterpret_cast<const char*>(hash_bytes.data()), hash_bytes.size())) {
                     result = score::MakeUnexpected(MyErrorCode::PhysicalStorageFailure);
                 } else {
@@ -851,8 +850,8 @@ score::ResultBlank Kvs::write_json_data(const std::string& buf)
             }
         }
     } else {
-        std::cerr << "Failed to create directory for KVS file '" << fn_json << "'\n";
-        result = score::MakeUnexpected(MyErrorCode::UnmappedError); /* Unmapped, because this error shall not occur on runtime but only in unittests since the argument is passed by a const variable*/
+        std::cerr << "Failed to create directory for KVS file '" << json_path.CStr() << "'\n";
+        result = score::MakeUnexpected(MyErrorCode::PhysicalStorageFailure);
     }
 
     return result;
@@ -908,16 +907,30 @@ score::ResultBlank Kvs::flush() {
 }
 
 /* Retrieve the snapshot count*/
-size_t Kvs::snapshot_count() const {
+score::Result<size_t> Kvs::snapshot_count() const {
+    score::Result<size_t> result = score::MakeUnexpected(MyErrorCode::UnmappedError);
     size_t count = 0;
+    bool error = false;
     for (size_t idx = 1; idx <= KVS_MAX_SNAPSHOTS; ++idx) {
-        const string fname = filename_prefix + "_" + to_string(idx) + ".json";
-        if (!std::ifstream(fname)) {
+        const score::filesystem::Path fname = filename_prefix.Native() + "_" + to_string(idx) + ".json";
+        const auto fname_exists_res = filesystem->standard->Exists(fname);
+        if (fname_exists_res) {
+            if(false == fname_exists_res.value()) {
+                break;
+            }
+        } else{
+            error = true;
             break;
         }
         count = idx;
     }
-    return count;
+    if (error) {
+        result = score::MakeUnexpected(MyErrorCode::PhysicalStorageFailure);
+    } else {
+        result = count;
+    }
+
+    return result;
 }
 
 /* Retrieve the max snapshot count*/
@@ -932,14 +945,14 @@ score::ResultBlank Kvs::snapshot_rotate() {
     if (lock.owns_lock()) {
         bool error = false;
         for (size_t idx = KVS_MAX_SNAPSHOTS; idx > 0; --idx) {
-            const string hash_old = filename_prefix + "_" + to_string(idx - 1) + ".hash";
-            const string hash_new = filename_prefix + "_" + to_string(idx)     + ".hash";
-            const string snap_old = filename_prefix + "_" + to_string(idx - 1) + ".json";
-            const string snap_new = filename_prefix + "_" + to_string(idx)     + ".json";
+            score::filesystem::Path hash_old = filename_prefix.Native() + "_" + to_string(idx - 1) + ".hash";
+            score::filesystem::Path hash_new = filename_prefix.Native() + "_" + to_string(idx)     + ".hash";
+            score::filesystem::Path snap_old = filename_prefix.Native() + "_" + to_string(idx - 1) + ".json";
+            score::filesystem::Path snap_new = filename_prefix.Native() + "_" + to_string(idx)     + ".json";
 
             cout << "rotating: " << snap_old << " -> " << snap_new << endl;
             /* Rename hash */
-            int32_t hash_rename = std::rename(hash_old.c_str(), hash_new.c_str());
+            int32_t hash_rename = std::rename(hash_old.CStr(), hash_new.CStr());
             if (0 != hash_rename) {
                 if (errno != ENOENT) {
                     error = true;
@@ -949,7 +962,7 @@ score::ResultBlank Kvs::snapshot_rotate() {
             }
             if(!error){
                 /* Rename snapshot */
-                int32_t snap_rename = std::rename(snap_old.c_str(), snap_new.c_str());
+                int32_t snap_rename = std::rename(snap_old.CStr(), snap_new.CStr());
                 if (0 != snap_rename) {
                     if (errno != ENOENT) {
                         error = true;
@@ -977,23 +990,29 @@ score::ResultBlank Kvs::snapshot_restore(const SnapshotId& snapshot_id) {
     score::ResultBlank result = score::MakeUnexpected(MyErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock()) {
-        /* Fail if the snapshot ID is the current KVS */
-        if (0 == snapshot_id.id) {
-            result = score::MakeUnexpected(MyErrorCode::InvalidSnapshotId);
-        }else if (snapshot_count() < snapshot_id.id) {
-            result = score::MakeUnexpected(MyErrorCode::InvalidSnapshotId);
+        auto snapshot_count_res = snapshot_count();
+        if (!snapshot_count_res) {
+            result = score::MakeUnexpected(static_cast<MyErrorCode>(*snapshot_count_res.error()));
         }else{
-            auto data_res = open_json(
-                filename_prefix + "_" + to_string(snapshot_id.id),
-                OpenJsonNeedFile::Required);
-            if (!data_res) {
-                result = score::MakeUnexpected(static_cast<MyErrorCode>(*data_res.error()));
+            /* Fail if the snapshot ID is the current KVS */
+            if (0 == snapshot_id.id) {
+                result = score::MakeUnexpected(MyErrorCode::InvalidSnapshotId);
+            }else if (snapshot_count_res.value() < snapshot_id.id) {
+                result = score::MakeUnexpected(MyErrorCode::InvalidSnapshotId);
             }else{
-                kvs = std::move(data_res.value());
-                result = score::ResultBlank{};
+                score::filesystem::Path restore_path = filename_prefix.Native() + "_" + to_string(snapshot_id.id);
+                auto data_res = open_json(
+                    restore_path,
+                    OpenJsonNeedFile::Required);
+                if (!data_res) {
+                    result = score::MakeUnexpected(static_cast<MyErrorCode>(*data_res.error()));
+                }else{
+                    kvs = std::move(data_res.value());
+                    result = score::ResultBlank{};
+                }
             }
         }
-    }else{
+    } else {
         result = score::MakeUnexpected(MyErrorCode::MutexLockFailed);
     }
     
@@ -1001,13 +1020,37 @@ score::ResultBlank Kvs::snapshot_restore(const SnapshotId& snapshot_id) {
 }
 
 /* Get the filename for a snapshot*/
-std::string Kvs::get_kvs_filename(const SnapshotId& snapshot_id) const {
-    std::string filename = filename_prefix + "_" + std::to_string(snapshot_id.id) + ".json";
-    return filename;
+score::Result<score::filesystem::Path> Kvs::get_kvs_filename(const SnapshotId& snapshot_id) const {
+    score::filesystem::Path filename = filename_prefix.Native() + "_" + std::to_string(snapshot_id.id) + ".json";
+    score::Result<score::filesystem::Path> result = score::MakeUnexpected(MyErrorCode::UnmappedError);
+
+    const auto fname_exists_res = filesystem->standard->Exists(filename);
+    if (fname_exists_res) {
+        if (false == fname_exists_res.value()) {
+            result = score::MakeUnexpected(MyErrorCode::FileNotFound);
+        } else {
+            result = filename;
+        }
+    } else {
+        result = score::MakeUnexpected(static_cast<MyErrorCode>(*fname_exists_res.error()));
+    }
+    return result;
 }
 
 /* Get the hash filename for a snapshot*/
-std::string Kvs::get_kvs_hash_filename(const SnapshotId& snapshot_id) const {
-    std::string filename = filename_prefix + "_" + std::to_string(snapshot_id.id) + ".hash";
-    return filename;
+score::Result<score::filesystem::Path> Kvs::get_hash_filename(const SnapshotId& snapshot_id) const {
+    score::filesystem::Path filename = filename_prefix.Native() + "_" + std::to_string(snapshot_id.id) + ".hash";
+    score::Result<score::filesystem::Path> result = score::MakeUnexpected(MyErrorCode::UnmappedError);
+
+    const auto fname_exists_res = filesystem->standard->Exists(filename);
+    if (fname_exists_res) {
+        if (false == fname_exists_res.value()) {
+            result = score::MakeUnexpected(MyErrorCode::FileNotFound);
+        } else {
+            result = filename;
+        }
+    } else {
+        result = score::MakeUnexpected(static_cast<MyErrorCode>(*fname_exists_res.error()));
+    }
+    return result;
 }
