@@ -15,10 +15,11 @@
 
 cc_library(
     name = "kvs_cpp",
-    srcs = glob(["src/*.cpp"]),
-    hdrs = glob([
-        "inc/**/*.hpp",
-    ]),
+    srcs = [
+        "inc/internal/kvs_helper.hpp",
+        "src/kvs.cpp",
+    ],
+    hdrs = ["inc/kvs.hpp"],
     includes = ["inc"],
     visibility = ["//:__pkg__"],
     deps = [

@@ -32,9 +32,7 @@ cc_test(
         "@googletest//:gtest_main",
         "@score-baselibs//score/filesystem:filesystem",
         "@score-baselibs//score/filesystem:mock",
-        "@score-baselibs//score/json",
         "@score-baselibs//score/json:mock",
-        "@score-baselibs//score/memory:string_comparison_adaptor",
         "@score-baselibs//score/result:result",
     ],
 )
@@ -44,17 +42,13 @@ cc_test(
     size = "small",
     srcs = [
         "bm_kvs.cpp",
-        "//src/cpp:kvs_srcs",
-    ],
-    copts = [
-        "-Isrc/cpp/inc",
     ],
     visibility = ["//:__pkg__"],
     deps = [
+        "//:kvs_cpp",
         "@google_benchmark//:benchmark",
         "@score-baselibs//score/filesystem:filesystem",
-        "@score-baselibs//score/json:interface",
-        "@score-baselibs//score/json:json_parser",
+        "@score-baselibs//score/json",
         "@score-baselibs//score/result:result",
     ],
 )
