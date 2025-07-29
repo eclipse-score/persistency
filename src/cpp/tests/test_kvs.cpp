@@ -1374,7 +1374,8 @@ TEST(kvs_write_json_data, write_json_data_success){
     auto kvs = Kvs::open(InstanceId(instance_id), OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
     ASSERT_TRUE(kvs);
 
-    auto result = kvs->write_json_data(filename_prefix, json_test_data);
+    kvs->filename_prefix = filename_prefix; /* Set the filename prefix to the test prefix */
+    auto result = kvs->write_json_data(json_test_data);
     EXPECT_TRUE(result);
     EXPECT_TRUE(std::filesystem::exists(kvs_prefix + ".json"));
     EXPECT_TRUE(std::filesystem::exists(kvs_prefix + ".hash"));
@@ -1410,8 +1411,8 @@ TEST(kvs_write_json_data, write_json_data_failure){
 
     auto kvs = Kvs::open(InstanceId(instance_id), OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
     ASSERT_TRUE(kvs);
-
-    auto result = kvs->write_json_data(unwritable_dir + "/kvs_" + std::to_string(instance), kvs_json);
+    kvs->filename_prefix = unwritable_dir + "/kvs_" + std::to_string(instance); /* Set the filename prefix to the test prefix */
+    auto result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
 
@@ -1420,7 +1421,8 @@ TEST(kvs_write_json_data, write_json_data_failure){
     out_hash << "data";
     out_hash.close();
     std::filesystem::permissions(kvs_prefix + ".hash", std::filesystem::perms::owner_read, std::filesystem::perm_options::replace);
-    result = kvs->write_json_data(filename_prefix, kvs_json);
+    kvs->filename_prefix = filename_prefix; /* Reset the filename prefix to the test prefix */
+    result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
 
@@ -1429,13 +1431,14 @@ TEST(kvs_write_json_data, write_json_data_failure){
     out_json << "data";
     out_json.close();
     std::filesystem::permissions(kvs_prefix + ".json", std::filesystem::perms::owner_read, std::filesystem::perm_options::replace);
-    result = kvs->write_json_data(filename_prefix, kvs_json);
+    kvs->filename_prefix = filename_prefix; /* Reset the filename prefix to the test prefix */
+    result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
 
     /* Test if path argument is missing parent path (will only occur if semantic errors will be done in flush() )*/
-    const std::string prefix = "no_parent_path";
-    result = kvs->write_json_data(prefix, kvs_json);
+    kvs->filename_prefix =  "no_parent_path"; /* Set the filename prefix to the test prefix */
+    result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), MyErrorCode::UnmappedError);
 

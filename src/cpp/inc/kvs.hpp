@@ -556,7 +556,7 @@ class Kvs final {
 
         score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
         score::Result<std::unordered_map<std::string, KvsValue>> open_json(const std::string& prefix, OpenJsonNeedFile need_file);
-        score::ResultBlank write_json_data(const std::string& filename_prefix, const std::string& buf);
+        score::ResultBlank write_json_data(const std::string& buf);
 };
 
 

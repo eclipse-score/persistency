@@ -823,7 +823,7 @@ score::ResultBlank Kvs::remove_key(const string_view key) {
 }
 
 /* Helper Function to write JSON data to a file for flush process (also adds Hash file)*/
-score::ResultBlank Kvs::write_json_data(const std::string& filename_prefix, const std::string& buf)
+score::ResultBlank Kvs::write_json_data(const std::string& buf)
 {
     score::ResultBlank result = score::MakeUnexpected(MyErrorCode::UnmappedError);
     const std::string fn_json = filename_prefix + "_0.json";
@@ -899,7 +899,7 @@ score::ResultBlank Kvs::flush() {
             }else{
                 /* Write JSON Data */
                 std::string buf = std::move(buf_res.value());
-                result = write_json_data(filename_prefix, buf);
+                result = write_json_data(buf);
             }
         }
     }
