@@ -91,9 +91,6 @@ enum class MyErrorCode : score::result::ErrorCode {
 
     /* Invalid value type*/
     InvalidValueType,
-
-    /* Invalid argument*/
-    InvalidArgument
 };
 
 class MyErrorDomain final : public score::result::ErrorDomain
