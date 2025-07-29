@@ -157,7 +157,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_i32) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     ASSERT_TRUE(result);
-    EXPECT_EQ(result.value().getType(), KvsValue::Type::I32);
+    EXPECT_EQ(result.value().getType(), KvsValue::Type::i32);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_u32) {
@@ -167,7 +167,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_u32) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     ASSERT_TRUE(result);
-    EXPECT_EQ(result.value().getType(), KvsValue::Type::U32);
+    EXPECT_EQ(result.value().getType(), KvsValue::Type::u32);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_i64) {
@@ -177,7 +177,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_i64) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     ASSERT_TRUE(result);
-    EXPECT_EQ(result.value().getType(), KvsValue::Type::I64);
+    EXPECT_EQ(result.value().getType(), KvsValue::Type::i64);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_u64) {
@@ -187,7 +187,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_u64) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     ASSERT_TRUE(result);
-    EXPECT_EQ(result.value().getType(), KvsValue::Type::U64);
+    EXPECT_EQ(result.value().getType(), KvsValue::Type::u64);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_f64) {
@@ -197,7 +197,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_f64) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     ASSERT_TRUE(result);
-    EXPECT_EQ(result.value().getType(), KvsValue::Type::F64);
+    EXPECT_EQ(result.value().getType(), KvsValue::Type::f64);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_string) {
@@ -767,7 +767,7 @@ TEST(kvs_constructor, move_constructor) {
     EXPECT_TRUE(kvs_a.default_values.count("test_default"));
 
     const auto& val = kvs_a.kvs.at("test_kvs");
-    EXPECT_EQ(val.getType(), KvsValue::Type::F64);
+    EXPECT_EQ(val.getType(), KvsValue::Type::f64);
     EXPECT_EQ(std::get<double>(val.getValue()), 42.0);
 
     const auto& def = kvs_a.default_values.at("test_default");
@@ -1100,7 +1100,7 @@ TEST(kvs_get_value, get_value_success){
     /* Check if value is returned */
     auto get_value_result = result.value().get_value("kvs");
     ASSERT_TRUE(get_value_result);
-    EXPECT_EQ(get_value_result.value().getType(), KvsValue::Type::I32);
+    EXPECT_EQ(get_value_result.value().getType(), KvsValue::Type::i32);
     EXPECT_EQ(std::get<int32_t>(get_value_result.value().getValue()), 2);
 
     /* Check if default value is returned when no written key exists */
@@ -1113,7 +1113,7 @@ TEST(kvs_get_value, get_value_success){
     );
     get_value_result = result.value().get_value("kvs");
     ASSERT_TRUE(get_value_result);
-    EXPECT_EQ(get_value_result.value().getType(), KvsValue::Type::I32);
+    EXPECT_EQ(get_value_result.value().getType(), KvsValue::Type::i32);
     EXPECT_EQ(std::get<int32_t>(get_value_result.value().getValue()), 42);
 
     cleanup_environment();
@@ -1162,7 +1162,7 @@ TEST(kvs_get_default_value, get_default_value_success){
     /* Check if default value is returned */
     auto get_def_value_result = result.value().get_default_value("kvs");
     ASSERT_TRUE(get_def_value_result);
-    EXPECT_EQ(get_def_value_result.value().getType(), KvsValue::Type::I32);
+    EXPECT_EQ(get_def_value_result.value().getType(), KvsValue::Type::i32);
     EXPECT_EQ(std::get<int32_t>(get_def_value_result.value().getValue()), 42);
 
     cleanup_environment();
@@ -1286,13 +1286,13 @@ TEST(kvs_set_value, set_value_success){
     auto set_value_result = result.value().set_value("new_key", KvsValue(3.14));
     EXPECT_TRUE(set_value_result);
     EXPECT_TRUE(result.value().kvs.count("new_key"));
-    EXPECT_EQ(result.value().kvs.at("new_key").getType(), KvsValue::Type::F64);
+    EXPECT_EQ(result.value().kvs.at("new_key").getType(), KvsValue::Type::f64);
     EXPECT_DOUBLE_EQ(std::get<double>(result.value().kvs.at("new_key").getValue()), 3.14);
 
     /* Set a value with an existing key */
     set_value_result = result.value().set_value("kvs", KvsValue(2.718));
     EXPECT_TRUE(set_value_result);
-    EXPECT_EQ(result.value().kvs.at("kvs").getType(), KvsValue::Type::F64);
+    EXPECT_EQ(result.value().kvs.at("kvs").getType(), KvsValue::Type::f64);
     EXPECT_DOUBLE_EQ(std::get<double>(result.value().kvs.at("kvs").getValue()), 2.718);
 
     cleanup_environment();

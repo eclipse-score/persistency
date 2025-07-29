@@ -238,27 +238,27 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) {
     bool error = false;
     score::json::Object obj;
     switch (kv.getType()) {
-        case KvsValue::Type::I32: {
+        case KvsValue::Type::i32: {
             obj.emplace("t", score::json::Any(std::string("i32")));
             obj.emplace("v", score::json::Any(static_cast<int32_t>(std::get<int32_t>(kv.getValue()))));
             break;
         }
-        case KvsValue::Type::U32: {
+        case KvsValue::Type::u32: {
             obj.emplace("t", score::json::Any(std::string("u32")));
             obj.emplace("v", score::json::Any(static_cast<uint32_t>(std::get<uint32_t>(kv.getValue()))));
             break;
         }
-        case KvsValue::Type::I64: {
+        case KvsValue::Type::i64: {
             obj.emplace("t", score::json::Any(std::string("i64")));
             obj.emplace("v", score::json::Any(static_cast<int64_t>(std::get<int64_t>(kv.getValue()))));
             break;
         }
-        case KvsValue::Type::U64: {
+        case KvsValue::Type::u64: {
             obj.emplace("t", score::json::Any(std::string("u64")));
             obj.emplace("v", score::json::Any(static_cast<uint64_t>(std::get<uint64_t>(kv.getValue()))));
             break;
         }
-        case KvsValue::Type::F64: {
+        case KvsValue::Type::f64: {
             obj.emplace("t", score::json::Any(std::string("f64")));
             obj.emplace("v", score::json::Any(std::get<double>(kv.getValue())));
             break;

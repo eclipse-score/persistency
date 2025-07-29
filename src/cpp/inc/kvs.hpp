@@ -183,11 +183,11 @@ public:
 
     /* Enum to represent the type of the value*/
     enum class Type {
-        I32,
-        U32,
-        I64,
-        U64,
-        F64,
+        i32,
+        u32,
+        i64,
+        u64,
+        f64,
         Boolean,
         String,
         Null,
@@ -196,11 +196,11 @@ public:
     };
 
     /* Constructors for each type*/
-    explicit KvsValue(int32_t number) : value(number), type(Type::I32) {}
-    explicit KvsValue(uint32_t number) : value(number), type(Type::U32) {}
-    explicit KvsValue(int64_t number) : value(number), type(Type::I64) {}
-    explicit KvsValue(uint64_t number) : value(number), type(Type::U64) {}
-    explicit KvsValue(double number) : value(number), type(Type::F64) {}
+    explicit KvsValue(int32_t number) : value(number), type(Type::i32) {}
+    explicit KvsValue(uint32_t number) : value(number), type(Type::u32) {}
+    explicit KvsValue(int64_t number) : value(number), type(Type::i64) {}
+    explicit KvsValue(uint64_t number) : value(number), type(Type::u64) {}
+    explicit KvsValue(double number) : value(number), type(Type::f64) {}
     explicit KvsValue(bool boolean) : value(boolean), type(Type::Boolean) {}
     explicit KvsValue(const std::string& str) : value(str), type(Type::String) {}
     explicit KvsValue(std::nullptr_t) : value(nullptr), type(Type::Null) {}
