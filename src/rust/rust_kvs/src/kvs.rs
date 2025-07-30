@@ -259,7 +259,7 @@ impl<J: KvsBackend> KvsApi for GenericKvs<J> {
         Ok(())
     }
 
-    /// Reset a key-value pair in the storage to its default state
+    /// Reset a key-value pair in the storage to its initial state
     ///
     /// # Parameters
     ///    * 'key': Key being reset to default
@@ -983,7 +983,6 @@ mod tests {
     #[cfg_attr(miri, ignore)]
     #[test]
     fn test_kvs_reset_single() {
-        let instance_id = InstanceId::new(0);
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_string_lossy().to_string();
 
@@ -992,11 +991,15 @@ mod tests {
             format!("{}/kvs_0_default.json", dir_path.clone()),
         )
         .unwrap();
-        let kvs = KvsBuilder::<Kvs>::new(instance_id.clone())
-            .dir(dir_path.clone())
-            .need_defaults(true)
-            .build()
-            .unwrap();
+        let instance_id = InstanceId::new(0);
+
+        let kvs = Kvs::open(
+            instance_id.clone(),
+            OpenNeedDefaults::Optional,
+            OpenNeedKvs::Optional,
+            Some(dir_path.clone()),
+        )
+        .unwrap();
 
         let _ = kvs.set_value("number1", KvsValue::Number(987f64));
         let _ = kvs.reset_key("number1");
@@ -1019,5 +1022,28 @@ mod tests {
             kvs.reset_key("fail"),
             Err(ErrorCode::KeyDefaultNotFound)
         ));
+    }
+
+    #[test]
+    fn test_drop() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_string_lossy().to_string();
+
+        let instance_id = InstanceId::new(0);
+
+        let kvs = Kvs::open(
+            instance_id.clone(),
+            OpenNeedDefaults::Optional,
+            OpenNeedKvs::Optional,
+            Some(dir_path.clone()),
+        )
+        .unwrap();
+
+        kvs.flush_on_exit(false);
+        // Drop is called automatically, but we can check that flush_on_exit is set to false
+        assert!(
+            !kvs.flush_on_exit.load(std::sync::atomic::Ordering::Relaxed),
+            "Expected flush_on_exit to be false"
+        );
     }
 }
