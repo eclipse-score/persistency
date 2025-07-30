@@ -282,7 +282,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_format_invalid) {
     score::json::Any any_obj_type(std::move(obj_type));
     auto result = any_to_kvsvalue(any_obj_type);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 
     score::json::Object obj_value;
     obj_value.emplace("t", score::json::Any(std::string("bool")));
@@ -290,14 +290,14 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_format_invalid) {
     score::json::Any any_obj_value(std::move(obj_value));
     result = any_to_kvsvalue(any_obj_value);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_no_object) {
     score::json::Any any_bool(true);
     auto result = any_to_kvsvalue(any_bool);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_type_no_string) {
@@ -307,7 +307,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_type_no_string) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_type_invalid) {
@@ -317,7 +317,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_type_invalid) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_no_string_type) {
@@ -327,7 +327,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_no_string_type) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_i32){
@@ -337,7 +337,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_i32){
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_u32){
@@ -347,7 +347,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_u32){
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_i64){
@@ -357,7 +357,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_i64){
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_u64){
@@ -367,7 +367,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_u64){
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_f64){
@@ -377,7 +377,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_f64){
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_boolean){
@@ -387,7 +387,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_boolean){
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_string){
@@ -397,7 +397,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_string){
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_null){
@@ -407,7 +407,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_null){
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_array) {
@@ -417,7 +417,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_array) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_object) {
@@ -427,7 +427,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_object) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_array_with_invalid_element) {
@@ -449,7 +449,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_array_with_invalid_element) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_object_with_invalid_value) {
@@ -472,7 +472,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_object_with_invalid_value) {
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 /* Mock KvsValue for testing purposes (kvsvalue_to_any) */
@@ -611,7 +611,7 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_invalid) {
     BrokenKvsValue invalid;
     auto result = kvsvalue_to_any(invalid);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 
     /* Invalid values in array and object */
     KvsValue::Array array;
@@ -620,7 +620,7 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_invalid) {
     KvsValue array_invalid(array);
     result = kvsvalue_to_any(array_invalid);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 
     KvsValue::Object obj;
     obj.emplace("valid", KvsValue(42.0));
@@ -628,35 +628,35 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_invalid) {
     KvsValue obj_invalid(obj);
     result = kvsvalue_to_any(obj_invalid);
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
 TEST(kvs_MessageFor, MessageFor) {
    struct {
-        MyErrorCode code;
+        ErrorCode code;
         std::string_view expected_message;
     } test_cases[] = {
-        {MyErrorCode::UnmappedError,          "Error that was not yet mapped"},
-        {MyErrorCode::FileNotFound,           "File not found"},
-        {MyErrorCode::KvsFileReadError,       "KVS file read error"},
-        {MyErrorCode::KvsHashFileReadError,   "KVS hash file read error"},
-        {MyErrorCode::JsonParserError,        "JSON parser error"},
-        {MyErrorCode::JsonGeneratorError,     "JSON generator error"},
-        {MyErrorCode::PhysicalStorageFailure, "Physical storage failure"},
-        {MyErrorCode::IntegrityCorrupted,     "Integrity corrupted"},
-        {MyErrorCode::ValidationFailed,       "Validation failed"},
-        {MyErrorCode::EncryptionFailed,       "Encryption failed"},
-        {MyErrorCode::ResourceBusy,           "Resource is busy"},
-        {MyErrorCode::OutOfStorageSpace,      "Out of storage space"},
-        {MyErrorCode::QuotaExceeded,          "Quota exceeded"},
-        {MyErrorCode::AuthenticationFailed,   "Authentication failed"},
-        {MyErrorCode::KeyNotFound,            "Key not found"},
-        {MyErrorCode::KeyDefaultNotFound,     "Key default value not found"},
-        {MyErrorCode::SerializationFailed,    "Serialization failed"},
-        {MyErrorCode::InvalidSnapshotId,      "Invalid snapshot ID"},
-        {MyErrorCode::ConversionFailed,       "Conversion failed"},
-        {MyErrorCode::MutexLockFailed,        "Mutex failed"},
-        {MyErrorCode::InvalidValueType,       "Invalid value type"},
+        {ErrorCode::UnmappedError,          "Error that was not yet mapped"},
+        {ErrorCode::FileNotFound,           "File not found"},
+        {ErrorCode::KvsFileReadError,       "KVS file read error"},
+        {ErrorCode::KvsHashFileReadError,   "KVS hash file read error"},
+        {ErrorCode::JsonParserError,        "JSON parser error"},
+        {ErrorCode::JsonGeneratorError,     "JSON generator error"},
+        {ErrorCode::PhysicalStorageFailure, "Physical storage failure"},
+        {ErrorCode::IntegrityCorrupted,     "Integrity corrupted"},
+        {ErrorCode::ValidationFailed,       "Validation failed"},
+        {ErrorCode::EncryptionFailed,       "Encryption failed"},
+        {ErrorCode::ResourceBusy,           "Resource is busy"},
+        {ErrorCode::OutOfStorageSpace,      "Out of storage space"},
+        {ErrorCode::QuotaExceeded,          "Quota exceeded"},
+        {ErrorCode::AuthenticationFailed,   "Authentication failed"},
+        {ErrorCode::KeyNotFound,            "Key not found"},
+        {ErrorCode::KeyDefaultNotFound,     "Key default value not found"},
+        {ErrorCode::SerializationFailed,    "Serialization failed"},
+        {ErrorCode::InvalidSnapshotId,      "Invalid snapshot ID"},
+        {ErrorCode::ConversionFailed,       "Conversion failed"},
+        {ErrorCode::MutexLockFailed,        "Mutex failed"},
+        {ErrorCode::InvalidValueType,       "Invalid value type"},
     };
     for (const auto& test : test_cases) {
         SCOPED_TRACE(static_cast<int>(test.code));
@@ -691,11 +691,11 @@ TEST(kvs_kvsbuilder, kvsbuilder_build) {
     open() function should return an error, since the files are not available */
     auto result_build = builder.build();
     ASSERT_FALSE(result_build);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result_build.error()), MyErrorCode::KvsFileReadError); /* This error occurs in open_json and is passed through open()*/
+    EXPECT_EQ(static_cast<ErrorCode>(*result_build.error()), ErrorCode::KvsFileReadError); /* This error occurs in open_json and is passed through open()*/
     builder.need_defaults_flag(false);
     result_build = builder.build();
     ASSERT_FALSE(result_build);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result_build.error()), MyErrorCode::KvsFileReadError); /* This error occurs in open_json and is passed through open()*/
+    EXPECT_EQ(static_cast<ErrorCode>(*result_build.error()), ErrorCode::KvsFileReadError); /* This error occurs in open_json and is passed through open()*/
     builder.need_kvs_flag(false);
     result_build = builder.build();
     EXPECT_TRUE(result_build);
@@ -833,7 +833,7 @@ TEST(kvs_TEST, parse_json_data_failure) {
 
     auto result = kvs->parse_json_data("data_not_used_in_mocking");
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::JsonParserError);
+    EXPECT_EQ(result.error(), ErrorCode::JsonParserError);
 
 
     /* No Object returned Failure */
@@ -848,7 +848,7 @@ TEST(kvs_TEST, parse_json_data_failure) {
 
     result = kvs->parse_json_data("data_not_used_in_mocking");
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::JsonParserError);
+    EXPECT_EQ(result.error(), ErrorCode::JsonParserError);
 
 
     /* any_to_kvsvalue error */
@@ -868,7 +868,7 @@ TEST(kvs_TEST, parse_json_data_failure) {
 
     result = kvs->parse_json_data("data_not_used_in_mocking");
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), MyErrorCode::InvalidValueType); //error is passed from any_to_kvsvalue
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType); //error is passed from any_to_kvsvalue
 
     cleanup_environment();
 }
@@ -917,13 +917,13 @@ TEST(kvs_open_json, open_json_json_invalid) {
 
     auto result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Required);
     ASSERT_FALSE(result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::JsonParserError); /* Errorcode passed by parse json function*/
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::JsonParserError); /* Errorcode passed by parse json function*/
 
     /* JSON not existing */
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Required);
     ASSERT_FALSE(result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::KvsFileReadError);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::KvsFileReadError);
 
     cleanup_environment();
 }
@@ -941,19 +941,19 @@ TEST(kvs_open_json, open_json_hash_invalid) {
 
     auto result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Optional);
     ASSERT_FALSE(result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::ValidationFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::ValidationFailed);
 
     /* Hash not existing */
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
     result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Optional);
     ASSERT_FALSE(result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::KvsHashFileReadError);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::KvsHashFileReadError);
 
     /* JSON not existing */
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Required);
     ASSERT_FALSE(result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::KvsFileReadError);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::KvsFileReadError);
 
     cleanup_environment();
 }
@@ -1006,7 +1006,7 @@ TEST(kvs_reset, reset_failure){
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     auto reset_result = result.value().reset();
     EXPECT_FALSE(reset_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*reset_result.error()), MyErrorCode::MutexLockFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*reset_result.error()), ErrorCode::MutexLockFailed);
 
     cleanup_environment();
 }
@@ -1050,7 +1050,7 @@ TEST(kvs_get_all_keys, get_all_keys_failure){
 
     auto get_all_keys_result = result.value().get_all_keys();
     EXPECT_FALSE(get_all_keys_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*get_all_keys_result.error()), MyErrorCode::MutexLockFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*get_all_keys_result.error()), ErrorCode::MutexLockFailed);
 
     cleanup_environment();
 }
@@ -1090,7 +1090,7 @@ TEST(kvs_key_exists, key_exists_failure){
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     auto exists_result = result.value().key_exists("kvs");
     EXPECT_FALSE(exists_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*exists_result.error()), MyErrorCode::MutexLockFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*exists_result.error()), ErrorCode::MutexLockFailed);
 
     cleanup_environment();
 }
@@ -1139,7 +1139,7 @@ TEST(kvs_get_value, get_value_failure){
     /* Check if non-existing key returns error */
     auto get_value_result = result.value().get_value("non_existing_key");
     EXPECT_FALSE(get_value_result);
-    EXPECT_EQ(get_value_result.error(), MyErrorCode::KeyNotFound);
+    EXPECT_EQ(get_value_result.error(), ErrorCode::KeyNotFound);
 
     /* Mutex locked */
     result = Kvs::open(instance_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
@@ -1148,7 +1148,7 @@ TEST(kvs_get_value, get_value_failure){
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     get_value_result = result.value().get_value("kvs");
     EXPECT_FALSE(get_value_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*get_value_result.error()), MyErrorCode::MutexLockFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::MutexLockFailed);
 
     cleanup_environment();
 }
@@ -1188,7 +1188,7 @@ TEST(kvs_get_default_value, get_default_value_failure){
     /* Check if non-existing key returns error */
     auto get_def_value_result = result.value().get_default_value("non_existing_key");
     EXPECT_FALSE(get_def_value_result);
-    EXPECT_EQ(get_def_value_result.error(), MyErrorCode::KeyNotFound);
+    EXPECT_EQ(get_def_value_result.error(), ErrorCode::KeyNotFound);
 
     cleanup_environment();
 }
@@ -1234,7 +1234,7 @@ TEST(kvs_reset_key, reset_key_failure){
     /* Reset a non-existing key */
     auto reset_key_result = result.value().reset_key("non_existing_key");
     EXPECT_FALSE(reset_key_result);
-    EXPECT_EQ(reset_key_result.error(), MyErrorCode::KeyDefaultNotFound);
+    EXPECT_EQ(reset_key_result.error(), ErrorCode::KeyDefaultNotFound);
 
     /* Reset a key without default value */
     result = Kvs::open(instance_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
@@ -1243,7 +1243,7 @@ TEST(kvs_reset_key, reset_key_failure){
     result.value().default_values.clear(); // Clear default values to ensure no default value exists for "kvs"
     reset_key_result = result.value().reset_key("kvs");
     EXPECT_FALSE(reset_key_result);
-    EXPECT_EQ(reset_key_result.error(), MyErrorCode::KeyDefaultNotFound);
+    EXPECT_EQ(reset_key_result.error(), ErrorCode::KeyDefaultNotFound);
 
     /* Mutex locked */
     result = Kvs::open(instance_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
@@ -1252,7 +1252,7 @@ TEST(kvs_reset_key, reset_key_failure){
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     reset_key_result = result.value().reset_key("kvs");
     EXPECT_FALSE(reset_key_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*reset_key_result.error()), MyErrorCode::MutexLockFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*reset_key_result.error()), ErrorCode::MutexLockFailed);
 
     cleanup_environment();
 }
@@ -1319,7 +1319,7 @@ TEST(kvs_set_value, set_value_failure){
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     auto set_value_result = result.value().set_value("new_key", KvsValue(3.0));
     EXPECT_FALSE(set_value_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*set_value_result.error()), MyErrorCode::MutexLockFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*set_value_result.error()), ErrorCode::MutexLockFailed);
 
     cleanup_environment();
 }
@@ -1353,7 +1353,7 @@ TEST(kvs_remove_key, remove_key_failure){
     /* Remove a non-existing key */
     auto remove_key_result = result.value().remove_key("non_existing_key");
     EXPECT_FALSE(remove_key_result);
-    EXPECT_EQ(remove_key_result.error(), MyErrorCode::KeyNotFound);
+    EXPECT_EQ(remove_key_result.error(), ErrorCode::KeyNotFound);
 
     /* Mutex locked */
     result = Kvs::open(instance_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
@@ -1362,7 +1362,7 @@ TEST(kvs_remove_key, remove_key_failure){
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     remove_key_result = result.value().remove_key("kvs");
     EXPECT_FALSE(remove_key_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*remove_key_result.error()), MyErrorCode::MutexLockFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*remove_key_result.error()), ErrorCode::MutexLockFailed);
 
     cleanup_environment();
 }
@@ -1430,14 +1430,14 @@ TEST(kvs_write_json_data, write_json_data_filesystem_failure){
 
     auto result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
-    EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
+    EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
 
    
     /* Test if path argument is missing parent path (will only occur if semantic errors will be done in flush() )*/
     kvs->filename_prefix = score::filesystem::Path("no_parent_path"); /* Set the filename prefix to the test prefix */
     result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
-    EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
+    EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
 
     cleanup_environment();
 }
@@ -1458,7 +1458,7 @@ TEST(kvs_write_json_data, write_json_data_permissions_failure){
     kvs->filename_prefix = score::filesystem::Path(filename_prefix); /* Reset the filename prefix to the test prefix */
     auto result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
-    EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
+    EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
 
     /* Test writing to a non-writable kvs file */
     std::ofstream out_json(kvs_prefix + ".json");
@@ -1468,7 +1468,7 @@ TEST(kvs_write_json_data, write_json_data_permissions_failure){
     kvs->filename_prefix = score::filesystem::Path(filename_prefix); /* Reset the filename prefix to the test prefix */
     result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
-    EXPECT_EQ(result.error(), MyErrorCode::PhysicalStorageFailure);
+    EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
 
     cleanup_environment();
 
@@ -1549,7 +1549,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_json){
     std::filesystem::create_directory(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS) + ".json");
     auto rotate_result = result.value().snapshot_rotate();
     EXPECT_FALSE(rotate_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*rotate_result.error()), MyErrorCode::PhysicalStorageFailure);
+    EXPECT_EQ(static_cast<ErrorCode>(*rotate_result.error()), ErrorCode::PhysicalStorageFailure);
 
     cleanup_environment();
 }
@@ -1573,7 +1573,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_hash){
     std::filesystem::create_directory(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS) + ".hash");
     auto rotate_result = result.value().snapshot_rotate();
     EXPECT_FALSE(rotate_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*rotate_result.error()), MyErrorCode::PhysicalStorageFailure);
+    EXPECT_EQ(static_cast<ErrorCode>(*rotate_result.error()), ErrorCode::PhysicalStorageFailure);
     
     cleanup_environment();
 }
@@ -1590,7 +1590,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_mutex){
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     auto rotate_result = result.value().snapshot_rotate();
     EXPECT_FALSE(rotate_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*rotate_result.error()), MyErrorCode::MutexLockFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*rotate_result.error()), ErrorCode::MutexLockFailed);
 
     cleanup_environment();
 }
@@ -1657,7 +1657,7 @@ TEST(kvs_flush, flush_failure_mutex){
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     auto flush_result = result.value().flush();
     EXPECT_FALSE(flush_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*flush_result.error()), MyErrorCode::MutexLockFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::MutexLockFailed);
 
     cleanup_environment();
 }
@@ -1676,7 +1676,7 @@ TEST(kvs_flush, flush_failure_rotate_snapshots){
     auto flush_result = result.value().flush();
 
     EXPECT_FALSE(flush_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*flush_result.error()), MyErrorCode::PhysicalStorageFailure);
+    EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::PhysicalStorageFailure);
 
     cleanup_environment();
 }
@@ -1694,7 +1694,7 @@ TEST(kvs_flush, flush_failure_kvsvalue_invalid){
 
     auto flush_result_invalid = result.value().flush();
     EXPECT_FALSE(flush_result_invalid);
-    EXPECT_EQ(flush_result_invalid.error(), MyErrorCode::InvalidValueType);
+    EXPECT_EQ(flush_result_invalid.error(), ErrorCode::InvalidValueType);
 
     cleanup_environment();
 }
@@ -1714,7 +1714,7 @@ TEST(kvs_flush, flush_failure_json_writer){
     kvs->writer = std::move(mock_writer);
     auto result = kvs.value().flush();
     EXPECT_FALSE(result);
-    EXPECT_EQ(result.error(), MyErrorCode::JsonGeneratorError);
+    EXPECT_EQ(result.error(), ErrorCode::JsonGeneratorError);
 
     cleanup_environment();
 }
@@ -1760,7 +1760,7 @@ TEST(kvs_snapshot_count, snapshot_count_invalid){
 
     auto result = kvs.value().snapshot_count();
     EXPECT_FALSE(result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::PhysicalStorageFailure);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::PhysicalStorageFailure);
 }
 
 
@@ -1818,12 +1818,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_invalid_snapshot_id){
     /* Restore Snapshot ID 0 -> Current KVS*/
     auto restore_result = result.value().snapshot_restore(0);
     ASSERT_FALSE(restore_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*restore_result.error()), MyErrorCode::InvalidSnapshotId);
+    EXPECT_EQ(static_cast<ErrorCode>(*restore_result.error()), ErrorCode::InvalidSnapshotId);
 
     /* Restore Snapshot ID higher than snapshot_count (e.g. KVS_MAX_SNAPSHOTS +1) */
     restore_result = result.value().snapshot_restore(KVS_MAX_SNAPSHOTS + 1);
     ASSERT_FALSE(restore_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*restore_result.error()), MyErrorCode::InvalidSnapshotId);
+    EXPECT_EQ(static_cast<ErrorCode>(*restore_result.error()), ErrorCode::InvalidSnapshotId);
 
     cleanup_environment();
 }
@@ -1842,7 +1842,7 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_open_json){
 
     auto restore_result = result.value().snapshot_restore(1);
     EXPECT_FALSE(restore_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*restore_result.error()), MyErrorCode::ValidationFailed); /* passed by open_json*/
+    EXPECT_EQ(static_cast<ErrorCode>(*restore_result.error()), ErrorCode::ValidationFailed); /* passed by open_json*/
 
     cleanup_environment();
 }
@@ -1858,7 +1858,7 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_mutex){
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     auto restore_result = result.value().snapshot_restore(1);
     EXPECT_FALSE(restore_result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*restore_result.error()), MyErrorCode::MutexLockFailed);
+    EXPECT_EQ(static_cast<ErrorCode>(*restore_result.error()), ErrorCode::MutexLockFailed);
 
     cleanup_environment();
 }
@@ -1930,7 +1930,7 @@ TEST(kvs_get_filename, get_kvs_filename_failure){
     /* Testfiles not available */
     auto result = kvs.value().get_kvs_filename(SnapshotId(1));
     EXPECT_FALSE(result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::FileNotFound);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::FileNotFound);
 
     /* Filesystem exists error */
     /* Mock Filesystem */
@@ -1981,7 +1981,7 @@ TEST(kvs_get_filename, get_hashname_failure){
     /* Testfiles not available */
     auto result = kvs.value().get_hash_filename(SnapshotId(1));
     EXPECT_FALSE(result);
-    EXPECT_EQ(static_cast<MyErrorCode>(*result.error()), MyErrorCode::FileNotFound);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::FileNotFound);
 
     /* Filesystem exists error */
     /* Mock Filesystem */

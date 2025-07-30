@@ -37,7 +37,7 @@ namespace kvs
 {
 
 /* @brief */
-enum class MyErrorCode : score::result::ErrorCode {
+enum class ErrorCode : score::result::ErrorCode {
     /* Error that was not yet mapped*/
     UnmappedError,
 
@@ -109,7 +109,7 @@ public:
 };
 
 constexpr MyErrorDomain my_error_domain;
-score::result::Error MakeError(MyErrorCode code, std::string_view user_message = "") noexcept;
+score::result::Error MakeError(ErrorCode code, std::string_view user_message = "") noexcept;
 
 
 struct InstanceId {
