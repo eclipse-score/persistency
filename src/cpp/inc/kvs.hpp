@@ -90,7 +90,7 @@ enum class MyErrorCode : score::result::ErrorCode {
     MutexLockFailed,
 
     /* Invalid value type*/
-    InvalidValueType
+    InvalidValueType,
 };
 
 class MyErrorDomain final : public score::result::ErrorDomain
@@ -180,7 +180,11 @@ public:
 
     /* Enum to represent the type of the value*/
     enum class Type {
-        Number,
+        i32,
+        u32,
+        i64,
+        u64,
+        f64,
         Boolean,
         String,
         Null,
@@ -189,7 +193,11 @@ public:
     };
 
     /* Constructors for each type*/
-    explicit KvsValue(double number) : value(number), type(Type::Number) {}
+    explicit KvsValue(int32_t number) : value(number), type(Type::i32) {}
+    explicit KvsValue(uint32_t number) : value(number), type(Type::u32) {}
+    explicit KvsValue(int64_t number) : value(number), type(Type::i64) {}
+    explicit KvsValue(uint64_t number) : value(number), type(Type::u64) {}
+    explicit KvsValue(double number) : value(number), type(Type::f64) {}
     explicit KvsValue(bool boolean) : value(boolean), type(Type::Boolean) {}
     explicit KvsValue(const std::string& str) : value(str), type(Type::String) {}
     explicit KvsValue(std::nullptr_t) : value(nullptr), type(Type::Null) {}
@@ -200,13 +208,13 @@ public:
     Type getType() const { return type; }
 
     /* Access the underlying value (use std::get to retrieve the value)*/
-    const std::variant<double, bool, std::string, std::nullptr_t, Array, Object>& getValue() const {
+    const std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>& getValue() const {
         return value;
     }
 
 private:
     /* The underlying value*/
-    std::variant<double, bool, std::string, std::nullptr_t, Array, Object> value;
+    std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object> value;
 
     /* The type of the value*/
     Type type;
@@ -234,7 +242,6 @@ private:
  * - `reset_key`: Resets a key to its default value if available.
  * - `has_default_value`: Checks if a default value exists for a specific key.
  * - `set_value`: Sets the value for a specific key in the KVS.
- * - `set_default_value`: Sets a default value for a specific key.
  * - `remove_key`: Removes a specific key from the KVS.
  * - `flush`: Flushes the KVS to storage.
  * - `flush_default`: Flushes the default values to storage.
@@ -242,7 +249,7 @@ private:
  * - `snapshot_max_count`: Retrieves the maximum number of snapshots allowed.
  * - `snapshot_restore`: Restores the KVS from a specified snapshot.
  * - `get_kvs_filename`: Retrieves the filename associated with a snapshot.
- * - `get_kvs_hash_filename`: Retrieves the hash filename associated with a snapshot.
+ * - `get_hash_filename`: Retrieves the hash filename associated with a snapshot.
  * 
  * Private Members:
  * - `kvs_mutex`: A mutex for ensuring thread safety.
@@ -264,7 +271,7 @@ private:
  *
  *  int main() {
  *    // Open kvs
- *    auto open_res = KvsBuilder("Process_Name", 0)
+ *    auto open_res = KvsBuilder(0)
  *                        .need_defaults_flag(true)
  *                        .need_kvs_flag(true)
  *                        .build();
@@ -305,8 +312,6 @@ class Kvs final {
          * It allows the caller to specify whether default values and an existing KVS are required 
          * or optional during the opening process.
          * 
-         * @param process_name The name of the process that is opening the KVS. This is used to create a unique directory for the KVS instance.
-         *                     Important: It must be unique for each application to avoid conflicts.
          * @param id The instance ID of the KVS. This uniquely identifies the KVS instance.
          * @param need_defaults A flag of type OpenNeedDefaults indicating whether default values 
          *                      are required or optional.
@@ -315,6 +320,8 @@ class Kvs final {
          * @param need_kvs A flag of type OpenNeedKvs indicating whether the KVS is required or optional.
          *                 - OpenNeedKvs::Required: The KVS must already exist.
          *                 - OpenNeedKvs::Optional: An empty KVS will be used if no KVS exists.
+         * @param dir The directory path where the KVS files are located. It is passed as an rvalue reference to avoid unnecessary copying.
+         *            Use "" or "." for the current directory.
          * @return A Result object containing either:
          *         - A Kvs object if the operation is successful.
          *         - An ErrorCode if an error occurs during the operation.
@@ -326,7 +333,7 @@ class Kvs final {
          * - ErrorCode::ValidationFailed: Validation of the KVS data failed.
          * - ErrorCode::ResourceBusy: The KVS resource is currently in use.
          */
-        static score::Result<Kvs> open(const std::string&& process_name, const InstanceId& id, OpenNeedDefaults need_defaults, OpenNeedKvs need_kvs);
+        static score::Result<Kvs> open(const InstanceId& instance_id, OpenNeedDefaults need_defaults, OpenNeedKvs need_kvs, const std::string&& dir);
 
         /**
          * @brief Sets whether the key-value store should flush its contents to
@@ -468,9 +475,11 @@ class Kvs final {
         /**
          * @brief Retrieves the number of snapshots currently stored in the key-value store.
          * 
-         * @return The total count of snapshots as a size_t value.
+         * @return A score::Result object that indicates the success or failure of the operation.
+         *         - On success: The total count of snapshots as a size_t value.
+         *         - On failure: Returns an ErrorCode describing the error.
          */
-        size_t snapshot_count() const;
+        score::Result<size_t> snapshot_count() const;
 
 
         /**
@@ -503,9 +512,11 @@ class Kvs final {
          * @brief Retrieves the filename associated with a given snapshot ID in the key-value store.
          * 
          * @param snapshot_id The identifier of the snapshot for which the filename is to be retrieved.
-         * @return A String with the filename associated with the snapshot ID.
+         * @return score::ResultBlank 
+         *         - On success: A score::filesystem::Path with the filename (path) associated with the snapshot ID.
+         *         - On failure: An error code describing the reason for the failure.
          */
-        std::string get_kvs_filename(const SnapshotId& snapshot_id) const;
+        score::Result<score::filesystem::Path> get_kvs_filename(const SnapshotId& snapshot_id) const;
 
 
         /**
@@ -516,9 +527,11 @@ class Kvs final {
          * store metadata or integrity information for the snapshot.
          * 
          * @param snapshot_id The identifier of the snapshot for which the hash filename is requested.
-         * @return A String with the filename of the hash file associated with the snapshot ID.
+         * @return score::ResultBlank 
+         *         - On success: A score::filesystem::Path with the filename (path) of the hash file associated with the snapshot ID.
+         *         - On failure: An error code describing the reason for the failure.
          */
-        std::string get_kvs_hash_filename(const SnapshotId& snapshot_id) const;
+        score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const;
 
     private:
         /* Private constructor to prevent direct instantiation */
@@ -535,11 +548,21 @@ class Kvs final {
         std::unordered_map<std::string, KvsValue> default_values;
     
         /* Filename prefix */
-        std::string filename_prefix;
+        score::filesystem::Path filename_prefix;
     
         /* Flush on exit flag for written Keys */
         std::atomic<bool> flush_on_exit;
-   
+
+        /* Filesystem handling */
+        std::unique_ptr<score::filesystem::Filesystem> filesystem;
+
+        /* Json handling */
+        std::unique_ptr<score::json::IJsonParser> parser;
+        std::unique_ptr<score::json::IJsonWriter> writer;
+
+        score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
+        score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix, OpenJsonNeedFile need_file);
+        score::ResultBlank write_json_data(const std::string& buf);
 };
 
 
@@ -553,7 +576,7 @@ public:
      * @brief Constructs a KvsBuilder for the given KVS instance.
      * @param instance_id Unique identifier for the KVS instance.
      */
-    explicit KvsBuilder(std::string&& process_name, const InstanceId& instance_id);
+    explicit KvsBuilder(const InstanceId& instance_id);
 
     /**
      * @brief Specify whether default values must be loaded.
@@ -570,19 +593,28 @@ public:
     KvsBuilder& need_kvs_flag(bool flag);
 
     /**
+     * @brief Specify the directory where KVS files are stored.
+     * @param dir The directory path as a string.
+     * Use "" or "." for the current directory.
+     *
+     * @return Reference to this builder (for chaining).
+     */
+    KvsBuilder& dir(std::string&& dir_path);
+
+    /**
      * @brief Builds and opens the Kvs instance with the configured options.
      *
      * Internally calls Kvs::open() with the selected flags and directory.
      *
      * @return A score::Result<Kvs> containing the opened store or an ErrorCode.
      */
-    score::Result<Kvs> build() const;
+    score::Result<Kvs> build();
 
 private:
     InstanceId                         instance_id;   ///< ID of the KVS instance
     bool                               need_defaults; ///< Whether default values are required
     bool                               need_kvs;      ///< Whether an existing KVS is required
-    std::string                        process_name;  ///< Process name for the KVS files
+    std::string                        directory;     ///< Directory where to store the KVS Files
 };
 
 #endif /* SCORE_LIB_KVS_KVS_HPP */

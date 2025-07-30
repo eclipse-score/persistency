@@ -25,9 +25,6 @@ uint32_t parse_hash_adler32(std::istream& in);
 uint32_t calculate_hash_adler32(const std::string& data);
 std::array<uint8_t,4> get_hash_bytes_adler32(uint32_t hash);
 std::array<uint8_t,4> get_hash_bytes(const std::string& data);
-score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
-score::Result<std::unordered_map<std::string, KvsValue>> open_json(const std::string& prefix, OpenJsonNeedFile need_file);
-score::ResultBlank write_json_data(const std::string& filename_prefix, const std::string& buf);
 score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any);
 score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv);
 

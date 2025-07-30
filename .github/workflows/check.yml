@@ -70,7 +70,6 @@ jobs:
         run: |
           bazel coverage //:test_kvs_cpp \
             --collect_code_coverage \
-            --instrument_test_targets \
             --combined_report=lcov \
             --experimental_generate_llvm_lcov \
             --nocache_test_results \
