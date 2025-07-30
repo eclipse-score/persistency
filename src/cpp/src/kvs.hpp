@@ -20,6 +20,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "internal/error.hpp"
+#include "kvsvalue.hpp"
 #include "score/filesystem/filesystem.h"
 #include "score/json/json_parser.h"
 #include "score/json/json_writer.h"
@@ -35,82 +37,6 @@ namespace pers
 {
 namespace kvs 
 {
-
-/* @brief */
-enum class ErrorCode : score::result::ErrorCode {
-    /* Error that was not yet mapped*/
-    UnmappedError,
-
-    /* File not found*/
-    FileNotFound,
-
-    /* KVS file read error*/
-    KvsFileReadError,
-
-    /* KVS hash file read error*/
-    KvsHashFileReadError,
-
-    /* JSON parser error*/
-    JsonParserError,
-
-    /* JSON generator error*/
-    JsonGeneratorError,
-
-    /* Physical storage failure*/
-    PhysicalStorageFailure,
-
-    /* Integrity corrupted*/
-    IntegrityCorrupted,
-
-    /* Validation failed*/
-    ValidationFailed,
-
-    /* Encryption failed*/
-    EncryptionFailed,
-
-    /* Resource is busy*/
-    ResourceBusy,
-
-    /* Out of storage space*/
-    OutOfStorageSpace,
-
-    /* Quota exceeded*/
-    QuotaExceeded,
-
-    /* Authentication failed*/
-    AuthenticationFailed,
-
-    /* Key not found*/
-    KeyNotFound,
-    
-    /* Key default value not found*/
-    KeyDefaultNotFound,
-
-    /* Serialization failed*/
-    SerializationFailed,
-
-    /* Invalid snapshot ID*/
-    InvalidSnapshotId,
-
-    /* Conversion failed*/
-    ConversionFailed,
-
-    /* Mutex failed*/
-    MutexLockFailed,
-
-    /* Invalid value type*/
-    InvalidValueType,
-};
-
-class MyErrorDomain final : public score::result::ErrorDomain
-{
-public:
-    std::string_view MessageFor(score::result::ErrorCode const& code) const noexcept override;
-};
-
-constexpr MyErrorDomain my_error_domain;
-score::result::Error MakeError(ErrorCode code, std::string_view user_message = "") noexcept;
-
 
 struct InstanceId {
     size_t id;
@@ -145,90 +71,6 @@ enum class OpenJsonNeedFile {
     Optional = 0, /* Optional: If the file doesn't exist, start with empty data */
     Required = 1 /* Required: The file must already exist */
 };
-
-/* Define the KvsValue class*/
-/**
- * @class KvsValue
- * @brief Represents a flexible value type that can hold various data types, 
- *        including numbers, booleans, strings, null, arrays, and objects.
- * 
- * The KvsValue class provides a type-safe way to store and retrieve values of 
- * different types. It uses a std::variant to hold the underlying value and an 
- * enum to track the type of the value.
- * 
- * ## Supported Types:
- * - Number (double)
- * - Boolean (bool)
- * - String (std::string)
- * - Null (std::nullptr_t)
- * - Array (std::vector<KvsValue>)
- * - Object (std::unordered_map<std::string, KvsValue>)
- * 
- * ## Public Methods:
- * - `KvsValue(double number)`: Constructs a KvsValue holding a number.
- * - `KvsValue(bool boolean)`:
- * - Access the underlying value using `getValue()` and `std::get`.
- *
- * ## Example:
- * @code
- * KvsValue numberValue(42.0);
- * KvsValue stringValue("Hello, World!");
- * KvsValue arrayValue(KvsValue::Array{numberValue, stringValue});
- *
- * if (numberValue.getType() == KvsValue::Type::Number) {
- *     double number = std::get<double>(numberValue.getValue());
- * }
- * @endcode
- */
-
-class KvsValue final{
-public:
-    /* Define the possible types for KvsValue*/
-    using Array = std::vector<KvsValue>;
-    using Object = std::unordered_map<std::string, KvsValue>;
-
-    /* Enum to represent the type of the value*/
-    enum class Type {
-        i32,
-        u32,
-        i64,
-        u64,
-        f64,
-        Boolean,
-        String,
-        Null,
-        Array,
-        Object
-    };
-
-    /* Constructors for each type*/
-    explicit KvsValue(int32_t number) : value(number), type(Type::i32) {}
-    explicit KvsValue(uint32_t number) : value(number), type(Type::u32) {}
-    explicit KvsValue(int64_t number) : value(number), type(Type::i64) {}
-    explicit KvsValue(uint64_t number) : value(number), type(Type::u64) {}
-    explicit KvsValue(double number) : value(number), type(Type::f64) {}
-    explicit KvsValue(bool boolean) : value(boolean), type(Type::Boolean) {}
-    explicit KvsValue(const std::string& str) : value(str), type(Type::String) {}
-    explicit KvsValue(std::nullptr_t) : value(nullptr), type(Type::Null) {}
-    explicit KvsValue(const Array& array) : value(array), type(Type::Array) {}
-    explicit KvsValue(const Object& object) : value(object), type(Type::Object) {}
-
-    /* Get the type of the value*/
-    Type getType() const { return type; }
-
-    /* Access the underlying value (use std::get to retrieve the value)*/
-    const std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>& getValue() const {
-        return value;
-    }
-
-private:
-    /* The underlying value*/
-    std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object> value;
-
-    /* The type of the value*/
-    Type type;
-};
-
 
 /**
  * @class Kvs
@@ -273,32 +115,6 @@ private:
  * Refer: "Blank and score::ResultBlank shall be used for `T` instead of `void`" in result.h
  * A KVS Object is not copyable, but it can be moved.
  * 
- * \brief Example Usage
- * \code
- *  #include <iostream>
- *  #include "Kvs.hpp"
- *
- *  int main() {
- *    // Open kvs
- *    auto open_res = KvsBuilder(0)
- *                        .need_defaults_flag(true)
- *                        .need_kvs_flag(true)
- *                        .build();
- *    if (!open_res) return 1;
- *    Kvs kvs = std::move(open_res.value());
- *
- *    // Set and get a value
- *    kvs.set_value("pi", KvsValue(3.14));
- *    auto get_res = kvs.get_value("pi");
- *
- *    // Delete a key
- *    kvs.remove_key("pi");
- *    std::cout << "has pi? " << (kvs.key_exists("pi").value_or(false) ? "yes" : "no") << "\n";
- *
- *
- *    return 0;
- *  }
- * \endcode
 */
 
 class Kvs final {
@@ -572,58 +388,6 @@ class Kvs final {
         score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
         score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix, OpenJsonNeedFile need_file);
         score::ResultBlank write_json_data(const std::string& buf);
-};
-
-
-/**
- * @class KvsBuilder
- * @brief Builder for opening a KVS object.
- */
-class KvsBuilder final {
-public:
-    /**
-     * @brief Constructs a KvsBuilder for the given KVS instance.
-     * @param instance_id Unique identifier for the KVS instance.
-     */
-    explicit KvsBuilder(const InstanceId& instance_id);
-
-    /**
-     * @brief Specify whether default values must be loaded.
-     * @param flag True to require default values; false to make them optional.
-     * @return Reference to this builder (for chaining).
-     */
-    KvsBuilder& need_defaults_flag(bool flag);
-
-    /**
-     * @brief Configure if KVS must exist when opening the KVS.
-     * @param flag True to require an existing store; false to allow starting empty.
-     * @return Reference to this builder (for chaining).
-     */
-    KvsBuilder& need_kvs_flag(bool flag);
-
-    /**
-     * @brief Specify the directory where KVS files are stored.
-     * @param dir The directory path as a string.
-     * Use "" or "." for the current directory.
-     *
-     * @return Reference to this builder (for chaining).
-     */
-    KvsBuilder& dir(std::string&& dir_path);
-
-    /**
-     * @brief Builds and opens the Kvs instance with the configured options.
-     *
-     * Internally calls Kvs::open() with the selected flags and directory.
-     *
-     * @return A score::Result<Kvs> containing the opened store or an ErrorCode.
-     */
-    score::Result<Kvs> build();
-
-private:
-    InstanceId                         instance_id;   ///< ID of the KVS instance
-    bool                               need_defaults; ///< Whether default values are required
-    bool                               need_kvs;      ///< Whether an existing KVS is required
-    std::string                        directory;     ///< Directory where to store the KVS Files
 };
 
 } /* namespace kvs */

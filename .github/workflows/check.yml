@@ -85,5 +85,5 @@ jobs:
           REPORT=$(find "$(bazel info output_path)" -name _coverage_report.dat | head -n1)
           lcov \
             --rc branch_coverage=1 \
-            --extract "$REPORT" "src/cpp/src/kvs.cpp" \
+            --extract "$REPORT" '*.cpp' -o "${REPORT}.cpp" \
             --output-file kvs_coverage.info

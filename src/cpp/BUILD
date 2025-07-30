@@ -14,15 +14,35 @@
 # The filegroup is used to collect all source files for the tests.
 
 cc_library(
+    name = "kvsvalue",
+    srcs = [
+        "src/kvsvalue.cpp",
+    ],
+    hdrs = ["src/kvsvalue.hpp"],
+    includes = ["src"],
+    visibility = [
+        "//:__pkg__",
+        "//src/cpp/src/internal:__pkg__",
+    ],
+)
+
+cc_library(
     name = "kvs_cpp",
     srcs = [
-        "inc/internal/kvs_helper.hpp",
         "src/kvs.cpp",
+        "src/kvsbuilder.cpp",
     ],
-    hdrs = ["inc/kvs.hpp"],
-    includes = ["inc"],
+    hdrs = [
+        "src/kvsbuilder.hpp",
+    ],
+    implementation_deps = [
+        "//src/cpp/src/internal:kvs_helper",
+    ],
+    includes = ["src"],
     visibility = ["//:__pkg__"],
     deps = [
+        ":kvsvalue",
+        "//src/cpp/src/internal:error",
         "@score-baselibs//score/filesystem:filesystem",
         "@score-baselibs//score/json",
         "@score-baselibs//score/result:result",

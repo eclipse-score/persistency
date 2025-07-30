@@ -11,37 +11,38 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
-cc_test(
-    name = "test_kvs_cpp",
-    size = "small",
+cc_library(
+    name = "error",
     srcs = [
-        "test_kvs.cpp",
+        "error.cpp",
     ],
-    visibility = ["//:__pkg__"],
+    hdrs = [
+        "error.hpp",
+    ],
+    visibility = [
+        "//src/cpp:__pkg__",
+        "//src/cpp/tests:__pkg__",
+    ],
     deps = [
-        "//:kvs_cpp",
-        "//src/cpp/src/internal:kvs_helper",
-        "@googletest//:gtest_main",
-        "@score-baselibs//score/filesystem:filesystem",
-        "@score-baselibs//score/filesystem:mock",
-        "@score-baselibs//score/json:mock",
         "@score-baselibs//score/result:result",
     ],
 )
 
-cc_test(
-    name = "bm_kvs_cpp",
-    size = "small",
+cc_library(
+    name = "kvs_helper",
     srcs = [
-        "bm_kvs.cpp",
+        "kvs_helper.cpp",
     ],
-    visibility = ["//:__pkg__"],
+    hdrs = [
+        "kvs_helper.hpp",
+    ],
+    visibility = [
+        "//src/cpp:__pkg__",
+        "//src/cpp/tests:__pkg__",
+    ],
     deps = [
-        "//:kvs_cpp",
-        "//src/cpp/src/internal:kvs_helper",
-        "@google_benchmark//:benchmark",
-        "@score-baselibs//score/filesystem:filesystem",
+        ":error",
+        "//src/cpp:kvsvalue",
         "@score-baselibs//score/json",
-        "@score-baselibs//score/result:result",
     ],
 )
