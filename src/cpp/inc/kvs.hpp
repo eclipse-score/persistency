@@ -27,6 +27,15 @@
 
 #define KVS_MAX_SNAPSHOTS 3
 
+namespace score 
+{
+namespace mw 
+{
+namespace pers 
+{
+namespace kvs 
+{
+
 /* @brief */
 enum class MyErrorCode : score::result::ErrorCode {
     /* Error that was not yet mapped*/
@@ -616,5 +625,10 @@ private:
     bool                               need_kvs;      ///< Whether an existing KVS is required
     std::string                        directory;     ///< Directory where to store the KVS Files
 };
+
+} /* namespace kvs */
+} /* namespace pers */
+} /* namespace mw */
+} /* namespace score */
 
 #endif /* SCORE_LIB_KVS_KVS_HPP */

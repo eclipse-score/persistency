@@ -31,6 +31,7 @@
 #include "score/json/i_json_writer_mock.h"
 #include "score/filesystem/filesystem_mock.h"
 
+using namespace score::mw::pers::kvs;
 ////////////////////////////////////////////////////////////////////////////////
 /* Test Environment Setup - Standard Variables for tests*/
 

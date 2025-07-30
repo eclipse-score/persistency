@@ -25,6 +25,15 @@
 
 using namespace std;
 
+namespace score 
+{
+namespace mw 
+{
+namespace pers 
+{
+namespace kvs 
+{
+
 /*********************** Hash Functions *********************/
 /*Adler 32 checksum algorithm*/ 
 // Optimized version: processes data in blocks to reduce modulo operations
@@ -1054,3 +1063,8 @@ score::Result<score::filesystem::Path> Kvs::get_hash_filename(const SnapshotId& 
     }
     return result;
 }
+
+} /* namespace kvs */
+} /* namespace pers */
+} /* namespace mw */
+} /* namespace score */
