@@ -16,6 +16,11 @@ cc_test(
     size = "small",
     srcs = [
         "test_kvs.cpp",
+        "test_kvs_builder.cpp",
+        "test_kvs_error.cpp",
+        "test_kvs_general.cpp",
+        "test_kvs_general.hpp",
+        "test_kvs_helper.cpp",
     ],
     visibility = ["//:__pkg__"],
     deps = [
