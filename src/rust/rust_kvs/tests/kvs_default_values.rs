@@ -29,20 +29,42 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     let dir = tempdir()?;
     set_current_dir(dir.path())?;
 
-    // create defaults file
+    // create defaults file in t-tagged format
     let defaults: HashMap<String, JsonValue> = HashMap::from([
-        ("number1".to_string(), JsonValue::from(123.0)),
-        ("bool1".to_string(), true.into()),
-        ("string1".to_string(), "Hello".to_string().into()),
+        (
+            "number1".to_string(),
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String("f64".to_string())),
+                ("v".to_string(), JsonValue::Number(123.0)),
+            ])),
+        ),
+        (
+            "bool1".to_string(),
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String("bool".to_string())),
+                ("v".to_string(), JsonValue::Boolean(true)),
+            ])),
+        ),
+        (
+            "string1".to_string(),
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String("str".to_string())),
+                ("v".to_string(), JsonValue::String("Hello".to_string())),
+            ])),
+        ),
     ]);
 
-    let json_value = JsonValue::from(defaults);
+    let json_value = JsonValue::Object(defaults);
     let mut buf = Vec::new();
     let mut gen = JsonGenerator::new(&mut buf).indent("  ");
     gen.generate(&json_value)?;
 
     let data = String::from_utf8(buf)?;
-    std::fs::write("kvs_0_default.json", &data)?;
+    let filepath = &dir
+        .path()
+        .to_path_buf()
+        .join(format!("kvs_{}_default.json", 0));
+    std::fs::write(filepath, &data)?;
 
     // create KVS
     let kvs = KvsBuilder::<Kvs>::new(InstanceId::new(0))
@@ -98,11 +120,29 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     // drop the current instance with flush-on-exit enabled and reopen storage
     drop(kvs);
 
-    // change default of `number1` and `bool1`
+    // create defaults file in t-tagged format
     let defaults: HashMap<String, JsonValue> = HashMap::from([
-        ("number1".to_string(), JsonValue::from(987.0)),
-        ("bool1".to_string(), false.into()),
-        ("string1".to_string(), "Hello".to_string().into()),
+        (
+            "number1".to_string(),
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String("f64".to_string())),
+                ("v".to_string(), JsonValue::Number(987.0)),
+            ])),
+        ),
+        (
+            "bool1".to_string(),
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String("bool".to_string())),
+                ("v".to_string(), JsonValue::Boolean(false)),
+            ])),
+        ),
+        (
+            "string1".to_string(),
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String("str".to_string())),
+                ("v".to_string(), JsonValue::String("Hello".to_string())),
+            ])),
+        ),
     ]);
 
     let json_value = JsonValue::from(defaults);
@@ -111,7 +151,7 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     gen.generate(&json_value)?;
 
     let data = String::from_utf8(buf)?;
-    std::fs::write("kvs_0_default.json", &data)?;
+    std::fs::write(filepath, &data)?;
 
     let kvs = KvsBuilder::<Kvs>::new(InstanceId::new(0))
         .need_defaults(false)

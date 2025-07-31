@@ -22,13 +22,13 @@ use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
 
 // Example of how KvsValue is stored in the JSON file (t-tagged format):
 // {
-//   "my_int": { "t": "I32", "v": 42 },
-//   "my_float": { "t": "F64", "v": 3.1415 },
-//   "my_bool": { "t": "Boolean", "v": true },
-//   "my_string": { "t": "String", "v": "hello" },
-//   "my_array": { "t": "Array", "v": [ ... ] },
-//   "my_object": { "t": "Object", "v": { ... } },
-//   "my_null": { "t": "Null", "v": null }
+//   "my_int": { "t": "i32", "v": 42 },
+//   "my_float": { "t": "f64", "v": 3.1415 },
+//   "my_bool": { "t": "bool", "v": true },
+//   "my_string": { "t": "str", "v": "hello" },
+//   "my_array": { "t": "arr", "v": [ ... ] },
+//   "my_object": { "t": "obj", "v": { ... } },
+//   "my_null": { "t": "null", "v": null }
 // }
 
 /// Backend-specific JsonValue -> KvsValue conversion.
@@ -40,98 +40,40 @@ impl From<&JsonValue> for KvsValue {
                 if let (Some(JsonValue::String(type_str)), Some(value)) =
                     (obj.get("t"), obj.get("v"))
                 {
-                    match type_str.as_str() {
-                        "i32" => {
-                            if let JsonValue::Number(num) = value {
-                                return KvsValue::I32(*num as i32);
-                            } else {
-                                return KvsValue::Null; // t mismatch
-                            }
+                    return match (type_str.as_str(), value) {
+                        ("i32", JsonValue::Number(v)) => KvsValue::I32(*v as i32),
+                        ("u32", JsonValue::Number(v)) => KvsValue::U32(*v as u32),
+                        ("i64", JsonValue::Number(v)) => KvsValue::I64(*v as i64),
+                        ("u64", JsonValue::Number(v)) => KvsValue::U64(*v as u64),
+                        ("f64", JsonValue::Number(v)) => KvsValue::F64(*v),
+                        ("bool", JsonValue::Boolean(v)) => KvsValue::Boolean(*v),
+                        ("str", JsonValue::String(v)) => KvsValue::String(v.clone()),
+                        ("null", JsonValue::Null) => KvsValue::Null,
+                        ("arr", JsonValue::Array(v)) => {
+                            KvsValue::Array(v.iter().map(KvsValue::from).collect())
                         }
-                        "u32" => {
-                            if let JsonValue::Number(num) = value {
-                                return KvsValue::U32(*num as u32);
-                            } else {
-                                return KvsValue::Null;
-                            }
-                        }
-                        "i64" => {
-                            if let JsonValue::Number(num) = value {
-                                return KvsValue::I64(*num as i64);
-                            } else {
-                                return KvsValue::Null;
-                            }
-                        }
-                        "u64" => {
-                            if let JsonValue::Number(num) = value {
-                                return KvsValue::U64(*num as u64);
-                            } else {
-                                return KvsValue::Null;
-                            }
-                        }
-                        "f64" => {
-                            if let JsonValue::Number(num) = value {
-                                return KvsValue::F64(*num);
-                            } else {
-                                return KvsValue::Null;
-                            }
-                        }
-                        "bool" => {
-                            if let JsonValue::Boolean(bv) = value {
-                                return KvsValue::Boolean(*bv);
-                            } else {
-                                return KvsValue::Null;
-                            }
-                        }
-                        "str" => {
-                            if let JsonValue::String(sv) = value {
-                                return KvsValue::String(sv.clone());
-                            } else {
-                                return KvsValue::Null;
-                            }
-                        }
-                        "null" => {
-                            if let JsonValue::Null = value {
-                                return KvsValue::Null;
-                            } else {
-                                return KvsValue::Null;
-                            }
-                        }
-                        "arr" => {
-                            if let JsonValue::Array(vec) = value {
-                                return KvsValue::Array(vec.iter().map(KvsValue::from).collect());
-                            } else {
-                                return KvsValue::Null;
-                            }
-                        }
-                        "obj" => {
-                            if let JsonValue::Object(hm) = value {
-                                return KvsValue::Object(
-                                    hm.iter()
-                                        .map(|(k, v)| (k.clone(), KvsValue::from(v)))
-                                        .collect(),
-                                );
-                            } else {
-                                return KvsValue::Null;
-                            }
-                        }
+                        ("obj", JsonValue::Object(v)) => KvsValue::Object(
+                            v.iter()
+                                .map(|(k, v)| (k.clone(), KvsValue::from(v)))
+                                .collect(),
+                        ),
                         _ => {
                             return KvsValue::Null;
                         }
-                    }
+                    };
                 }
-                // fallback: treat as object of kvs values
-                KvsValue::Object(
-                    obj.iter()
-                        .map(|(k, v)| (k.clone(), KvsValue::from(v)))
-                        .collect(),
-                )
+                // If not a t-tagged object, treat as a map of key-value pairs (KvsMap)
+                let map: KvsMap = obj
+                    .iter()
+                    .map(|(k, v)| (k.clone(), KvsValue::from(v)))
+                    .collect();
+                KvsValue::Object(map)
             }
-            JsonValue::Number(n) => KvsValue::F64(*n),
-            JsonValue::Boolean(b) => KvsValue::Boolean(*b),
-            JsonValue::String(s) => KvsValue::String(s.clone()),
-            JsonValue::Null => KvsValue::Null,
-            JsonValue::Array(arr) => KvsValue::Array(arr.iter().map(KvsValue::from).collect()),
+            JsonValue::Number(_)
+            | JsonValue::Boolean(_)
+            | JsonValue::String(_)
+            | JsonValue::Null
+            | JsonValue::Array(_) => KvsValue::Null,
         }
     }
 }
