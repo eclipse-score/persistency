@@ -20,7 +20,7 @@ cc_library(
         "error.hpp",
     ],
     visibility = [
-        "//src/cpp:__pkg__",
+        "//src/cpp/src:__pkg__",
         "//src/cpp/tests:__pkg__",
     ],
     deps = [
@@ -37,12 +37,12 @@ cc_library(
         "kvs_helper.hpp",
     ],
     visibility = [
-        "//src/cpp:__pkg__",
+        "//src/cpp/src:__pkg__",
         "//src/cpp/tests:__pkg__",
     ],
     deps = [
         ":error",
-        "//src/cpp:kvsvalue",
+        "//src/cpp/src:kvsvalue",
         "@score-baselibs//score/json",
     ],
 )

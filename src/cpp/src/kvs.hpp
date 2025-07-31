@@ -99,16 +99,25 @@ enum class OpenJsonNeedFile {
  * - `snapshot_count`: Retrieves the number of available snapshots.
  * - `snapshot_max_count`: Retrieves the maximum number of snapshots allowed.
  * - `snapshot_restore`: Restores the KVS from a specified snapshot.
- * - `get_kvs_filename`: Retrieves the filename associated with a snapshot.
- * - `get_hash_filename`: Retrieves the hash filename associated with a snapshot.
+ * - `get_kvs_filename`: Retrieves the filename (path) associated with a snapshot.
+ * - `get_hash_filename`: Retrieves the hashname (path) associated with a snapshot.
+ * 
+ * Private Methods:
+ * - `snapshot_rotate`: Rotates the snapshots, ensuring that the maximum count is maintained.
+ * - `parse_json_data`: Parses JSON data into an unordered map of key-value pairs.
+ * - `open_json`: Opens a JSON file and returns its contents as an unordered map of key-value pairs.
+ * - `write_json_data`: Writes the provided data to a JSON file.
  * 
  * Private Members:
  * - `kvs_mutex`: A mutex for ensuring thread safety.
  * - `kvs`: An unordered map for storing key-value pairs.
  * - `default_mutex`: A mutex for default value operations.
  * - `default_values`: An unordered map for storing optional default values.
- * - `filename_prefix`: A string prefix for filenames associated with snapshots.
+ * - `filename_prefix`: A path prefix for filenames associated with snapshots.
  * - `flush_on_exit`: An atomic boolean flag indicating whether to flush on exit.
+ * - `filesystem`: A unique pointer to a filesystem handler for file operations.
+ * - `parser`: A unique pointer to a JSON parser for reading KVS data.
+ * - `writer`: A unique pointer to a JSON writer for writing KVS data.
  * 
  * ----------------Notice----------------
  * - Blank should be used instead of void for Result class
@@ -151,12 +160,8 @@ class Kvs final {
          *         - A Kvs object if the operation is successful.
          *         - An ErrorCode if an error occurs during the operation.
          * 
-         * Possible Error Codes:
-         * - ErrorCode::FileNotFound: The KVS file was not found.
-         * - ErrorCode::KvsFileReadError: An error occurred while reading the KVS file.
-         * - ErrorCode::IntegrityCorrupted: The KVS integrity is corrupted.
-         * - ErrorCode::ValidationFailed: Validation of the KVS data failed.
-         * - ErrorCode::ResourceBusy: The KVS resource is currently in use.
+         * IMPORTANT: Instead of using the Kvs::open method directly, it is recommended to use the KvsBuilder class.
+         * 
          */
         static score::Result<Kvs> open(const InstanceId& instance_id, OpenNeedDefaults need_defaults, OpenNeedKvs need_kvs, const std::string&& dir);
 
@@ -362,9 +367,6 @@ class Kvs final {
         /* Private constructor to prevent direct instantiation */
         Kvs();
 
-        /* Rotate Snapshots */
-        score::ResultBlank snapshot_rotate();
-
         /* Internal storage and configuration details.*/
         std::mutex kvs_mutex;
         std::unordered_map<std::string, KvsValue> kvs;
@@ -385,6 +387,8 @@ class Kvs final {
         std::unique_ptr<score::json::IJsonParser> parser;
         std::unique_ptr<score::json::IJsonWriter> writer;
 
+        /* Private Methods */
+        score::ResultBlank snapshot_rotate();
         score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
         score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix, OpenJsonNeedFile need_file);
         score::ResultBlank write_json_data(const std::string& buf);

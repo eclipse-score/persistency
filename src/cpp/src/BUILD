@@ -16,10 +16,10 @@
 cc_library(
     name = "kvsvalue",
     srcs = [
-        "src/kvsvalue.cpp",
+        "kvsvalue.cpp",
     ],
-    hdrs = ["src/kvsvalue.hpp"],
-    includes = ["src"],
+    hdrs = ["kvsvalue.hpp"],
+    includes = ["."],
     visibility = [
         "//:__pkg__",
         "//src/cpp/src/internal:__pkg__",
@@ -29,16 +29,17 @@ cc_library(
 cc_library(
     name = "kvs_cpp",
     srcs = [
-        "src/kvs.cpp",
-        "src/kvsbuilder.cpp",
+        "kvs.cpp",
+        "kvsbuilder.cpp",
     ],
     hdrs = [
-        "src/kvsbuilder.hpp",
+        "kvs.hpp",
+        "kvsbuilder.hpp",
     ],
     implementation_deps = [
         "//src/cpp/src/internal:kvs_helper",
     ],
-    includes = ["src"],
+    includes = ["."],
     visibility = ["//:__pkg__"],
     deps = [
         ":kvsvalue",
