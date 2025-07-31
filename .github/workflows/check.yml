@@ -87,3 +87,6 @@ jobs:
             --rc branch_coverage=1 \
             --extract "$REPORT" '*.cpp' -o "${REPORT}.cpp" \
             --output-file kvs_coverage.info
+
+      - name: Bazel Benchmark
+        run: bazel run -c opt //:bm_kvs_cpp
