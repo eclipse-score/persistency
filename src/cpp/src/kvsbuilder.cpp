@@ -12,14 +12,7 @@
 ********************************************************************************/
 #include "kvsbuilder.hpp"
 
-namespace score 
-{
-namespace mw 
-{
-namespace pers 
-{
-namespace kvs 
-{
+namespace score::mw::pers::kvs {
 
 /*********************** KVS Builder Implementation *********************/
 KvsBuilder::KvsBuilder(const InstanceId& instance_id)
@@ -63,7 +56,4 @@ score::Result<Kvs> KvsBuilder::build() {
     return result;
 }
 
-} /* namespace kvs */
-} /* namespace pers */
-} /* namespace mw */
-} /* namespace score */
+} /* namespace score::mw::pers::kvs */

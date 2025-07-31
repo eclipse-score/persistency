@@ -15,14 +15,7 @@
 
 #include "score/result/result.h"
 
-namespace score 
-{
-namespace mw 
-{
-namespace pers 
-{
-namespace kvs 
-{
+namespace score::mw::pers::kvs {
 
 /* @brief */
 enum class ErrorCode : score::result::ErrorCode {
@@ -99,9 +92,6 @@ public:
 constexpr MyErrorDomain my_error_domain;
 score::result::Error MakeError(ErrorCode code, std::string_view user_message = "") noexcept;
 
-} // namespace kvs
-} // namespace pers
-} // namespace mw
-} // namespace score
+} /* namespace score::mw::pers::kvs */
 
 #endif /* SCORE_LIB_KVS_INTERNAL_ERROR_HPP */

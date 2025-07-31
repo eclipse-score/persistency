@@ -23,14 +23,7 @@
  * This header defines helper functions used internally by the Key-Value Store (KVS) implementation.
  * It exists to allow unit tests to access these internal functions.
  */
-namespace score 
-{
-namespace mw 
-{
-namespace pers 
-{
-namespace kvs 
-{
+namespace score::mw::pers::kvs {
 
 uint32_t parse_hash_adler32(std::istream& in);
 uint32_t calculate_hash_adler32(const std::string& data);
@@ -40,9 +33,6 @@ bool check_hash(const std::string& data_calculate, std::istream& data_parse);
 score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any);
 score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv);
 
-} /* namespace kvs */
-} /* namespace pers */
-} /* namespace mw */
-} /* namespace score */
+} /* namespace score::mw::pers::kvs */
 
 #endif // SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP

@@ -12,14 +12,7 @@
 ********************************************************************************/
 #include "kvs_helper.hpp"
 
-namespace score 
-{
-namespace mw 
-{
-namespace pers 
-{
-namespace kvs 
-{
+namespace score::mw::pers::kvs {
 
 /*********************** Hash Functions *********************/
 /*Adler 32 checksum algorithm*/ 
@@ -323,7 +316,4 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) {
 }
 
 
-} /* namespace kvs */
-} /* namespace pers */
-} /* namespace mw */
-} /* namespace score */
+} /* namespace score::mw::pers::kvs */

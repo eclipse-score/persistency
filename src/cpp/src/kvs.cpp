@@ -23,14 +23,7 @@
 
 using namespace std;
 
-namespace score 
-{
-namespace mw 
-{
-namespace pers 
-{
-namespace kvs 
-{
+namespace score::mw::pers::kvs {
 
 /*********************** KVS Implementation *********************/
 Kvs::~Kvs(){
@@ -634,7 +627,4 @@ score::Result<score::filesystem::Path> Kvs::get_hash_filename(const SnapshotId& 
     return result;
 }
 
-} /* namespace kvs */
-} /* namespace pers */
-} /* namespace mw */
-} /* namespace score */
+} /* namespace score::mw::pers::kvs */

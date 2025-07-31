@@ -19,6 +19,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace score::mw::pers::kvs {
+
 /* Define the KvsValue class*/
 /**
  * @class KvsValue
@@ -101,5 +103,7 @@ private:
     /* The type of the value*/
     Type type;
 };
+
+} /* namespace score::mw::pers::kvs */
 
 #endif /* SCORE_LIB_KVS_KVSVALUE_HPP */

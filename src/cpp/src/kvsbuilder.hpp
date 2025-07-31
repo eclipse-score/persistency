@@ -16,14 +16,7 @@
 #include <string>
 #include "kvs.hpp"
 
-namespace score 
-{
-namespace mw 
-{
-namespace pers 
-{
-namespace kvs 
-{
+namespace score::mw::pers::kvs {
 
 /**
  * @class KvsBuilder
@@ -108,9 +101,6 @@ private:
     std::string                        directory;     ///< Directory where to store the KVS Files
 };
 
-} /* namespace kvs */
-} /* namespace pers */
-} /* namespace mw */
-} /* namespace score */
+} /* namespace score::mw::pers::kvs */
 
 #endif /* SCORE_LIB_KVS_KVSBUILDER_HPP */
