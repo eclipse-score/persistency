@@ -20,15 +20,15 @@ use std::collections::HashMap;
 
 use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
 
-// Example of how KvsValue is stored in the JSON file (type-tagged format):
+// Example of how KvsValue is stored in the JSON file (t-tagged format):
 // {
-//   "my_int": { "type": "I32", "value": 42 },
-//   "my_float": { "type": "F64", "value": 3.1415 },
-//   "my_bool": { "type": "Boolean", "value": true },
-//   "my_string": { "type": "String", "value": "hello" },
-//   "my_array": { "type": "Array", "value": [ ... ] },
-//   "my_object": { "type": "Object", "value": { ... } },
-//   "my_null": { "type": "Null", "value": null }
+//   "my_int": { "t": "I32", "v": 42 },
+//   "my_float": { "t": "F64", "v": 3.1415 },
+//   "my_bool": { "t": "Boolean", "v": true },
+//   "my_string": { "t": "String", "v": "hello" },
+//   "my_array": { "t": "Array", "v": [ ... ] },
+//   "my_object": { "t": "Object", "v": { ... } },
+//   "my_null": { "t": "Null", "v": null }
 // }
 
 /// Backend-specific JsonValue -> KvsValue conversion.
@@ -36,75 +36,75 @@ impl From<&JsonValue> for KvsValue {
     fn from(val: &JsonValue) -> KvsValue {
         match val {
             JsonValue::Object(obj) => {
-                // Type-tagged: { "type": ..., "value": ... }
+                // Type-tagged: { "t": ..., "v": ... }
                 if let (Some(JsonValue::String(type_str)), Some(value)) =
-                    (obj.get("type"), obj.get("value"))
+                    (obj.get("t"), obj.get("v"))
                 {
                     match type_str.as_str() {
-                        "I32" => {
+                        "i32" => {
                             if let JsonValue::Number(num) = value {
                                 return KvsValue::I32(*num as i32);
                             } else {
-                                return KvsValue::Null; // type mismatch
+                                return KvsValue::Null; // t mismatch
                             }
                         }
-                        "U32" => {
+                        "u32" => {
                             if let JsonValue::Number(num) = value {
                                 return KvsValue::U32(*num as u32);
                             } else {
                                 return KvsValue::Null;
                             }
                         }
-                        "I64" => {
+                        "i64" => {
                             if let JsonValue::Number(num) = value {
                                 return KvsValue::I64(*num as i64);
                             } else {
                                 return KvsValue::Null;
                             }
                         }
-                        "U64" => {
+                        "u64" => {
                             if let JsonValue::Number(num) = value {
                                 return KvsValue::U64(*num as u64);
                             } else {
                                 return KvsValue::Null;
                             }
                         }
-                        "F64" => {
+                        "f64" => {
                             if let JsonValue::Number(num) = value {
                                 return KvsValue::F64(*num);
                             } else {
                                 return KvsValue::Null;
                             }
                         }
-                        "Boolean" => {
+                        "bool" => {
                             if let JsonValue::Boolean(bv) = value {
                                 return KvsValue::Boolean(*bv);
                             } else {
                                 return KvsValue::Null;
                             }
                         }
-                        "String" => {
+                        "str" => {
                             if let JsonValue::String(sv) = value {
                                 return KvsValue::String(sv.clone());
                             } else {
                                 return KvsValue::Null;
                             }
                         }
-                        "Null" => {
+                        "null" => {
                             if let JsonValue::Null = value {
                                 return KvsValue::Null;
                             } else {
                                 return KvsValue::Null;
                             }
                         }
-                        "Array" => {
+                        "arr" => {
                             if let JsonValue::Array(vec) = value {
                                 return KvsValue::Array(vec.iter().map(KvsValue::from).collect());
                             } else {
                                 return KvsValue::Null;
                             }
                         }
-                        "Object" => {
+                        "obj" => {
                             if let JsonValue::Object(hm) = value {
                                 return KvsValue::Object(
                                     hm.iter()
@@ -141,48 +141,48 @@ impl From<&KvsValue> for JsonValue {
         let mut obj = HashMap::new();
         match val {
             KvsValue::I32(n) => {
-                obj.insert("type".to_string(), JsonValue::String("I32".to_string()));
-                obj.insert("value".to_string(), JsonValue::Number(*n as f64));
+                obj.insert("t".to_string(), JsonValue::String("i32".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(*n as f64));
             }
             KvsValue::U32(n) => {
-                obj.insert("type".to_string(), JsonValue::String("U32".to_string()));
-                obj.insert("value".to_string(), JsonValue::Number(*n as f64));
+                obj.insert("t".to_string(), JsonValue::String("u32".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(*n as f64));
             }
             KvsValue::I64(n) => {
-                obj.insert("type".to_string(), JsonValue::String("I64".to_string()));
-                obj.insert("value".to_string(), JsonValue::Number(*n as f64));
+                obj.insert("t".to_string(), JsonValue::String("i64".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(*n as f64));
             }
             KvsValue::U64(n) => {
-                obj.insert("type".to_string(), JsonValue::String("U64".to_string()));
-                obj.insert("value".to_string(), JsonValue::Number(*n as f64));
+                obj.insert("t".to_string(), JsonValue::String("u64".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(*n as f64));
             }
             KvsValue::F64(n) => {
-                obj.insert("type".to_string(), JsonValue::String("F64".to_string()));
-                obj.insert("value".to_string(), JsonValue::Number(*n));
+                obj.insert("t".to_string(), JsonValue::String("f64".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(*n));
             }
             KvsValue::Boolean(b) => {
-                obj.insert("type".to_string(), JsonValue::String("Boolean".to_string()));
-                obj.insert("value".to_string(), JsonValue::Boolean(*b));
+                obj.insert("t".to_string(), JsonValue::String("bool".to_string()));
+                obj.insert("v".to_string(), JsonValue::Boolean(*b));
             }
             KvsValue::String(s) => {
-                obj.insert("type".to_string(), JsonValue::String("String".to_string()));
-                obj.insert("value".to_string(), JsonValue::String(s.clone()));
+                obj.insert("t".to_string(), JsonValue::String("str".to_string()));
+                obj.insert("v".to_string(), JsonValue::String(s.clone()));
             }
             KvsValue::Null => {
-                obj.insert("type".to_string(), JsonValue::String("Null".to_string()));
-                obj.insert("value".to_string(), JsonValue::Null);
+                obj.insert("t".to_string(), JsonValue::String("null".to_string()));
+                obj.insert("v".to_string(), JsonValue::Null);
             }
             KvsValue::Array(arr) => {
-                obj.insert("type".to_string(), JsonValue::String("Array".to_string()));
+                obj.insert("t".to_string(), JsonValue::String("arr".to_string()));
                 obj.insert(
-                    "value".to_string(),
+                    "v".to_string(),
                     JsonValue::Array(arr.iter().map(JsonValue::from).collect()),
                 );
             }
             KvsValue::Object(map) => {
-                obj.insert("type".to_string(), JsonValue::String("Object".to_string()));
+                obj.insert("t".to_string(), JsonValue::String("obj".to_string()));
                 obj.insert(
-                    "value".to_string(),
+                    "v".to_string(),
                     JsonValue::Object(
                         map.iter()
                             .map(|(k, v)| (k.clone(), JsonValue::from(v)))
