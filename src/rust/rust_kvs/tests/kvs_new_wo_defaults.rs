@@ -71,9 +71,12 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     assert_eq!(kvs.get_value_as::<()>("null"), Ok(()));
 
     let json_array = kvs.get_value_as::<Vec<KvsValue>>("array")?;
-    assert_eq!(json_array[0].get(), Some(&456.0));
-    assert_eq!(json_array[1].get(), Some(&false));
-    assert_eq!(json_array[2].get(), Some(&"Bye".to_string()));
+    assert_eq!(json_array.get(0).and_then(|v| v.get()), Some(&456.0));
+    assert_eq!(json_array.get(1).and_then(|v| v.get()), Some(&false));
+    assert_eq!(
+        json_array.get(2).and_then(|v| v.get()),
+        Some(&"Bye".to_string())
+    );
 
     let json_map = kvs.get_value_as::<HashMap<String, KvsValue>>("object")?;
     assert_eq!(json_map["sub-number"].get(), Some(&789.0));
@@ -82,9 +85,15 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     assert_eq!(json_map["sub-null"].get(), Some(&()));
 
     let json_sub_array = &json_map["sub-array"];
-    assert_eq!(json_sub_array[0].get(), Some(&1246.0));
-    assert_eq!(json_sub_array[1].get(), Some(&false));
-    assert_eq!(json_sub_array[2].get(), Some(&"Moin".to_string()));
+    assert!(
+        matches!(json_sub_array, KvsValue::Array(_)),
+        "Expected sub-array to be an Array"
+    );
+    if let KvsValue::Array(arr) = json_sub_array {
+        assert_eq!(arr.get(0).and_then(|v| v.get()), Some(&1246.0));
+        assert_eq!(arr.get(1).and_then(|v| v.get()), Some(&false));
+        assert_eq!(arr.get(2).and_then(|v| v.get()), Some(&"Moin".to_string()));
+    }
 
     // test for non-existent values
     assert_eq!(
