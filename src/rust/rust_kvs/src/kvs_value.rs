@@ -84,6 +84,42 @@ impl From<()> for KvsValue {
     }
 }
 
+// Macro to implement TryFrom<&KvsValue> for T for each supported type/variant.
+macro_rules! impl_tryfrom_kvs_value_to_t {
+    ($to:ty, $variant:ident) => {
+        impl std::convert::TryFrom<&KvsValue> for $to {
+            type Error = String;
+            fn try_from(value: &KvsValue) -> Result<Self, Self::Error> {
+                if let KvsValue::$variant(ref n) = value {
+                    Ok(n.clone())
+                } else {
+                    Err(format!("KvsValue is not a {}", stringify!($to)))
+                }
+            }
+        }
+    };
+}
+
+impl_tryfrom_kvs_value_to_t!(i32, I32);
+impl_tryfrom_kvs_value_to_t!(u32, U32);
+impl_tryfrom_kvs_value_to_t!(i64, I64);
+impl_tryfrom_kvs_value_to_t!(u64, U64);
+impl_tryfrom_kvs_value_to_t!(f64, F64);
+impl_tryfrom_kvs_value_to_t!(bool, Boolean);
+impl_tryfrom_kvs_value_to_t!(String, String);
+impl_tryfrom_kvs_value_to_t!(Vec<KvsValue>, Array);
+impl_tryfrom_kvs_value_to_t!(std::collections::HashMap<String, KvsValue>, Object);
+
+impl TryFrom<&KvsValue> for () {
+    type Error = &'static str;
+    fn try_from(value: &KvsValue) -> Result<Self, Self::Error> {
+        match value {
+            KvsValue::Null => Ok(()),
+            _ => Err("KvsValue is not Null (unit type)"),
+        }
+    }
+}
+
 // Trait for extracting inner values from KvsValue
 pub trait KvsValueGet {
     fn get_inner_value(val: &KvsValue) -> Option<&Self>;
@@ -122,42 +158,6 @@ impl KvsValueGet for () {
         match v {
             KvsValue::Null => Some(&()),
             _ => None,
-        }
-    }
-}
-
-// Macro to implement TryFrom<&KvsValue> for T for each supported type/variant.
-macro_rules! impl_tryfrom_kvs_value_to_t {
-    ($to:ty, $variant:ident, $err:expr) => {
-        impl std::convert::TryFrom<&KvsValue> for $to {
-            type Error = &'static str;
-            fn try_from(value: &KvsValue) -> Result<Self, Self::Error> {
-                if let KvsValue::$variant(ref n) = value {
-                    Ok(n.clone())
-                } else {
-                    Err($err)
-                }
-            }
-        }
-    };
-}
-
-impl_tryfrom_kvs_value_to_t!(i32, I32, "KvsValue is not an i32");
-impl_tryfrom_kvs_value_to_t!(u32, U32, "KvsValue is not a u32");
-impl_tryfrom_kvs_value_to_t!(i64, I64, "KvsValue is not an i64");
-impl_tryfrom_kvs_value_to_t!(u64, U64, "KvsValue is not a u64");
-impl_tryfrom_kvs_value_to_t!(f64, F64, "KvsValue is not an f64");
-impl_tryfrom_kvs_value_to_t!(bool, Boolean, "KvsValue is not a bool");
-impl_tryfrom_kvs_value_to_t!(String, String, "KvsValue is not a String");
-impl_tryfrom_kvs_value_to_t!(Vec<KvsValue>, Array, "KvsValue is not an Array");
-impl_tryfrom_kvs_value_to_t!(std::collections::HashMap<String, KvsValue>, Object, "KvsValue is not an Object");
-
-impl TryFrom<&KvsValue> for () {
-    type Error = &'static str;
-    fn try_from(value: &KvsValue) -> Result<Self, Self::Error> {
-        match value {
-            KvsValue::Null => Ok(()),
-            _ => Err("KvsValue is not Null (unit type)"),
         }
     }
 }

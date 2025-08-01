@@ -31,7 +31,7 @@ use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
 //   "my_null": { "t": "null", "v": null }
 // }
 
-/// Backend-specific JsonValue -> KvsValue conversion (by value).
+/// Backend-specific JsonValue -> KvsValue conversion.
 impl From<JsonValue> for KvsValue {
     fn from(val: JsonValue) -> KvsValue {
         match val {
@@ -55,6 +55,7 @@ impl From<JsonValue> for KvsValue {
                         ("obj", JsonValue::Object(v)) => KvsValue::Object(
                             v.into_iter().map(|(k, v)| (k, KvsValue::from(v))).collect(),
                         ),
+                        // Remaining types can be handled with Null.
                         _ => KvsValue::Null,
                     };
                 }
@@ -66,14 +67,13 @@ impl From<JsonValue> for KvsValue {
                 KvsValue::Object(map)
             }
             JsonValue::Array(arr) => KvsValue::Array(arr.into_iter().map(KvsValue::from).collect()),
-            JsonValue::Number(_)
-            | JsonValue::Boolean(_)
-            | JsonValue::String(_)
-            | JsonValue::Null => KvsValue::Null,
+            // Remaining types can be handled with Null.
+            _ => KvsValue::Null,
         }
     }
 }
 
+/// Backend-specific KvsValue -> JsonValue conversion.
 impl From<KvsValue> for JsonValue {
     fn from(val: KvsValue) -> JsonValue {
         let mut obj = HashMap::new();
