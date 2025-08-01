@@ -60,10 +60,7 @@ fn kvs_without_defaults() -> Result<(), ErrorCode> {
     gen.generate(&json_value)?;
 
     let data = String::from_utf8(buf)?;
-    let filepath = &dir
-        .path()
-        .to_path_buf()
-        .join(format!("kvs_{}_default.json", 0));
+    let filepath = &dir.path().join(format!("kvs_{}_default.json", 0));
     std::fs::write(filepath, &data)?;
 
     // create KVS
