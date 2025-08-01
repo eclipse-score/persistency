@@ -80,7 +80,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lcov
 
-      - name: Extract Coverage for kvs.cpp
+      - name: Extract Coverage for CPP Files
         run: |
           REPORT=$(find "$(bazel info output_path)" -name _coverage_report.dat | head -n1)
           lcov \
