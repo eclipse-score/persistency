@@ -66,7 +66,6 @@ impl From<JsonValue> for KvsValue {
                     .collect();
                 KvsValue::Object(map)
             }
-            JsonValue::Array(arr) => KvsValue::Array(arr.into_iter().map(KvsValue::from).collect()),
             // Remaining types can be handled with Null.
             _ => KvsValue::Null,
         }

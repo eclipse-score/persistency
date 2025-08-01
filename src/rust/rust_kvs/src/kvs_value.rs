@@ -288,14 +288,19 @@ mod tests {
     fn test_tryfrom_error_cases() {
         use std::f64::consts::PI;
         let v = KvsValue::from(123i32);
-        assert!(u32::try_from(&v).is_err());
+        let err = u32::try_from(&v).unwrap_err();
+        assert_eq!(err, "KvsValue is not a u32");
         let v = KvsValue::from("abc");
-        assert!(i32::try_from(&v).is_err());
+        let err = i32::try_from(&v).unwrap_err();
+        assert_eq!(err, "KvsValue is not a i32");
         let v = KvsValue::from(vec![KvsValue::from(1i32)]);
-        assert!(bool::try_from(&v).is_err());
+        let err = bool::try_from(&v).unwrap_err();
+        assert_eq!(err, "KvsValue is not a bool");
         let v = KvsValue::from(PI);
-        assert!(String::try_from(&v).is_err());
+        let err = String::try_from(&v).unwrap_err();
+        assert_eq!(err, "KvsValue is not a String");
         let v = KvsValue::from(());
-        assert!(i32::try_from(&v).is_err());
+        let err = i32::try_from(&v).unwrap_err();
+        assert_eq!(err, "KvsValue is not a i32");
     }
 }
