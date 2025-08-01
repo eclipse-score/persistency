@@ -82,9 +82,15 @@ fn kvs_without_defaults_builder() -> Result<(), ErrorCode> {
     assert_eq!(json_map["sub-null"].get(), Some(&()));
 
     let json_sub_array = &json_map["sub-array"];
-    assert_eq!(json_sub_array[0].get(), Some(&1246.0));
-    assert_eq!(json_sub_array[1].get(), Some(&false));
-    assert_eq!(json_sub_array[2].get(), Some(&"Moin".to_string()));
+    assert!(
+        matches!(json_sub_array, KvsValue::Array(_)),
+        "Expected sub-array to be an Array"
+    );
+    if let KvsValue::Array(arr) = json_sub_array {
+        assert_eq!(arr[0].get(), Some(&1246.0));
+        assert_eq!(arr[1].get(), Some(&false));
+        assert_eq!(arr[2].get(), Some(&"Moin".to_string()));
+    }
 
     // test for non-existent values
     assert_eq!(

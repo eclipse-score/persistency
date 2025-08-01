@@ -1,25 +1,73 @@
+// Copyright (c) 2025 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+
 use crate::error_code::ErrorCode;
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_value::{KvsMap, KvsValue};
 use std::fs;
 use std::path::PathBuf;
 
+// for creating jsonvalue obj
+use std::collections::HashMap;
+
 use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
+
+// Example of how KvsValue is stored in the JSON file (t-tagged format):
+// {
+//   "my_int": { "t": "i32", "v": 42 },
+//   "my_float": { "t": "f64", "v": 3.1415 },
+//   "my_bool": { "t": "bool", "v": true },
+//   "my_string": { "t": "str", "v": "hello" },
+//   "my_array": { "t": "arr", "v": [ ... ] },
+//   "my_object": { "t": "obj", "v": { ... } },
+//   "my_null": { "t": "null", "v": null }
+// }
 
 /// Backend-specific JsonValue -> KvsValue conversion.
 impl From<JsonValue> for KvsValue {
     fn from(val: JsonValue) -> KvsValue {
         match val {
-            JsonValue::Number(n) => KvsValue::Number(n),
-            JsonValue::Boolean(b) => KvsValue::Boolean(b),
-            JsonValue::String(s) => KvsValue::String(s),
-            JsonValue::Null => KvsValue::Null,
-            JsonValue::Array(arr) => KvsValue::Array(arr.into_iter().map(KvsValue::from).collect()),
-            JsonValue::Object(obj) => KvsValue::Object(
-                obj.into_iter()
-                    .map(|(k, v)| (k.clone(), KvsValue::from(v)))
-                    .collect(),
-            ),
+            JsonValue::Object(mut obj) => {
+                // Type-tagged: { "t": ..., "v": ... }
+                if let (Some(JsonValue::String(type_str)), Some(value)) =
+                    (obj.remove("t"), obj.remove("v"))
+                {
+                    return match (type_str.as_str(), value) {
+                        ("i32", JsonValue::Number(v)) => KvsValue::I32(v as i32),
+                        ("u32", JsonValue::Number(v)) => KvsValue::U32(v as u32),
+                        ("i64", JsonValue::Number(v)) => KvsValue::I64(v as i64),
+                        ("u64", JsonValue::Number(v)) => KvsValue::U64(v as u64),
+                        ("f64", JsonValue::Number(v)) => KvsValue::F64(v),
+                        ("bool", JsonValue::Boolean(v)) => KvsValue::Boolean(v),
+                        ("str", JsonValue::String(v)) => KvsValue::String(v),
+                        ("null", JsonValue::Null) => KvsValue::Null,
+                        ("arr", JsonValue::Array(v)) => {
+                            KvsValue::Array(v.into_iter().map(KvsValue::from).collect())
+                        }
+                        ("obj", JsonValue::Object(v)) => KvsValue::Object(
+                            v.into_iter().map(|(k, v)| (k, KvsValue::from(v))).collect(),
+                        ),
+                        // Remaining types can be handled with Null.
+                        _ => KvsValue::Null,
+                    };
+                }
+                // If not a t-tagged object, treat as a map of key-value pairs (KvsMap)
+                let map: KvsMap = obj
+                    .into_iter()
+                    .map(|(k, v)| (k, KvsValue::from(v)))
+                    .collect();
+                KvsValue::Object(map)
+            }
+            // Remaining types can be handled with Null.
+            _ => KvsValue::Null,
         }
     }
 }
@@ -27,20 +75,60 @@ impl From<JsonValue> for KvsValue {
 /// Backend-specific KvsValue -> JsonValue conversion.
 impl From<KvsValue> for JsonValue {
     fn from(val: KvsValue) -> JsonValue {
+        let mut obj = HashMap::new();
         match val {
-            KvsValue::Number(n) => JsonValue::Number(n),
-            KvsValue::Boolean(b) => JsonValue::Boolean(b),
-            KvsValue::String(s) => JsonValue::String(s),
-            KvsValue::Null => JsonValue::Null,
-            KvsValue::Array(arr) => {
-                JsonValue::Array(arr.into_iter().map(JsonValue::from).collect())
+            KvsValue::I32(n) => {
+                obj.insert("t".to_string(), JsonValue::String("i32".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(n as f64));
             }
-            KvsValue::Object(map) => JsonValue::Object(
-                map.into_iter()
-                    .map(|(k, v)| (k.clone(), JsonValue::from(v)))
-                    .collect(),
-            ),
+            KvsValue::U32(n) => {
+                obj.insert("t".to_string(), JsonValue::String("u32".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(n as f64));
+            }
+            KvsValue::I64(n) => {
+                obj.insert("t".to_string(), JsonValue::String("i64".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(n as f64));
+            }
+            KvsValue::U64(n) => {
+                obj.insert("t".to_string(), JsonValue::String("u64".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(n as f64));
+            }
+            KvsValue::F64(n) => {
+                obj.insert("t".to_string(), JsonValue::String("f64".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(n));
+            }
+            KvsValue::Boolean(b) => {
+                obj.insert("t".to_string(), JsonValue::String("bool".to_string()));
+                obj.insert("v".to_string(), JsonValue::Boolean(b));
+            }
+            KvsValue::String(s) => {
+                obj.insert("t".to_string(), JsonValue::String("str".to_string()));
+                obj.insert("v".to_string(), JsonValue::String(s));
+            }
+            KvsValue::Null => {
+                obj.insert("t".to_string(), JsonValue::String("null".to_string()));
+                obj.insert("v".to_string(), JsonValue::Null);
+            }
+            KvsValue::Array(arr) => {
+                obj.insert("t".to_string(), JsonValue::String("arr".to_string()));
+                obj.insert(
+                    "v".to_string(),
+                    JsonValue::Array(arr.into_iter().map(JsonValue::from).collect()),
+                );
+            }
+            KvsValue::Object(map) => {
+                obj.insert("t".to_string(), JsonValue::String("obj".to_string()));
+                obj.insert(
+                    "v".to_string(),
+                    JsonValue::Object(
+                        map.into_iter()
+                            .map(|(k, v)| (k, JsonValue::from(v)))
+                            .collect(),
+                    ),
+                );
+            }
         }
+        JsonValue::Object(obj)
     }
 }
 

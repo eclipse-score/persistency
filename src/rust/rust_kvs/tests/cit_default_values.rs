@@ -21,7 +21,23 @@ fn write_defaults_file(
 ) -> Result<(), ErrorCode> {
     let filepath = dir_string.join(format!("kvs_{instance}_default.json"));
 
-    let json = JsonValue::from(data);
+    // Convert HashMap<String, JsonValue> to t-tagged format
+    let mut tagged_map = HashMap::new();
+    for (k, v) in data.into_iter() {
+        let t = match &v {
+            JsonValue::Number(_) => "f64", // always treat as f64 for compatibility
+            JsonValue::Boolean(_) => "bool",
+            JsonValue::String(_) => "str",
+            JsonValue::Array(_) => "arr",
+            JsonValue::Object(_) => "obj",
+            JsonValue::Null => "null",
+        };
+        let mut tagged = HashMap::new();
+        tagged.insert("v".to_string(), v);
+        tagged.insert("t".to_string(), JsonValue::String(t.to_string()));
+        tagged_map.insert(k, JsonValue::Object(tagged));
+    }
+    let json = JsonValue::Object(tagged_map);
     let mut buf = Vec::new();
     let mut gen = JsonGenerator::new(&mut buf).indent("  ");
     gen.generate(&json)?;
