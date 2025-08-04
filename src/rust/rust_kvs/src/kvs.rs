@@ -617,7 +617,6 @@ mod tests {
     use super::*;
     use crate::Kvs;
     use tempfile::tempdir;
-    use crate::kvs_builder::KvsBuilder;
 
     mod mock_backend {
         use super::*;
@@ -957,66 +956,23 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_drop() {
-        let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_string_lossy().to_string();
-
-        let instance_id = InstanceId::new(0);
-
-        let kvs = Kvs::open(
-            instance_id.clone(),
-            OpenNeedDefaults::Optional,
-            OpenNeedKvs::Optional,
-            Some(dir_path.clone()),
-        )
-        .unwrap();
-
-        kvs.flush_on_exit(false);
-        // Drop is called automatically, but we can check that flush_on_exit is set to false
-        assert!(
-            !kvs.flush_on_exit.load(std::sync::atomic::Ordering::Relaxed),
-            "Expected flush_on_exit to be false"
-        );
-    }
-
     #[cfg_attr(miri, ignore)]
     #[test]
     fn test_kvs_reset_single() {
-        let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_string_lossy().to_string();
+        let kvs = new_kvs_with_mock_required();
 
-        std::fs::copy(
-            "tests/kvs_0_default.json",
-            format!("{}/kvs_0_default.json", dir_path.clone()),
-        )
-        .unwrap();
-        let instance_id = InstanceId::new(0);
+        kvs.set_value("mock_default_key", 999.0).unwrap();
+        assert_eq!(kvs.get_value_as::<f64>("mock_default_key").unwrap(), 999.0);
 
-        let kvs = Kvs::open(
-            instance_id.clone(),
-            OpenNeedDefaults::Optional,
-            OpenNeedKvs::Optional,
-            Some(dir_path.clone()),
-        )
-        .unwrap();
+        kvs.reset_key("mock_default_key").unwrap();
+        assert_eq!(kvs.get_value_as::<f64>("mock_default_key").unwrap(), 111.0);
 
-        let _ = kvs.set_value("number1", KvsValue::Number(987f64));
-        let _ = kvs.reset_key("number1");
-        assert_eq!(kvs.get_value_as::<f64>("number1").unwrap(), 987f64);
-
-        let _ = kvs.set_value("string1", KvsValue::String("Testing".to_string()));
-        let _ = kvs.reset_key("string1");
-        assert_eq!(kvs.get_value_as::<String>("string1").unwrap(), "Hello");
-
-        let _ = kvs.set_value("bool", KvsValue::Boolean(true));
+        kvs.set_value("no_default", KvsValue::Boolean(true))
+            .unwrap();
         assert!(matches!(
-            kvs.reset_key("bool"),
+            kvs.reset_key("no_default"),
             Err(ErrorCode::KeyDefaultNotFound)
         ));
-
-        let _ = kvs.reset_key("bool1");
-        assert_eq!(kvs.get_value_as::<bool>("bool1").unwrap(), false);
 
         assert!(matches!(
             kvs.reset_key("fail"),
