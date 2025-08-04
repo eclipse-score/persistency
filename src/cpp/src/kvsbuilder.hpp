@@ -32,6 +32,8 @@ namespace score::mw::pers::kvs {
  *  #include <iostream>
  *  #include "kvsbuilder.hpp"
  *
+ *  using namespace score::mw::pers::kvs;
+ *
  *  int main() {
  *    // Open kvs
  *    auto open_res = KvsBuilder(0)
