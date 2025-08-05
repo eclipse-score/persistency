@@ -259,6 +259,27 @@ impl<J: KvsBackend> KvsApi for GenericKvs<J> {
         Ok(())
     }
 
+    /// Reset a key-value pair in the storage to its initial state
+    ///
+    /// # Parameters
+    ///    * 'key': Key being reset to default
+    ///
+    /// # Return Values
+    ///    * Ok: Reset of the key-value pair was successful
+    ///    * `ErrorCode::MutexLockFailed`: Mutex locking failed
+    ///    * `ErrorCode::KeyDefaultNotFound`: Key has no default value
+    fn reset_key(&self, key: &str) -> Result<(), ErrorCode> {
+        let mut kvs = self.kvs.lock()?;
+
+        if self.default.get(key).is_none() {
+            eprintln!("error: resetting key without a default value");
+            return Err(ErrorCode::KeyDefaultNotFound);
+        }
+
+        let _ = kvs.remove(key);
+        Ok(())
+    }
+
     /// Get list of all keys
     ///
     /// # Return Values
@@ -933,6 +954,30 @@ mod tests {
         if kvs.snapshot_count() > 0 {
             kvs.snapshot_restore(SnapshotId::new(1)).unwrap();
         }
+    }
+
+    #[cfg_attr(miri, ignore)]
+    #[test]
+    fn test_kvs_reset_single() {
+        let kvs = new_kvs_with_mock_required();
+
+        kvs.set_value("mock_default_key", 999.0).unwrap();
+        assert_eq!(kvs.get_value_as::<f64>("mock_default_key").unwrap(), 999.0);
+
+        kvs.reset_key("mock_default_key").unwrap();
+        assert_eq!(kvs.get_value_as::<f64>("mock_default_key").unwrap(), 111.0);
+
+        kvs.set_value("no_default", KvsValue::Boolean(true))
+            .unwrap();
+        assert!(matches!(
+            kvs.reset_key("no_default"),
+            Err(ErrorCode::KeyDefaultNotFound)
+        ));
+
+        assert!(matches!(
+            kvs.reset_key("fail"),
+            Err(ErrorCode::KeyDefaultNotFound)
+        ));
     }
 
     #[test]
