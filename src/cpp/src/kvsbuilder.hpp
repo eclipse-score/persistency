@@ -16,7 +16,7 @@
 #include <string>
 #include "kvs.hpp"
 
-namespace score::mw::pers::kvs {
+namespace score::mw::per::kvs {
 
 /**
  * @class KvsBuilder
@@ -32,7 +32,7 @@ namespace score::mw::pers::kvs {
  *  #include <iostream>
  *  #include "kvsbuilder.hpp"
  *
- *  using namespace score::mw::pers::kvs;
+ *  using namespace score::mw::per::kvs;
  *
  *  int main() {
  *    // Open kvs
@@ -103,6 +103,6 @@ private:
     std::string                        directory;     ///< Directory where to store the KVS Files
 };
 
-} /* namespace score::mw::pers::kvs */
+} /* namespace score::mw::per::kvs */
 
 #endif /* SCORE_LIB_KVS_KVSBUILDER_HPP */

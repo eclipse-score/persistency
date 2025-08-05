@@ -12,7 +12,7 @@
 ********************************************************************************/
 #include "error.hpp"
 
-namespace score::mw::pers::kvs {
+namespace score::mw::per::kvs {
 
 /*********************** Error Implementation *********************/
 std::string_view MyErrorDomain::MessageFor(score::result::ErrorCode const& code) const noexcept
@@ -96,4 +96,4 @@ score::result::Error MakeError(ErrorCode code, std::string_view user_message) no
     return {static_cast<score::result::ErrorCode>(code), my_error_domain, user_message};
 }
 
-} /* namespace score::mw::pers::kvs */
+} /* namespace score::mw::per::kvs */

@@ -20,7 +20,7 @@
 #undef private
 #undef final
 #include "internal/kvs_helper.hpp"
-using namespace score::mw::pers::kvs;
+using namespace score::mw::per::kvs;
 
 static void BM_get_hash_bytes(benchmark::State& state) {
     // Prepare a test string of configurable size

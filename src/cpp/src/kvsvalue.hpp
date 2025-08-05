@@ -19,7 +19,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace score::mw::pers::kvs {
+namespace score::mw::per::kvs {
 
 /* Define the KvsValue class*/
 /**
@@ -104,6 +104,6 @@ private:
     Type type;
 };
 
-} /* namespace score::mw::pers::kvs */
+} /* namespace score::mw::per::kvs */
 
 #endif /* SCORE_LIB_KVS_KVSVALUE_HPP */

@@ -29,7 +29,7 @@
 
 #define KVS_MAX_SNAPSHOTS 3
 
-namespace score::mw::pers::kvs {
+namespace score::mw::per::kvs {
 
 struct InstanceId {
     size_t id;
@@ -387,6 +387,6 @@ class Kvs final {
         score::ResultBlank write_json_data(const std::string& buf);
 };
 
-} /* namespace score::mw::pers::kvs */
+} /* namespace score::mw::per::kvs */
 
 #endif /* SCORE_LIB_KVS_KVS_HPP */
