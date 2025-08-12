@@ -52,6 +52,12 @@ List all targets:
 bazel query //...
 ```
 
+List currated available targets with description:
+
+```bash
+bazel run //:help
+```
+
 Build selected target:
 
 ```bash

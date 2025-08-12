@@ -106,3 +106,5 @@ git_override(
     commit = "46923f5c4f302bd9feae0261588687aaf32e3c5c",
     remote = "https://github.com/eclipse-score/baselibs.git",
 )
+
+bazel_dep(name = "score_cli_helper", version = "0.1.2")
