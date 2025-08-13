@@ -11,6 +11,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
+load("@score_cli_helper//:cli_helper.bzl", "cli_helper")
 load("@score_cr_checker//:cr_checker.bzl", "copyright_checker")
 load("@score_dash_license_checker//:dash.bzl", "dash_license_checker")
 load("@score_docs_as_code//:docs.bzl", "docs")
@@ -52,12 +53,18 @@ dash_license_checker(
     visibility = ["//visibility:public"],
 )
 
+cli_helper(
+    name = "cli-help",
+    visibility = ["//visibility:public"],
+)
+
 # Add target for formatting checks
 use_format_targets()
 
 alias(
     name = "kvs_cpp",
     actual = "//src/cpp/src:kvs_cpp",
+    tags = ["cli_help=Build KVS CPP [build]"],
     visibility = ["//visibility:public"],
 )
 
