@@ -1,0 +1,7 @@
+{
+    "name": "eclipse-s-core",
+    // "image": "ghcr.io/eclipse-score/devcontainer:latest"
+    "build": {
+        "dockerfile": "Dockerfile"
+    }
+}
