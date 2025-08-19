@@ -32,7 +32,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--build-scenarios",
         action="store_true",
-        help="Build test scenarios executables",
+        help="Build test scenarios executables.",
     )
     parser.addoption(
         "--build-scenarios-timeout",

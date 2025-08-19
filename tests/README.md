@@ -71,10 +71,6 @@ pytest -v . --build-scenarios --self-contained-html --html report.html --traces 
 
 Test scenarios can be run independently from `pytest`.
 
-CLI interface is same for both Rust and C++ implementation.
-Executables are interactive by default and prompt will require test input to be provided.
-E.g., `{"kvs_parameters":{"instance_id":0,"flush_on_exit":false}}`.
-
 ### Rust
 
 Set current working directory to the following:

@@ -265,7 +265,7 @@ dependencies = [
 [[package]]
 name = "test_scenarios_rust"
 version = "0.2.0"
-source = "git+https://github.com/qorix-group/testing_tools.git?rev=2c58adab6118d0c768492a68aabdba93d5cbeda8#2c58adab6118d0c768492a68aabdba93d5cbeda8"
+source = "git+https://github.com/qorix-group/testing_tools.git?tag=v0.2.0#a847c7464cfa47e000141631d1223b92560d2e58"
 dependencies = [
  "tracing",
  "tracing-subscriber",
