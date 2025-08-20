@@ -52,7 +52,7 @@ List all targets:
 bazel query //...
 ```
 
-List currated available targets with description:
+List curated available targets with description:
 
 ```bash
 bazel run //:help
@@ -98,7 +98,7 @@ Run all tests:
 bazel test //...
 ```
 
-Run Component Integration Tests (groupped into single Test Suite):
+Run Component Integration Tests (grouped into single Test Suite):
 
 ```bash
 bazel test //src/rust/rust_kvs:cit
@@ -151,7 +151,7 @@ Options:
 Usage Examples:
 
 Read a Key and show value:
-    kvs_tool -o getkey -k MyKey [optional: -t for type, if not specified, String is used. Panic if not correct type!]                  
+    kvs_tool -o getkey -k MyKey [optional: -t for type, if not specified, String is used. Panic if not correct type!]
     kvs_tool -o getkey -k MyKey -t number (or -t n)
     kvs_tool -o getkey -k MyKey -t bool (or -t b)
     kvs_tool -o getkey -k MyKey -t array (or -t a)
@@ -162,12 +162,12 @@ Read a Key and show value:
 Write a Key and use the <payload> as the data source:
     kvs_tool -o setkey  -k MyKey -p 'Hello World' (automatically detects following types: Number, Boolean, String, Null, Object, Array)
     kvs_tool -o setkey  -k MyKey -p 'true'
-    kvs_tool -o setkey  -k MyKey -p 15                   
+    kvs_tool -o setkey  -k MyKey -p 15
     kvs_tool -o setkey  -k MyKey -p '[456,false,"Second"]'
     kvs_tool -o setkey  -k MyKey -p '{"sub-number":789,"sub-string":"Third","sub-bool":true,"sub-array":[1246,false,"Fourth"],"sub-null":null}'
 
 Delete a key:
-    kvs_tool -o removekey -k MyKey    
+    kvs_tool -o removekey -k MyKey
 
 List Keys:
     kvs_tool -o listkeys
@@ -190,8 +190,8 @@ Get Hash Filename:
 ---------------------------------------
 
 Create Test Data:
-    kvs_tool -o createtestdata (Creates Data provided by the example code in the KVS API)             
-    
+    kvs_tool -o createtestdata (Creates Data provided by the example code in the KVS API)
+
 ---------------------------------------
 ```
 
@@ -201,4 +201,19 @@ Using `cargo test`:
 
 ```bash
 cargo test
+```
+
+### Run examples with Cargo
+
+Examples can be run `cargo run`.
+Following examples are available: `basic`, `defaults`, `flush`, `snapshots`.
+
+```bash
+cargo run --example <EXAMPLE_NAME>
+```
+
+Basic example command:
+
+```bash
+cargo run --example basic
 ```
