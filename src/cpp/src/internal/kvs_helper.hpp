@@ -19,7 +19,7 @@
 #include "kvsvalue.hpp"
 #include "score/json/json_parser.h" /* For JSON Any Type */
 
-/* 
+/*
  * This header defines helper functions used internally by the Key-Value Store (KVS) implementation.
  * It exists to allow unit tests to access these internal functions.
  */
