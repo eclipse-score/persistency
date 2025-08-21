@@ -1,4 +1,4 @@
-use rust_kvs::prelude::*;
+use rust_kvs::{kvs_api::FlushOnExit, prelude::*};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use test_scenarios_rust::scenario::Scenario;
@@ -46,9 +46,14 @@ impl Scenario for BasicScenario {
         }
 
         // Create KVS.
-        let kvs: Kvs = builder.build().unwrap();
+        let mut kvs: Kvs = builder.build().unwrap();
         if let Some(flag) = params.flush_on_exit {
-            kvs.flush_on_exit(flag);
+            let mode = if flag {
+                FlushOnExit::Yes
+            } else {
+                FlushOnExit::No
+            };
+            kvs.set_flush_on_exit(mode);
         }
 
         // Simple set/get.

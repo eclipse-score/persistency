@@ -13,11 +13,10 @@
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
-use std::sync::atomic::{self, AtomicBool};
 use std::sync::Mutex;
 
 use crate::error_code::ErrorCode;
-use crate::kvs_api::{InstanceId, KvsApi, SnapshotId};
+use crate::kvs_api::{FlushOnExit, InstanceId, KvsApi, SnapshotId};
 use crate::kvs_api::{OpenNeedDefaults, OpenNeedKvs};
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_value::{KvsMap, KvsValue};
@@ -43,7 +42,7 @@ pub struct GenericKvs<J: KvsBackend> {
     filename_prefix: PathBuf,
 
     /// Flush on exit flag
-    flush_on_exit: AtomicBool,
+    flush_on_exit: FlushOnExit,
 
     _backend: std::marker::PhantomData<J>,
 }
@@ -176,8 +175,10 @@ impl<J: KvsBackend> GenericKvs<J> {
 impl<J: KvsBackend> KvsApi for GenericKvs<J> {
     /// Open the key-value-storage
     ///
-    /// Checks and opens a key-value-storage. Flush on exit is enabled by default and can be
-    /// controlled with [`flush_on_exit`](Self::flush_on_exit).
+    /// Checks and opens a key-value-storage.
+    ///
+    /// Flush on exit is enabled by default.
+    /// It can be controlled with [`flush_on_exit`](Self::flush_on_exit) and [`set_flush_on_exit`](Self::set_flush_on_exit).
     ///
     /// # Features
     ///   * `FEAT_REQ__KVS__default_values`
@@ -235,18 +236,25 @@ impl<J: KvsBackend> KvsApi for GenericKvs<J> {
             kvs: Mutex::new(kvs),
             default,
             filename_prefix,
-            flush_on_exit: AtomicBool::new(true),
+            flush_on_exit: FlushOnExit::Yes,
             _backend: std::marker::PhantomData,
         })
     }
 
-    /// Control the flush on exit behaviour
+    /// Get current flush on exit behavior.
+    ///
+    /// # Return Values
+    ///    * `FlushOnExit`: Current flush on exit behavior.
+    fn flush_on_exit(&self) -> FlushOnExit {
+        self.flush_on_exit.clone()
+    }
+
+    /// Control the flush on exit behavior
     ///
     /// # Parameters
-    ///   * `flush_on_exit`: Flag to control flush-on-exit behaviour
-    fn flush_on_exit(&self, flush_on_exit: bool) {
-        self.flush_on_exit
-            .store(flush_on_exit, atomic::Ordering::Relaxed);
+    ///   * `flush_on_exit`: Flag to control flush-on-exit behavior
+    fn set_flush_on_exit(&mut self, flush_on_exit: FlushOnExit) {
+        self.flush_on_exit = flush_on_exit;
     }
 
     /// Resets a key-value-storage to its initial state
@@ -603,7 +611,7 @@ impl<J: KvsBackend> KvsApi for GenericKvs<J> {
 
 impl<J: KvsBackend> Drop for GenericKvs<J> {
     fn drop(&mut self) {
-        if self.flush_on_exit.load(atomic::Ordering::Relaxed) {
+        if self.flush_on_exit() == FlushOnExit::Yes {
             if let Err(e) = self.flush() {
                 eprintln!("GenericKvs::flush() failed in Drop: {e:?}");
             }
@@ -616,11 +624,13 @@ mod kvs_tests {
     use crate::error_code::ErrorCode;
     use crate::json_backend::JsonBackend;
     use crate::kvs::{GenericKvs, KVS_MAX_SNAPSHOTS};
-    use crate::kvs_api::{InstanceId, KvsApi, OpenNeedDefaults, OpenNeedKvs, SnapshotId};
+    use crate::kvs_api::{
+        FlushOnExit, InstanceId, KvsApi, OpenNeedDefaults, OpenNeedKvs, SnapshotId,
+    };
     use crate::kvs_backend::KvsBackend;
     use crate::kvs_value::{KvsMap, KvsValue};
     use std::path::PathBuf;
-    use std::sync::{atomic, Mutex};
+    use std::sync::Mutex;
     use tempfile::tempdir;
 
     /// Most tests can be performed with mocked backend.
@@ -1010,9 +1020,17 @@ mod kvs_tests {
     fn test_flush_on_exit() {
         let kvs = get_kvs::<MockBackend>(PathBuf::new(), KvsMap::new(), KvsMap::new());
 
-        assert!(kvs.flush_on_exit.load(atomic::Ordering::Relaxed));
-        kvs.flush_on_exit(false);
-        assert!(!kvs.flush_on_exit.load(atomic::Ordering::Relaxed));
+        assert_eq!(kvs.flush_on_exit(), FlushOnExit::Yes);
+    }
+
+    #[test]
+    fn test_set_flush_on_exit() {
+        let mut kvs = get_kvs::<MockBackend>(PathBuf::new(), KvsMap::new(), KvsMap::new());
+
+        kvs.set_flush_on_exit(FlushOnExit::Yes);
+        assert_eq!(kvs.flush_on_exit(), FlushOnExit::Yes);
+        kvs.set_flush_on_exit(FlushOnExit::No);
+        assert_eq!(kvs.flush_on_exit(), FlushOnExit::No);
     }
 
     #[test]
@@ -1183,8 +1201,8 @@ mod kvs_tests {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
         {
-            let kvs = get_kvs::<JsonBackend>(dir_path.clone(), KvsMap::new(), KvsMap::new());
-            kvs.flush_on_exit(true);
+            let mut kvs = get_kvs::<JsonBackend>(dir_path.clone(), KvsMap::new(), KvsMap::new());
+            kvs.set_flush_on_exit(FlushOnExit::Yes);
             kvs.set_value("key", "value").unwrap();
         }
 

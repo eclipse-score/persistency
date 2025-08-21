@@ -100,13 +100,13 @@ fn cit_persistency_flush_on_exit_disabled_drop_data() -> Result<(), ErrorCode> {
 
     {
         // First KVS run.
-        let kvs = Kvs::open(
+        let mut kvs = Kvs::open(
             InstanceId(0),
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
         )?;
-        kvs.flush_on_exit(false);
+        kvs.set_flush_on_exit(FlushOnExit::No);
 
         // Set values.
         for (key, value) in kv_values.iter() {
@@ -158,13 +158,13 @@ fn cit_persistency_flush_on_exit_disabled_manual_flush() -> Result<(), ErrorCode
 
     {
         // First KVS run.
-        let kvs = Kvs::open(
+        let mut kvs = Kvs::open(
             InstanceId(0),
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
         )?;
-        kvs.flush_on_exit(false);
+        kvs.set_flush_on_exit(FlushOnExit::No);
 
         // Set values.
         for (key, value) in kv_values.iter() {
