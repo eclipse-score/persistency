@@ -21,7 +21,7 @@
 //! ## Usage
 //!
 //! ```text
-//!    
+//!
 //!    Options:
 //!    -h, --help          Show this help message and exit
 //!    -o, --operation     Specify the operation to perform (setkey, getkey, removekey, listkeys, reset, snapshotcount, snapshotmaxcount, snapshotrestore, getkvsfilename, gethashfilename, createtestdata)
@@ -29,53 +29,53 @@
 //!    -p, --payload       Specify the value to write (for set operations)
 //!    -t, --type          Specify the value type for get operations (number, bool, string, null, array, object or first letter as a short form: n = number (except NULL))
 //!    -s, --snapshotid    Specify the snapshot ID for Snapshot operations
-//!    
+//!
 //!    ---------------------------------------
-//!    
+//!
 //!    Usage Examples:
-//!    
+//!
 //!    Read a Key and show value:
-//!        kvs_tool -o getkey -k MyKey [optional: -t for type, if not specified, String is used. Panic if not correct type!]                  
+//!        kvs_tool -o getkey -k MyKey [optional: -t for type, if not specified, String is used. Panic if not correct type!]
 //!        kvs_tool -o getkey -k MyKey -t number (or -t n)
 //!        kvs_tool -o getkey -k MyKey -t bool (or -t b)
 //!        kvs_tool -o getkey -k MyKey -t array (or -t a)
 //!        kvs_tool -o getkey -k MyKey -t object (or -t o)
 //!        kvs_tool -o getkey -k MyKey -t string (or -t s or no type specification at all => string is default)
 //!        kvs_tool -o getkey -k MyKey -t null
-//!    
+//!
 //!    Write a Key and use the <payload> as the data source:
 //!        kvs_tool -o setkey  -k MyKey -p 'Hello World' (automatically detects following types: Number, Boolean, String, Null, Object, Array)
 //!        kvs_tool -o setkey  -k MyKey -p 'true'
-//!        kvs_tool -o setkey  -k MyKey -p 15                   
+//!        kvs_tool -o setkey  -k MyKey -p 15
 //!        kvs_tool -o setkey  -k MyKey -p '[456,false,"Second"]'
 //!        kvs_tool -o setkey  -k MyKey -p '{"sub-number":789,"sub-string":"Third","sub-bool":true,"sub-array":[1246,false,"Fourth"],"sub-null":null}'
-//!    
+//!
 //!    Delete a key:
-//!        kvs_tool -o removekey -k MyKey    
-//!    
+//!        kvs_tool -o removekey -k MyKey
+//!
 //!    List Keys:
 //!        kvs_tool -o listkeys
-//!    
+//!
 //!    Reset KVS:
 //!        kvs_tool -o reset
-//!    
+//!
 //!    Snapshot Count:
 //!        kvs_tool -o snapshotcount
-//!    
+//!
 //!    Snapshot Restore:
 //!        kvs_tool -o snapshotrestore -s 1
-//!    
+//!
 //!    Get KVS Filename:
 //!        kvs_tool -o getkvsfilename -s 1
-//!    
+//!
 //!    Get Hash Filename:
 //!        kvs_tool -o gethashfilename -s 1
-//!    
+//!
 //!    ---------------------------------------
-//!    
+//!
 //!    Create Test Data:
 //!        kvs_tool -o createtestdata (Creates Data provided by the example code in the KVS API)
-//!        
+//!
 //! ```
 //!
 
@@ -541,14 +541,14 @@ fn main() -> Result<(), ErrorCode> {
 
     if args.contains(["-h", "--help"]) {
         const HELP: &str = r#"
-        
+
         ---------------------------------------
         KVS Tool - Command Line Interface
         ---------------------------------------
-    
+
         Version 0.1.0
         Author: Joshua Licht, Continental Automotive Technologies GmbH - Contributors to the Eclipse Foundation
-    
+
         ---------------------------------------
 
         Options:
@@ -558,13 +558,13 @@ fn main() -> Result<(), ErrorCode> {
         -p, --payload       Specify the value to write (for set operations)
         -t, --type          Specify the value type for get operations (number, bool, string, null, array, object or first letter as a short form: n = number (except NULL))
         -s, --snapshotid    Specify the snapshot ID for Snapshot operations
-        
+
         ---------------------------------------
-    
+
         Usage Examples:
 
         Read a Key and show value:
-            kvs_tool -o getkey -k MyKey [optional: -t for type, if not specified, String is used. Panic if not correct type!]                  
+            kvs_tool -o getkey -k MyKey [optional: -t for type, if not specified, String is used. Panic if not correct type!]
             kvs_tool -o getkey -k MyKey -t number (or -t n)
             kvs_tool -o getkey -k MyKey -t bool (or -t b)
             kvs_tool -o getkey -k MyKey -t array (or -t a)
@@ -575,12 +575,12 @@ fn main() -> Result<(), ErrorCode> {
         Write a Key and use the <payload> as the data source:
             kvs_tool -o setkey  -k MyKey -p 'Hello World' (automatically detects following types: Number, Boolean, String, Null, Object, Array)
             kvs_tool -o setkey  -k MyKey -p 'true'
-            kvs_tool -o setkey  -k MyKey -p 15                   
+            kvs_tool -o setkey  -k MyKey -p 15
             kvs_tool -o setkey  -k MyKey -p '[456,false,"Second"]'
             kvs_tool -o setkey  -k MyKey -p '{"sub-number":789,"sub-string":"Third","sub-bool":true,"sub-array":[1246,false,"Fourth"],"sub-null":null}'
 
         Delete a key:
-            kvs_tool -o removekey -k MyKey    
+            kvs_tool -o removekey -k MyKey
 
         List Keys:
             kvs_tool -o listkeys
@@ -590,7 +590,7 @@ fn main() -> Result<(), ErrorCode> {
 
         Snapshot Count:
             kvs_tool -o snapshotcount
-        
+
         Snapshot Restore:
             kvs_tool -o snapshotrestore -s 1
 
@@ -603,8 +603,8 @@ fn main() -> Result<(), ErrorCode> {
         ---------------------------------------
 
         Create Test Data:
-            kvs_tool -o createtestdata (Creates Data provided by the example code in the KVS API)             
-            
+            kvs_tool -o createtestdata (Creates Data provided by the example code in the KVS API)
+
         ---------------------------------------
 
         "#;

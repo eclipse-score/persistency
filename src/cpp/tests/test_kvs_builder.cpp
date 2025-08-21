@@ -15,7 +15,7 @@
 
 TEST(kvs_kvsbuilder, kvsbuilder_build) {
     /* This test also checks the kvs open function with the KvsBuilder */
-    
+
     /* Test the KvsBuilder constructor */
     KvsBuilder builder(instance_id);
     EXPECT_EQ(builder.instance_id.id, instance_id.id);
@@ -49,7 +49,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_build) {
 
 TEST(kvs_kvsbuilder, kvsbuilder_directory_check) {
 
-    /* Test the KvsBuilder with all configurations for the current working directory */    
+    /* Test the KvsBuilder with all configurations for the current working directory */
     KvsBuilder builder(instance_id);
     builder.dir("");
     auto result_build = builder.build();

@@ -23,10 +23,10 @@ namespace score::mw::per::kvs {
  * @brief Builder for opening a KVS object.
  * This class allows configuration of various options for opening a KVS instance,
  * such as whether default values are required, whether the KVS data must already exist.
- * 
+ *
  * Important: You don't need to include any other header files to use the KVS.
  * For documentation of the KVS Functions, refer to the kvs.hpp documentation.
- * 
+ *
  * \brief Example Usage
  * \code
  *  #include <iostream>

@@ -15,7 +15,7 @@
 #include <string>
 
 #define private public
-#define final 
+#define final
 #include "kvsbuilder.hpp"
 #undef private
 #undef final

@@ -63,7 +63,7 @@ enum class ErrorCode : score::result::ErrorCode {
 
     /* Key not found*/
     KeyNotFound,
-    
+
     /* Key default value not found*/
     KeyDefaultNotFound,
 

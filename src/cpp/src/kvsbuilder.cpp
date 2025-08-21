@@ -45,14 +45,14 @@ score::Result<Kvs> KvsBuilder::build() {
     if ("" == directory) {
         directory = "./";
     }
-    
+
     result = Kvs::open(
         instance_id,
         need_defaults ? OpenNeedDefaults::Required : OpenNeedDefaults::Optional,
         need_kvs      ? OpenNeedKvs::Required      : OpenNeedKvs::Optional,
         std::move(directory)
     );
-    
+
     return result;
 }
 
