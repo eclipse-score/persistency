@@ -251,11 +251,11 @@ score::ResultBlank Kvs::reset() {
 }
 
 /* Retrieve all keys in the KVS*/
-score::Result<std::vector<std::string_view>> Kvs::get_all_keys() {
-    score::Result<std::vector<std::string_view>> result = score::MakeUnexpected(ErrorCode::UnmappedError);
+score::Result<std::vector<std::string>> Kvs::get_all_keys() {
+    score::Result<std::vector<std::string>> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock()) {
-        std::vector<std::string_view> keys;
+        std::vector<std::string> keys;
         keys.reserve(kvs.size());
         for (const auto& [key, _] : kvs) {
             keys.emplace_back(key);

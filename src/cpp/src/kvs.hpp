@@ -185,7 +185,7 @@ class Kvs final {
          *         A score::Result object containing a vector of all written keys on success,
          *         or an Errorcode on failure.
          */
-        score::Result<std::vector<std::string_view>> get_all_keys();
+        score::Result<std::vector<std::string>> get_all_keys();
 
 
         /**

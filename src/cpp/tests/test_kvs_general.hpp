@@ -26,7 +26,7 @@
 
 /* Change Private Members and final to public to allow access to member variables (kvs and kvsbuilder) and derive from kvsvalue in unittests*/
 #define private public
-#define final 
+#define final
 #include "kvsbuilder.hpp"
 #undef private
 #undef final
