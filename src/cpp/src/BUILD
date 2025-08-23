@@ -49,6 +49,7 @@ cc_library(
         "//src/cpp/src/internal:error",
         "@score-baselibs//score/filesystem:filesystem",
         "@score-baselibs//score/json",
+        "@score-baselibs//score/mw/log",
         "@score-baselibs//score/result:result",
     ],
 )
