@@ -250,7 +250,7 @@ mod tests {
     #[test]
     fn test_builder_only_instance_id() {
         let instance_id = InstanceId(42);
-        let builder = KvsBuilder::<StubKvs>::new(instance_id.clone());
+        let builder = KvsBuilder::<StubKvs>::new(instance_id);
         let kvs = builder.build().unwrap();
         assert_eq!(kvs.instance_id().clone(), instance_id);
         assert_eq!(kvs.need_defaults().clone(), OpenNeedDefaults::Optional);
@@ -261,7 +261,7 @@ mod tests {
     #[test]
     fn test_builder_need_defaults() {
         let instance_id = InstanceId(1);
-        let builder = KvsBuilder::<StubKvs>::new(instance_id.clone()).need_defaults(true);
+        let builder = KvsBuilder::<StubKvs>::new(instance_id).need_defaults(true);
         let kvs = builder.build().unwrap();
         assert_eq!(kvs.instance_id().clone(), instance_id);
         assert_eq!(kvs.need_defaults().clone(), OpenNeedDefaults::Required);
@@ -272,7 +272,7 @@ mod tests {
     #[test]
     fn test_builder_need_kvs() {
         let instance_id = InstanceId(1);
-        let builder = KvsBuilder::<StubKvs>::new(instance_id.clone()).need_kvs(true);
+        let builder = KvsBuilder::<StubKvs>::new(instance_id).need_kvs(true);
         let kvs = builder.build().unwrap();
         assert_eq!(kvs.instance_id().clone(), instance_id);
         assert_eq!(kvs.need_defaults().clone(), OpenNeedDefaults::Optional);
@@ -284,7 +284,7 @@ mod tests {
     fn test_builder_dir() {
         let instance_id = InstanceId(1);
         let dir = "/tmp/test_kvs".to_string();
-        let builder = KvsBuilder::<StubKvs>::new(instance_id.clone()).dir(dir.clone());
+        let builder = KvsBuilder::<StubKvs>::new(instance_id).dir(dir.clone());
         let kvs = builder.build().unwrap();
         assert_eq!(kvs.instance_id().clone(), instance_id);
         assert_eq!(kvs.need_defaults().clone(), OpenNeedDefaults::Optional);
@@ -296,7 +296,7 @@ mod tests {
     fn test_builder_chained() {
         let instance_id = InstanceId(1);
         let dir = "/tmp/test_kvs".to_string();
-        let builder = KvsBuilder::<StubKvs>::new(instance_id.clone())
+        let builder = KvsBuilder::<StubKvs>::new(instance_id)
             .need_defaults(true)
             .need_kvs(true)
             .dir(dir.clone());

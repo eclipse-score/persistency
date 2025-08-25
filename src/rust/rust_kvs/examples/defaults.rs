@@ -39,7 +39,7 @@ fn main() -> Result<(), ErrorCode> {
     let instance_id = InstanceId(0);
 
     // Create and save defaults file.
-    create_defaults_file(dir.path().to_path_buf(), instance_id.clone())?;
+    create_defaults_file(dir.path().to_path_buf(), instance_id)?;
 
     // Build KVS instance for given instance ID and temporary directory.
     // `need_defaults` is set to `true` - defaults are required.

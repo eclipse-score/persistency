@@ -18,7 +18,7 @@ use crate::error_code::ErrorCode;
 use crate::kvs_value::KvsValue;
 
 /// Instance ID
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct InstanceId(pub usize);
 
 impl fmt::Display for InstanceId {
@@ -34,7 +34,7 @@ impl From<InstanceId> for usize {
 }
 
 /// Snapshot ID
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SnapshotId(pub usize);
 
 impl fmt::Display for SnapshotId {
