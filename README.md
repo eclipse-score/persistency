@@ -17,6 +17,12 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Setup
 
+> [!NOTE]
+> This repository offers a [DevContainer](https://containers.dev/).
+> For setting this up and enabling code completion read [eclipse-score/devcontainer/README.md#inside-the-container](https://github.com/eclipse-score/devcontainer/blob/main/README.md#inside-the-container).
+
+If you chose not to use the devcontainer you have to setup the following dependencies yourself.
+
 ### System dependencies
 
 ```bash
