@@ -34,10 +34,10 @@ fn main() -> Result<(), ErrorCode> {
         {
             // Build KVS instance for given instance ID and temporary directory.
             let builder = KvsBuilder::<Kvs>::new(instance_id.clone()).dir(dir_string.clone());
-            let kvs = builder.build()?;
+            let mut kvs = builder.build()?;
 
             // Disable flush on exit.
-            kvs.flush_on_exit(false);
+            kvs.set_flush_on_exit(FlushOnExit::No);
 
             // Set value - will be dropped on going out of scope.
             kvs.set_value("k1", "v1")?;
@@ -55,10 +55,10 @@ fn main() -> Result<(), ErrorCode> {
         {
             // Build KVS instance for given instance ID and temporary directory.
             let builder = KvsBuilder::<Kvs>::new(instance_id.clone()).dir(dir_string.clone());
-            let kvs = builder.build()?;
+            let mut kvs = builder.build()?;
 
             // Explicitly enable flush on exit - this is the default.
-            kvs.flush_on_exit(true);
+            kvs.set_flush_on_exit(FlushOnExit::Yes);
 
             // Set value.
             kvs.set_value("k1", "v1")?;
@@ -76,10 +76,10 @@ fn main() -> Result<(), ErrorCode> {
         {
             // Build KVS instance for given instance ID and temporary directory.
             let builder = KvsBuilder::<Kvs>::new(instance_id.clone()).dir(dir_string.clone());
-            let kvs = builder.build()?;
+            let mut kvs = builder.build()?;
 
             // Disable flush on exit.
-            kvs.flush_on_exit(false);
+            kvs.set_flush_on_exit(FlushOnExit::No);
 
             // Set value.
             kvs.set_value("k2", "v2")?;
@@ -94,8 +94,8 @@ fn main() -> Result<(), ErrorCode> {
             let builder = KvsBuilder::<Kvs>::new(instance_id.clone())
                 .dir(dir_string)
                 .need_kvs(true);
-            let kvs = builder.build()?;
-            kvs.flush_on_exit(false);
+            let mut kvs = builder.build()?;
+            kvs.set_flush_on_exit(FlushOnExit::No);
 
             let k1_key = "k1";
             let k1_value = kvs.get_value(k1_key)?;

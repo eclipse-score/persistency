@@ -18,8 +18,8 @@ fn main() -> Result<(), ErrorCode> {
 
         // Build KVS instance for given instance ID and temporary directory.
         let builder = KvsBuilder::<Kvs>::new(instance_id.clone()).dir(dir_string.clone());
-        let kvs = builder.build()?;
-        kvs.flush_on_exit(false);
+        let mut kvs = builder.build()?;
+        kvs.set_flush_on_exit(FlushOnExit::No);
 
         let max_count = Kvs::snapshot_max_count() as u32;
         println!("Max snapshot count: {max_count:?}");
@@ -40,8 +40,8 @@ fn main() -> Result<(), ErrorCode> {
 
         // Build KVS instance for given instance ID and temporary directory.
         let builder = KvsBuilder::<Kvs>::new(instance_id.clone()).dir(dir_string.clone());
-        let kvs = builder.build()?;
-        kvs.flush_on_exit(false);
+        let mut kvs = builder.build()?;
+        kvs.set_flush_on_exit(FlushOnExit::No);
 
         let max_count = Kvs::snapshot_max_count() as u32;
         let counter_key = "counter";
