@@ -83,6 +83,7 @@ public:
     explicit KvsValue(uint64_t number) : value(number), type(Type::u64) {}
     explicit KvsValue(double number) : value(number), type(Type::f64) {}
     explicit KvsValue(bool boolean) : value(boolean), type(Type::Boolean) {}
+    explicit KvsValue(const char* str) : value(std::string(str)), type(Type::String) {}
     explicit KvsValue(const std::string& str) : value(str), type(Type::String) {}
     explicit KvsValue(std::nullptr_t) : value(nullptr), type(Type::Null) {}
     explicit KvsValue(const Array& array) ;
