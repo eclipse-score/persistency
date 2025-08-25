@@ -98,14 +98,14 @@ fn cit_persistency_multiple_instances_same_id_common_value() -> Result<(), Error
     {
         // Create first KVS instance.
         let kvs1 = Kvs::open(
-            instance_id.clone(),
+            instance_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
         )?;
         // Create second KVS instance.
         let kvs2 = Kvs::open(
-            instance_id.clone(),
+            instance_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
@@ -120,13 +120,13 @@ fn cit_persistency_multiple_instances_same_id_common_value() -> Result<(), Error
     {
         // Second KVS run.
         let kvs1 = Kvs::open(
-            instance_id.clone(),
+            instance_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
         )?;
         let kvs2 = Kvs::open(
-            instance_id.clone(),
+            instance_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
@@ -165,14 +165,14 @@ fn cit_persistency_multiple_instances_same_id_interfere() -> Result<(), ErrorCod
     {
         // Create first KVS instance.
         let kvs1 = Kvs::open(
-            instance_id.clone(),
+            instance_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
         )?;
         // Create second KVS instance.
         let kvs2 = Kvs::open(
-            instance_id.clone(),
+            instance_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
@@ -187,13 +187,13 @@ fn cit_persistency_multiple_instances_same_id_interfere() -> Result<(), ErrorCod
     {
         // Second KVS run.
         let kvs1 = Kvs::open(
-            instance_id.clone(),
+            instance_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
         )?;
         let kvs2 = Kvs::open(
-            instance_id.clone(),
+            instance_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),

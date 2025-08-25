@@ -112,7 +112,7 @@ fn cit_snapshots_snapshot_restore_previous_snapshot() -> Result<(), ErrorCode> {
     // Arrange.
     let instance_id = InstanceId(0);
     let num_snapshots = 4;
-    let kvs = init_kvs(instance_id.clone(), dir_string, num_snapshots)?;
+    let kvs = init_kvs(instance_id, dir_string, num_snapshots)?;
 
     // Assert.
     kvs.snapshot_restore(SnapshotId(3))?;
@@ -129,7 +129,7 @@ fn cit_snapshots_snapshot_restore_current_snapshot() -> Result<(), ErrorCode> {
     // Arrange.
     let instance_id = InstanceId(0);
     let num_snapshots = 2;
-    let kvs = init_kvs(instance_id.clone(), dir_string.clone(), num_snapshots)?;
+    let kvs = init_kvs(instance_id, dir_string.clone(), num_snapshots)?;
 
     // Assert.
     let result = kvs.snapshot_restore(SnapshotId(0));
@@ -146,7 +146,7 @@ fn cit_snapshots_snapshot_restore_nonexisting_snapshot() -> Result<(), ErrorCode
     // Arrange.
     let instance_id = InstanceId(0);
     let num_snapshots = 2;
-    let kvs = init_kvs(instance_id.clone(), dir_string.clone(), num_snapshots)?;
+    let kvs = init_kvs(instance_id, dir_string.clone(), num_snapshots)?;
 
     // Assert.
     let result = kvs.snapshot_restore(SnapshotId(3));
@@ -163,7 +163,7 @@ fn cit_snapshots_get_kvs_filename_existing_snapshot() -> Result<(), ErrorCode> {
     // Arrange.
     let instance_id = InstanceId(0);
     let num_snapshots = 2;
-    let kvs = init_kvs(instance_id.clone(), dir_string.clone(), num_snapshots)?;
+    let kvs = init_kvs(instance_id, dir_string.clone(), num_snapshots)?;
 
     // Assert.
     let last_snapshot_index = num_snapshots - 1;
@@ -204,7 +204,7 @@ fn cit_snapshots_get_hash_filename_existing_snapshot() -> Result<(), ErrorCode> 
     // Arrange.
     let instance_id = InstanceId(0);
     let num_snapshots = 2;
-    let kvs = init_kvs(instance_id.clone(), dir_string.clone(), num_snapshots)?;
+    let kvs = init_kvs(instance_id, dir_string.clone(), num_snapshots)?;
 
     // Assert.
     let last_snapshot_index = num_snapshots - 1;

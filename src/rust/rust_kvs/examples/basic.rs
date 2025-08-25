@@ -19,7 +19,7 @@ fn main() -> Result<(), ErrorCode> {
         // Build KVS instance for given instance ID and temporary directory.
         // `need_kvs` is explicitly set to `false`, but this is the default value.
         // KVS files are not required.
-        let builder = KvsBuilder::<Kvs>::new(instance_id.clone())
+        let builder = KvsBuilder::<Kvs>::new(instance_id)
             .dir(dir_string.clone())
             .need_kvs(false);
         let kvs = builder.build()?;

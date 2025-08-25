@@ -17,7 +17,7 @@ use tinyjson::{JsonGenerator, JsonValue};
 fn write_defaults_file(
     dir_string: &Path,
     data: HashMap<String, JsonValue>,
-    instance: &InstanceId,
+    instance: InstanceId,
 ) -> Result<(), ErrorCode> {
     let filepath = dir_string.join(format!("kvs_{instance}_default.json"));
 
@@ -64,21 +64,21 @@ fn cit_persistency_default_values() -> Result<(), ErrorCode> {
     write_defaults_file(
         dir.path(),
         HashMap::from([(keyname.clone(), JsonValue::from(default_value))]),
-        &default_id,
+        default_id,
     )?;
 
     // Assertions.
     {
         // KVS instance with defaults.
         let kvs_with_defaults = Kvs::open(
-            default_id.clone(),
+            default_id,
             OpenNeedDefaults::Required,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
         )?;
         // KVS instance without defaults.
         let kvs_without_defaults = Kvs::open(
-            non_default_id.clone(),
+            non_default_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
@@ -124,14 +124,14 @@ fn cit_persistency_default_values() -> Result<(), ErrorCode> {
     {
         // KVS instance with defaults.
         let kvs_with_defaults = Kvs::open(
-            default_id.clone(),
+            default_id,
             OpenNeedDefaults::Required,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
         )?;
         // KVS instance without defaults.
         let kvs_without_defaults = Kvs::open(
-            non_default_id.clone(),
+            non_default_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
@@ -167,7 +167,7 @@ fn cit_persistency_default_values_optional() -> Result<(), ErrorCode> {
     write_defaults_file(
         dir.path(),
         HashMap::from([(keyname.clone(), JsonValue::from(default_value))]),
-        &default_id,
+        default_id,
     )
     .unwrap();
 
@@ -176,7 +176,7 @@ fn cit_persistency_default_values_optional() -> Result<(), ErrorCode> {
         // KVS instance with present defaults file and optional defaults setting
         // (should load defaults).
         let kvs_optional_defaults = Kvs::open(
-            default_id.clone(),
+            default_id,
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
@@ -213,14 +213,14 @@ fn cit_persistency_defaults_enabled_values_removal() -> Result<(), ErrorCode> {
     write_defaults_file(
         dir.path(),
         HashMap::from([(keyname.clone(), JsonValue::from(default_value))]),
-        &default_id,
+        default_id,
     )?;
 
     // Assertions.
     {
         // KVS instance with defaults.
         let kvs_with_defaults = Kvs::open(
-            default_id.clone(),
+            default_id,
             OpenNeedDefaults::Required,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),
@@ -310,7 +310,7 @@ fn cit_persistency_invalid_default_values() -> Result<(), ErrorCode> {
 
     // Assertions: opening should fail due to invalid JSON
     let kvs = Kvs::open(
-        default_id.clone(),
+        default_id,
         OpenNeedDefaults::Required,
         OpenNeedKvs::Optional,
         Some(dir_string.clone()),
@@ -343,14 +343,14 @@ fn cit_persistency_reset_all_default_values() -> Result<(), ErrorCode> {
             (keyname1.clone(), JsonValue::from(default_value)),
             (keyname2.clone(), JsonValue::from(default_value)),
         ]),
-        &default_id,
+        default_id,
     )?;
 
     // Assertions.
     {
         // KVS instance with defaults.
         let kvs_with_defaults = Kvs::open(
-            default_id.clone(),
+            default_id,
             OpenNeedDefaults::Required,
             OpenNeedKvs::Optional,
             Some(dir_string.clone()),

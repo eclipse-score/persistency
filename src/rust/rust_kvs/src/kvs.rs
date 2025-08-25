@@ -1046,7 +1046,7 @@ mod kvs_tests {
         kvs.flush().unwrap();
         let snapshot_id = SnapshotId(0);
         // Functions below check if file exist.
-        kvs.get_kvs_filename(snapshot_id.clone()).unwrap();
+        kvs.get_kvs_filename(snapshot_id).unwrap();
         kvs.get_hash_filename(snapshot_id).unwrap();
     }
 
