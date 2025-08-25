@@ -46,7 +46,7 @@ impl Scenario for BasicScenario {
         }
 
         // Create KVS.
-        let mut kvs: Kvs = builder.build().unwrap();
+        let kvs: Kvs = builder.build().unwrap();
         if let Some(flag) = params.flush_on_exit {
             let mode = if flag {
                 FlushOnExit::Yes

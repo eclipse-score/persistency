@@ -127,7 +127,7 @@ pub trait KvsApi {
     ) -> Result<(), ErrorCode>;
     fn remove_key(&self, key: &str) -> Result<(), ErrorCode>;
     fn flush_on_exit(&self) -> FlushOnExit;
-    fn set_flush_on_exit(&mut self, flush_on_exit: FlushOnExit);
+    fn set_flush_on_exit(&self, flush_on_exit: FlushOnExit);
     fn flush(&self) -> Result<(), ErrorCode>;
     fn snapshot_count(&self) -> usize;
     fn snapshot_max_count() -> usize

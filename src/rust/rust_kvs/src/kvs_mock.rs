@@ -46,7 +46,7 @@ impl KvsApi for MockKvs {
     fn flush_on_exit(&self) -> FlushOnExit {
         FlushOnExit::No
     }
-    fn set_flush_on_exit(&mut self, _flush_on_exit: FlushOnExit) {}
+    fn set_flush_on_exit(&self, _flush_on_exit: FlushOnExit) {}
     fn reset(&self) -> Result<(), ErrorCode> {
         if self.fail {
             return Err(ErrorCode::UnmappedError);
