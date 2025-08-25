@@ -37,6 +37,7 @@ Kvs::Kvs()
     , filesystem(std::make_unique<score::filesystem::Filesystem>(score::filesystem::FilesystemFactory{}.CreateInstance())) /* Create Filesystem instance, noexcept call */
     , parser(std::make_unique<score::json::JsonParser>())
     , writer(std::make_unique<score::json::JsonWriter>())
+    , logger(std::make_unique<score::mw::log::Logger>("SKVS"))
 {
 }
 
@@ -46,6 +47,7 @@ Kvs::Kvs(Kvs&& other) noexcept
     , filesystem(std::move(other.filesystem))
     , parser(std::move(other.parser)) /* Not absolutely necessary, because a new JSON writer/parser object would also be okay*/
     , writer(std::move(other.writer))
+    , logger(std::move(other.logger))
 {
     {
         std::lock_guard<std::mutex> lock(other.kvs_mutex);
@@ -85,6 +87,7 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
             Not absolutely necessary, because a new JSON writer/parser object would also be okay*/
         parser = std::move(other.parser);
         writer = std::move(other.writer);
+        logger = std::move(other.logger);
     }
     return *this;
 }
@@ -141,11 +144,11 @@ score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const score::
     ifstream in(json_file.CStr());
     if (!in) {
         if (need_file == OpenJsonNeedFile::Required) {
-            cerr << "error: file " << json_file << " could not be read" << endl;
+            logger->LogError() << "error: file " << json_file << " could not be read";
             error = true;
             result = score::MakeUnexpected(ErrorCode::KvsFileReadError);
         }else{
-            cout << "file " << json_file << " not found, using empty data" << endl;
+            logger->LogInfo() << "file " << json_file << " not found, using empty data";
             new_kvs = true;
             result = score::Result<std::unordered_map<string,KvsValue>>({});
         }
@@ -159,18 +162,18 @@ score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const score::
     if((!error) && (!new_kvs)){
         ifstream hin(hash_file.CStr(), ios::binary);
         if (!hin) {
-            cerr << "error: hash file " << hash_file << " could not be read" << endl;
+            logger->LogError() << "error: hash file " << hash_file << " could not be read";
             error = true;
             result = score::MakeUnexpected(ErrorCode::KvsHashFileReadError);
 
         }else{
             bool valid_hash = check_hash(data, hin);
             if(!valid_hash){
-                cerr << "error: KVS data corrupted (" << json_file << ", " << hash_file << ")" << endl;
+                logger->LogError() << "error: KVS data corrupted (" << json_file << ", " << hash_file << ")";
                 error = true;
                 result = score::MakeUnexpected(ErrorCode::ValidationFailed);
             }else{
-                cout << "JSON data has valid hash" << endl;
+                logger->LogInfo() << "JSON data has valid hash";
             }
         }
     }
@@ -179,7 +182,7 @@ score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const score::
     if((!error) && (!new_kvs)){
         auto parse_res = parse_json_data(data);
         if (!parse_res) {
-            cerr << "error: parsing JSON data failed" << endl;
+            logger->LogError() << "error: parsing JSON data failed";
             error = true;
             result = score::MakeUnexpected(static_cast<ErrorCode>(*parse_res.error()));
         }else{
@@ -214,13 +217,12 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id, OpenNeedDefaults nee
         if (!kvs_res){
             result = score::MakeUnexpected(static_cast<ErrorCode>(*kvs_res.error()));
         }else{
-            cout << "opened KVS: instance '" << instance_id.id << "'" << endl;
-            cout << "max snapshot count: " << KVS_MAX_SNAPSHOTS << endl;
-
             kvs.kvs = std::move(kvs_res.value());
             kvs.default_values = std::move(default_res.value());
             kvs.filename_prefix = filename_prefix;
             kvs.flush_on_exit.store(true, std::memory_order_relaxed);
+            kvs.logger->LogInfo() << "opened KVS: instance '" << instance_id.id << "'";
+            kvs.logger->LogInfo() << "max snapshot count: " << KVS_MAX_SNAPSHOTS;
             result = std::move(kvs);
         }
     }
@@ -422,7 +424,7 @@ score::ResultBlank Kvs::write_json_data(const std::string& buf)
             }
         }
     } else {
-        std::cerr << "Failed to create directory for KVS file '" << json_path.CStr() << "'\n";
+        logger->LogError() << "Failed to create directory for KVS file '" << json_path << "'";
         result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
     }
 
@@ -522,13 +524,13 @@ score::ResultBlank Kvs::snapshot_rotate() {
             score::filesystem::Path snap_old = filename_prefix.Native() + "_" + to_string(idx - 1) + ".json";
             score::filesystem::Path snap_new = filename_prefix.Native() + "_" + to_string(idx)     + ".json";
 
-            cout << "rotating: " << snap_old << " -> " << snap_new << endl;
+            logger->LogInfo() << "rotating: " << snap_old << " -> " << snap_new;
             /* Rename hash */
             int32_t hash_rename = std::rename(hash_old.CStr(), hash_new.CStr());
             if (0 != hash_rename) {
                 if (errno != ENOENT) {
                     error = true;
-                    cout << "error: could not rename hash file " << snap_old << ". Rename Errorcode " << errno << endl;
+                    logger->LogError() << "error: could not rename hash file " << snap_old << ". Rename Errorcode " << errno;
                     result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
                 }
             }
@@ -538,7 +540,7 @@ score::ResultBlank Kvs::snapshot_rotate() {
                 if (0 != snap_rename) {
                     if (errno != ENOENT) {
                         error = true;
-                        cout << "error: could not rename snapshot file " << snap_old << ". Rename Errorcode " << errno << endl;
+                        logger->LogError() << "error: could not rename snapshot file " << snap_old << ". Rename Errorcode " << errno;
                         result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
                     }
                 }

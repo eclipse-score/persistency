@@ -26,6 +26,7 @@
 #include "score/json/json_parser.h"
 #include "score/json/json_writer.h"
 #include "score/result/result.h"
+#include "score/mw/log/logger.h"
 
 #define KVS_MAX_SNAPSHOTS 3
 
@@ -380,11 +381,15 @@ class Kvs final {
         std::unique_ptr<score::json::IJsonParser> parser;
         std::unique_ptr<score::json::IJsonWriter> writer;
 
+        /* Logging */
+        std::unique_ptr<score::mw::log::Logger> logger;
+
         /* Private Methods */
         score::ResultBlank snapshot_rotate();
         score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
         score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix, OpenJsonNeedFile need_file);
         score::ResultBlank write_json_data(const std::string& buf);
+
 };
 
 } /* namespace score::mw::per::kvs */
