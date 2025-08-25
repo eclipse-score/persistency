@@ -215,7 +215,7 @@ mod tests {
             unimplemented!()
         }
 
-        fn set_flush_on_exit(&mut self, _flush_on_exit: FlushOnExit) {
+        fn set_flush_on_exit(&self, _flush_on_exit: FlushOnExit) {
             unimplemented!()
         }
 

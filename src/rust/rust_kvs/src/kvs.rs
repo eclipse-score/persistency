@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-//std dependencies
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
@@ -42,7 +42,7 @@ pub struct GenericKvs<J: KvsBackend> {
     filename_prefix: PathBuf,
 
     /// Flush on exit flag
-    flush_on_exit: FlushOnExit,
+    flush_on_exit: RefCell<FlushOnExit>,
 
     _backend: std::marker::PhantomData<J>,
 }
@@ -236,7 +236,7 @@ impl<J: KvsBackend> KvsApi for GenericKvs<J> {
             kvs: Mutex::new(kvs),
             default,
             filename_prefix,
-            flush_on_exit: FlushOnExit::Yes,
+            flush_on_exit: RefCell::new(FlushOnExit::Yes),
             _backend: std::marker::PhantomData,
         })
     }
@@ -246,15 +246,15 @@ impl<J: KvsBackend> KvsApi for GenericKvs<J> {
     /// # Return Values
     ///    * `FlushOnExit`: Current flush on exit behavior.
     fn flush_on_exit(&self) -> FlushOnExit {
-        self.flush_on_exit.clone()
+        self.flush_on_exit.borrow().clone()
     }
 
     /// Control the flush on exit behavior
     ///
     /// # Parameters
     ///   * `flush_on_exit`: Flag to control flush-on-exit behavior
-    fn set_flush_on_exit(&mut self, flush_on_exit: FlushOnExit) {
-        self.flush_on_exit = flush_on_exit;
+    fn set_flush_on_exit(&self, flush_on_exit: FlushOnExit) {
+        *self.flush_on_exit.borrow_mut() = flush_on_exit
     }
 
     /// Resets a key-value-storage to its initial state
@@ -1025,7 +1025,7 @@ mod kvs_tests {
 
     #[test]
     fn test_set_flush_on_exit() {
-        let mut kvs = get_kvs::<MockBackend>(PathBuf::new(), KvsMap::new(), KvsMap::new());
+        let kvs = get_kvs::<MockBackend>(PathBuf::new(), KvsMap::new(), KvsMap::new());
 
         kvs.set_flush_on_exit(FlushOnExit::Yes);
         assert_eq!(kvs.flush_on_exit(), FlushOnExit::Yes);
@@ -1201,7 +1201,7 @@ mod kvs_tests {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
         {
-            let mut kvs = get_kvs::<JsonBackend>(dir_path.clone(), KvsMap::new(), KvsMap::new());
+            let kvs = get_kvs::<JsonBackend>(dir_path.clone(), KvsMap::new(), KvsMap::new());
             kvs.set_flush_on_exit(FlushOnExit::Yes);
             kvs.set_value("key", "value").unwrap();
         }

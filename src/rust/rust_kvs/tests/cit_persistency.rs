@@ -100,7 +100,7 @@ fn cit_persistency_flush_on_exit_disabled_drop_data() -> Result<(), ErrorCode> {
 
     {
         // First KVS run.
-        let mut kvs = Kvs::open(
+        let kvs = Kvs::open(
             InstanceId(0),
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
@@ -158,7 +158,7 @@ fn cit_persistency_flush_on_exit_disabled_manual_flush() -> Result<(), ErrorCode
 
     {
         // First KVS run.
-        let mut kvs = Kvs::open(
+        let kvs = Kvs::open(
             InstanceId(0),
             OpenNeedDefaults::Optional,
             OpenNeedKvs::Optional,
