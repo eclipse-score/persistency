@@ -6,9 +6,8 @@ rust_binary(
     srcs = glob(["src/**/*.rs"]),
     visibility = ["//visibility:private"],
     deps =
-        ["//src/rust/rust_kvs"] +
-        all_crate_deps(
-            normal = True,
-            normal_dev = True,
-        ),
+        [
+            "//src/rust/rust_kvs",
+            "@score_persistency_crates//:tinyjson",
+        ] + all_crate_deps(normal = True),
 )
