@@ -1,11 +1,21 @@
-from abc import abstractmethod
 import json
+from abc import abstractmethod
 from typing import Any
+
 import pytest
 from common_scenario import CommonScenario
-from testing_utils import ScenarioResult, LogContainer, BazelTools, BuildTools
+from testing_utils import BazelTools, BuildTools, LogContainer, ScenarioResult
 
 
+@pytest.mark.PartiallyVerifies(
+    ["comp_req__persistency__key_encoding", "comp_req__persistency__value_data_types"]
+)
+@pytest.mark.FullyVerifies([])
+@pytest.mark.Description(
+    "Verifies that KVS supports UTF-8 string keys for storing and retrieving values."
+)
+@pytest.mark.TestType("requirements-based")
+@pytest.mark.DerivationTechnique("interface-test")
 class TestSupportedDatatypesKeys(CommonScenario):
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
@@ -31,6 +41,15 @@ class TestSupportedDatatypesKeys(CommonScenario):
         assert len(act_keys.symmetric_difference(exp_keys)) == 0
 
 
+@pytest.mark.PartiallyVerifies(
+    ["comp_req__persistency__key_encoding", "comp_req__persistency__value_data_types"]
+)
+@pytest.mark.FullyVerifies([])
+@pytest.mark.Description(
+    "Verifies that KVS supports UTF-8 string keys for storing and retrieving values."
+)
+@pytest.mark.TestType("requirements-based")
+@pytest.mark.DerivationTechnique("interface-test")
 class TestSupportedDatatypesValues(CommonScenario):
     @abstractmethod
     def exp_key(self) -> str:
