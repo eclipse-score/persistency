@@ -5,6 +5,7 @@ edition.workspace = true
 
 [dependencies]
 rust_kvs.workspace = true
+tinyjson.workspace = true
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["json"] }
 serde = { version = "1.0.219", features = ["derive"] }

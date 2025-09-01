@@ -1,17 +1,7 @@
-use rust_kvs::{kvs_api::FlushOnExit, prelude::*};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use crate::helpers::kvs_parameters::KvsParameters;
+use rust_kvs::prelude::*;
 use test_scenarios_rust::scenario::Scenario;
 use tracing::info;
-
-#[derive(Serialize, Deserialize, Debug)]
-struct KvsParameters {
-    instance_id: usize,
-    need_defaults: Option<bool>,
-    need_kvs: Option<bool>,
-    dir: Option<String>,
-    flush_on_exit: Option<bool>,
-}
 
 fn _error_code_to_string(e: ErrorCode) -> String {
     format!("ErrorCode::{e:?}")
@@ -29,31 +19,30 @@ impl Scenario for BasicScenario {
         // Print and parse parameters.
         eprintln!("{}", input.clone().unwrap());
 
-        let v: Value = serde_json::from_str(input.as_deref().unwrap()).unwrap();
-        let params: KvsParameters = serde_json::from_value(v["kvs_parameters"].clone()).unwrap();
+        let params = KvsParameters::from_json(input.as_ref().unwrap()).unwrap();
 
         // Set builder parameters.
-        let instance_id = InstanceId(params.instance_id);
-        let mut builder = KvsBuilder::new(instance_id);
+        let mut builder = KvsBuilder::new(params.instance_id);
         if let Some(flag) = params.need_defaults {
-            builder = builder.need_defaults(flag);
+            builder = builder.need_defaults(match flag {
+                OpenNeedDefaults::Optional => false,
+                OpenNeedDefaults::Required => true,
+            });
         }
         if let Some(flag) = params.need_kvs {
-            builder = builder.need_kvs(flag);
+            builder = builder.need_kvs(match flag {
+                OpenNeedKvs::Optional => false,
+                OpenNeedKvs::Required => true,
+            });
         }
         if let Some(dir) = params.dir {
-            builder = builder.dir(dir);
+            builder = builder.dir(dir.to_string_lossy().to_string());
         }
 
         // Create KVS.
         let kvs: Kvs = builder.build().unwrap();
         if let Some(flag) = params.flush_on_exit {
-            let mode = if flag {
-                FlushOnExit::Yes
-            } else {
-                FlushOnExit::No
-            };
-            kvs.set_flush_on_exit(mode);
+            kvs.set_flush_on_exit(flag);
         }
 
         // Simple set/get.
