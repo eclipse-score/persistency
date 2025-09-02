@@ -1,9 +1,25 @@
 from pathlib import Path
 import pytest
-from testing_utils import Scenario, LogContainer
+from testing_utils import Scenario, LogContainer, BuildTools, BazelTools
+
+
+class ResultCode:
+    """
+    Test scenario exit codes.
+    """
+
+    SUCCESS = 0
+    PANIC = 101
+    SIGKILL = -9
+    SIGABRT = -6
 
 
 class CommonScenario(Scenario):
+    @pytest.fixture(scope="class")
+    def build_tools(self, version: str) -> BuildTools:
+        assert version in ("cpp", "rust")
+        return BazelTools(option_prefix=version)
+
     @pytest.fixture(scope="class")
     def logs_target(self, target_path: Path, logs: LogContainer) -> LogContainer:
         """
@@ -16,7 +32,7 @@ class CommonScenario(Scenario):
         logs : LogContainer
             Unfiltered logs.
         """
-        return logs.get_logs_by_field(field="target", pattern=f"{target_path.name}.*")
+        return logs.get_logs(field="target", pattern=f"{target_path.name}.*")
 
     @pytest.fixture(scope="class")
     def logs_info_level(self, logs_target: LogContainer) -> LogContainer:
@@ -28,7 +44,7 @@ class CommonScenario(Scenario):
         logs_target : LogContainer
             Logs with messages generated strictly by the tested code.
         """
-        return logs_target.get_logs_by_field(field="level", value="INFO")
+        return logs_target.get_logs(field="level", value="INFO")
 
     @pytest.fixture(autouse=True)
     def print_to_report(

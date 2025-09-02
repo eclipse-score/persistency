@@ -6,7 +6,7 @@ use serde_json::Value;
 use std::path::PathBuf;
 
 /// KVS parameters in serde-compatible format.
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct KvsParameters {
     #[serde(deserialize_with = "deserialize_instance_id")]
     pub instance_id: InstanceId,
