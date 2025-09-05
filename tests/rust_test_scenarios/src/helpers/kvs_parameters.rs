@@ -7,6 +7,7 @@ use std::path::PathBuf;
 
 /// KVS parameters in serde-compatible format.
 #[derive(Deserialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct KvsParameters {
     #[serde(deserialize_with = "deserialize_instance_id")]
     pub instance_id: InstanceId,
