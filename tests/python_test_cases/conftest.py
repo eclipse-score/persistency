@@ -133,4 +133,15 @@ def pytest_terminal_summary(terminalreporter):
 def pytest_collection_modifyitems(items: list[pytest.Function]):
     for item in items:
         for marker in item.iter_markers():
+            markers_to_process = (
+                "PartiallyVerifies",
+                "FullyVerifies",
+                "Description",
+                "TestType",
+                "DerivationTechnique",
+            )
+
+            if marker.name not in markers_to_process:
+                continue
+
             item.user_properties.append((marker.name, marker.args[0]))

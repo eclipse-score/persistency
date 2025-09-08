@@ -87,6 +87,14 @@ impl Scenario for TestFlushOnExit {
             // Second KVS instance object - used for flush check.
             let kvs = kvs_instance(params).unwrap();
 
+            let snapshot_id = SnapshotId(0);
+            let kvs_path_result = kvs.get_kvs_filename(snapshot_id);
+            let hash_path_result = kvs.get_hash_filename(snapshot_id);
+            info!(
+                kvs_path = format!("{kvs_path_result:?}"),
+                hash_path = format!("{hash_path_result:?}")
+            );
+
             // Get values.
             for (key, _) in key_values.iter() {
                 let value = kvs.get_value(key);

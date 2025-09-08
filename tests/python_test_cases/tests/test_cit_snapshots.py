@@ -56,7 +56,7 @@ class TestSnapshotCountFull(TestSnapshotCountFirstFlush):
 
 
 @pytest.mark.PartiallyVerifies(["comp_req__persistency__snapshot_max_num"])
-@pytest.mark.FullyVerifies([""])
+@pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
     "Verifies that the maximum number of snapshots is a constant value."
 )
@@ -118,7 +118,7 @@ class TestSnapshotRestorePrevious(CommonScenario):
 
 
 @pytest.mark.PartiallyVerifies(["comp_req__persistency__snapshot_creation"])
-@pytest.mark.FullyVerifies([""])
+@pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
     "Checks that restoring the current snapshot ID fails with InvalidSnapshotId error."
 )
@@ -161,7 +161,7 @@ class TestSnapshotRestoreCurrent(CommonScenario):
         "comp_req__persistency__snapshot_restore",
     ]
 )
-@pytest.mark.FullyVerifies([""])
+@pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
     "Checks that restoring a non-existing snapshot fails with InvalidSnapshotId error."
 )
@@ -199,7 +199,7 @@ class TestSnapshotRestoreNonexistent(CommonScenario):
 
 
 @pytest.mark.PartiallyVerifies(["comp_req__persistency__snapshot_creation"])
-@pytest.mark.FullyVerifies([""])
+@pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
     "Verifies that the KVS and hash filenames for an existing snapshot is generated correctly."
 )
@@ -233,7 +233,7 @@ class TestSnapshotPathsExist(CommonScenario):
 
 
 @pytest.mark.PartiallyVerifies(["comp_req__persistency__snapshot_creation"])
-@pytest.mark.FullyVerifies([""])
+@pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
     "Checks that requesting the KVS and hash filenames for a non-existing snapshot returns FileNotFound error."
 )

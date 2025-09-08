@@ -111,7 +111,7 @@ impl Scenario for SnapshotPaths {
             info!(
                 kvs_path = format!("{kvs_path_result:?}"),
                 hash_path = format!("{hash_path_result:?}")
-            )
+            );
         }
 
         Ok(())
