@@ -523,8 +523,8 @@ fn main() -> Result<(), ErrorCode> {
     };
 
     let builder = KvsBuilder::new(InstanceId(0))
-        .need_defaults(false)
-        .need_kvs(false);
+        .defaults(KvsDefaults::Optional)
+        .kvs_load(KvsLoad::Optional);
 
     let builder = if let Some(dir) = directory {
         builder.dir(dir)

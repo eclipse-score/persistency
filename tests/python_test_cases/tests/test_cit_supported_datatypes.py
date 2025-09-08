@@ -3,8 +3,10 @@ from abc import abstractmethod
 from typing import Any
 
 import pytest
-from common_scenario import CommonScenario
-from testing_utils import BazelTools, BuildTools, LogContainer, ScenarioResult
+from common import CommonScenario, ResultCode
+from testing_utils import ScenarioResult, LogContainer
+
+pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 
 
 @pytest.mark.PartiallyVerifies(
@@ -25,15 +27,10 @@ class TestSupportedDatatypesKeys(CommonScenario):
     def test_config(self) -> dict[str, Any]:
         return {"kvs_parameters": {"instance_id": 1, "flush_on_exit": False}}
 
-    @pytest.fixture(scope="class", params=["rust"])
-    def build_tools(self, request: pytest.FixtureRequest) -> BuildTools:
-        version = request.param
-        return BazelTools(option_prefix=version)
-
     def test_ok(self, results: ScenarioResult, logs_info_level: LogContainer) -> None:
-        assert results.return_code == 0
+        assert results.return_code == ResultCode.SUCCESS
 
-        logs = logs_info_level.get_logs_by_field(field="key", pattern=".*").get_logs()
+        logs = logs_info_level.get_logs(field="key")
         act_keys = set(map(lambda x: x.key, logs))
         exp_keys = {"example", "emoji ✅❗😀", "greek ημα"}
 
@@ -70,18 +67,11 @@ class TestSupportedDatatypesValues(CommonScenario):
     def test_config(self) -> dict[str, Any]:
         return {"kvs_parameters": {"instance_id": 1, "flush_on_exit": False}}
 
-    @pytest.fixture(scope="class", params=["rust"])
-    def build_tools(self, request: pytest.FixtureRequest) -> BuildTools:
-        version = request.param
-        return BazelTools(option_prefix=version)
-
     def test_ok(self, results: ScenarioResult, logs_info_level: LogContainer) -> None:
-        assert results.return_code == 0
+        assert results.return_code == ResultCode.SUCCESS
 
         # Get log containing type and value.
-        logs = logs_info_level.get_logs_by_field(
-            field="key", value=self.exp_key()
-        ).get_logs()
+        logs = logs_info_level.get_logs(field="key", value=self.exp_key())
         assert len(logs) == 1
         log = logs[0]
 
