@@ -64,8 +64,15 @@ class TestFlushOnExitEnabled(CommonScenario):
             }
         }
 
-    def test_data_stored(self, results: ScenarioResult, logs_info_level: LogContainer):
+    def test_data_stored(
+        self, temp_dir: Path, results: ScenarioResult, logs_info_level: LogContainer
+    ):
         assert results.return_code == ResultCode.SUCCESS
+
+        paths_log = logs_info_level.find_log("kvs_path")
+        assert paths_log is not None
+        assert paths_log.kvs_path == f'Ok("{temp_dir}/kvs_2_0.json")'
+        assert paths_log.hash_path == f'Ok("{temp_dir}/kvs_2_0.hash")'
 
         for i in range(self.NUM_VALUES):
             log = logs_info_level.find_log("key", value=f"test_number_{i}")
@@ -100,7 +107,7 @@ class TestFlushOnExitDisabled(CommonScenario):
     def test_data_dropped(self, results: ScenarioResult, logs_info_level: LogContainer):
         assert results.return_code == ResultCode.SUCCESS
 
-        for i in range(self.NUM_VALUES):
-            log = logs_info_level.find_log("key", value=f"test_number_{i}")
-            assert log is not None
-            assert log.value == "Err(KeyNotFound)"
+        paths_log = logs_info_level.find_log("kvs_path")
+        assert paths_log is not None
+        assert paths_log.kvs_path == "Err(FileNotFound)"
+        assert paths_log.hash_path == "Err(FileNotFound)"
