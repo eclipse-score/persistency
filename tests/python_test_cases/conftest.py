@@ -104,7 +104,15 @@ def pytest_runtest_makereport(item, call):
     report.description = str(item.function.__doc__)
     report.scenario = item.funcargs.get("scenario_name", "")
     report.input = item.funcargs.get("test_config", "")
-    report.command = " ".join(item.funcargs.get("command", ""))
+
+    command = []
+    for token in item.funcargs.get("command", ""):
+        if " " in token:
+            command.append(f"'{token}'")
+        else:
+            command.append(token)
+    report.command = " ".join(command)
+
     # Store failed command for printing in summary
     if report.failed:
         FAILED_CONFIGS.append(
