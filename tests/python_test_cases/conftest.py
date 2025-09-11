@@ -1,4 +1,5 @@
 import json
+import os
 
 import pytest
 from testing_utils import BazelTools
@@ -112,6 +113,15 @@ def pytest_runtest_makereport(item, call):
         else:
             command.append(token)
     report.command = " ".join(command)
+    # If bazel is used, modify command
+    if "BAZEL_VERSION" in os.environ:
+        report.command = report.command.replace(
+            "tests/",
+            "bazel run //tests/",
+        ).replace(
+            " --name",
+            "-- --name",
+        )
 
     # Store failed command for printing in summary
     if report.failed:

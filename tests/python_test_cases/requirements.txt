@@ -1,1 +1,2 @@
+pytest-env==1.1.5
 testing-utils @ git+https://github.com/qorix-group/testing_tools.git@v0.2.2
