@@ -48,9 +48,10 @@ rust.toolchain(
 
 # LLVM Toolchains Rules - host configuration
 bazel_dep(name = "rules_cc", version = "0.1.1")
-bazel_dep(name = "toolchains_llvm", version = "1.2.0")
 
-llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
+bazel_dep(name = "toolchains_llvm", version = "1.2.0", dev_dependency = True)
+
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm", dev_dependency = True)
 llvm.toolchain(
     cxx_standard = {"": "c++17"},
     llvm_version = "19.1.0",
@@ -58,7 +59,10 @@ llvm.toolchain(
 use_repo(llvm, "llvm_toolchain")
 use_repo(llvm, "llvm_toolchain_llvm")
 
-register_toolchains("@llvm_toolchain//:all")
+register_toolchains(
+    "@llvm_toolchain//:all",
+    dev_dependency = True,
+)
 
 ## Bazel registry
 # Module dependencies
