@@ -72,7 +72,15 @@ bazel_dep(name = "googletest", version = "1.17.0.bcr.1")
 bazel_dep(name = "google_benchmark", version = "1.9.4", dev_dependency = True)
 
 ## S-CORE bazel registry
-bazel_dep(name = "score_tooling", version = "1.0.2")
+bazel_dep(name = "score_tooling", version = "1.0.3")
+
+# ToDo: remove this once 1.0.4 is released,
+# since it will contain updated cr_checker
+git_override(
+    module_name = "score_tooling",
+    commit = "654664dae7df2700fd5840c5ed6c07ac6c61705d",  #until 1.0.4 is released
+    remote = "https://github.com/eclipse-score/tooling.git",
+)
 
 # ToDo: implicit dependencies for score_tooling, but needed directly here??
 bazel_dep(name = "aspect_rules_lint", version = "1.10.2")
