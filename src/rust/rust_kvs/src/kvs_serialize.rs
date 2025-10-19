@@ -9,20 +9,43 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+use crate::error_code::ErrorCode;
 use crate::kvs_value::{KvsMap, KvsValue};
 
 /// `KvsValue` serialization trait.
 /// Allows object to be serialized into `KvsValue`.
 pub trait KvsSerialize {
+    type Error;
+
     /// Serialize object to `KvsValue`.
-    fn to_kvs(&self) -> KvsValue;
+    fn to_kvs(&self) -> Result<KvsValue, Self::Error>;
 }
 
-macro_rules! impl_kvs_serialize_for_t_cast {
+macro_rules! impl_kvs_serialize_for_t_unchecked_cast {
     ($t:ty, $internal_t:ty, $variant:ident) => {
         impl KvsSerialize for $t {
-            fn to_kvs(&self) -> KvsValue {
-                KvsValue::$variant(self.clone() as $internal_t)
+            type Error = ErrorCode;
+
+            fn to_kvs(&self) -> Result<KvsValue, Self::Error> {
+                Ok(KvsValue::$variant(self.clone() as $internal_t))
+            }
+        }
+    };
+}
+
+macro_rules! impl_kvs_serialize_for_t_checked_cast {
+    ($t:ty, $internal_t:ty, $variant:ident) => {
+        impl KvsSerialize for $t {
+            type Error = ErrorCode;
+
+            fn to_kvs(&self) -> Result<KvsValue, Self::Error> {
+                if let Ok(casted) = <$internal_t>::try_from(self.clone()) {
+                    Ok(KvsValue::$variant(casted))
+                } else {
+                    Err(ErrorCode::SerializationFailed(
+                        "Value to KvsValue cast failed".to_string(),
+                    ))
+                }
             }
         }
     };
@@ -30,21 +53,27 @@ macro_rules! impl_kvs_serialize_for_t_cast {
 
 macro_rules! impl_kvs_serialize_for_t {
     ($t:ty, $variant:ident) => {
-        impl_kvs_serialize_for_t_cast!($t, $t, $variant);
+        impl KvsSerialize for $t {
+            type Error = ErrorCode;
+
+            fn to_kvs(&self) -> Result<KvsValue, Self::Error> {
+                Ok(KvsValue::$variant(self.clone()))
+            }
+        }
     };
 }
 
-impl_kvs_serialize_for_t_cast!(i8, i32, I32);
-impl_kvs_serialize_for_t_cast!(i16, i32, I32);
+impl_kvs_serialize_for_t_unchecked_cast!(i8, i32, I32);
+impl_kvs_serialize_for_t_unchecked_cast!(i16, i32, I32);
 impl_kvs_serialize_for_t!(i32, I32);
 impl_kvs_serialize_for_t!(i64, I64);
-impl_kvs_serialize_for_t_cast!(isize, i64, I64);
-impl_kvs_serialize_for_t_cast!(u8, u32, U32);
-impl_kvs_serialize_for_t_cast!(u16, u32, U32);
+impl_kvs_serialize_for_t_checked_cast!(isize, i64, I64);
+impl_kvs_serialize_for_t_unchecked_cast!(u8, u32, U32);
+impl_kvs_serialize_for_t_unchecked_cast!(u16, u32, U32);
 impl_kvs_serialize_for_t!(u32, U32);
 impl_kvs_serialize_for_t!(u64, U64);
-impl_kvs_serialize_for_t_cast!(usize, u64, U64);
-impl_kvs_serialize_for_t_cast!(f32, f64, F64);
+impl_kvs_serialize_for_t_checked_cast!(usize, u64, U64);
+impl_kvs_serialize_for_t_unchecked_cast!(f32, f64, F64);
 impl_kvs_serialize_for_t!(f64, F64);
 impl_kvs_serialize_for_t!(bool, Boolean);
 impl_kvs_serialize_for_t!(String, String);
@@ -52,36 +81,48 @@ impl_kvs_serialize_for_t!(Vec<KvsValue>, Array);
 impl_kvs_serialize_for_t!(KvsMap, Object);
 
 impl KvsSerialize for &str {
-    fn to_kvs(&self) -> KvsValue {
-        KvsValue::String(self.to_string())
+    type Error = ErrorCode;
+
+    fn to_kvs(&self) -> Result<KvsValue, Self::Error> {
+        Ok(KvsValue::String(self.to_string()))
     }
 }
 
 impl KvsSerialize for () {
-    fn to_kvs(&self) -> KvsValue {
-        KvsValue::Null
+    type Error = ErrorCode;
+
+    fn to_kvs(&self) -> Result<KvsValue, Self::Error> {
+        Ok(KvsValue::Null)
     }
 }
 
 /// `KvsValue` deserialization trait.
 /// Allows object to be deserialized from `KvsValue`.
 pub trait KvsDeserialize: Sized {
+    type Error;
+
     /// Deserialize object from `KvsValue`.
-    fn from_kvs(kvs_value: &KvsValue) -> Option<Self>;
+    fn from_kvs(kvs_value: &KvsValue) -> Result<Self, Self::Error>;
 }
 
-macro_rules! impl_kvs_deserialize_for_t_cast {
+macro_rules! impl_kvs_deserialize_for_t_checked_cast {
     ($t:ty, $variant:ident) => {
         impl KvsDeserialize for $t {
-            fn from_kvs(kvs_value: &KvsValue) -> Option<Self> {
+            type Error = ErrorCode;
+
+            fn from_kvs(kvs_value: &KvsValue) -> Result<Self, Self::Error> {
                 if let KvsValue::$variant(value) = kvs_value {
                     if let Ok(casted) = <$t>::try_from(value.clone()) {
-                        Some(casted)
+                        Ok(casted)
                     } else {
-                        None
+                        Err(ErrorCode::DeserializationFailed(
+                            "KvsValue to value cast failed".to_string(),
+                        ))
                     }
                 } else {
-                    None
+                    Err(ErrorCode::DeserializationFailed(
+                        "Invalid KvsValue variant provided".to_string(),
+                    ))
                 }
             }
         }
@@ -91,27 +132,31 @@ macro_rules! impl_kvs_deserialize_for_t_cast {
 macro_rules! impl_kvs_deserialize_for_t {
     ($t:ty, $variant:ident) => {
         impl KvsDeserialize for $t {
-            fn from_kvs(kvs_value: &KvsValue) -> Option<Self> {
+            type Error = ErrorCode;
+
+            fn from_kvs(kvs_value: &KvsValue) -> Result<Self, Self::Error> {
                 if let KvsValue::$variant(value) = kvs_value {
-                    Some(value.clone())
+                    Ok(value.clone())
                 } else {
-                    None
+                    Err(ErrorCode::DeserializationFailed(
+                        "Invalid KvsValue variant provided".to_string(),
+                    ))
                 }
             }
         }
     };
 }
 
-impl_kvs_deserialize_for_t_cast!(i8, I32);
-impl_kvs_deserialize_for_t_cast!(i16, I32);
+impl_kvs_deserialize_for_t_checked_cast!(i8, I32);
+impl_kvs_deserialize_for_t_checked_cast!(i16, I32);
 impl_kvs_deserialize_for_t!(i32, I32);
 impl_kvs_deserialize_for_t!(i64, I64);
-impl_kvs_deserialize_for_t_cast!(isize, I64);
-impl_kvs_deserialize_for_t_cast!(u8, U32);
-impl_kvs_deserialize_for_t_cast!(u16, U32);
+impl_kvs_deserialize_for_t_checked_cast!(isize, I64);
+impl_kvs_deserialize_for_t_checked_cast!(u8, U32);
+impl_kvs_deserialize_for_t_checked_cast!(u16, U32);
 impl_kvs_deserialize_for_t!(u32, U32);
 impl_kvs_deserialize_for_t!(u64, U64);
-impl_kvs_deserialize_for_t_cast!(usize, U64);
+impl_kvs_deserialize_for_t_checked_cast!(usize, U64);
 impl_kvs_deserialize_for_t!(f64, F64);
 impl_kvs_deserialize_for_t!(bool, Boolean);
 impl_kvs_deserialize_for_t!(String, String);
@@ -121,21 +166,29 @@ impl_kvs_deserialize_for_t!(KvsMap, Object);
 /// Edge case - `TryFrom` is not implemented for `f32`.
 /// Unchecked `as` conversion must be used.
 impl KvsDeserialize for f32 {
-    fn from_kvs(kvs_value: &KvsValue) -> Option<Self> {
+    type Error = ErrorCode;
+
+    fn from_kvs(kvs_value: &KvsValue) -> Result<Self, Self::Error> {
         if let KvsValue::F64(value) = kvs_value {
-            Some(*value as f32)
+            Ok(*value as f32)
         } else {
-            None
+            Err(ErrorCode::DeserializationFailed(
+                "Invalid KvsValue variant provided".to_string(),
+            ))
         }
     }
 }
 
 impl KvsDeserialize for () {
-    fn from_kvs(kvs_value: &KvsValue) -> Option<Self> {
+    type Error = ErrorCode;
+
+    fn from_kvs(kvs_value: &KvsValue) -> Result<Self, Self::Error> {
         if let KvsValue::Null = kvs_value {
-            Some(())
+            Ok(())
         } else {
-            None
+            Err(ErrorCode::DeserializationFailed(
+                "Invalid KvsValue variant provided".to_string(),
+            ))
         }
     }
 }
@@ -148,105 +201,105 @@ mod serialize_tests {
     #[test]
     fn test_i8_ok() {
         let value = i8::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::I32(value as i32));
     }
 
     #[test]
     fn test_i16_ok() {
         let value = i16::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::I32(value as i32));
     }
 
     #[test]
     fn test_i32_ok() {
         let value = i32::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::I32(value));
     }
 
     #[test]
     fn test_i64_ok() {
         let value = i64::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::I64(value));
     }
 
     #[test]
     fn test_isize_ok() {
         let value = isize::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::I64(value as i64));
     }
 
     #[test]
     fn test_u8_ok() {
         let value = u8::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::U32(value as u32));
     }
 
     #[test]
     fn test_u16_ok() {
         let value = u16::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::U32(value as u32));
     }
 
     #[test]
     fn test_u32_ok() {
         let value = u32::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::U32(value));
     }
 
     #[test]
     fn test_u64_ok() {
         let value = u64::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::U64(value));
     }
 
     #[test]
     fn test_usize_ok() {
         let value = usize::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::U64(value as u64));
     }
 
     #[test]
     fn test_f32_ok() {
         let value = f32::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::F64(value as f64));
     }
 
     #[test]
     fn test_f64_ok() {
         let value = f64::MIN;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::F64(value));
     }
 
     #[test]
     fn test_bool_ok() {
         let value = true;
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::Boolean(value));
     }
 
     #[test]
     fn test_string_ok() {
         let value = "test".to_string();
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::String(value));
     }
 
     #[test]
     fn test_str_ok() {
         let value = "test";
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::String(value.to_string()));
     }
 
@@ -257,7 +310,7 @@ mod serialize_tests {
             KvsValue::String("two".to_string()),
             KvsValue::String("three".to_string()),
         ];
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::Array(value));
     }
 
@@ -268,20 +321,21 @@ mod serialize_tests {
             ("second".to_string(), KvsValue::from(1234u32)),
             ("third".to_string(), KvsValue::from(true)),
         ]);
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::Object(value));
     }
 
     #[test]
     fn test_unit_ok() {
         let value = ();
-        let kvs_value = value.to_kvs();
+        let kvs_value = value.to_kvs().unwrap();
         assert_eq!(kvs_value, KvsValue::Null);
     }
 }
 
 #[cfg(test)]
 mod deserialize_tests {
+    use crate::error_code::ErrorCode;
     use crate::kvs_serialize::KvsDeserialize;
     use crate::kvs_value::{KvsMap, KvsValue};
 
@@ -299,14 +353,17 @@ mod deserialize_tests {
     fn test_i8_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = i8::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
     fn test_i8_out_of_range() {
         let kvs_value = KvsValue::I32(i32::MAX);
         let result = i8::from_kvs(&kvs_value);
-        assert!(result.is_none())
+        assert!(result
+            .is_err_and(|e| e
+                == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string())));
     }
 
     #[test]
@@ -320,14 +377,17 @@ mod deserialize_tests {
     fn test_i16_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = i16::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
     fn test_i16_out_of_range() {
         let kvs_value = KvsValue::I32(i32::MAX);
         let result = i16::from_kvs(&kvs_value);
-        assert!(result.is_none())
+        assert!(result
+            .is_err_and(|e| e
+                == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string())));
     }
 
     #[test]
@@ -341,7 +401,8 @@ mod deserialize_tests {
     fn test_i32_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = i32::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -355,7 +416,8 @@ mod deserialize_tests {
     fn test_i64_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = i64::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -369,7 +431,8 @@ mod deserialize_tests {
     fn test_isize_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = isize::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -383,14 +446,17 @@ mod deserialize_tests {
     fn test_u8_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = u8::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
     fn test_u8_out_of_range() {
         let kvs_value = KvsValue::U32(u32::MAX);
         let result = u8::from_kvs(&kvs_value);
-        assert!(result.is_none())
+        assert!(result
+            .is_err_and(|e| e
+                == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string())));
     }
 
     #[test]
@@ -404,14 +470,17 @@ mod deserialize_tests {
     fn test_u16_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = u16::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
     fn test_u16_out_of_range() {
         let kvs_value = KvsValue::U32(u32::MAX);
         let result = u16::from_kvs(&kvs_value);
-        assert!(result.is_none())
+        assert!(result
+            .is_err_and(|e| e
+                == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string())));
     }
 
     #[test]
@@ -425,7 +494,8 @@ mod deserialize_tests {
     fn test_u32_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = u32::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -439,7 +509,8 @@ mod deserialize_tests {
     fn test_u64_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = u64::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -453,7 +524,8 @@ mod deserialize_tests {
     fn test_usize_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = usize::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -467,7 +539,8 @@ mod deserialize_tests {
     fn test_bool_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = bool::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -481,7 +554,8 @@ mod deserialize_tests {
     fn test_string_invalid_variant() {
         let kvs_value = KvsValue::Boolean(true);
         let result = String::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -499,7 +573,8 @@ mod deserialize_tests {
     fn test_array_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = Vec::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -517,7 +592,8 @@ mod deserialize_tests {
     fn test_object_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = KvsMap::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -531,6 +607,7 @@ mod deserialize_tests {
     fn test_unit_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = <()>::from_kvs(&kvs_value);
-        assert!(result.is_none());
+        assert!(result.is_err_and(|e| e
+            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 }
