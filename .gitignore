@@ -62,3 +62,6 @@ devenv.local.nix
 .direnv
 target
 
+# --- keep test fixture payloads under install/ (override *.so, *.a, etc.)
+!tests/integration_test_scenarios/install/
+!tests/integration_test_scenarios/install/**
