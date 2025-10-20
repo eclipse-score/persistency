@@ -16,10 +16,6 @@
     "url": "https://eclipse-score.github.io/inc_mw_per/pr-107/"
   },
   {
-    "version": "pr-126",
-    "url": "https://eclipse-score.github.io/inc_mw_per/pr-126/"
-  },
-  {
     "version": "pr-132",
     "url": "https://eclipse-score.github.io/inc_mw_per/pr-132/"
   },
@@ -30,10 +26,6 @@
   {
     "version": "pr-138",
     "url": "https://eclipse-score.github.io/inc_mw_per/pr-138/"
-  },
-  {
-    "version": "pr-139",
-    "url": "https://eclipse-score.github.io/inc_mw_per/pr-139/"
   },
   {
     "version": "pr-141",
@@ -52,6 +44,10 @@
     "url": "https://eclipse-score.github.io/inc_mw_per/pr-15/"
   },
   {
+    "version": "pr-150",
+    "url": "https://eclipse-score.github.io/inc_mw_per/pr-150/"
+  },
+  {
     "version": "pr-27",
     "url": "https://eclipse-score.github.io/inc_mw_per/pr-27/"
   },
@@ -66,9 +62,5 @@
   {
     "version": "pr-83",
     "url": "https://eclipse-score.github.io/inc_mw_per/pr-83/"
-  },
-  {
-    "version": "pr-150",
-    "url": "https://eclipse-score.github.io/inc_mw_per/pr-150/"
   }
 ]
