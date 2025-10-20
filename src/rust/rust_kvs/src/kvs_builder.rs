@@ -55,10 +55,64 @@ impl From<PoisonError<MutexGuard<'_, [Option<KvsInner>; KVS_MAX_INSTANCES]>>> fo
     }
 }
 
+/// KVS instance parameters, as used by `KvsBuilder`.
+/// Parameters set are changed, unset are taken from provided `KvsParameters`.
+#[derive(Clone)]
+struct KvsBuilderParameters {
+    /// Instance ID.
+    pub instance_id: InstanceId,
+
+    /// Defaults handling mode.
+    pub defaults: Option<KvsDefaults>,
+
+    /// KVS load mode.
+    pub kvs_load: Option<KvsLoad>,
+
+    /// Working directory.
+    pub working_dir: Option<PathBuf>,
+
+    /// Maximum number of snapshots to store.
+    pub snapshot_max_count: Option<usize>,
+}
+
+impl KvsBuilderParameters {
+    pub fn new(instance_id: InstanceId) -> Self {
+        KvsBuilderParameters {
+            instance_id,
+            defaults: None,
+            kvs_load: None,
+            working_dir: None,
+            snapshot_max_count: None,
+        }
+    }
+
+    pub fn create_parameters(self, kvs_parameters: &KvsParameters) -> KvsParameters {
+        let mut new_parameters = kvs_parameters.clone();
+
+        if let Some(defaults) = self.defaults {
+            new_parameters.defaults = defaults;
+        }
+
+        if let Some(kvs_load) = self.kvs_load {
+            new_parameters.kvs_load = kvs_load;
+        }
+
+        if let Some(working_dir) = self.working_dir {
+            new_parameters.working_dir = working_dir;
+        }
+
+        if let Some(snapshot_max_count) = self.snapshot_max_count {
+            new_parameters.snapshot_max_count = snapshot_max_count;
+        }
+
+        new_parameters
+    }
+}
+
 /// Key-value-storage builder.
 pub struct GenericKvsBuilder<Backend: KvsBackend, PathResolver: KvsPathResolver = Backend> {
     /// KVS instance parameters.
-    parameters: KvsParameters,
+    parameters: KvsBuilderParameters,
 
     /// Marker for `Backend`.
     _backend_marker: PhantomData<Backend>,
@@ -79,13 +133,7 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
     /// # Return Values
     ///   * KvsBuilder instance
     pub fn new(instance_id: InstanceId) -> Self {
-        let parameters = KvsParameters {
-            instance_id,
-            defaults: KvsDefaults::Optional,
-            kvs_load: KvsLoad::Optional,
-            working_dir: PathBuf::new(),
-            snapshot_max_count: 3,
-        };
+        let parameters = KvsBuilderParameters::new(instance_id);
 
         Self {
             parameters,
@@ -110,7 +158,7 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
     /// # Return Values
     ///   * KvsBuilder instance
     pub fn defaults(mut self, mode: KvsDefaults) -> Self {
-        self.parameters.defaults = mode;
+        self.parameters.defaults = Some(mode);
         self
     }
 
@@ -122,7 +170,7 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
     /// # Return Values
     ///   * KvsBuilder instance
     pub fn kvs_load(mut self, mode: KvsLoad) -> Self {
-        self.parameters.kvs_load = mode;
+        self.parameters.kvs_load = Some(mode);
         self
     }
 
@@ -134,7 +182,7 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
     /// # Return Values
     ///   * KvsBuilder instance
     pub fn dir<P: Into<String>>(mut self, dir: P) -> Self {
-        self.parameters.working_dir = PathBuf::from(dir.into());
+        self.parameters.working_dir = Some(PathBuf::from(dir.into()));
         self
     }
 
@@ -146,7 +194,7 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
     /// # Return Values
     ///   * KvsBuilder instance
     pub fn snapshot_max_count(mut self, snapshot_max_count: usize) -> Self {
-        self.parameters.snapshot_max_count = snapshot_max_count;
+        self.parameters.snapshot_max_count = Some(snapshot_max_count);
         self
     }
 
@@ -167,9 +215,8 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
     ///   * `ErrorCode::KvsHashFileReadError`: KVS hash file read error
     ///   * `ErrorCode::UnmappedError`: Generic error
     pub fn build(self) -> Result<GenericKvs<Backend, PathResolver>, ErrorCode> {
-        let instance_id = self.parameters.clone().instance_id;
+        let instance_id = self.parameters.instance_id;
         let instance_id_index: usize = instance_id.into();
-        let working_dir = self.parameters.clone().working_dir;
 
         // Check if instance already exists.
         {
@@ -178,7 +225,11 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
                 Some(kvs_pool_entry) => match kvs_pool_entry {
                     // If instance exists then parameters must match.
                     Some(kvs_inner) => {
-                        if kvs_inner.parameters == self.parameters {
+                        let kvs_parameters = self
+                            .parameters
+                            .clone()
+                            .create_parameters(&kvs_inner.parameters);
+                        if kvs_inner.parameters == kvs_parameters {
                             Ok(Some(kvs_inner))
                         } else {
                             Err(ErrorCode::InstanceParametersMismatch)
@@ -201,9 +252,14 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
         }
 
         // Initialize KVS instance with provided parameters.
+        // Get parameters object.
+        let kvs_parameters = self
+            .parameters
+            .create_parameters(&KvsParameters::new(instance_id));
         // Load file containing defaults.
-        let defaults_path = PathResolver::defaults_file_path(&working_dir, instance_id);
-        let defaults_map = match self.parameters.defaults {
+        let defaults_path =
+            PathResolver::defaults_file_path(&kvs_parameters.working_dir, instance_id);
+        let defaults_map = match kvs_parameters.defaults {
             KvsDefaults::Ignored => KvsMap::new(),
             KvsDefaults::Optional => {
                 if defaults_path.exists() {
@@ -217,9 +273,11 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
 
         // Load KVS and hash files.
         let snapshot_id = SnapshotId(0);
-        let kvs_path = PathResolver::kvs_file_path(&working_dir, instance_id, snapshot_id);
-        let hash_path = PathResolver::hash_file_path(&working_dir, instance_id, snapshot_id);
-        let kvs_map = match self.parameters.kvs_load {
+        let kvs_path =
+            PathResolver::kvs_file_path(&kvs_parameters.working_dir, instance_id, snapshot_id);
+        let hash_path =
+            PathResolver::hash_file_path(&kvs_parameters.working_dir, instance_id, snapshot_id);
+        let kvs_map = match kvs_parameters.kvs_load {
             KvsLoad::Ignored => KvsMap::new(),
             KvsLoad::Optional => {
                 if kvs_path.exists() && hash_path.exists() {
@@ -246,12 +304,12 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
             };
 
             let _ = kvs_pool_entry.insert(KvsInner {
-                parameters: self.parameters.clone(),
+                parameters: kvs_parameters.clone(),
                 data: data.clone(),
             });
         }
 
-        Ok(GenericKvs::new(data, self.parameters))
+        Ok(GenericKvs::new(data, kvs_parameters))
     }
 }
 
@@ -443,7 +501,7 @@ mod kvs_builder_tests {
         let dir = tempdir().unwrap();
         let dir_string = dir.path().to_string_lossy().to_string();
 
-        // Create two instances with same parameters.
+        // Create two instances with different parameters.
         let instance_id = InstanceId(1);
         let builder1 = TestKvsBuilder::new(instance_id)
             .defaults(KvsDefaults::Ignored)
@@ -455,6 +513,77 @@ mod kvs_builder_tests {
             .defaults(KvsDefaults::Optional)
             .kvs_load(KvsLoad::Ignored)
             .dir(dir_string);
+        let result = builder2.build();
+
+        assert!(result.is_err_and(|e| e == ErrorCode::InstanceParametersMismatch));
+    }
+
+    #[test]
+    fn test_build_instance_exists_params_not_set() {
+        let _lock = lock_and_reset();
+
+        let dir = tempdir().unwrap();
+        let dir_string = dir.path().to_string_lossy().to_string();
+
+        // Create two instances, first with parameters, second without.
+        let instance_id = InstanceId(1);
+        let builder1 = TestKvsBuilder::new(instance_id)
+            .defaults(KvsDefaults::Ignored)
+            .kvs_load(KvsLoad::Ignored)
+            .dir(dir_string.clone());
+        let _ = builder1.build().unwrap();
+
+        let builder2 = TestKvsBuilder::new(instance_id);
+        let kvs = builder2.build().unwrap();
+
+        // Assert params as expected.
+        assert_eq!(kvs.parameters().instance_id, instance_id);
+        assert_eq!(kvs.parameters().defaults, KvsDefaults::Ignored);
+        assert_eq!(kvs.parameters().kvs_load, KvsLoad::Ignored);
+        assert_eq!(kvs.parameters().working_dir, dir.path());
+    }
+
+    #[test]
+    fn test_build_instance_exists_single_matching_param_set() {
+        let _lock = lock_and_reset();
+
+        let dir = tempdir().unwrap();
+        let dir_string = dir.path().to_string_lossy().to_string();
+
+        // Create two instances, first with parameters, second only with `defaults`.
+        let instance_id = InstanceId(1);
+        let builder1 = TestKvsBuilder::new(instance_id)
+            .defaults(KvsDefaults::Ignored)
+            .kvs_load(KvsLoad::Ignored)
+            .dir(dir_string.clone());
+        let _ = builder1.build().unwrap();
+
+        let builder2 = TestKvsBuilder::new(instance_id).defaults(KvsDefaults::Ignored);
+        let kvs = builder2.build().unwrap();
+
+        // Assert params as expected.
+        assert_eq!(kvs.parameters().instance_id, instance_id);
+        assert_eq!(kvs.parameters().defaults, KvsDefaults::Ignored);
+        assert_eq!(kvs.parameters().kvs_load, KvsLoad::Ignored);
+        assert_eq!(kvs.parameters().working_dir, dir.path());
+    }
+
+    #[test]
+    fn test_build_instance_exists_single_mismatched_param_set() {
+        let _lock = lock_and_reset();
+
+        let dir = tempdir().unwrap();
+        let dir_string = dir.path().to_string_lossy().to_string();
+
+        // Create two instances, first with parameters, second only with `defaults`.
+        let instance_id = InstanceId(1);
+        let builder1 = TestKvsBuilder::new(instance_id)
+            .defaults(KvsDefaults::Ignored)
+            .kvs_load(KvsLoad::Ignored)
+            .dir(dir_string.clone());
+        let _ = builder1.build().unwrap();
+
+        let builder2 = TestKvsBuilder::new(instance_id).defaults(KvsDefaults::Optional);
         let result = builder2.build();
 
         assert!(result.is_err_and(|e| e == ErrorCode::InstanceParametersMismatch));
