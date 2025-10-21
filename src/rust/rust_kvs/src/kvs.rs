@@ -38,6 +38,18 @@ pub struct KvsParameters {
     pub snapshot_max_count: usize,
 }
 
+impl KvsParameters {
+    pub fn new(instance_id: InstanceId) -> Self {
+        Self {
+            instance_id,
+            defaults: KvsDefaults::Optional,
+            kvs_load: KvsLoad::Optional,
+            working_dir: PathBuf::new(),
+            snapshot_max_count: 3,
+        }
+    }
+}
+
 /// Key-value-storage data
 pub struct GenericKvs<Backend: KvsBackend, PathResolver: KvsPathResolver = Backend> {
     /// KVS instance data.
