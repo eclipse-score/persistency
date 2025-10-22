@@ -12,6 +12,7 @@
 # *******************************************************************************
 
 name: License check preparation
+
 on:
   pull_request_target:
     types: [opened, reopened, synchronize]

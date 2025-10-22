@@ -1,6 +1,26 @@
+# *******************************************************************************
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
 name: Check compilation and code
 
-on: [push, pull_request]
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+  merge_group:
+    types: [checks_requested]
 
 defaults:
   run:
@@ -50,6 +70,69 @@ jobs:
         run: |
           cargo +nightly-2024-12-17 miri test
 
+  cargo-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly-2024-12-17
+          components: llvm-tools-preview, rust-src
+
+      - name: Install cargo-llvm-cov
+        run: |
+          cargo +nightly-2024-12-17 install cargo-llvm-cov --locked
+
+      - name: Cargo llvm-cov
+        run: |
+          cargo +nightly-2024-12-17 llvm-cov --branch --tests --lib
+
+  rust-bazel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bazel with shared caching
+        uses: bazel-contrib/setup-bazel@0.14.0
+        with:
+          disk-cache: true
+          repository-cache: true
+          bazelisk-cache: true
+
+      - name: Bazel Build
+        run: |
+          bazel build \
+            //src/rust/rust_kvs:rust_kvs \
+            //src/rust/rust_kvs_tool:kvs_tool
+
+      - name: Bazel Unit Tests
+        run: |
+          bazel test //src/rust/rust_kvs:tests
+
+      - name: Bazel Unit Test with Coverage
+        run: |
+          bazel coverage //src/rust/rust_kvs:tests \
+            --collect_code_coverage \
+            --combined_report=lcov \
+            --experimental_generate_llvm_lcov \
+            --nocache_test_results \
+            --nostamp
+
+      - name: Install lcov
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lcov
+
+      - name: Extract Coverage for Rust Files
+        run: |
+          REPORT=$(find "$(bazel info output_path)" -type f -path '*/rust/*/coverage.dat' | head -n1)
+          lcov \
+            --rc branch_coverage=1 \
+            --extract "$REPORT" '*.rs' -o "${REPORT}.rs" \
+            --output-file kvs_coverage.info
+
   cpp-bazel:
     runs-on: ubuntu-latest
     steps:
@@ -82,7 +165,7 @@ jobs:
 
       - name: Extract Coverage for CPP Files
         run: |
-          REPORT=$(find "$(bazel info output_path)" -name _coverage_report.dat | head -n1)
+          REPORT=$(find "$(bazel info output_path)" -type f -path '*/cpp/*/coverage.dat' | head -n1)
           lcov \
             --rc branch_coverage=1 \
             --extract "$REPORT" '*.cpp' -o "${REPORT}.cpp" \

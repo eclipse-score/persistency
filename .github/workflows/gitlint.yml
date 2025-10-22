@@ -12,9 +12,11 @@
 # *******************************************************************************
 
 name: Gitlint check
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   lint-commits:
     name: check-commit-messages
