@@ -70,19 +70,11 @@ bazel_dep(name = "googletest", version = "1.15.0")
 bazel_dep(name = "google_benchmark", version = "1.9.4")
 
 ## S-CORE bazel registry
-# Checker rule for CopyRight checks/fixs
-bazel_dep(name = "score_cr_checker", version = "0.3.1")
+bazel_dep(name = "score_tooling", version = "1.0.2")
 
-# Starlark language server
-bazel_dep(name = "score_starpls_lsp", version = "0.1.0")
-
-#Dash license checker
-bazel_dep(name = "score_dash_license_checker", version = "0.1.2")
-
-# Format checker
-bazel_dep(name = "score_format_checker", version = "0.1.1")
-bazel_dep(name = "aspect_rules_lint", version = "1.4.4")
-bazel_dep(name = "buildifier_prebuilt", version = "8.2.0.2")
+# ToDo: implicit dependencies for score_tooling, but needed directly here??
+bazel_dep(name = "aspect_rules_lint", version = "1.10.2", dev_dependency = True)
+bazel_dep(name = "buildifier_prebuilt", version = "8.2.0.2", dev_dependency = True)
 
 # docs-as-code
 bazel_dep(name = "score_docs_as_code", version = "1.0.1")
@@ -91,9 +83,6 @@ bazel_dep(name = "score_docs_as_code", version = "1.0.1")
 bazel_dep(name = "score_python_basics", version = "0.3.4")
 bazel_dep(name = "score_platform", version = "0.3.0")
 bazel_dep(name = "score_process", version = "1.1.0")
-
-# cli helper
-bazel_dep(name = "score_cli_helper", version = "0.1.2")
 
 # Module deps
 bazel_dep(name = "score-baselibs", version = "0.0.0")
