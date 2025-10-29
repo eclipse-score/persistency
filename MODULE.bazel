@@ -47,14 +47,19 @@ rust.toolchain(
 )
 
 # LLVM Toolchains Rules - host configuration
-bazel_dep(name = "rules_cc", version = "0.1.1")
+bazel_dep(name = "rules_cc", version = "0.2.12")
 
-bazel_dep(name = "toolchains_llvm", version = "1.2.0", dev_dependency = True)
+bazel_dep(name = "toolchains_llvm", version = "1.5.0", dev_dependency = True)
 
 llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm", dev_dependency = True)
 llvm.toolchain(
+    # ToDo: need "inherited" from score_baselibs
+    compile_flags = {"": [
+        "-Wno-error=deprecated-declarations",
+        "-Wno-error=deprecated-literal-operator",
+    ]},
     cxx_standard = {"": "c++17"},
-    llvm_version = "19.1.0",
+    llvm_version = "21.1.0",
 )
 use_repo(llvm, "llvm_toolchain")
 use_repo(llvm, "llvm_toolchain_llvm")
@@ -66,8 +71,8 @@ register_toolchains(
 
 ## Bazel registry
 # Module dependencies
-bazel_dep(name = "googletest", version = "1.15.0")
-bazel_dep(name = "google_benchmark", version = "1.9.4")
+bazel_dep(name = "googletest", version = "1.17.0.bcr.1", dev_dependency = True)
+bazel_dep(name = "google_benchmark", version = "1.9.4", dev_dependency = True)
 
 ## S-CORE bazel registry
 # Checker rule for CopyRight checks/fixs
