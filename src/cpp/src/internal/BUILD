@@ -24,7 +24,7 @@ cc_library(
         "//src/cpp/tests:__pkg__",
     ],
     deps = [
-        "@score-baselibs//score/result:result",
+        "@score_baselibs//score/result",
     ],
 )
 
@@ -43,6 +43,6 @@ cc_library(
     deps = [
         ":error",
         "//src/cpp/src:kvsvalue",
-        "@score-baselibs//score/json",
+        "@score_baselibs//score/json",
     ],
 )
