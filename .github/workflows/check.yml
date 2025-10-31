@@ -165,11 +165,24 @@ jobs:
 
       - name: Extract Coverage for CPP Files
         run: |
-          REPORT=$(find "$(bazel info output_path)" -type f -path '*/cpp/*/coverage.dat' | head -n1)
-          lcov \
-            --rc branch_coverage=1 \
-            --extract "$REPORT" '*.cpp' -o "${REPORT}.cpp" \
-            --output-file kvs_coverage.info
+          # ToDo: should work out of the box with bazel coverage (https://github.com/eclipse-score/toolchains_gcc/issues/21)
+          # run test binary to generate coverage data (*.gcda files). Manually
+          # since it is build already with the correct flags and the gcda ends
+          # up in a proper location
+          ./bazel-bin/src/cpp/tests/test_kvs_cpp
+
+          # define some variables for easier usage
+          BASE_DIR="$(pwd)"
+          GCOV_TOOL="./bazel-persistency/external/score_toolchains_gcc++gcc+gcc_toolchain_gcc/bin/x86_64-unknown-linux-gnu-gcov"
+          BIN_DIR="./bazel-bin/src/cpp/"
+          OUT_FILE="lcov_coverage.info"
+          # capture coverage info
+          lcov --capture --directory "$BIN_DIR" --output-file "$OUT_FILE" --gcov-tool "$GCOV_TOOL" --base-directory "$BASE_DIR" --branch-coverage --ignore-errors mismatch --exclude "*/external/*"
+          # display summary
+          lcov --summary --rc branch_coverage=1 "$OUT_FILE"
+          # generate html report (for local inspection if needed)
+          # genhtml "$OUT_FILE" -o coverage_html --show-details --legend --function-coverage --branch-coverage
+          rm ${OUT_FILE}
 
       - name: Bazel Benchmark
         run: bazel run -c opt //:bm_kvs_cpp
