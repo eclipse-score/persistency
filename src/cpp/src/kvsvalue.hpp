@@ -13,10 +13,12 @@
 #ifndef SCORE_LIB_KVS_KVSVALUE_HPP
 #define SCORE_LIB_KVS_KVSVALUE_HPP
 
+#include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 namespace score::mw::per::kvs {
