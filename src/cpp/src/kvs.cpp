@@ -375,10 +375,60 @@ score::ResultBlank Kvs::remove_key(const std::string_view key) {
     return result;
 }
 
+score::Result<size_t> Kvs::get_file_size(const score::filesystem::Path& file_path) {
+    std::error_code ec;
+    const auto size = std::filesystem::file_size(file_path.CStr(), ec);
+
+    if (ec) {
+        // Check if the error is "file not found"
+        if (ec == std::errc::no_such_file_or_directory) {
+            // File does not exist, its size is 0. This is not an error.
+            return 0;
+        }
+        logger->LogError() << "Error: Could not get size of file " << file_path << ": " << ec.message();
+        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+    }
+
+    return size;
+}
+
+/* Helper Function to get current storage size */
+score::Result<size_t> Kvs::get_current_storage_size() {
+    size_t total_size = 0;
+    const std::array<const char*, 2> file_extensions = {".json", ".hash"};
+
+    for (size_t snapshot_index = 0; snapshot_index <= KVS_MAX_SNAPSHOTS; ++snapshot_index) {
+        const std::string snapshot_suffix = "_" + to_string(snapshot_index);
+
+        for (const char* extension : file_extensions) {
+            const score::filesystem::Path file_path = filename_prefix.Native() + snapshot_suffix + extension;
+            auto size_result = get_file_size(file_path);
+            if (!size_result) {
+                return size_result; // Propagate error directly
+            }
+            total_size += size_result.value();
+        }
+    }
+    return total_size;
+}
+
 /* Helper Function to write JSON data to a file for flush process (also adds Hash file)*/
 score::ResultBlank Kvs::write_json_data(const std::string& buf)
 {
     score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+
+    auto current_size_res = get_current_storage_size();
+    if (!current_size_res) {
+        return score::MakeUnexpected(static_cast<ErrorCode>(*current_size_res.error()));
+    }
+
+    const size_t total_size = current_size_res.value() + buf.size();
+
+    if (total_size > KVS_MAX_STORAGE_BYTES) {
+        logger->LogError() << "error: KVS storage limit exceeded. total_size:" << total_size << " KVS_MAX_STORAGE_BYTES:" << KVS_MAX_STORAGE_BYTES;
+        return score::MakeUnexpected(ErrorCode::OutOfStorageSpace);
+    }
+
     score::filesystem::Path json_path{filename_prefix.Native() + "_0.json"};
     score::filesystem::Path dir = json_path.ParentPath();
     if  (!dir.Empty()) {
