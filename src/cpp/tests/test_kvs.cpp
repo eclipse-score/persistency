@@ -1230,7 +1230,6 @@ TEST(kvs, flush_fails_when_storage_limit_exceeded) {
     auto open_res = builder.build();
     ASSERT_TRUE(open_res);
     Kvs kvs = std::move(open_res.value());
-    kvs.set_flush_on_exit(false);
 
     // 2. Add data that is close to the limit.
     // There is overhead for the JSON structure (key, type info, braces, etc.) and the hash file (4 bytes).
