@@ -52,13 +52,13 @@ const std::string kTargetName{"cpp_test_scenarios::basic::basic"};
 
 std::string BasicScenario::name() const { return "basic"; }
 
-void BasicScenario::run(const std::optional<std::string>& input) const {
+void BasicScenario::run(const std::string& input) const {
     using namespace score::mw::per::kvs;
 
     // Print and parse parameters.
-    std::cerr << *input << std::endl;
+    std::cerr << input << std::endl;
 
-    auto params{map_to_params(*input)};
+    auto params{map_to_params(input)};
 
     // Set builder parameters.
     InstanceId instance_id{params.instance_id};
