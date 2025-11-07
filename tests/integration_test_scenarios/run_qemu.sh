@@ -52,5 +52,5 @@ else
     -pidfile /tmp/qemu.pid &
 fi
 
-sleep 20
-if [ -f /tmp/qemu.pid ]; then kill "$(cat /tmp/qemu.pid)"; fi
+#sleep 20
+#if [ -f /tmp/qemu.pid ]; then kill "$(cat /tmp/qemu.pid)"; fi

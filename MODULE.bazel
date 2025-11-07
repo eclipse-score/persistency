@@ -40,11 +40,11 @@ use_repo(pip, "pip_score_venv_test")
 # rust
 bazel_dep(name = "rules_rust", version = "0.56.0")
 
-rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
-rust.toolchain(
-    edition = "2021",
-    versions = ["1.85.0"],
-)
+#rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+#rust.toolchain(
+#    edition = "2021",
+#    versions = ["1.85.0"],
+#)
 
 # LLVM Toolchains Rules - host configuration
 bazel_dep(name = "rules_cc", version = "0.1.1")
@@ -111,12 +111,12 @@ crate.from_cargo(
     ],
 )
 
-bazel_dep(name = "rust_qnx8_toolchain", version = "1.0.0", dev_dependency = True)
+bazel_dep(name = "rust_qnx8_toolchain", version = "1.2.0", dev_dependency = True)
 archive_override(
     module_name = "rust_qnx8_toolchain",
     strip_prefix = "qnx8",
     urls = [
-        "https://github.com/qorix-group/rust-lang-qnx8/releases/download/1.0.0/qnx8_rust_toolchain.tar.gz",
+        "https://github.com/qorix-group/rust-lang-qnx8/releases/download/1.2.0/qnx8_rust_toolchain.tar.gz",
     ],
 )
 
@@ -151,18 +151,26 @@ git_override(
     remote = "https://github.com/eclipse-score/baselibs.git",
 )
 
-bazel_dep(name = "score_toolchains_rust", version = "0.1", dev_dependency = True)
+bazel_dep(name = "score_toolchains_rust", version = "0.1.1", dev_dependency = True)
 git_override(
     module_name = "score_toolchains_rust",
-    commit = "5614e4b273f2f5302d47a05d7e58dae86f97a3c3",
+    commit = "6651945b4ba8e7c342d9740e9cb2d37842f56261",
     remote = "https://github.com/eclipse-score/toolchains_rust.git",
 )
+#local_path_override(
+#    module_name = "score_toolchains_rust",
+#    path = "/home/dcalavrezo/sources/toolchains_rust",
+#)  
 
 bazel_dep(name = "score_toolchains_qnx", version = "0.1", dev_dependency = True)
-git_override(
+#git_override(
+#    module_name = "score_toolchains_qnx",
+#    commit = "cdaa451c994f5e1f88aa6395dd516586f387d0ec",
+#    remote = "https://github.com/eclipse-score/toolchains_qnx.git",
+#)
+local_path_override(
     module_name = "score_toolchains_qnx",
-    commit = "cdaa451c994f5e1f88aa6395dd516586f387d0ec",
-    remote = "https://github.com/eclipse-score/toolchains_qnx.git",
+    path = "/home/dcalavrezo/sources/toolchains_qnx",
 )
 
 toolchains_qnx = use_extension("@score_toolchains_qnx//:extensions.bzl", "toolchains_qnx", dev_dependency = True)
@@ -191,6 +199,7 @@ bazel_dep(name = "platforms", version = "0.0.11", dev_dependency = True)
 register_toolchains(
     "@toolchains_qnx_qcc//:qcc_aarch64",
     "@score_toolchains_rust//toolchains/aarch64-unknown-qnx8_0:toolchain_aarch64_qnx8_0",
+    "@score_toolchains_rust//toolchains/x86_64-unknown-linux-gnu:toolchain_x86_64_linux",
     dev_dependency = True,
 )
 

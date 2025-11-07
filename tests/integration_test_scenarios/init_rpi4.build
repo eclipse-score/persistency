@@ -151,6 +151,8 @@
     /usr/bin/kvs_test.sh >/var/log/kvs_test.log 2>&1
 
     ## TODO: enable when rust_test_scenarios is built for QNX
+    display_msg "Running rust_test_scenarios ..."
+    ksh /usr/bin/run_rust_scenarios.sh
 
     # power off so the Bazel test wrapper can detect completion
     /sbin/shutdown -f
@@ -619,8 +621,8 @@ ldqnx-64.so.2=ldqnx-64.so.2
 [uid=0 gid=0 perms=0755] /usr/bin/kvs_tool=bazel-out/k8-fastbuild/bin/tests/integration_test_scenarios/install/usr/bin/kvs_tool
 [uid=0 gid=0 perms=0755] /usr/bin/kvs_test.sh=bazel-out/k8-fastbuild/bin/tests/integration_test_scenarios/install/usr/bin/kvs_test.sh
 
-#TODO: enable when rust_test_scenarios is built for QNX
-#[uid=0 gid=0 perms=0755] /usr/bin/rust_test_scenarios=bazel-out/k8-fastbuild/bin/tests/integration_test_scenarios/install/usr/bin/rust_test_scenarios
+#rust_test_scenarios for QNX
+[uid=0 gid=0 perms=0755] /usr/bin/rust_test_scenarios=bazel-out/k8-fastbuild/bin/tests/integration_test_scenarios/install/usr/bin/rust_test_scenarios
 
 
 
@@ -780,6 +782,14 @@ usb_start.sh = {
     waitfor /dev/usb/devu-hcd-bcm2711-xhci.so
 }
 
+################################################################################################
+## Script for launching the rust_test_scenarios
+################################################################################################
+[uid=0 gid=0 perms=0755] /usr/bin/run_rust_scenarios.sh = {
+#!/bin/ksh
+/usr/bin/rust_test_scenarios --input '"'"'{"kvs_parameters": {"instance_id": 2}}'"'"'
+
+}
 ################################################################################################
 ## GPIO utility
 ################################################################################################

@@ -57,16 +57,16 @@ genrule(
 
 # state the tests too
 #TODO: enable when rust_test_scenarios is built for QNX
-#genrule(
-#    name = "stage_rust_test_scenarios",
-#    srcs = ["//tests/rust_test_scenarios:rust_test_scenarios"],
-#    outs = ["install/usr/bin/rust_test_scenarios"],
-#    cmd = """
-#      mkdir -p $(RULEDIR)/install/usr/bin
-#      cp $(location //tests/rust_test_scenarios:rust_test_scenarios) $@
-#      chmod +x $@
-#    """,
-#)
+genrule(
+    name = "stage_rust_test_scenarios",
+    srcs = ["//tests/rust_test_scenarios:rust_test_scenarios"],
+    outs = ["install/usr/bin/rust_test_scenarios"],
+    cmd = """
+      mkdir -p $(RULEDIR)/install/usr/bin
+      cp $(location //tests/rust_test_scenarios:rust_test_scenarios) $@
+      chmod +x $@
+    """,
+)
 
 filegroup(
     name = "overlay_tree",
@@ -81,7 +81,7 @@ qnx_ifs(
         ":is_qnx_aarch64": [
             ":stage_kvs_tool",
             ":stage_kvs_test_sh",
-            #            ":stage_rust_test_scenarios",
+            ":stage_rust_test_scenarios",
             ":overlay_tree",
         ],
         "//conditions:default": [],

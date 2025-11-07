@@ -35,7 +35,8 @@ jobs:
       - name: Run QEMU Integration Test
         run: |
           bazel run //tests/integration_test_scenarios:run_qemu \
-            --platforms=@score_toolchains_rust//platforms:aarch64-unknown-qnx8_0
+            --platforms=@score_toolchains_rust//platforms:aarch64-unknown-qnx8_0 \
+            --features=-dependency_file
 
       - name: Cleanup QNX License
         if: always()
