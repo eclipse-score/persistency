@@ -15,6 +15,7 @@
 #include <sstream>
 #include "internal/kvs_helper.hpp"
 #include "kvs.hpp"
+#include <filesystem>
 
 //TODO Default Value Handling TBD
 //TODO Add Score Logging
