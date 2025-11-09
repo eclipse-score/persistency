@@ -11,5 +11,5 @@ class BasicScenario final : public Scenario {
 
     std::string name() const final;
 
-    void run(const std::optional<std::string>& input) const final;
+    void run(const std::string& input) const final;
 };

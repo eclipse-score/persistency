@@ -13,6 +13,6 @@ cc_binary(
     visibility = ["//tests/python_test_cases:__pkg__"],
     deps = [
         "//src/cpp/src:kvs_cpp",
-        "@testing-utils//test_scenarios_cpp:test_scenarios_cpp",
+        "@score_test_scenarios//test_scenarios_cpp",
     ],
 )

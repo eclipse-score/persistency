@@ -27,10 +27,10 @@ cc_test(
         "//:kvs_cpp",
         "//src/cpp/src/internal:kvs_helper",
         "@googletest//:gtest_main",
-        "@score-baselibs//score/filesystem:filesystem",
-        "@score-baselibs//score/filesystem:mock",
-        "@score-baselibs//score/json:mock",
-        "@score-baselibs//score/result:result",
+        "@score_baselibs//score/filesystem",
+        "@score_baselibs//score/filesystem:mock",
+        "@score_baselibs//score/json:mock",
+        "@score_baselibs//score/result",
     ],
 )
 
@@ -45,8 +45,8 @@ cc_test(
         "//:kvs_cpp",
         "//src/cpp/src/internal:kvs_helper",
         "@google_benchmark//:benchmark",
-        "@score-baselibs//score/filesystem:filesystem",
-        "@score-baselibs//score/json",
-        "@score-baselibs//score/result:result",
+        "@score_baselibs//score/filesystem",
+        "@score_baselibs//score/json",
+        "@score_baselibs//score/result",
     ],
 )

@@ -47,9 +47,9 @@ cc_library(
     deps = [
         ":kvsvalue",
         "//src/cpp/src/internal:error",
-        "@score-baselibs//score/filesystem:filesystem",
-        "@score-baselibs//score/json",
-        "@score-baselibs//score/mw/log",
-        "@score-baselibs//score/result:result",
+        "@score_baselibs//score/filesystem",
+        "@score_baselibs//score/json",
+        "@score_baselibs//score/mw/log",
+        "@score_baselibs//score/result",
     ],
 )
