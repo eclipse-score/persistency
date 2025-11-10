@@ -132,9 +132,11 @@ git_override(
     remote = "https://github.com/eclipse-score/baselibs.git",
 )
 
+# We only override score_docs_as_code because score_platform depends on an older version with a lower compatibility level
+# Remove this override when score_platform has updated it to 2.0.0+.
 git_override(
     module_name = "score_docs_as_code",
-    commit = "13ba715a95cfe85158b60d7f4748ba8e28895d8c",
+    commit = "78c007096c48ccf3770a92d635258fa3b081dcbc", # v2.0.0
     remote = "https://github.com/eclipse-score/docs-as-code.git",
 )
 
