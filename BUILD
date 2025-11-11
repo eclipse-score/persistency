@@ -20,7 +20,6 @@ load("//:project_config.bzl", "PROJECT_CONFIG")
 docs(
     data = [
         "@score_platform//:needs_json",
-        "@score_process//:needs_json",
     ],
     source_dir = "docs",
 )
