@@ -10,7 +10,7 @@ cc_binary(
     copts = [
         "-g",
     ],
-    visibility = ["//tests/python_test_cases:__pkg__"],
+    visibility = ["//visibility:public"],
     deps = [
         "//src/cpp/src:kvs_cpp",
         "@score_test_scenarios//test_scenarios_cpp",
