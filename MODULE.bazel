@@ -38,12 +38,22 @@ pip.parse(
 use_repo(pip, "pip_score_venv_test")
 
 # rust
-bazel_dep(name = "rules_rust", version = "0.56.0")
+bazel_dep(name = "rules_rust", version = "0.67.0")
 
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust", dev_dependency = True)
 rust.toolchain(
-    edition = "2021",
-    versions = ["1.85.0"],
+    edition = "2024",
+    versions = ["1.90.0"],
+)
+
+# ToDo: Official release needed, documentaion on usage of rust toolchains missing
+bazel_dep(name = "rust_qnx8_toolchain", version = "1.2.0", dev_dependency = True)
+archive_override(
+    module_name = "rust_qnx8_toolchain",
+    strip_prefix = "qnx8",
+    urls = [
+        "https://github.com/qorix-group/rust-lang-qnx8/releases/download/1.2.0/qnx8_rust_toolchain.tar.gz",
+    ],
 )
 
 # bazel cc rules
@@ -101,16 +111,6 @@ crate.from_cargo(
         "//tests/rust_test_scenarios:Cargo.toml",
     ],
 )
-
-bazel_dep(name = "rust_qnx8_toolchain", version = "1.0.0", dev_dependency = True)
-archive_override(
-    module_name = "rust_qnx8_toolchain",
-    strip_prefix = "qnx8",
-    urls = [
-        "https://github.com/qorix-group/rust-lang-qnx8/releases/download/1.0.0/qnx8_rust_toolchain.tar.gz",
-    ],
-)
-
 use_repo(crate, "score_persistency_crates")
 
 ## temporary overrides / tools
