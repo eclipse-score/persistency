@@ -86,6 +86,14 @@ bazel_dep(name = "score_python_basics", version = "0.3.4")
 bazel_dep(name = "score_platform", version = "0.4.1")
 bazel_dep(name = "score_process", version = "1.3.1")
 
+# S-CORE logging library.
+bazel_dep(name = "score-mw-log", version = "0.1.0")
+git_override(
+    module_name = "score-mw-log",
+    commit = "3b3dd625111be9530eee70652762246cd5e3569e",
+    remote = "https://github.com/eclipse-score/inc_mw_log.git",
+)
+
 # Module deps
 bazel_dep(name = "score_baselibs", version = "0.1.2")
 
