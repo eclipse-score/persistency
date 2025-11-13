@@ -66,7 +66,10 @@ pub enum ErrorCode {
     KeyDefaultNotFound,
 
     /// Serialization failed
-    SerializationFailed,
+    SerializationFailed(String),
+
+    /// Deserialization failed
+    DeserializationFailed(String),
 
     /// Invalid snapshot ID
     InvalidSnapshotId,
