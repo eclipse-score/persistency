@@ -182,6 +182,10 @@ fn main() -> Result<(), ErrorCode> {
     // Temporary directory.
     let dir = tempdir()?;
     let dir_string = dir.path().to_string_lossy().to_string();
+    let backend_parameters = KvsMap::from([
+        ("name".to_string(), KvsValue::String("json".to_string())),
+        ("working_dir".to_string(), KvsValue::String(dir_string)),
+    ]);
 
     // Create initial example object.
     let object = Example {
@@ -218,7 +222,7 @@ fn main() -> Result<(), ErrorCode> {
     let kvs = KvsBuilder::new(InstanceId(0))
         .kvs_load(KvsLoad::Ignored)
         .defaults(KvsDefaults::Ignored)
-        .dir(dir_string)
+        .backend_parameters(backend_parameters)
         .build()?;
 
     // Serialize and set object.

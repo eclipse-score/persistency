@@ -85,6 +85,15 @@ pub enum ErrorCode {
 
     /// Instance parameters mismatch
     InstanceParametersMismatch,
+
+    /// Requested unknown backend
+    UnknownBackend,
+
+    /// Backend already registered
+    BackendAlreadyRegistered,
+
+    /// Invalid backend parameters.
+    InvalidBackendParameters,
 }
 
 impl From<std::io::Error> for ErrorCode {
