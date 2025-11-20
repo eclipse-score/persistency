@@ -140,6 +140,7 @@ pub mod kvs_builder;
 pub mod kvs_mock;
 pub mod kvs_serialize;
 pub mod kvs_value;
+mod log;
 
 use json_backend::JsonBackend;
 pub type KvsBuilder = kvs_builder::GenericKvsBuilder<JsonBackend>;
