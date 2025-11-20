@@ -129,23 +129,29 @@ impl Scenario for ResetAllKeys {
             // Set non-default values.
             for (key, value) in key_values.iter() {
                 // Get value parameters before set.
-                let value_is_default = kvs
-                    .is_value_default(key)
-                    .expect("Failed to check if default value");
-                let current_value = kvs.get_value_as::<f64>(key).expect("Failed to read value");
-
+                let value_is_default = match kvs.is_value_default(key) {
+                    Ok(v) => format!("Ok({})", v),
+                    Err(e) => to_str(&Err::<bool, rust_kvs::error_code::ErrorCode>(e)),
+                };
+                let current_value = match kvs.get_value_as::<f64>(key) {
+                    Ok(v) => format!("Ok(F64({:.1}))", v),
+                    Err(e) => to_str(&Err::<f64, rust_kvs::error_code::ErrorCode>(e)),
+                };
                 info!(key = key, value_is_default, current_value);
 
                 // Set value.
                 kvs.set_value(key.clone(), *value)
                     .expect("Failed to set value");
 
-                // Get value parameters after set.
-                let value_is_default = kvs
-                    .is_value_default(key)
-                    .expect("Failed to check if default value");
-                let current_value = kvs.get_value_as::<f64>(key).expect("Failed to read value");
-
+                // // Get value parameters after set.
+                let value_is_default = match kvs.is_value_default(key) {
+                    Ok(v) => format!("Ok({})", v),
+                    Err(e) => to_str(&Err::<bool, rust_kvs::error_code::ErrorCode>(e)),
+                };
+                let current_value = match kvs.get_value_as::<f64>(key) {
+                    Ok(v) => format!("Ok(F64({:.1}))", v),
+                    Err(e) => to_str(&Err::<f64, rust_kvs::error_code::ErrorCode>(e)),
+                };
                 info!(key, value_is_default, current_value);
             }
 
@@ -154,11 +160,14 @@ impl Scenario for ResetAllKeys {
 
             // Get value parameters after reset.
             for (key, _) in key_values.iter() {
-                let value_is_default = kvs
-                    .is_value_default(key)
-                    .expect("Failed to check if default value");
-                let current_value = kvs.get_value_as::<f64>(key).expect("Failed to read value");
-
+                let value_is_default = match kvs.is_value_default(key) {
+                    Ok(v) => format!("Ok({})", v),
+                    Err(e) => to_str(&Err::<bool, rust_kvs::error_code::ErrorCode>(e)),
+                };
+                let current_value = match kvs.get_value_as::<f64>(key) {
+                    Ok(v) => format!("Ok(F64({:.1}))", v),
+                    Err(e) => to_str(&Err::<f64, rust_kvs::error_code::ErrorCode>(e)),
+                };
                 info!(key, value_is_default, current_value);
             }
         }
@@ -196,11 +205,14 @@ impl Scenario for ResetSingleKey {
             // Set non-default values.
             for (key, value) in key_values.iter() {
                 // Get value parameters before set.
-                let value_is_default = kvs
-                    .is_value_default(key)
-                    .expect("Failed to check if default value");
-                let current_value = kvs.get_value_as::<f64>(key).expect("Failed to read value");
-
+                let value_is_default = match kvs.is_value_default(key) {
+                    Ok(v) => format!("Ok({})", v),
+                    Err(e) => to_str(&Err::<bool, rust_kvs::error_code::ErrorCode>(e)),
+                };
+                let current_value = match kvs.get_value_as::<f64>(key) {
+                    Ok(v) => format!("Ok(F64({:.1}))", v),
+                    Err(e) => to_str(&Err::<f64, rust_kvs::error_code::ErrorCode>(e)),
+                };
                 info!(key = key, value_is_default, current_value);
 
                 // Set value.
@@ -208,11 +220,14 @@ impl Scenario for ResetSingleKey {
                     .expect("Failed to set value");
 
                 // Get value parameters after set.
-                let value_is_default = kvs
-                    .is_value_default(key)
-                    .expect("Failed to check if default value");
-                let current_value = kvs.get_value_as::<f64>(key).expect("Failed to read value");
-
+                let value_is_default = match kvs.is_value_default(key) {
+                    Ok(v) => format!("Ok({})", v),
+                    Err(e) => to_str(&Err::<bool, rust_kvs::error_code::ErrorCode>(e)),
+                };
+                let current_value = match kvs.get_value_as::<f64>(key) {
+                    Ok(v) => format!("Ok(F64({:.1}))", v),
+                    Err(e) => to_str(&Err::<f64, rust_kvs::error_code::ErrorCode>(e)),
+                };
                 info!(key, value_is_default, current_value);
             }
 
@@ -222,11 +237,14 @@ impl Scenario for ResetSingleKey {
 
             // Get value parameters after reset.
             for (key, _) in key_values.iter() {
-                let value_is_default = kvs
-                    .is_value_default(key)
-                    .expect("Failed to check if default value");
-                let current_value = kvs.get_value_as::<f64>(key).expect("Failed to read value");
-
+                let value_is_default = match kvs.is_value_default(key) {
+                    Ok(v) => format!("Ok({})", v),
+                    Err(e) => to_str(&Err::<bool, rust_kvs::error_code::ErrorCode>(e)),
+                };
+                let current_value = match kvs.get_value_as::<f64>(key) {
+                    Ok(v) => format!("Ok(F64({:.1}))", v),
+                    Err(e) => to_str(&Err::<f64, rust_kvs::error_code::ErrorCode>(e)),
+                };
                 info!(key, value_is_default, current_value);
             }
         }
@@ -234,7 +252,6 @@ impl Scenario for ResetSingleKey {
         Ok(())
     }
 }
-
 /// Check hash file is created when KVS is init with defaults.
 struct Checksum;
 

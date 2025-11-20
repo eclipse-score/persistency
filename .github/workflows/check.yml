@@ -184,4 +184,5 @@ jobs:
           rm ${OUT_FILE}
 
       - name: Bazel Benchmark
-        run: bazel run -c opt //:bm_kvs_cpp
+        run: |
+          bazel run -c opt //:bm_kvs_cpp

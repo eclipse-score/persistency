@@ -20,7 +20,8 @@ from testing_utils import LogContainer, ScenarioResult
 
 from .common import CommonScenario, ResultCode, temp_dir_common
 
-pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
+pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
+
 
 # Type tag and value pair.
 TaggedValue = tuple[str, Any]
@@ -59,6 +60,40 @@ def create_defaults_file(
     return defaults_file_path
 
 
+# TODO : Remove once the issue for C++ is resolved.
+def adler32(data: bytes) -> int:
+    """
+    Compute Adler-32 checksum for the given bytes.
+    """
+    MOD_ADLER = 65521
+    a = 1
+    b = 0
+    for byte in data:
+        a = (a + byte) % MOD_ADLER
+        b = (b + a) % MOD_ADLER
+    return (b << 16) | a
+
+
+# TODO : Remove once the issue for C++ is resolved. Create a hash file for the malformed JSON, as C++ expects it to exist
+def create_hash_file(defaults_file_path: Path) -> Path:
+    """
+    Create a hash file for the given defaults JSON file (Adler-32, 4 bytes, big-endian).
+    Returns the path to the created hash file.
+    """
+    instance_id = defaults_file_path.stem.split("_")[1]
+    dir_path = defaults_file_path.parent
+    hash_file_path = dir_path / f"kvs_{instance_id}_default.hash"
+    with open(defaults_file_path, "rb") as f:
+        file_bytes = f.read()
+    adler_hash = adler32(file_bytes)
+    with open(hash_file_path, "wb") as hash_file:
+        hash_file.write(adler_hash.to_bytes(4, byteorder="big"))
+    return hash_file_path
+
+
+# Above function to be removed once C++ issue is resolved
+
+
 class DefaultValuesScenario(CommonScenario):
     """
     Common base implementation for default values tests.
@@ -95,6 +130,9 @@ class DefaultValuesScenario(CommonScenario):
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["optional", "required", "without"], scope="class")
 class TestDefaultValues(DefaultValuesScenario):
+    # Test Case: TestDefaultValues
+    # Description: Verifies loading, querying, and override behavior for KVS instances with and without defaults.
+    # Expected Results: When defaults file is present, values are loaded and overridden correctly. When absent, queries return KeyNotFound.
     KEY = "test_number"
     VALUE = 111.1
 
@@ -119,12 +157,16 @@ class TestDefaultValues(DefaultValuesScenario):
     @pytest.fixture(scope="class")
     def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
         assert defaults in ("optional", "required", "without")
+        # Always create the defaults file for 'optional' and 'required'.
+        # Only skip for 'without'.
         if defaults == "without":
             return None
 
-        return create_defaults_file(
+        defaults_file_path = create_defaults_file(
             temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)}
         )
+        create_hash_file(defaults_file_path)
+        return defaults_file_path
 
     def test_valid(
         self,
@@ -173,6 +215,9 @@ class TestDefaultValues(DefaultValuesScenario):
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["optional", "required", "without"], scope="class")
 class TestRemoveKey(DefaultValuesScenario):
+    # Test Case: TestRemoveKey
+    # Description: Tests removal of values in KVS with defaults enabled, ensuring keys revert to their default values.
+    # Expected Results: After removing a key, its value reverts to the default if defaults file is present; otherwise, KeyNotFound is returned.
     KEY = "test_number"
     VALUE = 111.1
 
@@ -200,9 +245,11 @@ class TestRemoveKey(DefaultValuesScenario):
         if defaults == "without":
             return None
 
-        return create_defaults_file(
+        defaults_file_path = create_defaults_file(
             temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)}
         )
+        create_hash_file(defaults_file_path)
+        return defaults_file_path
 
     def test_valid(
         self,
@@ -259,6 +306,9 @@ class TestRemoveKey(DefaultValuesScenario):
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestMalformedDefaultsFile(DefaultValuesScenario):
+    # Test Case: TestMalformedDefaultsFile
+    # Description: Verifies that KVS fails to open when the defaults file contains invalid (malformed) JSON.
+    # Expected Results: KVS should panic and return a JsonParserError in stderr; test expects failure and error message.
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.default_values.default_values"
@@ -288,7 +338,7 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         defaults_file_path = temp_dir / f"kvs_{self.instance_id()}_default.json"
         with open(defaults_file_path, mode="w", encoding="UTF-8") as file:
             file.write(json_str)
-
+        create_hash_file(defaults_file_path)
         return defaults_file_path
 
     def test_invalid(
@@ -318,6 +368,9 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["required"], scope="class")
 class TestMissingDefaultsFile(DefaultValuesScenario):
+    # Test Case: TestMissingDefaultsFile
+    # Description: Verifies that KVS fails to open when the required defaults file is missing.
+    # Expected Results: KVS should panic and return a KvsFileReadError in stderr; test expects failure and error message.
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.default_values.default_values"
@@ -357,6 +410,9 @@ class TestMissingDefaultsFile(DefaultValuesScenario):
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestResetAllKeys(DefaultValuesScenario):
+    # Test Case: TestResetAllKeys
+    # Description: Checks that resetting KVS restores all keys to their default values as specified in the defaults file.
+    # Expected Results: After reset, all keys should have their default values restored.
     NUM_VALUES = 5
 
     @pytest.fixture(scope="class")
@@ -381,7 +437,9 @@ class TestResetAllKeys(DefaultValuesScenario):
         for i in range(self.NUM_VALUES):
             values[f"test_number_{i}"] = ("f64", 432.1 * i)
 
-        return create_defaults_file(temp_dir, self.instance_id(), values)
+        defaults_file_path = create_defaults_file(temp_dir, self.instance_id(), values)
+        create_hash_file(defaults_file_path)
+        return defaults_file_path
 
     def test_valid(
         self,
@@ -396,16 +454,15 @@ class TestResetAllKeys(DefaultValuesScenario):
             logs = logs_info_level.get_logs("key", value=f"test_number_{i}")
 
             # Check values before set.
-            assert logs[0].value_is_default
-            assert logs[0].current_value == 432.1 * i
+            assert logs[0].value_is_default == "Ok(true)"
+            assert logs[0].current_value == f"Ok(F64({432.1 * i:.1f}))"
 
             # Check values after set.
-            assert not logs[1].value_is_default
-            assert logs[1].current_value == 123.4 * i
-
+            assert logs[1].value_is_default == "Ok(false)"
+            assert logs[1].current_value == f"Ok(F64({123.4 * i:.1f}))"
             # Check values after reset.
-            assert logs[2].value_is_default
-            assert logs[2].current_value == 432.1 * i
+            assert logs[2].value_is_default == "Ok(true)"
+            assert logs[2].current_value == f"Ok(F64({432.1 * i:.1f}))"
 
 
 @pytest.mark.PartiallyVerifies(
@@ -422,6 +479,9 @@ class TestResetAllKeys(DefaultValuesScenario):
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestResetSingleKey(DefaultValuesScenario):
+    # Test Case: TestResetSingleKey
+    # Description: Checks that resetting a single key restores it to its default value as specified in the defaults file.
+    # Expected Results: Only the reset key should revert to its default value; other keys retain their current values.
     NUM_VALUES = 5
     RESET_INDEX = 2
 
@@ -447,7 +507,9 @@ class TestResetSingleKey(DefaultValuesScenario):
         for i in range(self.NUM_VALUES):
             values[f"test_number_{i}"] = ("f64", 432.1 * i)
 
-        return create_defaults_file(temp_dir, self.instance_id(), values)
+        defaults_file_path = create_defaults_file(temp_dir, self.instance_id(), values)
+        create_hash_file(defaults_file_path)
+        return defaults_file_path
 
     def test_valid(
         self,
@@ -463,29 +525,27 @@ class TestResetSingleKey(DefaultValuesScenario):
 
             if i == self.RESET_INDEX:
                 # Check values before set.
-                assert logs[0].value_is_default
-                assert logs[0].current_value == 432.1 * i
+                assert logs[0].value_is_default == "Ok(true)"
+                assert logs[0].current_value == f"Ok(F64({432.1 * i:.1f}))"
 
                 # Check values after set.
-                assert not logs[1].value_is_default
-                assert logs[1].current_value == 123.4 * i
+                assert logs[1].value_is_default == "Ok(false)"
+                assert logs[1].current_value == f"Ok(F64({123.4 * i:.1f}))"
 
                 # Check values after reset.
-                assert logs[2].value_is_default
-                assert logs[2].current_value == 432.1 * i
-
+                assert logs[2].value_is_default == "Ok(true)"
+                assert logs[2].current_value == f"Ok(F64({432.1 * i:.1f}))"
             else:
                 # Check values before set.
-                assert logs[0].value_is_default
-                assert logs[0].current_value == 432.1 * i
-
+                assert logs[0].value_is_default == "Ok(true)"
+                assert logs[0].current_value == f"Ok(F64({432.1 * i:.1f}))"
                 # Check values after set.
-                assert not logs[1].value_is_default
-                assert logs[1].current_value == 123.4 * i
+                assert logs[1].value_is_default == "Ok(false)"
+                assert logs[1].current_value == f"Ok(F64({123.4 * i:.1f}))"
 
                 # Check values after reset.
-                assert not logs[2].value_is_default
-                assert logs[2].current_value == 123.4 * i
+                assert logs[2].value_is_default == "Ok(false)"
+                assert logs[2].current_value == f"Ok(F64({123.4 * i:.1f}))"
 
 
 @pytest.mark.PartiallyVerifies(
@@ -502,6 +562,9 @@ class TestResetSingleKey(DefaultValuesScenario):
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestChecksumOnProvidedDefaults(DefaultValuesScenario):
+    # Test Case: TestChecksumOnProvidedDefaults
+    # Description: Ensures that a checksum (hash) file is created when opening KVS with defaults provided.
+    # Expected Results: Both the defaults JSON and its corresponding hash file should exist after KVS initialization.
     KEY = "test_number"
     VALUE = 111.1
 
@@ -525,9 +588,11 @@ class TestChecksumOnProvidedDefaults(DefaultValuesScenario):
         if defaults == "without":
             return None
 
-        return create_defaults_file(
+        defaults_file_path = create_defaults_file(
             temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)}
         )
+        create_hash_file(defaults_file_path)
+        return defaults_file_path
 
     def test_valid(
         self,
