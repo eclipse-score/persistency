@@ -259,16 +259,18 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
         // Load file containing defaults.
         let defaults_path =
             PathResolver::defaults_file_path(&kvs_parameters.working_dir, instance_id);
+        let defaults_hash_path =
+            PathResolver::defaults_hash_file_path(&kvs_parameters.working_dir, instance_id);
         let defaults_map = match kvs_parameters.defaults {
             KvsDefaults::Ignored => KvsMap::new(),
             KvsDefaults::Optional => {
                 if defaults_path.exists() {
-                    Backend::load_kvs(&defaults_path, None)?
+                    Backend::load_kvs(&defaults_path, &defaults_hash_path)?
                 } else {
                     KvsMap::new()
                 }
             }
-            KvsDefaults::Required => Backend::load_kvs(&defaults_path, None)?,
+            KvsDefaults::Required => Backend::load_kvs(&defaults_path, &defaults_hash_path)?,
         };
 
         // Load KVS and hash files.
@@ -281,12 +283,12 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> GenericKvsBuilder<Backe
             KvsLoad::Ignored => KvsMap::new(),
             KvsLoad::Optional => {
                 if kvs_path.exists() && hash_path.exists() {
-                    Backend::load_kvs(&kvs_path, Some(&hash_path))?
+                    Backend::load_kvs(&kvs_path, &hash_path)?
                 } else {
                     KvsMap::new()
                 }
             }
-            KvsLoad::Required => Backend::load_kvs(&kvs_path, Some(&hash_path))?,
+            KvsLoad::Required => Backend::load_kvs(&kvs_path, &hash_path)?,
         };
 
         // Shared object containing data.
@@ -602,16 +604,18 @@ mod kvs_builder_tests {
     fn create_defaults_file(
         working_dir: &Path,
         instance_id: InstanceId,
-    ) -> Result<PathBuf, ErrorCode> {
+    ) -> Result<(PathBuf, PathBuf), ErrorCode> {
         let defaults_file_path = TestBackend::defaults_file_path(working_dir, instance_id);
+        let defaults_hash_file_path =
+            TestBackend::defaults_hash_file_path(working_dir, instance_id);
         let kvs_map = KvsMap::from([
             ("number1".to_string(), KvsValue::F64(123.0)),
             ("bool1".to_string(), KvsValue::Boolean(true)),
             ("string1".to_string(), KvsValue::String("Hello".to_string())),
         ]);
-        TestBackend::save_kvs(&kvs_map, &defaults_file_path, None)?;
+        TestBackend::save_kvs(&kvs_map, &defaults_file_path, &defaults_hash_file_path)?;
 
-        Ok(defaults_file_path)
+        Ok((defaults_file_path, defaults_hash_file_path))
     }
 
     /// Generate and store files containing example KVS and hash data.
@@ -627,7 +631,7 @@ mod kvs_builder_tests {
             ("bool1".to_string(), KvsValue::Boolean(false)),
             ("string1".to_string(), KvsValue::String("Hi".to_string())),
         ]);
-        TestBackend::save_kvs(&kvs_map, &kvs_file_path, Some(&hash_file_path))?;
+        TestBackend::save_kvs(&kvs_map, &kvs_file_path, &hash_file_path)?;
 
         Ok((kvs_file_path, hash_file_path))
     }

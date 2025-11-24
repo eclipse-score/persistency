@@ -17,14 +17,10 @@ use std::path::{Path, PathBuf};
 /// KVS backend interface.
 pub trait KvsBackend {
     /// Load KvsMap from given file.
-    fn load_kvs(kvs_path: &Path, hash_path: Option<&PathBuf>) -> Result<KvsMap, ErrorCode>;
+    fn load_kvs(kvs_path: &Path, hash_path: &Path) -> Result<KvsMap, ErrorCode>;
 
     /// Store KvsMap at given file path.
-    fn save_kvs(
-        kvs_map: &KvsMap,
-        kvs_path: &Path,
-        hash_path: Option<&PathBuf>,
-    ) -> Result<(), ErrorCode>;
+    fn save_kvs(kvs_map: &KvsMap, kvs_path: &Path, hash_path: &Path) -> Result<(), ErrorCode>;
 }
 
 /// KVS path resolver interface.
@@ -54,4 +50,10 @@ pub trait KvsPathResolver {
 
     /// Get defaults file path in working directory.
     fn defaults_file_path(working_dir: &Path, instance_id: InstanceId) -> PathBuf;
+
+    /// Get defaults hash file name.
+    fn defaults_hash_file_name(instance_id: InstanceId) -> String;
+
+    /// Get defaults hash file path in working directory.
+    fn defaults_hash_file_path(working_dir: &Path, instance_id: InstanceId) -> PathBuf;
 }

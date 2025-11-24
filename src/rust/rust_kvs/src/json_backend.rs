@@ -170,11 +170,11 @@ impl JsonBackend {
 }
 
 impl KvsBackend for JsonBackend {
-    fn load_kvs(kvs_path: &Path, hash_path: Option<&PathBuf>) -> Result<KvsMap, ErrorCode> {
+    fn load_kvs(kvs_path: &Path, hash_path: &Path) -> Result<KvsMap, ErrorCode> {
         if !Self::check_extension(kvs_path, "json") {
             return Err(ErrorCode::KvsFileReadError);
         }
-        if hash_path.is_some_and(|p| !Self::check_extension(p, "hash")) {
+        if !Self::check_extension(hash_path, "hash") {
             return Err(ErrorCode::KvsHashFileReadError);
         }
 
@@ -183,27 +183,25 @@ impl KvsBackend for JsonBackend {
         let json_value = Self::parse(&json_str)?;
 
         // Perform hash check.
-        if let Some(hash_path) = hash_path {
-            match fs::read(hash_path) {
-                Ok(hash_bytes) => {
-                    let hash_kvs = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
-                    if hash_bytes.len() == 4 {
-                        let file_hash = u32::from_be_bytes([
-                            hash_bytes[0],
-                            hash_bytes[1],
-                            hash_bytes[2],
-                            hash_bytes[3],
-                        ]);
-                        if hash_kvs != file_hash {
-                            return Err(ErrorCode::ValidationFailed);
-                        }
-                    } else {
+        match fs::read(hash_path) {
+            Ok(hash_bytes) => {
+                let hash_kvs = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
+                if hash_bytes.len() == 4 {
+                    let file_hash = u32::from_be_bytes([
+                        hash_bytes[0],
+                        hash_bytes[1],
+                        hash_bytes[2],
+                        hash_bytes[3],
+                    ]);
+                    if hash_kvs != file_hash {
                         return Err(ErrorCode::ValidationFailed);
                     }
+                } else {
+                    return Err(ErrorCode::ValidationFailed);
                 }
-                Err(_) => return Err(ErrorCode::KvsHashFileReadError),
-            };
-        }
+            }
+            Err(e) => return Err(e.into()),
+        };
 
         // Cast from `JsonValue` to `KvsValue`.
         let kvs_value = KvsValue::from(json_value);
@@ -214,16 +212,12 @@ impl KvsBackend for JsonBackend {
         }
     }
 
-    fn save_kvs(
-        kvs_map: &KvsMap,
-        kvs_path: &Path,
-        hash_path: Option<&PathBuf>,
-    ) -> Result<(), ErrorCode> {
+    fn save_kvs(kvs_map: &KvsMap, kvs_path: &Path, hash_path: &Path) -> Result<(), ErrorCode> {
         // Validate extensions.
         if !Self::check_extension(kvs_path, "json") {
             return Err(ErrorCode::KvsFileReadError);
         }
-        if hash_path.is_some_and(|p| !Self::check_extension(p, "hash")) {
+        if !Self::check_extension(hash_path, "hash") {
             return Err(ErrorCode::KvsHashFileReadError);
         }
 
@@ -236,10 +230,8 @@ impl KvsBackend for JsonBackend {
         fs::write(kvs_path, &json_str)?;
 
         // Generate hash and save to hash file.
-        if let Some(hash_path) = hash_path {
-            let hash = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
-            fs::write(hash_path, hash.to_be_bytes())?
-        }
+        let hash = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
+        fs::write(hash_path, hash.to_be_bytes())?;
 
         Ok(())
     }
@@ -277,6 +269,14 @@ impl KvsPathResolver for JsonBackend {
 
     fn defaults_file_path(working_dir: &Path, instance_id: InstanceId) -> PathBuf {
         working_dir.join(Self::defaults_file_name(instance_id))
+    }
+
+    fn defaults_hash_file_name(instance_id: InstanceId) -> String {
+        format!("kvs_{instance_id}_default.hash")
+    }
+
+    fn defaults_hash_file_path(working_dir: &Path, instance_id: InstanceId) -> PathBuf {
+        working_dir.join(Self::defaults_hash_file_name(instance_id))
     }
 }
 
@@ -736,7 +736,7 @@ mod backend_tests {
         ]);
         let kvs_path = working_dir.join("kvs.json");
         let hash_path = working_dir.join("kvs.hash");
-        JsonBackend::save_kvs(&kvs_map, &kvs_path, Some(&hash_path)).unwrap();
+        JsonBackend::save_kvs(&kvs_map, &kvs_path, &hash_path).unwrap();
         (kvs_path, hash_path)
     }
 
@@ -744,30 +744,54 @@ mod backend_tests {
     fn test_load_kvs_ok() {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
-        let (kvs_path, _hash_path) = create_kvs_files(&dir_path);
+        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
 
-        let kvs_map = JsonBackend::load_kvs(&kvs_path, None).unwrap();
+        let kvs_map = JsonBackend::load_kvs(&kvs_path, &hash_path).unwrap();
         assert_eq!(kvs_map.len(), 3);
     }
 
     #[test]
-    fn test_load_kvs_not_found() {
+    fn test_load_kvs_kvs_not_found() {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
-        let kvs_path = dir_path.join("kvs.json");
+        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        std::fs::remove_file(&kvs_path).unwrap();
 
-        assert!(JsonBackend::load_kvs(&kvs_path, None).is_err_and(|e| e == ErrorCode::FileNotFound));
+        assert!(JsonBackend::load_kvs(&kvs_path, &hash_path)
+            .is_err_and(|e| e == ErrorCode::FileNotFound));
     }
 
     #[test]
-    fn test_load_kvs_invalid_extension() {
+    fn test_load_kvs_kvs_invalid_extension() {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
         let kvs_path = dir_path.join("kvs.invalid_ext");
+        let hash_path = dir_path.join("kvs.hash");
 
-        assert!(
-            JsonBackend::load_kvs(&kvs_path, None).is_err_and(|e| e == ErrorCode::KvsFileReadError)
-        );
+        assert!(JsonBackend::load_kvs(&kvs_path, &hash_path)
+            .is_err_and(|e| e == ErrorCode::KvsFileReadError));
+    }
+
+    #[test]
+    fn test_load_kvs_hash_not_found() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        std::fs::remove_file(&hash_path).unwrap();
+
+        assert!(JsonBackend::load_kvs(&kvs_path, &hash_path)
+            .is_err_and(|e| e == ErrorCode::FileNotFound));
+    }
+
+    #[test]
+    fn test_load_kvs_hash_invalid_extension() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let kvs_path = dir_path.join("kvs.json");
+        let hash_path = dir_path.join("kvs.invalid_ext");
+
+        assert!(JsonBackend::load_kvs(&kvs_path, &hash_path)
+            .is_err_and(|e| e == ErrorCode::KvsHashFileReadError));
     }
 
     #[test]
@@ -775,11 +799,15 @@ mod backend_tests {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
         let kvs_path = dir_path.join("kvs.json");
-        std::fs::write(kvs_path.clone(), "{\"malformed_json\"}").unwrap();
+        let hash_path = dir_path.join("kvs.hash");
 
-        assert!(
-            JsonBackend::load_kvs(&kvs_path, None).is_err_and(|e| e == ErrorCode::JsonParserError)
-        );
+        let contents = "{\"malformed_json\"}";
+        let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
+        std::fs::write(kvs_path.clone(), contents).unwrap();
+        std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
+
+        assert!(JsonBackend::load_kvs(&kvs_path, &hash_path)
+            .is_err_and(|e| e == ErrorCode::JsonParserError));
     }
 
     #[test]
@@ -787,44 +815,15 @@ mod backend_tests {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
         let kvs_path = dir_path.join("kvs.json");
-        std::fs::write(kvs_path.clone(), "[123.4, 567.8]").unwrap();
+        let hash_path = dir_path.join("kvs.hash");
 
-        assert!(
-            JsonBackend::load_kvs(&kvs_path, None).is_err_and(|e| e == ErrorCode::JsonParserError)
-        );
-    }
+        let contents = "[123.4, 567.8]";
+        let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
+        std::fs::write(kvs_path.clone(), contents).unwrap();
+        std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
 
-    #[test]
-    fn test_load_kvs_hash_path_some_ok() {
-        let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
-
-        let kvs_map = JsonBackend::load_kvs(&kvs_path, Some(&hash_path)).unwrap();
-        assert_eq!(kvs_map.len(), 3);
-    }
-
-    #[test]
-    fn test_load_kvs_hash_path_some_invalid_extension() {
-        let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
-        let new_hash_path = hash_path.with_extension("invalid_ext");
-        std::fs::rename(hash_path, new_hash_path.clone()).unwrap();
-
-        assert!(JsonBackend::load_kvs(&kvs_path, Some(&new_hash_path))
-            .is_err_and(|e| e == ErrorCode::KvsHashFileReadError));
-    }
-
-    #[test]
-    fn test_load_kvs_hash_path_some_not_found() {
-        let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
-        std::fs::remove_file(hash_path.clone()).unwrap();
-
-        assert!(JsonBackend::load_kvs(&kvs_path, Some(&hash_path))
-            .is_err_and(|e| e == ErrorCode::KvsHashFileReadError));
+        assert!(JsonBackend::load_kvs(&kvs_path, &hash_path)
+            .is_err_and(|e| e == ErrorCode::JsonParserError));
     }
 
     #[test]
@@ -834,7 +833,7 @@ mod backend_tests {
         let (kvs_path, hash_path) = create_kvs_files(&dir_path);
         std::fs::write(hash_path.clone(), vec![0x12, 0x34, 0x56, 0x78]).unwrap();
 
-        assert!(JsonBackend::load_kvs(&kvs_path, Some(&hash_path))
+        assert!(JsonBackend::load_kvs(&kvs_path, &hash_path)
             .is_err_and(|e| e == ErrorCode::ValidationFailed));
     }
 
@@ -845,7 +844,7 @@ mod backend_tests {
         let (kvs_path, hash_path) = create_kvs_files(&dir_path);
         std::fs::write(hash_path.clone(), vec![0x12, 0x34, 0x56]).unwrap();
 
-        assert!(JsonBackend::load_kvs(&kvs_path, Some(&hash_path))
+        assert!(JsonBackend::load_kvs(&kvs_path, &hash_path)
             .is_err_and(|e| e == ErrorCode::ValidationFailed));
     }
 
@@ -860,49 +859,35 @@ mod backend_tests {
             ("k3".to_string(), KvsValue::from(123.4)),
         ]);
         let kvs_path = dir_path.join("kvs.json");
-        JsonBackend::save_kvs(&kvs_map, &kvs_path, None).unwrap();
+        let hash_path = dir_path.join("kvs.hash");
+        JsonBackend::save_kvs(&kvs_map, &kvs_path, &hash_path).unwrap();
 
         assert!(kvs_path.exists());
     }
 
     #[test]
-    fn test_save_kvs_invalid_extension() {
+    fn test_save_kvs_kvs_invalid_extension() {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
 
         let kvs_map = KvsMap::new();
         let kvs_path = dir_path.join("kvs.invalid_ext");
-        assert!(JsonBackend::save_kvs(&kvs_map, &kvs_path, None)
+        let hash_path = dir_path.join("kvs.hash");
+
+        assert!(JsonBackend::save_kvs(&kvs_map, &kvs_path, &hash_path)
             .is_err_and(|e| e == ErrorCode::KvsFileReadError));
     }
 
     #[test]
-    fn test_save_kvs_hash_path_some_ok() {
-        let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-
-        let kvs_map = KvsMap::from([
-            ("k1".to_string(), KvsValue::from("v1")),
-            ("k2".to_string(), KvsValue::from(true)),
-            ("k3".to_string(), KvsValue::from(123.4)),
-        ]);
-        let kvs_path = dir_path.join("kvs.json");
-        let hash_path = dir_path.join("kvs.hash");
-        JsonBackend::save_kvs(&kvs_map, &kvs_path, Some(&hash_path)).unwrap();
-
-        assert!(kvs_path.exists());
-        assert!(hash_path.exists());
-    }
-
-    #[test]
-    fn test_save_kvs_hash_path_some_invalid_extension() {
+    fn test_save_kvs_hash_invalid_extension() {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
 
         let kvs_map = KvsMap::new();
         let kvs_path = dir_path.join("kvs.json");
         let hash_path = dir_path.join("kvs.invalid_ext");
-        assert!(JsonBackend::save_kvs(&kvs_map, &kvs_path, Some(&hash_path))
+
+        assert!(JsonBackend::save_kvs(&kvs_map, &kvs_path, &hash_path)
             .is_err_and(|e| e == ErrorCode::KvsHashFileReadError));
     }
 
@@ -913,7 +898,9 @@ mod backend_tests {
 
         let kvs_map = KvsMap::from([("inf".to_string(), KvsValue::from(f64::INFINITY))]);
         let kvs_path = dir_path.join("kvs.json");
-        assert!(JsonBackend::save_kvs(&kvs_map, &kvs_path, None)
+        let hash_path = dir_path.join("kvs.hash");
+
+        assert!(JsonBackend::save_kvs(&kvs_map, &kvs_path, &hash_path)
             .is_err_and(|e| e == ErrorCode::JsonGeneratorError));
     }
 }
@@ -982,6 +969,25 @@ mod path_resolver_tests {
         let instance_id = InstanceId(123);
         let exp_name = dir_path.join(format!("kvs_{instance_id}_default.json"));
         let act_name = JsonBackend::defaults_file_path(dir_path, instance_id);
+        assert_eq!(exp_name, act_name);
+    }
+
+    #[test]
+    fn test_defaults_hash_file_name() {
+        let instance_id = InstanceId(123);
+        let exp_name = format!("kvs_{instance_id}_default.hash");
+        let act_name = JsonBackend::defaults_hash_file_name(instance_id);
+        assert_eq!(exp_name, act_name);
+    }
+
+    #[test]
+    fn test_defaults_hash_file_path() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path();
+
+        let instance_id = InstanceId(123);
+        let exp_name = dir_path.join(format!("kvs_{instance_id}_default.hash"));
+        let act_name = JsonBackend::defaults_hash_file_path(dir_path, instance_id);
         assert_eq!(exp_name, act_name);
     }
 }

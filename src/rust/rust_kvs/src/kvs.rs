@@ -393,7 +393,7 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> KvsApi
         );
 
         let data = self.data.lock()?;
-        Backend::save_kvs(&data.kvs_map, &kvs_path, Some(&hash_path)).map_err(|e| {
+        Backend::save_kvs(&data.kvs_map, &kvs_path, &hash_path).map_err(|e| {
             eprintln!("error: save_kvs failed: {e:?}");
             e
         })?;
@@ -473,7 +473,7 @@ impl<Backend: KvsBackend, PathResolver: KvsPathResolver> KvsApi
             self.parameters.instance_id,
             snapshot_id,
         );
-        data.kvs_map = Backend::load_kvs(&kvs_path, Some(&hash_path))?;
+        data.kvs_map = Backend::load_kvs(&kvs_path, &hash_path)?;
 
         Ok(())
     }
@@ -530,7 +530,7 @@ mod kvs_tests {
     use crate::kvs_backend::{KvsBackend, KvsPathResolver};
     use crate::kvs_builder::KvsData;
     use crate::kvs_value::{KvsMap, KvsValue};
-    use std::path::PathBuf;
+    use std::path::{Path, PathBuf};
     use std::sync::{Arc, Mutex};
     use tempfile::tempdir;
 
@@ -539,17 +539,14 @@ mod kvs_tests {
     struct MockBackend;
 
     impl KvsBackend for MockBackend {
-        fn load_kvs(
-            _kvs_path: &std::path::Path,
-            _hash_path: Option<&PathBuf>,
-        ) -> Result<KvsMap, ErrorCode> {
+        fn load_kvs(_kvs_path: &Path, _hash_path: &Path) -> Result<KvsMap, ErrorCode> {
             unimplemented!()
         }
 
         fn save_kvs(
             _kvs_map: &KvsMap,
-            _kvs_path: &std::path::Path,
-            _hash_path: Option<&PathBuf>,
+            _kvs_path: &Path,
+            _hash_path: &Path,
         ) -> Result<(), ErrorCode> {
             unimplemented!()
         }
@@ -561,7 +558,7 @@ mod kvs_tests {
         }
 
         fn kvs_file_path(
-            _working_dir: &std::path::Path,
+            _working_dir: &Path,
             _instance_id: InstanceId,
             _snapshot_id: SnapshotId,
         ) -> PathBuf {
@@ -573,7 +570,7 @@ mod kvs_tests {
         }
 
         fn hash_file_path(
-            _working_dir: &std::path::Path,
+            _working_dir: &Path,
             _instance_id: InstanceId,
             _snapshot_id: SnapshotId,
         ) -> PathBuf {
@@ -584,7 +581,15 @@ mod kvs_tests {
             unimplemented!()
         }
 
-        fn defaults_file_path(_working_dir: &std::path::Path, _instance_id: InstanceId) -> PathBuf {
+        fn defaults_file_path(_working_dir: &Path, _instance_id: InstanceId) -> PathBuf {
+            unimplemented!()
+        }
+
+        fn defaults_hash_file_name(_instance_id: InstanceId) -> String {
+            unimplemented!()
+        }
+
+        fn defaults_hash_file_path(_working_dir: &Path, _instance_id: InstanceId) -> PathBuf {
             unimplemented!()
         }
     }
