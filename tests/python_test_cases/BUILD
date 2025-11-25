@@ -11,8 +11,15 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 load("@pip_score_venv_test//:requirements.bzl", "all_requirements")
+load("@rules_python//python:defs.bzl", "py_library")
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 load("@score_python_basics//:defs.bzl", "score_py_pytest", "score_virtualenv")
+
+# Empty config library required by score_virtualenv macro
+py_library(
+    name = "config",
+    srcs = [],
+)
 
 # Additional requirements for the tests
 compile_pip_requirements(
@@ -24,9 +31,10 @@ compile_pip_requirements(
     ],
 )
 
+# Test specific dependencies are specified in the test targets below
 score_virtualenv(
     name = "python_tc_venv",
-    reqs = all_requirements,
+    reqs = [],
     venv_name = ".python_tc_venv",
 )
 
