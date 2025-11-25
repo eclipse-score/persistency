@@ -94,9 +94,6 @@ bazel_dep(name = "score_python_basics", version = "0.3.4")
 bazel_dep(name = "score_platform", version = "0.4.1")
 bazel_dep(name = "score_process", version = "1.3.1")
 
-# Module deps
-bazel_dep(name = "score_baselibs", version = "0.1.2")
-
 ## additional settings / config
 crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
 crate.from_cargo(
@@ -131,11 +128,10 @@ git_override(
     remote = "https://github.com/eclipse-score/testing_tools.git",
 )
 
-# ToDo: `-`version needed still because of indirect dependency
-bazel_dep(name = "score-baselibs", version = "", dev_dependency = True)
+bazel_dep(name = "score_baselibs", version = "", dev_dependency = True)
 git_override(
-    module_name = "score-baselibs",
-    commit = "06a27a163a2aa787e1b99f6b04feb00b413b3355",
+    module_name = "score_baselibs",
+    commit = "8d556711421cbdd804dffee049967fa5061ca2ea",
     remote = "https://github.com/eclipse-score/baselibs.git",
 )
 
