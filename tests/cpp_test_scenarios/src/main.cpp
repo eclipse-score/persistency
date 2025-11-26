@@ -10,32 +10,57 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#include <iostream>
-#include <memory>
-#include <string>
-#include <vector>
 
+#include "cit/test_default_values.hpp"
 #include "cli.hpp"
-#include "scenario.hpp"
+#include "helpers/kvs_parameters.hpp"
 #include "test_basic.hpp"
-#include "test_context.hpp"
 
 int main(int argc, char** argv) {
+    using namespace test_default_values;
     try {
+
         std::vector<std::string> raw_arguments{argv, argv + argc};
 
-        // Basic group.
+        // Basic group
         Scenario::Ptr basic_scenario{new BasicScenario{}};
-        ScenarioGroup::Ptr basic_group{new ScenarioGroupImpl{"basic", {basic_scenario}, {}}};
+        ScenarioGroup::Ptr basic_group{
+            new ScenarioGroupImpl{"basic", {basic_scenario}, {}}};
 
-        // Root group.
-        ScenarioGroup::Ptr root_group{new ScenarioGroupImpl{"root", {}, {basic_group}}};
+        ScenarioGroup::Ptr cit_group{
+            new ScenarioGroupImpl{"cit", {}, {create_default_values_group()}}};
 
-        // Run.
+        ScenarioGroup::Ptr root_group{
+            new ScenarioGroupImpl{"root", {}, {basic_group, cit_group}}};
+
         TestContext test_context{root_group};
+
         run_cli_app(raw_arguments, test_context);
+    } catch (const ScenarioError& ex) {
+        using score::mw::per::kvs::ErrorCode;
+        switch (ex.code) {
+        case ErrorCode::KvsFileReadError:
+        case ErrorCode::KvsHashFileReadError:
+        case ErrorCode::JsonParserError:
+        case ErrorCode::ValidationFailed:
+            std::cerr << "[EXCEPTION] Critical error: " << ex.what()
+                      << std::endl;
+            return 101;
+        default:
+            std::cerr << "[EXCEPTION] Non-critical runtime error: " << ex.what()
+                      << std::endl;
+            return 202;
+        }
+    } catch (const std::runtime_error& ex) {
+        std::cerr << "[EXCEPTION] std::runtime_error: " << ex.what()
+                  << std::endl;
+        return 102;
     } catch (const std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-        return 1;
+        std::cerr << "[EXCEPTION] std::exception: " << ex.what() << std::endl;
+        return 103;
+    } catch (...) {
+        std::cerr << "[EXCEPTION] Unknown exception" << std::endl;
+        return 104;
     }
+    return 0;
 }
