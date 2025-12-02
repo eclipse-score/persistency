@@ -80,6 +80,10 @@
     "url": "https://eclipse-score.github.io/persistency/pr-179/"
   },
   {
+    "version": "pr-181",
+    "url": "https://eclipse-score.github.io/persistency/pr-181/"
+  },
+  {
     "version": "pr-27",
     "url": "https://eclipse-score.github.io/inc_mw_per/pr-27/"
   },
@@ -94,9 +98,5 @@
   {
     "version": "pr-83",
     "url": "https://eclipse-score.github.io/inc_mw_per/pr-83/"
-  },
-  {
-    "version": "pr-181",
-    "url": "https://eclipse-score.github.io/persistency/pr-181/"
   }
 ]
