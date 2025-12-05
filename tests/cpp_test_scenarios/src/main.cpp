@@ -19,6 +19,12 @@
 #include "scenario.hpp"
 #include "test_basic.hpp"
 #include "test_context.hpp"
+#include "cit/test_snapshots.hpp"
+#include "tracing.hpp"
+#include <filesystem>
+#include "internal/error.hpp"
+#include "score/result/result.h"
+#include "test_objects/test_object_snapshot.hpp"
 
 int main(int argc, char** argv) {
     try {
@@ -28,8 +34,11 @@ int main(int argc, char** argv) {
         Scenario::Ptr basic_scenario{new BasicScenario{}};
         ScenarioGroup::Ptr basic_group{new ScenarioGroupImpl{"basic", {basic_scenario}, {}}};
 
+        ScenarioGroup::Ptr cit_group{
+        new ScenarioGroupImpl{"cit", {}, {snapshot_group}}};
+
         // Root group.
-        ScenarioGroup::Ptr root_group{new ScenarioGroupImpl{"root", {}, {basic_group}}};
+        ScenarioGroup::Ptr root_group{new ScenarioGroupImpl{"root", {}, {basic_group,cit_group}}};
 
         // Run.
         TestContext test_context{root_group};

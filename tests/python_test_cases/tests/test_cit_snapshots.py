@@ -16,7 +16,7 @@ import pytest
 from .common import CommonScenario, ResultCode, temp_dir_common
 from testing_utils import ScenarioResult, LogContainer
 
-pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
+pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
 
 
 class MaxSnapshotsScenario(CommonScenario):
@@ -63,6 +63,11 @@ class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
             "count": 1,
         }
 
+    @pytest.mark.xfail(
+        condition=lambda version: version == "cpp",
+        reason="Known bug in CPP code : ?",
+        strict=False,
+    )
     def test_ok(
         self,
         test_config: dict[str, Any],
@@ -125,6 +130,16 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
             }
         }
 
+    """
+        This test will xfail only for 'cpp' version.
+        For 'rust', it will run normally.
+    """
+
+    @pytest.mark.xfail(
+        condition=lambda version: version == "cpp",
+        reason="Known bug in CPP code : https://github.com/eclipse-score/persistency/issues/183",
+        strict=False,
+    )
     def test_ok(
         self,
         results: ScenarioResult,
