@@ -23,7 +23,7 @@
 #include <kvsbuilder.hpp>
 #include <nlohmann/json.hpp>
 
-// Custom exception type for error code propagation (shared with main.cpp)
+// Custom exception type for error code propagation (reusable in all scenariop)
 class ScenarioError : public std::runtime_error {
 public:
   score::mw::per::kvs::ErrorCode code;

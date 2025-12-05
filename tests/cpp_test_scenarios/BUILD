@@ -20,10 +20,6 @@ cc_binary(
     ]),
     copts = [
         "-g",
-        "-Isrc",
-        "-Isrc/cit",
-        "-Isrc/helpers",
-        "-Isrc/test_objects",
     ],
     visibility = ["//visibility:public"],
     deps = [
