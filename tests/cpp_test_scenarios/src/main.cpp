@@ -10,31 +10,37 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+#include <exception>
 #include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 
+#include "cit/test_cit_multiple_kvs.hpp"
 #include "cli.hpp"
-#include "scenario.hpp"
 #include "test_basic.hpp"
-#include "test_context.hpp"
 
-int main(int argc, char** argv) {
-    try {
+int main(int argc, char **argv)
+{
+
+    try
+    {
         std::vector<std::string> raw_arguments{argv, argv + argc};
 
         // Basic group.
         Scenario::Ptr basic_scenario{new BasicScenario{}};
         ScenarioGroup::Ptr basic_group{new ScenarioGroupImpl{"basic", {basic_scenario}, {}}};
-
+        ScenarioGroup::Ptr cit_group{
+            new ScenarioGroupImpl{
+                "cit", {}, {test_multiple_kvs::create_multiple_kvs_group()}}};
         // Root group.
-        ScenarioGroup::Ptr root_group{new ScenarioGroupImpl{"root", {}, {basic_group}}};
+        ScenarioGroup::Ptr root_group{new ScenarioGroupImpl{"root", {}, {basic_group, cit_group}}};
 
         // Run.
         TestContext test_context{root_group};
         run_cli_app(raw_arguments, test_context);
-    } catch (const std::exception& ex) {
+    }
+    catch (const std::exception &ex)
+    {
         std::cerr << ex.what() << std::endl;
         return 1;
     }
