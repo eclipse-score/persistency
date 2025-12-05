@@ -55,7 +55,7 @@ std::string SnapshotCount::name() const {
 * TestSnapshotCountFull
 	• Issue: The test expects a sequence of snapshot_count values: [0, 1] for count=2, [0, 1, 2, 3] for count=4, etc.
 	• Observed: C++ emits [0, 0, 1] or [0, 0, 1, 2, 3], but the first value is always 0, and the final value is not as expected.
-	• Possible Root Cause:The C++ implementation may not accumulating the count correctly , it stores or updates the count only after flush when MAX<3.
+	• Possible Root Cause: The C++ implementation may not be accumulating the count correctly, it stores or updates the count only after flush when MAX<3.
 */
 void SnapshotCount::run(const std::string& input) const {
     using namespace score::mw::per::kvs;

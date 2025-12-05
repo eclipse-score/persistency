@@ -130,11 +130,6 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
             }
         }
 
-    """
-        This test will xfail only for 'cpp' version.
-        For 'rust', it will run normally.
-    """
-
     @pytest.mark.xfail(
         condition=lambda version: version == "cpp",
         reason="Known bug in CPP code : https://github.com/eclipse-score/persistency/issues/183",
