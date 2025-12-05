@@ -17,30 +17,36 @@
 
 class SnapshotCount : public Scenario {
 public:
-    ~SnapshotCount() final = default;
-    std::string name() const override;
-    void run(const std::string& input) const override;
+  ~SnapshotCount() final = default;
+  std::string name() const override;
+  void run(const std::string &input) const override;
 };
 
 class SnapshotMaxCount : public Scenario {
 public:
-    ~SnapshotMaxCount() final = default;
-    std::string name() const override;
-    void run(const std::string& input) const override;
+  ~SnapshotMaxCount() final = default;
+  std::string name() const override;
+  void run(const std::string &input) const override;
 };
 
 class SnapshotRestore : public Scenario {
 public:
-    ~SnapshotRestore() final = default;
-    std::string name() const override;
-    void run(const std::string& input) const override;
+  ~SnapshotRestore() final = default;
+  std::string name() const override;
+  void run(const std::string &input) const override;
 };
 
 class SnapshotPaths : public Scenario {
 public:
-    ~SnapshotPaths() final = default;
-    std::string name() const override;
-    void run(const std::string& input) const override;
+  ~SnapshotPaths() final = default;
+  std::string name() const override;
+  void run(const std::string &input) const override;
 };
 
-#endif //TEST_SNAPSHOT_HPP
+extern Scenario::Ptr snapshot_count_scenario;
+extern Scenario::Ptr snapshot_count_max_count_scenario;
+extern Scenario::Ptr snapshot_count_restore_scenario;
+extern Scenario::Ptr snapshot_count_paths_scenario;
+extern ScenarioGroup::Ptr snapshot_group;
+
+#endif // TEST_SNAPSHOT_HPP

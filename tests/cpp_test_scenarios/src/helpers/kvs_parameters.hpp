@@ -12,16 +12,16 @@
  ********************************************************************************/
 #pragma once
 #include "internal/error.hpp"
-#include <stdexcept>
-#include <cstdint>
-#include <optional>
-#include <string>
 #include "score/json/json_parser.h"
 #include "score/json/json_writer.h"
+#include <cstdint>
 #include <fstream>
 #include <kvs.hpp>
 #include <kvsbuilder.hpp>
 #include <nlohmann/json.hpp>
+#include <optional>
+#include <stdexcept>
+#include <string>
 
 // Custom exception type for error code propagation (reusable in all scenariop)
 class ScenarioError : public std::runtime_error {
@@ -30,7 +30,6 @@ public:
   ScenarioError(score::mw::per::kvs::ErrorCode code, const std::string &msg)
       : std::runtime_error(msg), code(code) {}
 };
-
 
 namespace {
 
