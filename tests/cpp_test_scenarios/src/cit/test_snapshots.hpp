@@ -10,43 +10,38 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#ifndef TEST_SNAPSHOT_HPP
-#define TEST_SNAPSHOT_HPP
+#pragma once
 
 #include "scenario.hpp"
 
 class SnapshotCount : public Scenario {
-public:
-  ~SnapshotCount() final = default;
-  std::string name() const override;
-  void run(const std::string &input) const override;
+  public:
+    ~SnapshotCount() final = default;
+    std::string name() const final;
+    void run(const std::string &input) const final;
 };
 
 class SnapshotMaxCount : public Scenario {
-public:
-  ~SnapshotMaxCount() final = default;
-  std::string name() const override;
-  void run(const std::string &input) const override;
+  public:
+    ~SnapshotMaxCount() final = default;
+    std::string name() const final;
+    void run(const std::string &input) const final;
 };
 
 class SnapshotRestore : public Scenario {
-public:
-  ~SnapshotRestore() final = default;
-  std::string name() const override;
-  void run(const std::string &input) const override;
+  public:
+    ~SnapshotRestore() final = default;
+    std::string name() const final;
+    void run(const std::string &input) const final;
 };
 
 class SnapshotPaths : public Scenario {
-public:
-  ~SnapshotPaths() final = default;
-  std::string name() const override;
-  void run(const std::string &input) const override;
+  public:
+    ~SnapshotPaths() final = default;
+    std::string name() const final;
+    void run(const std::string &input) const final;
 };
 
-extern Scenario::Ptr snapshot_count_scenario;
-extern Scenario::Ptr snapshot_count_max_count_scenario;
-extern Scenario::Ptr snapshot_count_restore_scenario;
-extern Scenario::Ptr snapshot_count_paths_scenario;
-extern ScenarioGroup::Ptr snapshot_group;
-
-#endif // TEST_SNAPSHOT_HPP
+namespace test_snapshots {
+ScenarioGroup::Ptr create_snapshots_group();
+} // namespace test_snapshots

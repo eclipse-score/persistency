@@ -21,6 +21,7 @@ cc_binary(
     copts = [
         "-g",
     ],
+    includes = ["src"],
     visibility = ["//visibility:public"],
     deps = [
         "//src/cpp/src:kvs_cpp",

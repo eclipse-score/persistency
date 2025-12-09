@@ -63,18 +63,18 @@ class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
             "count": 1,
         }
 
-    @pytest.mark.xfail(
-        condition=lambda version: version == "cpp",
-        reason="Known bug in CPP code : ?",
-        strict=False,
-    )
     def test_ok(
         self,
         test_config: dict[str, Any],
         results: ScenarioResult,
         logs_info_level: LogContainer,
         snapshot_max_count: int,
+        version: str,
     ):
+        if version == "cpp":
+            pytest.xfail(
+                reason="Known bug in CPP code : https://github.com/eclipse-score/persistency/issues/183",
+            )
         assert results.return_code == ResultCode.SUCCESS
 
         count = test_config["count"]
@@ -130,17 +130,17 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
             }
         }
 
-    @pytest.mark.xfail(
-        condition=lambda version: version == "cpp",
-        reason="Known bug in CPP code : https://github.com/eclipse-score/persistency/issues/183",
-        strict=False,
-    )
     def test_ok(
         self,
         results: ScenarioResult,
         logs_info_level: LogContainer,
         snapshot_max_count: int,
+        version: str,
     ):
+        if version == "cpp":
+            pytest.xfail(
+                reason="Known bug in CPP code : https://github.com/eclipse-score/persistency/issues/183",
+            )
         assert results.return_code == ResultCode.SUCCESS
         assert (
             logs_info_level.find_log("max_count", value=snapshot_max_count) is not None

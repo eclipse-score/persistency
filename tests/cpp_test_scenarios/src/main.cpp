@@ -11,41 +11,34 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 #include <iostream>
-#include <memory>
-#include <string>
-#include <vector>
 
 #include "cit/test_snapshots.hpp"
 #include "cli.hpp"
 #include "internal/error.hpp"
-#include "scenario.hpp"
-#include "score/result/result.h"
 #include "test_basic.hpp"
-#include "test_context.hpp"
-#include "tracing.hpp"
-#include <filesystem>
 
 int main(int argc, char **argv) {
-  try {
-    std::vector<std::string> raw_arguments{argv, argv + argc};
+    using namespace test_snapshots;
+    try {
+        std::vector<std::string> raw_arguments{argv, argv + argc};
 
-    // Basic group.
-    Scenario::Ptr basic_scenario{new BasicScenario{}};
-    ScenarioGroup::Ptr basic_group{
-        new ScenarioGroupImpl{"basic", {basic_scenario}, {}}};
+        // Basic group.
+        Scenario::Ptr basic_scenario{new BasicScenario{}};
+        ScenarioGroup::Ptr basic_group{
+            new ScenarioGroupImpl{"basic", {basic_scenario}, {}}};
 
-    ScenarioGroup::Ptr cit_group{
-        new ScenarioGroupImpl{"cit", {}, {snapshot_group}}};
+        ScenarioGroup::Ptr cit_group{
+            new ScenarioGroupImpl{"cit", {}, {create_snapshots_group()}}};
 
-    // Root group.
-    ScenarioGroup::Ptr root_group{
-        new ScenarioGroupImpl{"root", {}, {basic_group, cit_group}}};
+        // Root group.
+        ScenarioGroup::Ptr root_group{
+            new ScenarioGroupImpl{"root", {}, {basic_group, cit_group}}};
 
-    // Run.
-    TestContext test_context{root_group};
-    run_cli_app(raw_arguments, test_context);
-  } catch (const std::exception &ex) {
-    std::cerr << ex.what() << std::endl;
-    return 1;
-  }
+        // Run.
+        TestContext test_context{root_group};
+        run_cli_app(raw_arguments, test_context);
+    } catch (const std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+        return 1;
+    }
 }

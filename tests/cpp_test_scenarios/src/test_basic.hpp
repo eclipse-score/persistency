@@ -18,10 +18,10 @@
 #include "scenario.hpp"
 
 class BasicScenario final : public Scenario {
-   public:
+  public:
     ~BasicScenario() final = default;
 
     std::string name() const final;
 
-    void run(const std::string& input) const final;
+    void run(const std::string &input) const final;
 };
