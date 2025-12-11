@@ -16,7 +16,7 @@ import pytest
 from .common import CommonScenario, ResultCode, temp_dir_common
 from testing_utils import ScenarioResult, LogContainer
 
-pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
+pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
 
 
 class MaxSnapshotsScenario(CommonScenario):
@@ -69,7 +69,12 @@ class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
         results: ScenarioResult,
         logs_info_level: LogContainer,
         snapshot_max_count: int,
+        version: str,
     ):
+        if version == "cpp" and snapshot_max_count in [1, 3, 10]:
+            pytest.xfail(
+                reason="https://github.com/eclipse-score/persistency/issues/192 , https://github.com/eclipse-score/persistency/issues/108",
+            )
         assert results.return_code == ResultCode.SUCCESS
 
         count = test_config["count"]
@@ -130,7 +135,12 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
         results: ScenarioResult,
         logs_info_level: LogContainer,
         snapshot_max_count: int,
+        version: str,
     ):
+        if version == "cpp":
+            pytest.xfail(
+                reason="https://github.com/eclipse-score/persistency/issues/108",
+            )
         assert results.return_code == ResultCode.SUCCESS
         assert (
             logs_info_level.find_log("max_count", value=snapshot_max_count) is not None
@@ -210,11 +220,13 @@ class TestSnapshotRestoreCurrent(CommonScenario):
         self,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ):
         assert results.return_code == ResultCode.SUCCESS
 
-        assert results.stderr is not None
-        assert "error: tried to restore current KVS as snapshot" in results.stderr
+        if version == "rust":
+            assert results.stderr is not None
+            assert "error: tried to restore current KVS as snapshot" in results.stderr
 
         result_log = logs_info_level.find_log("result")
         assert result_log is not None
@@ -250,14 +262,13 @@ class TestSnapshotRestoreNonexistent(CommonScenario):
         return True
 
     def test_error(
-        self,
-        results: ScenarioResult,
-        logs_info_level: LogContainer,
+        self, results: ScenarioResult, logs_info_level: LogContainer, version: str
     ):
         assert results.return_code == ResultCode.SUCCESS
 
-        assert results.stderr is not None
-        assert "error: tried to restore a non-existing snapshot" in results.stderr
+        if version == "rust":
+            assert results.stderr is not None
+            assert "error: tried to restore a non-existing snapshot" in results.stderr
 
         result_log = logs_info_level.find_log("result")
         assert result_log is not None
