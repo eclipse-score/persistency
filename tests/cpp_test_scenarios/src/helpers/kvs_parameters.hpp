@@ -46,6 +46,7 @@ KvsParameters map_to_params(const std::string& data) {
 
     KvsParameters params;
     params.instance_id = obj_root.at("instance_id").As<double>().value();
+
     // Precedence: direct 'need_defaults' field overrides inference from
     // 'defaults'.
     if (obj_root.find("need_defaults") != obj_root.end()) {
@@ -63,9 +64,11 @@ KvsParameters map_to_params(const std::string& data) {
             }
         }
     }
+
     if (obj_root.find("need_kvs") != obj_root.end()) {
         params.need_kvs = obj_root.at("need_kvs").As<bool>().value();
     }
+
     if (obj_root.find("dir") != obj_root.end()) {
         params.dir = obj_root.at("dir").As<std::string>().value();
     }

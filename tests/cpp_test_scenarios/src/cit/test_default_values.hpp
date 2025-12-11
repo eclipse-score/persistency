@@ -14,6 +14,8 @@
 
 #include "scenario.hpp"
 
+namespace test_default_values {
+
 class DefaultValuesScenario final : public Scenario {
   public:
     ~DefaultValuesScenario() final = default;
@@ -49,9 +51,6 @@ class ChecksumScenario final : public Scenario {
     void run(const std::string& input) const final;
 };
 
-namespace test_default_values {
-// Helper to get all scenarios
-std::vector<std::shared_ptr<const Scenario>> get_default_value_scenarios();
 // Default values group
 ScenarioGroup::Ptr create_default_values_group();
 } // namespace test_default_values

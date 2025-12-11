@@ -19,6 +19,7 @@ static score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params) {
     using namespace score::mw::per::kvs;
     InstanceId instance_id{params.instance_id};
     KvsBuilder builder{instance_id};
+
     if (params.need_defaults.has_value()) {
         builder = builder.need_defaults_flag(*params.need_defaults);
     }
@@ -28,6 +29,7 @@ static score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params) {
     if (params.dir.has_value()) {
         builder = builder.dir(std::string(*params.dir));
     }
+
     auto kvs_ptr = builder.build();
     if (!kvs_ptr) {
         throw ScenarioError(
@@ -35,5 +37,6 @@ static score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params) {
             "KVS creation failed: build() returned null (possible "
             "file not found, JSON parse error, or corruption)");
     }
+
     return std::move(*kvs_ptr);
 }

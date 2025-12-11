@@ -27,6 +27,7 @@ class ResultCode:
     PANIC = 101
     SIGKILL = -9
     SIGABRT = -6
+    FAILURE = 1
 
 
 def temp_dir_common(
