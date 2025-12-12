@@ -54,7 +54,6 @@ bazel_dep(name = "rules_cc", version = "0.1.2")
 
 #score gcc toolchain
 bazel_dep(name = "score_toolchains_gcc", version = "0.5", dev_dependency = True)
-
 gcc = use_extension("@score_toolchains_gcc//extentions:gcc.bzl", "gcc", dev_dependency = True)
 gcc.toolchain(
     sha256 = "8fa85c2a93a6bef1cf866fa658495a2416dfeec692e4246063b791abf18da083",
@@ -62,11 +61,6 @@ gcc.toolchain(
     url = "https://github.com/eclipse-score/toolchains_gcc_packages/releases/download/v0.0.3/x86_64-unknown-linux-gnu_gcc12.tar.gz",
 )
 use_repo(gcc, "gcc_toolchain", "gcc_toolchain_gcc")
-
-register_toolchains(
-    "@gcc_toolchain//:all",
-    dev_dependency = True,
-)
 
 ## Bazel registry
 # Module dependencies
@@ -180,13 +174,6 @@ bazel_dep(name = "platforms", version = "1.0.0")
 
 # Registers the custom Rust toolchain wired to @qnx_rust
 register_toolchains(
-    "@toolchains_qnx_qcc//:qcc_aarch64",
     "@score_toolchains_rust//toolchains/aarch64-unknown-qnx8_0:toolchain_aarch64_qnx8_0",
-    dev_dependency = True,
-)
-
-register_toolchains(
-    "@toolchains_qnx_ifs//:ifs_x86_64",
-    "@toolchains_qnx_ifs//:ifs_aarch64",
     dev_dependency = True,
 )
