@@ -107,13 +107,6 @@ Example
        Ok(())
    }
 
-See :ref:`requirements`.
-
-- :need:`feat_req__persistency__cpp_rust_interop`
 - :need:`feat_req__persistency__tooling`
 - :need:`feat_req__persistency__variant_management`
 - :need:`feat_req__persistency__fast_access`
-- :need:`feat_req__persistency__maximum_size` *(currently unsupported)*
-
-
-
