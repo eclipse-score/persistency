@@ -15,12 +15,10 @@ impl Scenario for BasicScenario {
         "basic"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
+    fn run(&self, input: &str) -> Result<(), String> {
         // Print and parse parameters.
-        let input_string = input.as_ref().expect("Test input is expected");
-        eprintln!("{input_string}");
-
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+        eprintln!("{input}");
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
 
         // Set builder parameters.
         let mut builder = KvsBuilder::new(params.instance_id);

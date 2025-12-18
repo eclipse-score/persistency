@@ -11,6 +11,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
+load("@rules_rust//rust:defs.bzl", "rust_clippy")
 load("@score_docs_as_code//:docs.bzl", "docs")
 load("@score_tooling//:defs.bzl", "cli_helper", "copyright_checker", "dash_license_checker", "setup_starpls", "use_format_targets")
 load("//:project_config.bzl", "PROJECT_CONFIG")
@@ -86,6 +87,17 @@ cli_helper(
 # Add target for formatting checks
 use_format_targets()
 
+rust_clippy(
+    name = "clippy",
+    testonly = True,
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src/rust/rust_kvs",
+        "//src/rust/rust_kvs_tool:kvs_tool",
+    ],
+)
+
 alias(
     name = "kvs_cpp",
     actual = "//src/cpp/src:kvs_cpp",
@@ -102,5 +114,23 @@ test_suite(
 test_suite(
     name = "bm_kvs_cpp",
     tests = ["//src/cpp/tests:bm_kvs_cpp"],
+    visibility = ["//visibility:public"],
+)
+
+test_suite(
+    name = "unit_tests",
+    tests = [
+        "test_kvs_cpp",
+        "//src/rust/rust_kvs:tests",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+test_suite(
+    name = "cit_tests",
+    tests = [
+        "//tests/python_test_cases:cit_cpp",
+        "//tests/python_test_cases:cit_rust",
+    ],
     visibility = ["//visibility:public"],
 )

@@ -12,7 +12,7 @@ impl Scenario for ExplicitFlush {
         "explicit_flush"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
+    fn run(&self, input: &str) -> Result<(), String> {
         // List of keys and corresponding values.
         let num_values = 5;
         let mut key_values = Vec::new();
@@ -23,8 +23,7 @@ impl Scenario for ExplicitFlush {
         }
 
         // Check parameters.
-        let input_string = input.as_ref().expect("Test input is expected");
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         {
             // First KVS instance object - used for setting and flushing data.
             let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");

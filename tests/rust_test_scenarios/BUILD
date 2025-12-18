@@ -11,7 +11,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 load("@rules_rust//rust:defs.bzl", "rust_binary")
-load("@score_persistency_crates//:defs.bzl", "all_crate_deps")
 
 rust_binary(
     name = "rust_test_scenarios",
@@ -20,6 +19,11 @@ rust_binary(
     deps =
         [
             "//src/rust/rust_kvs",
-            "@score_persistency_crates//:tinyjson",
-        ] + all_crate_deps(normal = True),
+            "@score_crates//:serde",
+            "@score_crates//:serde_json",
+            "@score_crates//:tinyjson",
+            "@score_crates//:tracing",
+            "@score_crates//:tracing_subscriber",
+            "@score_test_scenarios//test_scenarios_rust",
+        ],
 )

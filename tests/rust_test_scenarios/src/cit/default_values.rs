@@ -13,13 +13,12 @@ impl Scenario for DefaultValues {
         "default_values"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
+    fn run(&self, input: &str) -> Result<(), String> {
         // Key used for tests.
         let key = "test_number";
 
         // Create KVS instance with provided params.
-        let input_string = input.as_ref().expect("Test input is expected");
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         {
             let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
 
@@ -61,13 +60,12 @@ impl Scenario for RemoveKey {
         "remove_key"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
+    fn run(&self, input: &str) -> Result<(), String> {
         // Key used for tests.
         let key = "test_number";
 
         // Create KVS instance with provided params.
-        let input_string = input.as_ref().expect("Test input is expected");
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         {
             let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
 
@@ -109,12 +107,11 @@ impl Scenario for ResetAllKeys {
         "reset_all_keys"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
+    fn run(&self, input: &str) -> Result<(), String> {
         let num_values = 5;
 
         // Create KVS instance with provided params.
-        let input_string = input.as_ref().expect("Test input is expected");
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         {
             let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
 
@@ -175,13 +172,12 @@ impl Scenario for ResetSingleKey {
         "reset_single_key"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
+    fn run(&self, input: &str) -> Result<(), String> {
         let num_values = 5;
         let reset_index = 2;
 
         // Create KVS instance with provided params.
-        let input_string = input.as_ref().expect("Test input is expected");
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         {
             let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
 
@@ -243,10 +239,9 @@ impl Scenario for Checksum {
         "checksum"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
+    fn run(&self, input: &str) -> Result<(), String> {
         // Create KVS instance with provided params.
-        let input_string = input.as_ref().expect("Test input is expected");
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         let kvs_path;
         let hash_path;
         {

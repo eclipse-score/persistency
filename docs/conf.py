@@ -21,7 +21,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Score Persistency"
-project_url = "https://eclipse-score.github.io/inc_mw_per/"
+project_url = "https://eclipse-score.github.io/persistency/"
 project_prefix = "PER_"
 author = "S-CORE"
 version = "0.1.0"

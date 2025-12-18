@@ -116,6 +116,12 @@ Run selected test target:
 bazel test <TARGET_NAME>
 ```
 
+## Clippy
+
+- Clippy runs by default via `.bazelrc` on all Rust targets (Rust tests are tagged `no-clippy`).
+- Use `bazel build //:clippy` if you want an explicit lint-only target, or `bazel build //src/rust/...` while building.
+- The Clippy config comes from `@score_rust_policies//clippy/strict:clippy.toml`.
+
 ## Cargo-based operations
 
 Please use Bazel whenever possible.

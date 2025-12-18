@@ -13,9 +13,8 @@ impl Scenario for SupportedDatatypesKeys {
         "keys"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
-        let input_string = input.as_ref().expect("Test input is expected");
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+    fn run(&self, input: &str) -> Result<(), String> {
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         let kvs = kvs_instance(params).expect("Failed to create KVS instance");
 
         // Set key-value pairs. Unit type is used for value - only key is used later on.
@@ -59,9 +58,8 @@ impl Scenario for SupportedDatatypesValues {
         }
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
-        let input_string = input.as_ref().expect("Test input is expected");
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+    fn run(&self, input: &str) -> Result<(), String> {
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         let kvs = kvs_instance(params).expect("Failed to create KVS instance");
 
         kvs.set_value(self.name(), self.value.clone())

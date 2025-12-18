@@ -9,8 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-// TryFrom<&KvsValue> for all supported types
-use std::convert::TryFrom;
+use core::convert::TryFrom;
 
 /// Key-value storage map type
 pub type KvsMap = std::collections::HashMap<String, KvsValue>;
@@ -87,7 +86,7 @@ impl From<()> for KvsValue {
 // Macro to implement TryFrom<&KvsValue> for T for each supported type/variant.
 macro_rules! impl_tryfrom_kvs_value_to_t {
     ($to:ty, $variant:ident) => {
-        impl std::convert::TryFrom<&KvsValue> for $to {
+        impl core::convert::TryFrom<&KvsValue> for $to {
             type Error = String;
             fn try_from(value: &KvsValue) -> Result<Self, Self::Error> {
                 if let KvsValue::$variant(ref n) = value {

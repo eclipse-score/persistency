@@ -11,15 +11,15 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
-load("@score_persistency_crates//:defs.bzl", "all_crate_deps")
 
 rust_library(
     name = "rust_kvs",
     srcs = glob(["src/**/*.rs"]),
     visibility = ["//visibility:public"],
-    deps = all_crate_deps(
-        normal = True,
-    ),
+    deps = [
+        "@score_crates//:adler32",
+        "@score_crates//:tinyjson",
+    ],
 )
 
 rust_test(
@@ -29,8 +29,5 @@ rust_test(
         "unit_tests",
         "ut",
     ],
-    deps = all_crate_deps(
-        normal = True,
-        normal_dev = True,
-    ),
+    deps = ["@score_crates//:tempfile"],
 )

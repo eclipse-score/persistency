@@ -10,9 +10,10 @@ use tinyjson::JsonValue;
 
 /// Utility function for creating file containing default values.
 fn create_defaults_file(dir_path: PathBuf, instance_id: InstanceId) -> Result<(), ErrorCode> {
-    // Path to expected defaults file.
-    // E.g., `/tmp/xyz/kvs_0_default.json`.
+    // Path to expected defaults files.
+    // E.g., `/tmp/xyz/kvs_0_default.json`, `/tmp/xyz/kvs_0_default.hash`.
     let defaults_file_path = dir_path.join(format!("kvs_{instance_id}_default.json"));
+    let defaults_hash_file_path = dir_path.join(format!("kvs_{instance_id}_default.hash"));
 
     // Create defaults.
     // `KvsValue` is converted to `JsonValue` to ensure types are tagged.
@@ -26,6 +27,10 @@ fn create_defaults_file(dir_path: PathBuf, instance_id: InstanceId) -> Result<()
     // Stringify and save to file.
     let json_str = json_value.stringify()?;
     std::fs::write(&defaults_file_path, &json_str)?;
+
+    // Generate hash and save to hash file.
+    let hash = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
+    std::fs::write(defaults_hash_file_path, hash.to_be_bytes())?;
 
     Ok(())
 }

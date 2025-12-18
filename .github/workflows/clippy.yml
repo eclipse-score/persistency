@@ -10,18 +10,19 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-load("@rules_rust//rust:defs.bzl", "rust_binary")
+name: Bazel Clippy
 
-rust_binary(
-    name = "kvs_tool",
-    srcs = [
-        "src/kvs_tool.rs",
-    ],
-    crate_name = "rust_kvs_tool",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//src/rust/rust_kvs",
-        "@score_crates//:pico_args",
-        "@score_crates//:tinyjson",
-    ],
-)
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  bazel-clippy:
+    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@main
+    with:
+      bazel-target: "build //:clippy"

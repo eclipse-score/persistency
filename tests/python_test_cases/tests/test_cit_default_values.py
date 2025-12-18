@@ -14,6 +14,7 @@ import json
 import re
 from pathlib import Path
 from typing import Any, Generator
+from zlib import adler32
 
 import pytest
 from testing_utils import LogContainer, ScenarioResult
@@ -43,18 +44,27 @@ def create_defaults_file(
     dir_path: Path, instance_id: int, values: dict[str, TaggedValue]
 ) -> Path:
     """
-    Create file containing default values.
+    Create file containing default values, along with a matching hash file.
+    Returns path to default values file.
     """
     # Path to expected defaults file.
     # E.g., `/tmp/xyz/kvs_0_default.json`.
     defaults_file_path = dir_path / f"kvs_{instance_id}_default.json"
+    # Path to expected defaults hash file.
+    # E.g., `/tmp/xyz/kvs_0_default.hash`.
+    defaults_hash_file_path = dir_path / f"kvs_{instance_id}_default.hash"
 
     # Create JSON string containing default values.
     json_str = create_defaults_json(values)
 
-    # Save to file.
+    # Generate hash.
+    hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
+
+    # Save content and hash.
     with open(defaults_file_path, mode="w", encoding="UTF-8") as file:
         file.write(json_str)
+    with open(defaults_hash_file_path, mode="wb") as file:
+        file.write(hash)
 
     return defaults_file_path
 

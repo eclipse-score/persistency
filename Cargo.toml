@@ -6,6 +6,7 @@ members = [
     "tests/rust_test_scenarios",
 ]
 
+
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
@@ -18,3 +19,12 @@ rust_kvs_tool = { path = "src/rust/rust_kvs_tool" }
 adler32 = "1.2.0"
 tinyjson = "2.5.1"
 pico-args = "0.5"
+
+
+[workspace.lints.clippy]
+std_instead_of_core = "warn"
+alloc_instead_of_core = "warn"
+
+
+[workspace.lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(coverage_nightly)'] }

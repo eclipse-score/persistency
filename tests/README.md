@@ -67,6 +67,26 @@ pytest -v . --build-scenarios --self-contained-html --html report.html --traces 
 > Traces are collected using `stdout`.
 > Setting `--capture` flag (including `-s`) might cause traces to be missing from HTML report.
 
+### Bazel execution
+
+Run all Component Integration Tests:
+
+```bash
+bazel test //:cit_tests
+```
+
+When the dependencies in [requirements.txt](python_test_cases/requirements.txt) file are manually modified, the user should invoke command and commit changes:
+
+```bash
+bazel run //tests/python_test_cases:requirements.update
+```
+
+In order to update all dependencies use:
+
+```bash
+bazel run //tests/python_test_cases:requirements.update -- --upgrade
+```
+
 ## Standalone execution of test scenarios
 
 Test scenarios can be run independently from `pytest`.

@@ -11,9 +11,8 @@ impl Scenario for SnapshotCount {
         "count"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
-        let input_string = input.as_ref().expect("Test input is expected");
-        let v: Value = serde_json::from_str(input_string).expect("Failed to parse input string");
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
         let count =
             serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
         let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
@@ -44,9 +43,8 @@ impl Scenario for SnapshotMaxCount {
         "max_count"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
-        let input_string = input.as_ref().expect("Test input is expected");
-        let v: Value = serde_json::from_str(input_string).expect("Failed to parse input string");
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
         let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
 
         let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
@@ -62,9 +60,8 @@ impl Scenario for SnapshotRestore {
         "restore"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
-        let input_string = input.as_ref().expect("Test input is expected");
-        let v: Value = serde_json::from_str(input_string).expect("Failed to parse input string");
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
         let count =
             serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
         let snapshot_id = serde_json::from_value(v["snapshot_id"].clone())
@@ -104,9 +101,8 @@ impl Scenario for SnapshotPaths {
         "paths"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
-        let input_string = input.as_ref().expect("Test input is expected");
-        let v: Value = serde_json::from_str(input_string).expect("Failed to parse input string");
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
         let count =
             serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
         let snapshot_id = serde_json::from_value(v["snapshot_id"].clone())

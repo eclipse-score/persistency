@@ -1,3 +1,25 @@
+# *******************************************************************************
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+# -------------------------------------------------------------------------------
+# Links to S-CORE Bazel registry and Bazel Central Regoe
+# -------------------------------------------------------------------------------
+common --registry=https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/
+common --registry=https://bcr.bazel.build
+
+# -------------------------------------------------------------------------------
+# Default build flags (all configurations)
+# -------------------------------------------------------------------------------
 build --java_language_version=17
 build --tool_java_language_version=17
 build --java_runtime_version=remotejdk_17
@@ -10,9 +32,44 @@ build --@score_baselibs//score/mw/log/flags:KRemote_Logging=False
 build --@score-baselibs//score/json:base_library=nlohmann
 build --@score-baselibs//score/mw/log/flags:KRemote_Logging=False
 
+# Clippy linting (enabled by default)
+build --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
+build --output_groups=+clippy_checks
+build --@rules_rust//rust/settings:clippy.toml=@score_rust_policies//clippy/strict:clippy.toml
+
 test --test_output=errors
 
-common --registry=https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/
-common --registry=https://bcr.bazel.build
+# -------------------------------------------------------------------------------
+# Shared configuration for simple test execution
+# -------------------------------------------------------------------------------
+build:per_shared --incompatible_strict_action_env
+build:per_shared --sandbox_writable_path=/var/tmp
+build:per_shared --host_platform=@score_bazel_platforms//:x86_64-linux
 
+# -------------------------------------------------------------------------------
+# Config dedicated to host platform CPU:x86_64 and OS:Linux
+# -------------------------------------------------------------------------------
+build:per-x86_64-linux --config=per_shared
+build:per-x86_64-linux --platforms=@score_bazel_platforms//:x86_64-linux
+build:per-x86_64-linux --extra_toolchains=@gcc_toolchain//:host_gcc_12
+
+# -------------------------------------------------------------------------------
+# Config dedicated to target platform CPU:x86_64 and OS:QNX
+# -------------------------------------------------------------------------------
+build:per-x86_64-qnx --config=per_shared
+build:per-x86_64-qnx --platforms=@score_toolchains_qnx//platforms:x86_64-qnx
+build:per-x86_64-qnx --extra_toolchains=@toolchains_qnx_qcc//:qcc_x86_64
+build:per-x86_64-qnx --extra_toolchains=@toolchains_qnx_ifs//:ifs_x86_64
+
+# -------------------------------------------------------------------------------
+# Config dedicated to target platform CPU:arm64 and OS:QNX
+# -------------------------------------------------------------------------------
+build:per-arm64-qnx --config=per_shared
+build:per-arm64-qnx --platforms=@score_toolchains_qnx//platforms:aarch64-qnx8_0
+build:per-arm64-qnx --extra_toolchains=@toolchains_qnx_qcc//:qcc_aarch64
+build:per-arm64-qnx --extra_toolchains=@toolchains_qnx_ifs//:ifs_aarch64
+
+# -------------------------------------------------------------------------------
+# Import local user workspace file, if exists
+# -------------------------------------------------------------------------------
 try-import %workspace%/user.bazelrc

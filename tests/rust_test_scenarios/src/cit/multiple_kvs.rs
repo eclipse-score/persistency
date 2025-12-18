@@ -11,15 +11,14 @@ impl Scenario for MultipleInstanceIds {
         "multiple_instance_ids"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
+    fn run(&self, input: &str) -> Result<(), String> {
         // Values.
         let keyname = "number".to_string();
         let value1 = 111.1;
         let value2 = 222.2;
 
         // Parameters.
-        let input_string = input.as_ref().expect("Test input is expected");
-        let v: Value = serde_json::from_str(input_string).expect("Failed to parse input string");
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
         let params1 =
             KvsParameters::from_value(&v["kvs_parameters_1"]).expect("Failed to parse parameters");
         let params2 =
@@ -68,14 +67,13 @@ impl Scenario for SameInstanceIdSameValue {
         "same_instance_id_same_value"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
+    fn run(&self, input: &str) -> Result<(), String> {
         // Values.
         let keyname = "number".to_string();
         let value = 111.1;
 
         // Parameters.
-        let input_string = input.as_ref().expect("Test input is expected");
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         {
             // Create first KVS instance.
             let kvs1 = kvs_instance(params.clone()).expect("Failed to create KVS instance");
@@ -120,15 +118,14 @@ impl Scenario for SameInstanceIdDifferentValue {
         "same_instance_id_diff_value"
     }
 
-    fn run(&self, input: Option<String>) -> Result<(), String> {
+    fn run(&self, input: &str) -> Result<(), String> {
         // Values.
         let keyname = "number".to_string();
         let value1 = 111.1;
         let value2 = 222.2;
 
         // Parameters.
-        let input_string = input.as_ref().expect("Test input is expected");
-        let params = KvsParameters::from_json(input_string).expect("Failed to parse parameters");
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         {
             // Create first KVS instance.
             let kvs1 = kvs_instance(params.clone()).expect("Failed to create KVS instance");

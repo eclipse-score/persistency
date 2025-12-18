@@ -46,7 +46,7 @@ jobs:
 
       - name: Build C++ test scenarios with Bazel
         run: |
-          bazel build //tests/cpp_test_scenarios:cpp_test_scenarios
+          bazel build --config=per-x86_64-linux //tests/cpp_test_scenarios:cpp_test_scenarios
 
       - name: Build Rust test scenarios with Bazel
         run: |

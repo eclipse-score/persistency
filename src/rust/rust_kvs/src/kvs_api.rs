@@ -81,7 +81,7 @@ pub trait KvsApi {
     fn get_value_as<T>(&self, key: &str) -> Result<T, ErrorCode>
     where
         for<'a> T: TryFrom<&'a KvsValue> + Clone,
-        for<'a> <T as TryFrom<&'a KvsValue>>::Error: std::fmt::Debug;
+        for<'a> <T as TryFrom<&'a KvsValue>>::Error: core::fmt::Debug;
     fn get_default_value(&self, key: &str) -> Result<KvsValue, ErrorCode>;
     fn is_value_default(&self, key: &str) -> Result<bool, ErrorCode>;
     fn set_value<S: Into<String>, J: Into<KvsValue>>(
