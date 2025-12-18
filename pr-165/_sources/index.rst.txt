@@ -114,46 +114,46 @@ This crate addresses or is influenced by the following specification requirement
 General Capabilities
 --------------------
 
-- :need:`S-CORE_feat_req__persistency__cpp_rust_interop`
-- :need:`S-CORE_feat_req__persistency__multiple_kvs`
-- :need:`S-CORE_feat_req__persistency__tooling`
-- :need:`S-CORE_feat_req__persistency__variant_management`
-- :need:`S-CORE_feat_req__persistency__eng_mode`
-- :need:`S-CORE_feat_req__persistency__async_api`
-- :need:`S-CORE_feat_req__persistency__access_control`
-- :need:`S-CORE_feat_req__persistency__events`
-- :need:`S-CORE_feat_req__persistency__fast_access`
-- :need:`S-CORE_feat_req__persistency__intra_process_comm`
+- :need:`feat_req__persistency__cpp_rust_interop`
+- :need:`feat_req__persistency__multiple_kvs`
+- :need:`feat_req__persistency__tooling`
+- :need:`feat_req__persistency__variant_management`
+- :need:`feat_req__persistency__eng_mode`
+- :need:`feat_req__persistency__async_api`
+- :need:`feat_req__persistency__access_control`
+- :need:`feat_req__persistency__events`
+- :need:`feat_req__persistency__fast_access`
+- :need:`feat_req__persistency__intra_process_comm`
 
 Data Storage and Persistency
 ----------------------------
 
-- :need:`S-CORE_feat_req__persistency__default_values`
-- :need:`S-CORE_feat_req__persistency__default_value_get`
-- :need:`S-CORE_feat_req__persistency__default_value_reset`
-- :need:`S-CORE_feat_req__persistency__persistency`
-- :need:`S-CORE_feat_req__persistency__integrity_check`
-- :need:`S-CORE_feat_req__persistency__versioning`
-- :need:`S-CORE_feat_req__persistency__update_mechanism`
-- :need:`S-CORE_feat_req__persistency__snapshots`
-- :need:`S-CORE_feat_req__persistency__persist_data`
+- :need:`feat_req__persistency__default_values`
+- :need:`feat_req__persistency__default_value_get`
+- :need:`feat_req__persistency__default_value_reset`
+- :need:`feat_req__persistency__persistency`
+- :need:`feat_req__persistency__integrity_check`
+- :need:`feat_req__persistency__versioning`
+- :need:`feat_req__persistency__update_mechanism`
+- :need:`feat_req__persistency__snapshots`
+- :need:`feat_req__persistency__persist_data`
 
 Datatypes and Interfaces
 ------------------------
 
-- :need:`S-CORE_feat_req__persistency__support_datatype_keys`
-- :need:`S-CORE_feat_req__persistency__support_datatype_value`
+- :need:`feat_req__persistency__support_datatype_keys`
+- :need:`feat_req__persistency__support_datatype_value`
 
 Configuration Support
 ---------------------
 
-- :need:`S-CORE_feat_req__persistency__default_value_file`
-- :need:`S-CORE_feat_req__persistency__config_file`
+- :need:`feat_req__persistency__default_value_file`
+- :need:`feat_req__persistency__config_file`
 
 Limitations and Future Work
 ---------------------------
 
-- :need:`S-CORE_feat_req__persistency__maximum_size` *(currently unsupported)*
+- :need:`feat_req__persistency__maximum_size` *(currently unsupported)*
 
 
 
