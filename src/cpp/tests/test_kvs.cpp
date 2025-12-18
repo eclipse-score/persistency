@@ -1271,7 +1271,7 @@ TEST(kvs_check_size, check_size_scenarios) {
         ASSERT_TRUE(set_res);
 
         // Check the size
-        auto check_res = kvs.check_size();
+        auto check_res = kvs.calculate_potential_size();
         ASSERT_TRUE(check_res) << "check_size should succeed for data within limits";
         // Check if the returned size is plausible
         EXPECT_GT(check_res.value(), 0);
@@ -1292,7 +1292,7 @@ TEST(kvs_check_size, check_size_scenarios) {
         ASSERT_TRUE(set_res);
 
         // Check the size, expecting a failure
-        auto check_res = kvs.check_size();
+        auto check_res = kvs.calculate_potential_size();
         ASSERT_FALSE(check_res) << "check_size should fail when storage limit is exceeded";
         EXPECT_EQ(static_cast<ErrorCode>(*check_res.error()), ErrorCode::OutOfStorageSpace);
     }
