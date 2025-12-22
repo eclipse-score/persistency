@@ -34,13 +34,13 @@ def pytest_addoption(parser):
     parser.addoption(
         "--cpp-target-name",
         type=str,
-        default="//tests/cpp_test_scenarios:cpp_test_scenarios",
+        default="//tests/test_scenarios/cpp:test_scenarios",
         help="C++ test scenario executable target.",
     )
     parser.addoption(
         "--rust-target-name",
         type=str,
-        default="//tests/rust_test_scenarios:rust_test_scenarios",
+        default="//tests/test_scenarios/rust:test_scenarios",
         help="Rust test scenario executable target.",
     )
     parser.addoption(
@@ -90,7 +90,7 @@ def pytest_sessionstart(session):
             print("Building C++ test scenarios executable...")
             bazel_tools = BazelTools(option_prefix="cpp", build_timeout=build_timeout)
             cpp_target_name = session.config.getoption("--cpp-target-name")
-            bazel_tools.build(cpp_target_name)
+            bazel_tools.build(cpp_target_name, "--config=per-x86_64-linux")
 
     except Exception as e:
         pytest.exit(str(e), returncode=1)
@@ -161,22 +161,16 @@ def pytest_terminal_summary(terminalreporter):
         return
     # Print failed scenarios info
     terminalreporter.write_sep("=", "Failed tests reproduction info")
-    terminalreporter.write_line(
-        "Run failed scenarios from the repo root working directory\n"
-    )
+    terminalreporter.write_line("Run failed scenarios from the repo root working directory\n")
 
     for entry in FAILED_CONFIGS:
-        terminalreporter.write_line(
-            f"{entry['nodeid']} | Run command:\n{entry['command']}\n"
-        )
+        terminalreporter.write_line(f"{entry['nodeid']} | Run command:\n{entry['command']}\n")
 
 
 def pytest_collection_modifyitems(items: list[pytest.Function]):
     for item in items:
         # Automatically mark tests parametrized with 'version' as 'cpp' or 'rust'
-        if hasattr(item, "callspec") and "version" in getattr(
-            item.callspec, "params", {}
-        ):
+        if hasattr(item, "callspec") and "version" in getattr(item.callspec, "params", {}):
             version = item.callspec.params["version"]
             if version == "cpp":
                 item.add_marker(pytest.mark.cpp)

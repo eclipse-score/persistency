@@ -12,9 +12,10 @@
 # *******************************************************************************
 from pathlib import Path
 from typing import Any, Generator
+
 import pytest
-from .common import CommonScenario, ResultCode, temp_dir_common
-from testing_utils import ScenarioResult, LogContainer
+from common import CommonScenario, ResultCode, temp_dir_common
+from testing_utils import LogContainer, ScenarioResult
 
 pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 
@@ -34,16 +35,12 @@ class MaxSnapshotsScenario(CommonScenario):
         """
         Create temporary directory and remove it after test.
         """
-        yield from temp_dir_common(
-            tmp_path_factory, self.__class__.__name__, version, str(snapshot_max_count)
-        )
+        yield from temp_dir_common(tmp_path_factory, self.__class__.__name__, version, str(snapshot_max_count))
 
 
 @pytest.mark.PartiallyVerifies(["comp_req__persistency__snapshot_creation"])
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Verifies that a snapshot is only created after the first flush, and not before."
-)
+@pytest.mark.Description("Verifies that a snapshot is only created after the first flush, and not before.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("snapshot_max_count", [0, 1, 3, 10], scope="class")
@@ -84,9 +81,7 @@ class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
 
 @pytest.mark.PartiallyVerifies(["comp_req__persistency__snapshot_creation"])
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Checks that the snapshot count increases with each flush, up to the maximum allowed count."
-)
+@pytest.mark.Description("Checks that the snapshot count increases with each flush, up to the maximum allowed count.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("requirements-based")
 class TestSnapshotCountFull(TestSnapshotCountFirstFlush):
@@ -104,9 +99,7 @@ class TestSnapshotCountFull(TestSnapshotCountFirstFlush):
 
 @pytest.mark.PartiallyVerifies(["comp_req__persistency__snapshot_max_num"])
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Verifies that the maximum number of snapshots is a constant value."
-)
+@pytest.mark.Description("Verifies that the maximum number of snapshots is a constant value.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("inspection")
 @pytest.mark.parametrize("snapshot_max_count", [0, 1, 3, 10], scope="class")
@@ -132,9 +125,7 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
         snapshot_max_count: int,
     ):
         assert results.return_code == ResultCode.SUCCESS
-        assert (
-            logs_info_level.find_log("max_count", value=snapshot_max_count) is not None
-        )
+        assert logs_info_level.find_log("max_count", value=snapshot_max_count) is not None
 
 
 @pytest.mark.PartiallyVerifies(
@@ -144,9 +135,7 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
     ]
 )
 @pytest.mark.FullyVerifies(["comp_req__persistency__snapshot_restore"])
-@pytest.mark.Description(
-    "Verifies restoring to a previous snapshot returns the expected value."
-)
+@pytest.mark.Description("Verifies restoring to a previous snapshot returns the expected value.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("control-flow-analysis")
 @pytest.mark.parametrize("snapshot_max_count", [3, 10], scope="class")
@@ -185,9 +174,7 @@ class TestSnapshotRestorePrevious(MaxSnapshotsScenario):
 
 @pytest.mark.PartiallyVerifies(["comp_req__persistency__snapshot_creation"])
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Checks that restoring the current snapshot ID fails with InvalidSnapshotId error."
-)
+@pytest.mark.Description("Checks that restoring the current snapshot ID fails with InvalidSnapshotId error.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("fault-injection")
 class TestSnapshotRestoreCurrent(CommonScenario):
@@ -228,9 +215,7 @@ class TestSnapshotRestoreCurrent(CommonScenario):
     ]
 )
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Checks that restoring a non-existing snapshot fails with InvalidSnapshotId error."
-)
+@pytest.mark.Description("Checks that restoring a non-existing snapshot fails with InvalidSnapshotId error.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("fault-injection")
 class TestSnapshotRestoreNonexistent(CommonScenario):
@@ -266,9 +251,7 @@ class TestSnapshotRestoreNonexistent(CommonScenario):
 
 @pytest.mark.PartiallyVerifies(["comp_req__persistency__snapshot_creation"])
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Verifies that the KVS and hash filenames for an existing snapshot is generated correctly."
-)
+@pytest.mark.Description("Verifies that the KVS and hash filenames for an existing snapshot is generated correctly.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("interface-test")
 class TestSnapshotPathsExist(CommonScenario):

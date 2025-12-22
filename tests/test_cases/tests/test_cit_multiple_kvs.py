@@ -14,16 +14,13 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from common import CommonScenario, ResultCode
 from testing_utils import LogContainer, ScenarioResult
-
-from .common import CommonScenario, ResultCode
 
 pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 
 
-@pytest.mark.PartiallyVerifies(
-    ["comp_req__persistency__multi_instance", "comp_req__persistency__concurrency"]
-)
+@pytest.mark.PartiallyVerifies(["comp_req__persistency__multi_instance", "comp_req__persistency__concurrency"])
 @pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
     "Verifies that multiple KVS instances with different IDs store and retrieve independent values without interference."
@@ -38,12 +35,8 @@ class TestMultipleInstanceIds(CommonScenario):
     @pytest.fixture(scope="class")
     def test_config(self, temp_dir: Path) -> dict[str, Any]:
         return {
-            "kvs_parameters_1": {
-                "kvs_parameters": {"instance_id": 1, "dir": str(temp_dir)}
-            },
-            "kvs_parameters_2": {
-                "kvs_parameters": {"instance_id": 2, "dir": str(temp_dir)}
-            },
+            "kvs_parameters_1": {"kvs_parameters": {"instance_id": 1, "dir": str(temp_dir)}},
+            "kvs_parameters_2": {"kvs_parameters": {"instance_id": 2, "dir": str(temp_dir)}},
         }
 
     def test_ok(self, results: ScenarioResult, logs_info_level: LogContainer):
@@ -61,9 +54,7 @@ class TestMultipleInstanceIds(CommonScenario):
         assert log2.value == 222.2
 
 
-@pytest.mark.PartiallyVerifies(
-    ["comp_req__persistency__multi_instance", "comp_req__persistency__concurrency"]
-)
+@pytest.mark.PartiallyVerifies(["comp_req__persistency__multi_instance", "comp_req__persistency__concurrency"])
 @pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
     "Checks that multiple KVS instances with the same ID and key maintain consistent values across instances."
@@ -96,9 +87,7 @@ class TestSameInstanceIdSameValue(CommonScenario):
         assert log1.value == log2.value
 
 
-@pytest.mark.PartiallyVerifies(
-    ["comp_req__persistency__multi_instance", "comp_req__persistency__concurrency"]
-)
+@pytest.mark.PartiallyVerifies(["comp_req__persistency__multi_instance", "comp_req__persistency__concurrency"])
 @pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
     "Verifies that changes in one KVS instance with a shared ID and key are reflected in another instance, demonstrating interference."
