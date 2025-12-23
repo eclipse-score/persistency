@@ -22,7 +22,7 @@ pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 
 
 @pytest.mark.PartiallyVerifies([])
-@pytest.mark.FullyVerifies(["comp_req__persistency__persist_data_store_com"])
+@pytest.mark.FullyVerifies(["comp_req__persistency__persist_data_com_v2"])
 @pytest.mark.Description(
     "Verifies that disabling flush on exit but manually flushing ensures data is persisted correctly."
 )

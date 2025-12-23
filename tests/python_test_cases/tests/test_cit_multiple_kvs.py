@@ -22,7 +22,10 @@ pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 
 
 @pytest.mark.PartiallyVerifies(
-    ["comp_req__persistency__multi_instance", "comp_req__persistency__concurrency"]
+    [
+        "comp_req__persistency__multi_instance_v2",
+        "comp_req__persistency__concurrency_v2",
+    ]
 )
 @pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
@@ -62,7 +65,10 @@ class TestMultipleInstanceIds(CommonScenario):
 
 
 @pytest.mark.PartiallyVerifies(
-    ["comp_req__persistency__multi_instance", "comp_req__persistency__concurrency"]
+    [
+        "comp_req__persistency__multi_instance_v2",
+        "comp_req__persistency__concurrency_v2",
+    ]
 )
 @pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
@@ -97,7 +103,10 @@ class TestSameInstanceIdSameValue(CommonScenario):
 
 
 @pytest.mark.PartiallyVerifies(
-    ["comp_req__persistency__multi_instance", "comp_req__persistency__concurrency"]
+    [
+        "comp_req__persistency__multi_instance_v2",
+        "comp_req__persistency__concurrency_v2",
+    ]
 )
 @pytest.mark.FullyVerifies([])
 @pytest.mark.Description(

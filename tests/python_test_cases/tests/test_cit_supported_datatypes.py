@@ -23,7 +23,10 @@ pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 
 
 @pytest.mark.PartiallyVerifies(
-    ["comp_req__persistency__key_encoding", "comp_req__persistency__value_data_types"]
+    [
+        "comp_req__persistency__key_encoding_v2",
+        "comp_req__persistency__value_data_types_v2",
+    ]
 )
 @pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
@@ -52,7 +55,10 @@ class TestSupportedDatatypesKeys(CommonScenario):
 
 
 @pytest.mark.PartiallyVerifies(
-    ["comp_req__persistency__key_encoding", "comp_req__persistency__value_data_types"]
+    [
+        "comp_req__persistency__key_encoding_v2",
+        "comp_req__persistency__value_data_types_v2",
+    ]
 )
 @pytest.mark.FullyVerifies([])
 @pytest.mark.Description(
