@@ -21,7 +21,7 @@ from testing_utils import LogContainer, ScenarioResult
 
 from .common import CommonScenario, ResultCode, temp_dir_common
 
-pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
+pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
 
 # Type tag and value pair.
 TaggedValue = tuple[str, Any]
@@ -141,7 +141,13 @@ class TestDefaultValues(DefaultValuesScenario):
         defaults_file: Path | None,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ) -> None:
+        if version == "cpp":
+            pytest.xfail(
+                reason="Known bug in CPP code : https://github.com/eclipse-score/persistency/issues/182",
+            )
+
         assert results.return_code == ResultCode.SUCCESS
 
         logs = logs_info_level.get_logs("key", value=self.KEY)
@@ -219,7 +225,12 @@ class TestRemoveKey(DefaultValuesScenario):
         defaults_file: Path | None,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ) -> None:
+        if version == "cpp":
+            pytest.xfail(
+                reason="Known bug in CPP code : https://github.com/eclipse-score/persistency/issues/182",
+            )
         assert results.return_code == ResultCode.SUCCESS
 
         logs = logs_info_level.get_logs("key", value=self.KEY)
@@ -317,9 +328,14 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         self,
         defaults_file: Path | None,
         results: ScenarioResult,
+        version: str,
     ) -> None:
         assert defaults_file is not None
-        assert results.return_code == ResultCode.PANIC
+        if version == "cpp":
+            assert results.return_code == ResultCode.SIGABRT
+        else:
+            assert results.return_code == ResultCode.PANIC
+
         assert results.stderr is not None
         pattern = r'error: file ".*" could not be read: JsonParserError'
         assert re.findall(pattern, results.stderr) is not None
@@ -357,8 +373,12 @@ class TestMissingDefaultsFile(DefaultValuesScenario):
             }
         }
 
-    def test_invalid(self, results: ScenarioResult) -> None:
-        assert results.return_code == ResultCode.PANIC
+    # Sigabt when the proper error codes in case of default file is not found
+    def test_invalid(self, results: ScenarioResult, version: str) -> None:
+        if version == "cpp":
+            assert results.return_code == ResultCode.SIGABRT
+        else:
+            assert results.return_code == ResultCode.PANIC
         assert results.stderr is not None
         pattern = r'error: file ".*" could not be read: KvsFileReadError'
         assert re.findall(pattern, results.stderr) is not None
@@ -410,7 +430,12 @@ class TestResetAllKeys(DefaultValuesScenario):
         defaults_file: Path | None,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ):
+        if version == "cpp":
+            pytest.xfail(
+                reason="Known bug in CPP code : https://github.com/eclipse-score/persistency/issues/182",
+            )
         assert defaults_file is not None
         assert results.return_code == ResultCode.SUCCESS
 
@@ -476,7 +501,12 @@ class TestResetSingleKey(DefaultValuesScenario):
         defaults_file: Path | None,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ):
+        if version == "cpp":
+            pytest.xfail(
+                reason="Known bug in CPP code : https://github.com/eclipse-score/persistency/issues/182",
+            )
         assert defaults_file is not None
         assert results.return_code == ResultCode.SUCCESS
 
