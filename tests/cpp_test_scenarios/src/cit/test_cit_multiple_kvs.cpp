@@ -123,9 +123,7 @@ namespace test_multiple_kvs
     template <typename T>
     static void info_log(const std::string &instance, const std::string &keyname, T value)
     {
-        std::cout << "Value is :" << value << std::endl;
-        // ToDo: TRACING_INFO is not setting the precision of floating point to 1 decimal .
-        //  Change either global subsrciber in tracing or python test cases.
+        // TRACING_INFO is not setting the precision of floating point to 1 decimal .
         TRACING_INFO(kTargetName, std::pair{std::string{"instance"}, instance},
                      std::pair{std::string{"key"}, keyname},
                      std::pair{std::string{"value"}, value});
@@ -166,7 +164,6 @@ namespace test_multiple_kvs
         }
         catch (const std::exception &e)
         {
-
             throw e;
         }
 
@@ -202,12 +199,10 @@ namespace test_multiple_kvs
 
         if (!value1_res || !value2_res)
             throw std::runtime_error("Failed to retrieve values from KVS instances");
-        // Read and log using value_is_default and current_value
-        const bool value_is_default1 = kvs1b.has_default_value(keyname).value();
+
         const double current_value1 = std::get<double>(value1_res.value().getValue());
         info_log("kvs1", keyname, current_value1);
 
-        const bool value_is_default2 = kvs2b.has_default_value(keyname).value();
         const double current_value2 = std::get<double>(value2_res.value().getValue());
         info_log("kvs2", keyname, current_value2);
     }
@@ -269,7 +264,6 @@ namespace test_multiple_kvs
             throw set_res1.error();
         auto set_res2 = kvs2.set_value(keyname, KvsValue(value2));
         if (!set_res2)
-
             throw set_res2.error();
 
         kvs1.flush();
