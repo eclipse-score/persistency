@@ -1,4 +1,3 @@
-
 /********************************************************************************
  * Copyright (c) 2025 Contributors to the Eclipse Foundation
  *
@@ -11,6 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+
 #pragma once
 
 #include <kvs.hpp>
