@@ -16,8 +16,7 @@ use std::collections::HashMap;
 pub type KvsMap = HashMap<String, KvsValue>;
 
 /// Key-value-storage value
-#[derive(Clone, Debug, PartialEq)]
-#[cfg_attr(feature = "score-log", derive(mw_log::ScoreDebug))]
+#[derive(Clone, Debug, PartialEq, mw_log::ScoreDebug)]
 pub enum KvsValue {
     /// 32-bit signed integer
     I32(i32),

@@ -7,13 +7,7 @@ edition.workspace = true
 [dependencies]
 adler32.workspace = true
 tinyjson.workspace = true
-log = { version = "0.4.29", optional = true }
-
-
-[features]
-default = ["logging"]
-score-log = []
-logging = ["log"]
+mw_log.workspace = true
 
 
 [dev-dependencies]

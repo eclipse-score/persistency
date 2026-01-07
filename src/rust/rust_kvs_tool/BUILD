@@ -17,7 +17,7 @@ rust_binary(
     srcs = [
         "src/kvs_tool.rs",
     ],
-    crate_features = ["score-log"],
+    crate_features = ["mw_logger"],
     crate_name = "rust_kvs_tool",
     rustc_flags = [
         "-Clink-arg=-lstdc++",

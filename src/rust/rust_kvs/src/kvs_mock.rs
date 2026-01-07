@@ -10,8 +10,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::error_code::ErrorCode;
-use crate::kvs_api::{DebugT, KvsApi, SnapshotId};
+use crate::kvs_api::{KvsApi, SnapshotId};
 use crate::kvs_value::{KvsMap, KvsValue};
+use mw_log::fmt::ScoreDebug;
 use std::sync::{Arc, Mutex};
 
 #[derive(Clone)]
@@ -80,7 +81,7 @@ impl KvsApi for MockKvs {
     fn get_value_as<T>(&self, key: &str) -> Result<T, ErrorCode>
     where
         for<'a> T: TryFrom<&'a KvsValue>,
-        for<'a> <T as TryFrom<&'a KvsValue>>::Error: DebugT,
+        for<'a> <T as TryFrom<&'a KvsValue>>::Error: ScoreDebug,
     {
         if self.fail {
             return Err(ErrorCode::UnmappedError);

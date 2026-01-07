@@ -73,18 +73,11 @@
 //! ```
 //!
 
+use mw_log::error;
 use pico_args::Arguments;
 use rust_kvs::prelude::*;
 use std::collections::HashMap;
 use tinyjson::JsonValue;
-
-#[cfg(feature = "logging")]
-use log::error;
-#[cfg(feature = "score-log")]
-use mw_log::error;
-// Compile error if both `logging` and `score-log` features are enabled.
-#[cfg(all(feature = "logging", feature = "score-log"))]
-compile_error!("`logging` and `score-log` cannot be enabled at the same time.");
 
 /// Defines the available operation modes for key and file management.
 enum OperationMode {
@@ -447,14 +440,10 @@ fn _createtestdata(kvs: Kvs) -> Result<(), ErrorCode> {
 }
 
 fn init_logging() {
-    #[cfg(feature = "logging")]
-    simple_logger::SimpleLogger::new()
-        .with_level(log::LevelFilter::Warn)
-        .env()
-        .init()
-        .unwrap();
+    #[cfg(feature = "stdout_logger")]
+    stdout_logger::StdoutLoggerBuilder::new().set_as_default_logger();
 
-    #[cfg(feature = "score-log")]
+    #[cfg(feature = "mw_logger")]
     mw_logger::MwLoggerBuilder::new().set_as_default_logger();
 }
 

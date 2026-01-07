@@ -15,7 +15,7 @@ load("@rules_rust//rust:defs.bzl", "rust_binary")
 rust_binary(
     name = "rust_test_scenarios",
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["score-log"],
+    crate_features = ["mw_logger"],
     rustc_flags = [
         "-Clink-arg=-lstdc++",
         "-Clink-arg=-lm",

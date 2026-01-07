@@ -91,7 +91,7 @@ bazel_dep(name = "score_baselibs_rust", version = "0.0.1")
 # TODO: replace with stable version.
 git_override(
     module_name = "score_baselibs_rust",
-    commit = "18160f840f6623a38b0cb3cd58576cbaf0cf03f6",
+    commit = "54e2af036603107039a2eca4912413763ab112e7",
     remote = "https://github.com/eclipse-score/baselibs_rust.git",
 )
 

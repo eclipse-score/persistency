@@ -40,14 +40,10 @@ fn init_tracing_subscriber() {
 
 /// Logging is used for regular logs.
 fn init_logging() {
-    #[cfg(feature = "logging")]
-    simple_logger::SimpleLogger::new()
-        .with_level(log::LevelFilter::Warn)
-        .env()
-        .init()
-        .unwrap();
+    #[cfg(feature = "stdout_logger")]
+    stdout_logger::StdoutLoggerBuilder::new().set_as_default_logger();
 
-    #[cfg(feature = "score-log")]
+    #[cfg(feature = "mw_logger")]
     mw_logger::MwLoggerBuilder::new().set_as_default_logger();
 }
 

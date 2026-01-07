@@ -20,8 +20,8 @@ load("//:project_config.bzl", "PROJECT_CONFIG")
 # - `:docs` for building documentation at build-time
 docs(
     data = [
-        "@score_platform//:needs_json",
-        "@score_process//:needs_json",
+        # "@score_platform//:needs_json",
+        # "@score_process//:needs_json",
     ],
     source_dir = "docs",
 )

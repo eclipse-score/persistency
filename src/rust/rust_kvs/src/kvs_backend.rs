@@ -10,9 +10,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::error_code::ErrorCode;
-use crate::kvs_api::{DebugT, InstanceId, SnapshotId};
+use crate::kvs_api::{InstanceId, SnapshotId};
 use crate::kvs_value::KvsMap;
 use core::any::Any;
+use mw_log::fmt::ScoreDebug;
 
 /// Trait for comparisons between types.
 pub trait DynEq: Any {
@@ -40,11 +41,7 @@ where
 }
 
 /// KVS backend interface.
-pub trait KvsBackend:
-    // Either `core::fmt::Debug` or `DebugT` is required.
-    // Duplicate required traits are allowed.
-    // This approach reduces conditional compilation boilerplate.
-    DynEq + Sync + Send + core::fmt::Debug + DebugT {
+pub trait KvsBackend: DynEq + Sync + Send + ScoreDebug {
     /// Load KVS content.
     fn load_kvs(
         &self,

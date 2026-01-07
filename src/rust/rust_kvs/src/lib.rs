@@ -140,7 +140,6 @@ pub mod kvs_builder;
 pub mod kvs_mock;
 pub mod kvs_serialize;
 pub mod kvs_value;
-mod log;
 
 /// Prelude module for convenient imports
 pub mod prelude {

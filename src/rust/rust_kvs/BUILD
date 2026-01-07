@@ -15,7 +15,6 @@ load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 rust_library(
     name = "rust_kvs",
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["score-log"],
     visibility = ["//visibility:public"],
     deps = [
         "@score_baselibs_rust//src/log/mw_log",
@@ -27,7 +26,6 @@ rust_library(
 rust_test(
     name = "tests",
     crate = "rust_kvs",
-    crate_features = ["score-log"],
     tags = [
         "unit_tests",
         "ut",

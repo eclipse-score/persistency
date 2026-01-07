@@ -10,16 +10,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::error_code::ErrorCode;
-use crate::kvs_api::{DebugT, InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
+use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_builder::KvsData;
 use crate::kvs_value::{KvsMap, KvsValue};
-use crate::log::{error, warn};
+use mw_log::{error, fmt::ScoreDebug, warn};
 use std::sync::{Arc, Mutex};
 
 /// KVS instance parameters.
-#[derive(Debug)]
-#[cfg_attr(feature = "score-log", derive(mw_log::ScoreDebug))]
+#[derive(mw_log::ScoreDebug)]
 pub struct KvsParameters {
     /// Instance ID.
     pub instance_id: InstanceId,
@@ -153,7 +152,7 @@ impl KvsApi for Kvs {
     fn get_value_as<T>(&self, key: &str) -> Result<T, ErrorCode>
     where
         for<'a> T: TryFrom<&'a KvsValue>,
-        for<'a> <T as TryFrom<&'a KvsValue>>::Error: DebugT,
+        for<'a> <T as TryFrom<&'a KvsValue>>::Error: ScoreDebug,
     {
         let data = self.data.lock()?;
         if let Some(value) = data.kvs_map.get(key) {
@@ -349,8 +348,7 @@ mod kvs_tests {
 
     /// Most tests can be performed with mocked backend.
     /// Only those with file handling must use concrete implementation.
-    #[derive(PartialEq, Debug)]
-    #[cfg_attr(feature = "score-log", derive(mw_log::ScoreDebug))]
+    #[derive(PartialEq, Debug, mw_log::ScoreDebug)]
     struct MockBackend;
 
     impl KvsBackend for MockBackend {

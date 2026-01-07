@@ -15,7 +15,7 @@ use crate::kvs::{Kvs, KvsParameters};
 use crate::kvs_api::{InstanceId, KvsDefaults, KvsLoad, SnapshotId};
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_value::KvsMap;
-use crate::log::{debug, error, info, trace};
+use mw_log::{debug, error, info, trace};
 use std::sync::{Arc, LazyLock, Mutex, MutexGuard, PoisonError};
 
 /// Maximum number of instances.
@@ -58,8 +58,7 @@ impl From<PoisonError<MutexGuard<'_, [Option<KvsInner>; KVS_MAX_INSTANCES]>>> fo
 }
 
 /// Key-value-storage builder.
-#[derive(Debug)]
-#[cfg_attr(feature = "score-log", derive(mw_log::ScoreDebug))]
+#[derive(mw_log::ScoreDebug)]
 pub struct KvsBuilder {
     /// Instance ID.
     instance_id: InstanceId,
