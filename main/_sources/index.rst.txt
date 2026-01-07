@@ -12,14 +12,15 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
+.. toctree::
+   :maxdepth: 2
+
+   persistency/index
+
 Key-Value-Storage (rust_kvs) Documentation
 ==========================================
 
 This documentation describes the `rust_kvs` crate, which provides a key-value storage implementation with JSON-like persistence using Rust.
-
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
 
 Summary
 -------
@@ -106,54 +107,6 @@ Example
        Ok(())
    }
 
-Related Requirements
-====================
-
-This crate addresses or is influenced by the following specification requirements from the system architecture.
-
-General Capabilities
---------------------
-
-- :need:`feat_req__persistency__cpp_rust_interop`
-- :need:`feat_req__persistency__multiple_kvs`
 - :need:`feat_req__persistency__tooling`
 - :need:`feat_req__persistency__variant_management`
-- :need:`feat_req__persistency__eng_mode`
-- :need:`feat_req__persistency__async_api`
-- :need:`feat_req__persistency__access_control`
-- :need:`feat_req__persistency__events`
 - :need:`feat_req__persistency__fast_access`
-- :need:`feat_req__persistency__intra_process_comm`
-
-Data Storage and Persistency
-----------------------------
-
-- :need:`feat_req__persistency__default_values`
-- :need:`feat_req__persistency__default_value_get`
-- :need:`feat_req__persistency__default_value_reset`
-- :need:`feat_req__persistency__persistency`
-- :need:`feat_req__persistency__integrity_check`
-- :need:`feat_req__persistency__versioning`
-- :need:`feat_req__persistency__update_mechanism`
-- :need:`feat_req__persistency__snapshots`
-- :need:`feat_req__persistency__persist_data`
-
-Datatypes and Interfaces
-------------------------
-
-- :need:`feat_req__persistency__support_datatype_keys`
-- :need:`feat_req__persistency__support_datatype_value`
-
-Configuration Support
----------------------
-
-- :need:`feat_req__persistency__default_value_file`
-- :need:`feat_req__persistency__config_file`
-
-Limitations and Future Work
----------------------------
-
-- :need:`feat_req__persistency__maximum_size` *(currently unsupported)*
-
-
-
