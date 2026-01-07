@@ -15,6 +15,12 @@ load("@rules_rust//rust:defs.bzl", "rust_binary")
 rust_binary(
     name = "rust_test_scenarios",
     srcs = glob(["src/**/*.rs"]),
+    crate_features = ["score-log"],
+    rustc_flags = [
+        "-Clink-arg=-lstdc++",
+        "-Clink-arg=-lm",
+        "-Clink-arg=-lc",
+    ],
     visibility = ["//tests/python_test_cases:__pkg__"],
     deps =
         [
@@ -24,6 +30,7 @@ rust_binary(
             "@score_crates//:tinyjson",
             "@score_crates//:tracing",
             "@score_crates//:tracing_subscriber",
+            "@score_logging//src/rust/mw_logger",
             "@score_test_scenarios//test_scenarios_rust",
         ],
 )

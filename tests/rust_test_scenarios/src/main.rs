@@ -25,6 +25,7 @@ impl FormatTime for NumericUnixTime {
     }
 }
 
+/// `tracing` is used for test outputs.
 fn init_tracing_subscriber() {
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::TRACE)
@@ -37,8 +38,22 @@ fn init_tracing_subscriber() {
         .expect("Setting default subscriber failed!");
 }
 
+/// Logging is used for regular logs.
+fn init_logging() {
+    #[cfg(feature = "logging")]
+    simple_logger::SimpleLogger::new()
+        .with_level(log::LevelFilter::Warn)
+        .env()
+        .init()
+        .unwrap();
+
+    #[cfg(feature = "score-log")]
+    mw_logger::MwLoggerBuilder::new().set_as_default_logger();
+}
+
 fn main() -> Result<(), String> {
     let raw_arguments: Vec<String> = std::env::args().collect();
+    init_logging();
 
     // Basic group.
     let basic_scenario = Box::new(BasicScenario);
