@@ -12,7 +12,7 @@
 use crate::error_code::ErrorCode;
 use crate::kvs_api::{KvsApi, SnapshotId};
 use crate::kvs_value::{KvsMap, KvsValue};
-use mw_log::fmt::ScoreDebug;
+use crate::log::ScoreDebug;
 use std::sync::{Arc, Mutex};
 
 #[derive(Clone)]

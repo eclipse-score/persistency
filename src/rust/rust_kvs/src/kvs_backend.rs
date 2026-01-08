@@ -12,8 +12,8 @@
 use crate::error_code::ErrorCode;
 use crate::kvs_api::{InstanceId, SnapshotId};
 use crate::kvs_value::KvsMap;
+use crate::log::ScoreDebug;
 use core::any::Any;
-use mw_log::fmt::ScoreDebug;
 
 /// Trait for comparisons between types.
 pub trait DynEq: Any {

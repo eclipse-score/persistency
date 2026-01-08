@@ -9,6 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+use crate::log::ScoreDebug;
 use core::convert::TryFrom;
 use std::collections::HashMap;
 
@@ -16,7 +17,7 @@ use std::collections::HashMap;
 pub type KvsMap = HashMap<String, KvsValue>;
 
 /// Key-value-storage value
-#[derive(Clone, Debug, PartialEq, mw_log::ScoreDebug)]
+#[derive(Clone, Debug, PartialEq, ScoreDebug)]
 pub enum KvsValue {
     /// 32-bit signed integer
     I32(i32),

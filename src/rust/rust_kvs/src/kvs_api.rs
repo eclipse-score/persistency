@@ -11,10 +11,10 @@
 
 use crate::error_code::ErrorCode;
 use crate::kvs_value::KvsValue;
-use mw_log::fmt::ScoreDebug;
+use crate::log::ScoreDebug;
 
 /// Instance ID
-#[derive(Clone, Copy, Debug, PartialEq, Eq, mw_log::ScoreDebug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
 pub struct InstanceId(pub usize);
 
 impl core::fmt::Display for InstanceId {
@@ -30,7 +30,7 @@ impl From<InstanceId> for usize {
 }
 
 /// Snapshot ID
-#[derive(Clone, Copy, Debug, PartialEq, Eq, mw_log::ScoreDebug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
 pub struct SnapshotId(pub usize);
 
 impl core::fmt::Display for SnapshotId {
@@ -46,7 +46,7 @@ impl From<SnapshotId> for usize {
 }
 
 /// Defaults handling mode.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, mw_log::ScoreDebug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
 pub enum KvsDefaults {
     /// Defaults are not loaded.
     Ignored,
@@ -59,7 +59,7 @@ pub enum KvsDefaults {
 }
 
 /// KVS load mode.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, mw_log::ScoreDebug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
 pub enum KvsLoad {
     /// KVS is not loaded.
     Ignored,

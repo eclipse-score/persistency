@@ -11,12 +11,12 @@
 
 extern crate alloc;
 
+use crate::log::{error, ScoreDebug};
 use alloc::string::FromUtf8Error;
 use core::array::TryFromSliceError;
-use mw_log::error;
 
 /// Runtime Error Codes
-#[derive(Debug, PartialEq, mw_log::ScoreDebug)]
+#[derive(Debug, PartialEq, ScoreDebug)]
 pub enum ErrorCode {
     /// Error that was not yet mapped
     UnmappedError,

@@ -13,7 +13,7 @@ use crate::error_code::ErrorCode;
 use crate::kvs_api::{InstanceId, SnapshotId};
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_value::{KvsMap, KvsValue};
-use mw_log::{debug, error, trace};
+use crate::log::{debug, error, trace, ScoreDebug};
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -200,7 +200,7 @@ impl Default for JsonBackendBuilder {
 }
 
 /// KVS backend implementation based on TinyJSON.
-#[derive(Clone, Debug, PartialEq, mw_log::ScoreDebug)]
+#[derive(Clone, Debug, PartialEq, ScoreDebug)]
 pub struct JsonBackend {
     working_dir: PathBuf,
     snapshot_max_count: usize,

@@ -14,11 +14,11 @@ use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_builder::KvsData;
 use crate::kvs_value::{KvsMap, KvsValue};
-use mw_log::{error, fmt::ScoreDebug, warn};
+use crate::log::{error, warn, ScoreDebug};
 use std::sync::{Arc, Mutex};
 
 /// KVS instance parameters.
-#[derive(mw_log::ScoreDebug)]
+#[derive(ScoreDebug)]
 pub struct KvsParameters {
     /// Instance ID.
     pub instance_id: InstanceId,
@@ -343,12 +343,13 @@ mod kvs_tests {
     use crate::kvs_backend::KvsBackend;
     use crate::kvs_builder::KvsData;
     use crate::kvs_value::{KvsMap, KvsValue};
+    use crate::log::ScoreDebug;
     use std::sync::{Arc, Mutex};
     use tempfile::tempdir;
 
     /// Most tests can be performed with mocked backend.
     /// Only those with file handling must use concrete implementation.
-    #[derive(PartialEq, Debug, mw_log::ScoreDebug)]
+    #[derive(PartialEq, Debug, ScoreDebug)]
     struct MockBackend;
 
     impl KvsBackend for MockBackend {
