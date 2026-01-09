@@ -11,6 +11,7 @@ mod persistency;
 mod snapshots;
 mod supported_datatypes;
 
+/// Create a group containing scenarios for CITs.
 pub fn cit_scenario_group() -> Box<dyn ScenarioGroup> {
     Box::new(ScenarioGroupImpl::new(
         "cit",

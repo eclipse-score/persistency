@@ -12,16 +12,7 @@
  ********************************************************************************/
 #pragma once
 
-#include <optional>
-#include <string>
-
 #include <scenario.hpp>
 
-class BasicScenario final : public Scenario {
-   public:
-    ~BasicScenario() final = default;
-
-    std::string name() const final;
-
-    void run(const std::string& input) const final;
-};
+/// Create a group containing scenarios for CITs.
+ScenarioGroup::Ptr cit_scenario_group();

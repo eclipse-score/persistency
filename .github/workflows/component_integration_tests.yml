@@ -34,7 +34,7 @@ jobs:
       - name: Setup Rust build environment
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: 1.83.0
+          toolchain: 1.90.0
 
       - name: Setup Bazel
         uses: bazel-contrib/setup-bazel@0.15.0

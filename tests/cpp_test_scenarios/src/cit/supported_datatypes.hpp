@@ -12,16 +12,6 @@
  ********************************************************************************/
 #pragma once
 
-#include <optional>
-#include <string>
+#include "scenario.hpp"
 
-#include <scenario.hpp>
-
-class BasicScenario final : public Scenario {
-   public:
-    ~BasicScenario() final = default;
-
-    std::string name() const final;
-
-    void run(const std::string& input) const final;
-};
+ScenarioGroup::Ptr supported_datatypes_group();

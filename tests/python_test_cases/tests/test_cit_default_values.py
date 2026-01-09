@@ -21,7 +21,7 @@ from testing_utils import LogContainer, ScenarioResult
 
 from .common import CommonScenario, ResultCode, temp_dir_common
 
-pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
+pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
 
 # Type tag and value pair.
 TaggedValue = tuple[str, Any]
@@ -141,7 +141,13 @@ class TestDefaultValues(DefaultValuesScenario):
         defaults_file: Path | None,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ) -> None:
+        if version == "cpp":
+            pytest.xfail(
+                reason="https://github.com/eclipse-score/persistency/issues/182"
+            )
+
         assert results.return_code == ResultCode.SUCCESS
 
         logs = logs_info_level.get_logs("key", value=self.KEY)
@@ -219,7 +225,12 @@ class TestRemoveKey(DefaultValuesScenario):
         defaults_file: Path | None,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ) -> None:
+        if version == "cpp":
+            pytest.xfail(
+                reason="https://github.com/eclipse-score/persistency/issues/182"
+            )
         assert results.return_code == ResultCode.SUCCESS
 
         logs = logs_info_level.get_logs("key", value=self.KEY)
@@ -410,7 +421,12 @@ class TestResetAllKeys(DefaultValuesScenario):
         defaults_file: Path | None,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ):
+        if version == "cpp":
+            pytest.xfail(
+                reason="https://github.com/eclipse-score/persistency/issues/182"
+            )
         assert defaults_file is not None
         assert results.return_code == ResultCode.SUCCESS
 
@@ -476,7 +492,12 @@ class TestResetSingleKey(DefaultValuesScenario):
         defaults_file: Path | None,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ):
+        if version == "cpp":
+            pytest.xfail(
+                reason="https://github.com/eclipse-score/persistency/issues/182"
+            )
         assert defaults_file is not None
         assert results.return_code == ResultCode.SUCCESS
 

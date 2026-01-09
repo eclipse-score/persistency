@@ -33,7 +33,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: 1.83.0
+          toolchain: 1.90.0
           components: clippy, rustfmt
 
       - name: Cargo Clippy
@@ -57,7 +57,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: nightly-2024-12-17
+          toolchain: nightly-2025-12-15
           components: miri, rust-src
 
       - name: Install Clang
@@ -67,7 +67,7 @@ jobs:
 
       - name: Cargo Miri
         run: |
-          cargo +nightly-2024-12-17 miri test
+          cargo +nightly-2025-12-15 miri test
 
   cargo-coverage:
     runs-on: ubuntu-latest
@@ -76,16 +76,16 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: nightly-2024-12-17
+          toolchain: nightly-2025-12-15
           components: llvm-tools-preview, rust-src
 
       - name: Install cargo-llvm-cov
         run: |
-          cargo +nightly-2024-12-17 install cargo-llvm-cov --locked
+          cargo +nightly-2025-12-15 install cargo-llvm-cov --locked
 
       - name: Cargo llvm-cov
         run: |
-          cargo +nightly-2024-12-17 llvm-cov --branch --tests --lib
+          cargo +nightly-2025-12-15 llvm-cov --branch --tests --lib
 
   rust-bazel:
     runs-on: ubuntu-latest

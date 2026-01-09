@@ -12,16 +12,6 @@
  ********************************************************************************/
 #pragma once
 
-#include <optional>
-#include <string>
+#include "kvs_parameters.hpp"
 
-#include <scenario.hpp>
-
-class BasicScenario final : public Scenario {
-   public:
-    ~BasicScenario() final = default;
-
-    std::string name() const final;
-
-    void run(const std::string& input) const final;
-};
+score::mw::per::kvs::Kvs kvs_instance(const KvsParameters &params);

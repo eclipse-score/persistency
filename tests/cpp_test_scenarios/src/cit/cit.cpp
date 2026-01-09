@@ -10,18 +10,16 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
 
-#include <optional>
-#include <string>
+#include "cit/cit.hpp"
+#include "cit/default_values.hpp"
+#include "cit/multiple_kvs.hpp"
+#include "cit/snapshots.hpp"
+#include "cit/supported_datatypes.hpp"
 
-#include <scenario.hpp>
-
-class BasicScenario final : public Scenario {
-   public:
-    ~BasicScenario() final = default;
-
-    std::string name() const final;
-
-    void run(const std::string& input) const final;
-};
+ScenarioGroup::Ptr cit_scenario_group()
+{
+    return ScenarioGroup::Ptr{
+        new ScenarioGroupImpl{
+            "cit", {}, {default_values_group(), multiple_kvs_group(), snapshots_group(), supported_datatypes_group()}}};
+}
