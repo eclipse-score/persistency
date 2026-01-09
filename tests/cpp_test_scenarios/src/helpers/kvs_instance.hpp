@@ -14,4 +14,4 @@
 
 #include "kvs_parameters.hpp"
 
-score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params);
+score::mw::per::kvs::Kvs kvs_instance(const KvsParameters &params);

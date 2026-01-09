@@ -14,27 +14,34 @@
 #include "helpers/kvs_instance.hpp"
 #include <kvsbuilder.hpp>
 
-score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params) {
+score::mw::per::kvs::Kvs kvs_instance(const KvsParameters &params)
+{
     using namespace score::mw::per::kvs;
     InstanceId instance_id{params.instance_id};
     KvsBuilder builder{instance_id};
 
     // Set parameters.
-    if (params.need_defaults.has_value()) {
+    if (params.need_defaults.has_value())
+    {
         builder = builder.need_defaults_flag(*params.need_defaults);
     }
-    if (params.need_kvs.has_value()) {
+    if (params.need_kvs.has_value())
+    {
         builder = builder.need_kvs_flag(*params.need_kvs);
     }
-    if (params.dir.has_value()) {
+    if (params.dir.has_value())
+    {
         builder = builder.dir(std::string(*params.dir));
     }
 
     // Build KVS instance.
     auto build_result{builder.build()};
-    if (build_result) {
+    if (build_result)
+    {
         return std::move(*build_result);
-    } else {
+    }
+    else
+    {
         throw std::runtime_error{"Failed to build KVS instance"};
     }
 }

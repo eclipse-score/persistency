@@ -19,7 +19,7 @@ from testing_utils import LogContainer, ScenarioResult
 
 from .common import CommonScenario, ResultCode
 
-pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
+pytestmark = pytest.mark.parametrize("version", ["cpp", "rust"], scope="class")
 
 
 @pytest.mark.PartiallyVerifies(

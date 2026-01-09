@@ -15,8 +15,11 @@
 #include "cit/default_values.hpp"
 #include "cit/multiple_kvs.hpp"
 #include "cit/snapshots.hpp"
+#include "cit/supported_datatypes.hpp"
 
-ScenarioGroup::Ptr cit_scenario_group() {
-    return ScenarioGroup::Ptr{new ScenarioGroupImpl{
-        "cit", {}, {default_values_group(), multiple_kvs_group(), snapshots_group()}}};
+ScenarioGroup::Ptr cit_scenario_group()
+{
+    return ScenarioGroup::Ptr{
+        new ScenarioGroupImpl{
+            "cit", {}, {default_values_group(), multiple_kvs_group(), snapshots_group(), supported_datatypes_group()}}};
 }
