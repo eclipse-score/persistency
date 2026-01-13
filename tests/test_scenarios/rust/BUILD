@@ -13,9 +13,9 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary")
 
 rust_binary(
-    name = "rust_test_scenarios",
+    name = "test_scenarios",
     srcs = glob(["src/**/*.rs"]),
-    visibility = ["//tests/python_test_cases:__pkg__"],
+    visibility = ["//tests/test_cases:__pkg__"],
     deps =
         [
             "//src/rust/rust_kvs",

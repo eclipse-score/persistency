@@ -17,11 +17,11 @@ from typing import Any, Generator
 from zlib import adler32
 
 import pytest
+from common import CommonScenario, ResultCode, temp_dir_common
 from testing_utils import LogContainer, ScenarioResult
 
-from .common import CommonScenario, ResultCode, temp_dir_common
-
 pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
+
 
 # Type tag and value pair.
 TaggedValue = tuple[str, Any]

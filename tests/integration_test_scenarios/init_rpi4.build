@@ -620,7 +620,7 @@ ldqnx-64.so.2=ldqnx-64.so.2
 [uid=0 gid=0 perms=0755] /usr/bin/kvs_test.sh=bazel-out/k8-fastbuild/bin/tests/integration_test_scenarios/install/usr/bin/kvs_test.sh
 
 #TODO: enable when rust_test_scenarios is built for QNX
-#[uid=0 gid=0 perms=0755] /usr/bin/rust_test_scenarios=bazel-out/k8-fastbuild/bin/tests/integration_test_scenarios/install/usr/bin/rust_test_scenarios
+#[uid=0 gid=0 perms=0755] /usr/bin/test_scenarios/rust=bazel-out/k8-fastbuild/bin/tests/integration_test_scenarios/install/usr/bin/test_scenarios/rust
 
 
 

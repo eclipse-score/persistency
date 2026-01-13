@@ -1,5 +1,5 @@
 [package]
-name = "rust_test_scenarios"
+name = "test_scenarios"
 version.workspace = true
 edition.workspace = true
 
