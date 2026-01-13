@@ -72,6 +72,7 @@
         </script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Persistency KVS Module" href="persistency/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.1.0" />
@@ -150,6 +151,12 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="persistency/index.html">
+    Persistency KVS Module
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -261,6 +268,12 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="persistency/index.html">
+    Persistency KVS Module
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -347,26 +360,27 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="key-value-storage-rust-kvs-documentation">
+  <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="persistency/index.html">Persistency KVS Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="persistency/docs/index.html">Module Documents Persistency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="persistency/index.html#components">Components</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="key-value-storage-rust-kvs-documentation">
 <h1>Key-Value-Storage (rust_kvs) Documentation<a class="headerlink" href="#key-value-storage-rust-kvs-documentation" title="Link to this heading">#</a></h1>
 <p>This documentation describes the <cite>rust_kvs</cite> crate, which provides a key-value storage implementation with JSON-like persistence using Rust.</p>
-<nav class="contents local" id="table-of-contents">
-<p class="topic-title">Table of Contents</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#summary" id="id1">Summary</a></p></li>
-<li><p><a class="reference internal" href="#introduction" id="id2">Introduction</a></p></li>
-<li><p><a class="reference internal" href="#example" id="id3">Example</a></p></li>
-</ul>
-</nav>
 <section id="summary">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Summary</a><a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <p><strong>Crate:</strong> <cite>rust_kvs</cite></p>
 <p><strong>Purpose:</strong> Key-Value-Storage API and Implementation</p>
 <p><strong>Description:</strong>
 This crate provides a Key-Value-Store using TinyJSON to persist the data. It uses the Adler32 crate to validate stored data and depends only on the Rust standard library.</p>
 </section>
 <section id="introduction">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Introduction</a><a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
 <p>The key-value store is initialized with <cite>Kvs::open</cite> and can be flushed with <cite>Kvs::flush</cite>.</p>
 <p>All TinyJSON-supported datatypes are available:</p>
 <ul class="simple">
@@ -392,7 +406,7 @@ This crate provides a Key-Value-Store using TinyJSON to persist the data. It use
 </ul>
 </section>
 <section id="example">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Example</a><a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
 <div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">rust_kvs</span><span class="p">::{</span><span class="n">ErrorCode</span><span class="p">,</span><span class="w"> </span><span class="n">InstanceId</span><span class="p">,</span><span class="w"> </span><span class="n">Kvs</span><span class="p">,</span><span class="w"> </span><span class="n">OpenNeedDefaults</span><span class="p">,</span><span class="w"> </span><span class="n">OpenNeedKvs</span><span class="p">,</span><span class="w"> </span><span class="n">KvsValue</span><span class="p">};</span>
 <span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">collections</span><span class="p">::</span><span class="n">HashMap</span><span class="p">;</span>
 
@@ -436,58 +450,10 @@ This crate provides a Key-Value-Store using TinyJSON to persist the data. It use
 <span class="p">}</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="related-requirements">
-<h1>Related Requirements<a class="headerlink" href="#related-requirements" title="Link to this heading">#</a></h1>
-<p>This crate addresses or is influenced by the following specification requirements from the system architecture.</p>
-<section id="general-capabilities">
-<h2>General Capabilities<a class="headerlink" href="#general-capabilities" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__cpp_rust_interop">feat_req__persistency__cpp_rust_interop</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__multiple_kvs">feat_req__persistency__multiple_kvs</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__tooling">feat_req__persistency__tooling</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__variant_management">feat_req__persistency__variant_management</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__eng_mode">feat_req__persistency__eng_mode</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__async_api">feat_req__persistency__async_api</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__access_control">feat_req__persistency__access_control</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__events">feat_req__persistency__events</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__fast_access">feat_req__persistency__fast_access</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__intra_process_comm">feat_req__persistency__intra_process_comm</a></p></li>
-</ul>
-</section>
-<section id="data-storage-and-persistency">
-<h2>Data Storage and Persistency<a class="headerlink" href="#data-storage-and-persistency" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__default_values">feat_req__persistency__default_values</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__default_value_get">feat_req__persistency__default_value_get</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__default_value_reset">feat_req__persistency__default_value_reset</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__persistency">feat_req__persistency__persistency</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__integrity_check">feat_req__persistency__integrity_check</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__versioning">feat_req__persistency__versioning</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__update_mechanism">feat_req__persistency__update_mechanism</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__snapshots">feat_req__persistency__snapshots</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__persist_data">feat_req__persistency__persist_data</a></p></li>
-</ul>
-</section>
-<section id="datatypes-and-interfaces">
-<h2>Datatypes and Interfaces<a class="headerlink" href="#datatypes-and-interfaces" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__support_datatype_keys">feat_req__persistency__support_datatype_keys</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__support_datatype_value">feat_req__persistency__support_datatype_value</a></p></li>
-</ul>
-</section>
-<section id="configuration-support">
-<h2>Configuration Support<a class="headerlink" href="#configuration-support" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__default_value_file">feat_req__persistency__default_value_file</a></p></li>
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__config_file">feat_req__persistency__config_file</a></p></li>
-</ul>
-</section>
-<section id="limitations-and-future-work">
-<h2>Limitations and Future Work<a class="headerlink" href="#limitations-and-future-work" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/kvs/requirements/index.html#feat_req__persistency__maximum_size">feat_req__persistency__maximum_size</a> <em>(currently unsupported)</em></p></li>
+<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__tooling">feat_req__persistency__tooling</a></p></li>
+<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__variant_management">feat_req__persistency__variant_management</a></p></li>
+<li><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__fast_access">feat_req__persistency__fast_access</a></p></li>
 </ul>
 </section>
 </section>
@@ -502,6 +468,15 @@ This crate provides a Key-Value-Store using TinyJSON to persist the data. It use
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="right-next"
+       href="persistency/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Persistency KVS Module</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -521,22 +496,10 @@ This crate provides a Key-Value-Store using TinyJSON to persist the data. It use
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Key-Value-Storage (rust_kvs) Documentation</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
 </ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#related-requirements">Related Requirements</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-capabilities">General Capabilities</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-storage-and-persistency">Data Storage and Persistency</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datatypes-and-interfaces">Datatypes and Interfaces</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-support">Configuration Support</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations-and-future-work">Limitations and Future Work</a></li>
-</ul>
-</li>
-</ul>
-
   </nav></div>
 
   <div class="sidebar-secondary-item">
