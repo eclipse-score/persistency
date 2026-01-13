@@ -34,13 +34,13 @@ def pytest_addoption(parser):
     parser.addoption(
         "--cpp-target-name",
         type=str,
-        default="//tests/cpp_test_scenarios:cpp_test_scenarios",
+        default="//tests/test_scenarios/cpp:test_scenarios",
         help="C++ test scenario executable target.",
     )
     parser.addoption(
         "--rust-target-name",
         type=str,
-        default="//tests/rust_test_scenarios:rust_test_scenarios",
+        default="//tests/test_scenarios/rust:test_scenarios",
         help="Rust test scenario executable target.",
     )
     parser.addoption(
@@ -90,7 +90,7 @@ def pytest_sessionstart(session):
             print("Building C++ test scenarios executable...")
             bazel_tools = BazelTools(option_prefix="cpp", build_timeout=build_timeout)
             cpp_target_name = session.config.getoption("--cpp-target-name")
-            bazel_tools.build(cpp_target_name)
+            bazel_tools.build(cpp_target_name, "--config=per-x86_64-linux")
 
     except Exception as e:
         pytest.exit(str(e), returncode=1)

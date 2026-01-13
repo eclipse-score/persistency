@@ -46,11 +46,11 @@ jobs:
 
       - name: Build C++ test scenarios with Bazel
         run: |
-          bazel build --config=per-x86_64-linux //tests/cpp_test_scenarios:cpp_test_scenarios
+          bazel build --config=per-x86_64-linux //tests/test_scenarios/cpp:test_scenarios
 
       - name: Build Rust test scenarios with Bazel
         run: |
-          bazel build //tests/rust_test_scenarios:rust_test_scenarios
+          bazel build //tests/test_scenarios/rust:test_scenarios
 
       - name: Set up Python 3
         uses: actions/setup-python@v5
@@ -58,14 +58,12 @@ jobs:
           python-version: '3.12'
 
       - name: Set up Python virtual environment
-        working-directory: tests/python_test_cases
         run: |
           python -m venv .venv
           source .venv/bin/activate
-          pip install .
+          pip install -r tests/test_cases/requirements.txt
 
       - name: Run Python tests with pytest
-        working-directory: tests/python_test_cases
         run: |
           source .venv/bin/activate
-          python -m pytest
+          python -m pytest --traces=all

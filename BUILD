@@ -129,8 +129,8 @@ test_suite(
 test_suite(
     name = "cit_tests",
     tests = [
-        "//tests/python_test_cases:cit_cpp",
-        "//tests/python_test_cases:cit_rust",
+        "//tests/test_cases:cit_cpp",
+        "//tests/test_cases:cit_rust",
     ],
     visibility = ["//visibility:public"],
 )
