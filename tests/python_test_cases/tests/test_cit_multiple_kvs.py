@@ -18,7 +18,7 @@ from testing_utils import LogContainer, ScenarioResult
 
 from .common import CommonScenario, ResultCode
 
-pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
+pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
 
 
 @pytest.mark.PartiallyVerifies(
@@ -56,12 +56,12 @@ class TestMultipleInstanceIds(CommonScenario):
         log1 = logs_info_level.find_log("instance", value="kvs1")
         assert log1 is not None
         assert log1.key == key
-        assert log1.value == 111.1
+        assert round(log1.value, 1) == 111.1
 
         log2 = logs_info_level.find_log("instance", value="kvs2")
         assert log2 is not None
         assert log2.key == key
-        assert log2.value == 222.2
+        assert round(log2.value, 1) == 222.2
 
 
 @pytest.mark.PartiallyVerifies(
@@ -92,12 +92,12 @@ class TestSameInstanceIdSameValue(CommonScenario):
         log1 = logs_info_level.find_log("instance", value="kvs1")
         assert log1 is not None
         assert log1.key == key
-        assert log1.value == 111.1
+        assert round(log1.value, 1) == 111.1
 
         log2 = logs_info_level.find_log("instance", value="kvs2")
         assert log2 is not None
         assert log2.key == key
-        assert log2.value == 111.1
+        assert round(log2.value, 1) == 111.1
 
         assert log1.value == log2.value
 
@@ -132,11 +132,11 @@ class TestSameInstanceIdDifferentValue(CommonScenario):
         log1 = logs_info_level.find_log("instance", value="kvs1")
         assert log1 is not None
         assert log1.key == key
-        assert log1.value == 222.2
+        assert round(log1.value, 1) == 222.2
 
         log2 = logs_info_level.find_log("instance", value="kvs2")
         assert log2 is not None
         assert log2.key == key
-        assert log2.value == 222.2
+        assert round(log2.value, 1) == 222.2
 
         assert log1.value == log2.value

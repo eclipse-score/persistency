@@ -28,7 +28,7 @@ impl Scenario for MultipleInstanceIds {
             // Create first KVS instance.
             let kvs1 = kvs_instance(params1.clone()).expect("Failed to create KVS instance");
 
-            // Create seconds KVS instance.
+            // Create second KVS instance.
             let kvs2 = kvs_instance(params2.clone()).expect("Failed to create KVS instance");
 
             // Set values to both KVS instances.
