@@ -15,20 +15,21 @@ from typing import Any
 
 import pytest
 from testing_utils import LogContainer, ScenarioResult
+from attribute_plugin import add_test_properties 
 
 from .common import CommonScenario, ResultCode
 
 pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 
 
-@pytest.mark.PartiallyVerifies([])
-@pytest.mark.FullyVerifies(["comp_req__persistency__persist_data_com_v2"])
-@pytest.mark.Description(
-    "Verifies that disabling flush on exit but manually flushing ensures data is persisted correctly."
+
+@add_test_properties(
+    fully_verifies=["comp_req__persistency__persist_data_com_v2"],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
 )
-@pytest.mark.TestType("requirements-based")
-@pytest.mark.DerivationTechnique("requirements-based")
 class TestExplicitFlush(CommonScenario):
+    """Verifies that disabling flush on exit but manually flushing ensures data is persisted correctly."""
     NUM_VALUES = 5
 
     @pytest.fixture(scope="class")
