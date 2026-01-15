@@ -22,9 +22,6 @@
 #include "cit/cit.hpp"
 #include "test_basic.hpp"
 
-#include "cit/cit.hpp"
-#include "test_basic.hpp"
-
 int main(int argc, char **argv)
 {
     try
