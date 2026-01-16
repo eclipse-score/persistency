@@ -719,10 +719,10 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success){
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
-    for (size_t i = 1; i < KVS_MAX_SNAPSHOTS; i++) {
+    for (size_t i = 0; i < KVS_MAX_SNAPSHOTS; i++) {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count().value(), i);
+        EXPECT_EQ(result.value().snapshot_count().value(), i+1);
     }
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS) + ".json"));
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS) + ".hash"));
@@ -748,10 +748,10 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_max_snapshots){
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
-    for (size_t i = 1; i < KVS_MAX_SNAPSHOTS; i++) {
+    for (size_t i = 0; i < KVS_MAX_SNAPSHOTS; i++) {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count().value(), i);
+        EXPECT_EQ(result.value().snapshot_count().value(), i+1);
     }
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS) + ".json"));
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS) + ".hash"));
@@ -773,10 +773,10 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_json){
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
-    for (size_t i = 1; i < KVS_MAX_SNAPSHOTS; i++) {
+    for (size_t i = 0; i < KVS_MAX_SNAPSHOTS; i++) {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count().value(), i);
+        EXPECT_EQ(result.value().snapshot_count().value(), i+1);
     }
 
     /* Snapshot (JSON) Renaming failed (Create directorys instead of json files to trigger rename error)*/
@@ -796,10 +796,10 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_hash){
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
-    for (size_t i = 1; i < KVS_MAX_SNAPSHOTS; i++) {
+    for (size_t i = 0; i < KVS_MAX_SNAPSHOTS; i++) {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count().value(), i);
+        EXPECT_EQ(result.value().snapshot_count().value(), i+1);
     }
 
     /* Hash Renaming failed (Create directorys instead of json files to trigger rename error)*/
@@ -953,11 +953,11 @@ TEST(kvs_snapshot_count, snapshot_count_success){
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
-    for (size_t i = 1; i <= KVS_MAX_SNAPSHOTS; i++) {
+    for (size_t i = 0; i < KVS_MAX_SNAPSHOTS; i++) {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         auto count = result.value().snapshot_count();
         EXPECT_TRUE(count);
-        EXPECT_EQ(count.value(), i);
+        EXPECT_EQ(count.value(), i+1);
     }
     /* Test maximum capacity */
     std::ofstream(filename_prefix + "_" + std::to_string(KVS_MAX_SNAPSHOTS + 1) + ".json") << "{}";
