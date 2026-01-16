@@ -40,7 +40,7 @@ score_virtualenv(
 # Tests targets
 score_py_pytest(
     name = "cit_cpp",
-    srcs = glob(["tests/**/*.py"], ["test_properties.py"]),
+    srcs = glob(["tests/**/*.py"]) + ["test_properties.py"],
     args = [
         "-m cpp",
         "--cpp-target-path=$(rootpath //tests/cpp_test_scenarios)",
@@ -58,7 +58,7 @@ score_py_pytest(
 
 score_py_pytest(
     name = "cit_rust",
-    srcs = glob(["tests/**/*.py"]+ ["test_properties.py"]),
+    srcs = glob(["tests/**/*.py"]) + ["test_properties.py"],
     args = [
         "-m rust",
         "--rust-target-path=$(rootpath //tests/rust_test_scenarios)",
