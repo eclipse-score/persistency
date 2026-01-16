@@ -18,7 +18,7 @@ from zlib import adler32
 
 import pytest
 from testing_utils import LogContainer, ScenarioResult
-from attribute_plugin import add_test_properties 
+from test_properties import add_test_properties 
 
 from .common import CommonScenario, ResultCode, temp_dir_common
 

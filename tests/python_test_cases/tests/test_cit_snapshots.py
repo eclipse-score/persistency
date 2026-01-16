@@ -15,7 +15,7 @@ from typing import Any, Generator
 import pytest
 from .common import CommonScenario, ResultCode, temp_dir_common
 from testing_utils import ScenarioResult, LogContainer
-from attribute_plugin import add_test_properties 
+from test_properties import add_test_properties 
 
 pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
 
