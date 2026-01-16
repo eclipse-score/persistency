@@ -29,6 +29,8 @@
 #include "score/mw/log/logger.h"
 
 #define KVS_MAX_SNAPSHOTS 3
+#define KVS_MAX_STORAGE_BYTES (10000) /* Max total storage size for all snapshots including hash files in bytes */
+static constexpr size_t HASH_FILE_SIZE = 4;
 
 namespace score::mw::per::kvs {
 
@@ -282,6 +284,22 @@ class Kvs final {
 
 
         /**
+         * @brief Performs a 'dry run' to check if the current in-memory store would
+         *        exceed the storage limit upon flushing.
+         *
+         * This function serializes the current key-value data to a temporary buffer
+         * and calculates the potential total storage size. It checks this size against
+         * the compile-time `KVS_MAX_STORAGE_BYTES` limit.
+         *
+         * @return A score::Result object containing either:
+         *         - On success: The estimated total size (size_t) that the KVS would occupy after a flush.
+         *         - On failure: An `OutOfStorageSpace` error if the limit would be exceeded,
+         *           or another ErrorCode for other failures (e.g., serialization).
+         */
+        score::Result<size_t> calculate_potential_size();
+
+
+        /**
          * @brief Retrieves the number of snapshots currently stored in the key-value store.
          *
          * @return A score::Result object that indicates the success or failure of the operation.
@@ -367,6 +385,9 @@ class Kvs final {
         std::unique_ptr<score::mw::log::Logger> logger;
 
         /* Private Methods */
+        score::Result<std::string> serialize_and_check();
+        score::Result<size_t> get_file_size(const score::filesystem::Path& file_path);
+        score::Result<size_t> get_current_storage_size();
         score::ResultBlank snapshot_rotate();
         score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
         score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix, OpenJsonNeedFile need_file);
