@@ -6,4 +6,5 @@ except ImportError:
     def add_test_properties(*args, **kwargs):
         def decorator(func):
             return func  # No-op decorator
+
         return decorator

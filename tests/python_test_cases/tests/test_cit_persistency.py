@@ -15,12 +15,11 @@ from typing import Any
 
 import pytest
 from testing_utils import LogContainer, ScenarioResult
-from test_properties import add_test_properties 
+from test_properties import add_test_properties
 
 from .common import CommonScenario, ResultCode
 
 pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
-
 
 
 @add_test_properties(
@@ -30,6 +29,7 @@ pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 )
 class TestExplicitFlush(CommonScenario):
     """Verifies that disabling flush on exit but manually flushing ensures data is persisted correctly."""
+
     NUM_VALUES = 5
 
     @pytest.fixture(scope="class")

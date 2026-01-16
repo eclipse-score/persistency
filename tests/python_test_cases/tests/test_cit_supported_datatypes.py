@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 from testing_utils import LogContainer, ScenarioResult
-from test_properties import add_test_properties 
+from test_properties import add_test_properties
 
 from .common import CommonScenario, ResultCode
 
@@ -24,12 +24,16 @@ pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 
 
 @add_test_properties(
-    partially_verifies=[ "comp_req__persistency__key_encoding_v2", "comp_req__persistency__value_data_types_v2"],
+    partially_verifies=[
+        "comp_req__persistency__key_encoding_v2",
+        "comp_req__persistency__value_data_types_v2",
+    ],
     test_type="requirements-based",
     derivation_technique="interface-test",
 )
 class TestSupportedDatatypesKeys(CommonScenario):
     """Verifies that KVS supports UTF-8 string keys for storing and retrieving values."""
+
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.supported_datatypes.keys"
@@ -49,14 +53,17 @@ class TestSupportedDatatypesKeys(CommonScenario):
         assert len(act_keys.symmetric_difference(exp_keys)) == 0
 
 
-
 @add_test_properties(
-    partially_verifies=[ "comp_req__persistency__key_encoding_v2", "comp_req__persistency__value_data_types_v2"],
+    partially_verifies=[
+        "comp_req__persistency__key_encoding_v2",
+        "comp_req__persistency__value_data_types_v2",
+    ],
     test_type="requirements-based",
     derivation_technique="interface-test",
 )
 class TestSupportedDatatypesValues(CommonScenario):
     """Verifies that KVS supports UTF-8 string keys for storing and retrieving values."""
+
     @abstractmethod
     def exp_key(self) -> str:
         pass

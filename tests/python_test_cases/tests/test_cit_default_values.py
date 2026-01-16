@@ -18,7 +18,7 @@ from zlib import adler32
 
 import pytest
 from testing_utils import LogContainer, ScenarioResult
-from test_properties import add_test_properties 
+from test_properties import add_test_properties
 
 from .common import CommonScenario, ResultCode, temp_dir_common
 
@@ -91,13 +91,19 @@ class DefaultValuesScenario(CommonScenario):
 
 
 @add_test_properties(
-    partially_verifies=[ "comp_req__persistency__value_default_v2", "comp_req__persistency__default_value_cfg_v2", "comp_req__persistency__default_value_types_v2", "comp_req__persistency__default_value_query_v2"],
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_cfg_v2",
+        "comp_req__persistency__default_value_types_v2",
+        "comp_req__persistency__default_value_query_v2",
+    ],
     test_type="requirements-based",
     derivation_technique="requirements-based",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required", "without"], scope="class")
 class TestDefaultValues(DefaultValuesScenario):
     """Verifies default value loading, querying, and override behavior for KVS instances with and without defaults."""
+
     KEY = "test_number"
     VALUE = 111.1
 
@@ -167,15 +173,19 @@ class TestDefaultValues(DefaultValuesScenario):
             assert logs[1].current_value == "Ok(F64(432.1))"
 
 
-
 @add_test_properties(
-    partially_verifies=[ "comp_req__persistency__value_default_v2", "comp_req__persistency__default_value_cfg_v2", "comp_req__persistency__default_value_types_v2"],
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_cfg_v2",
+        "comp_req__persistency__default_value_types_v2",
+    ],
     test_type="requirements-based",
     derivation_technique="requirements-based",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required", "without"], scope="class")
 class TestRemoveKey(DefaultValuesScenario):
     """Tests removal of values in KVS with defaults enabled, ensuring keys revert to their default values."""
+
     KEY = "test_number"
     VALUE = 111.1
 
@@ -252,15 +262,19 @@ class TestRemoveKey(DefaultValuesScenario):
             assert logs[2].current_value == "Err(KeyNotFound)"
 
 
-
 @add_test_properties(
-    partially_verifies=[ "comp_req__persistency__value_default_v2", "comp_req__persistency__default_value_cfg_v2", "comp_req__persistency__default_value_types_v2"],
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_cfg_v2",
+        "comp_req__persistency__default_value_types_v2",
+    ],
     test_type="requirements-based",
     derivation_technique="requirements-based",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestMalformedDefaultsFile(DefaultValuesScenario):
     """Verifies that KVS fails to open when the defaults file contains invalid JSON."""
+
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.default_values.default_values"
@@ -318,13 +332,18 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
 
 
 @add_test_properties(
-    partially_verifies=[ "comp_req__persistency__value_default_v2", "comp_req__persistency__default_value_cfg_v2", "comp_req__persistency__default_value_types_v2"],
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_cfg_v2",
+        "comp_req__persistency__default_value_types_v2",
+    ],
     test_type="requirements-based",
     derivation_technique="requirements-based",
 )
 @pytest.mark.parametrize("defaults", ["required"], scope="class")
 class TestMissingDefaultsFile(DefaultValuesScenario):
     """Verifies that KVS fails to open when the defaults file is missing."""
+
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.default_values.default_values"
@@ -349,16 +368,20 @@ class TestMissingDefaultsFile(DefaultValuesScenario):
         assert re.findall(pattern, results.stderr) is not None
 
 
-
 @add_test_properties(
     fully_verifies=["comp_req__persistency__value_reset_v2"],
-    partially_verifies=[ "comp_req__persistency__value_default_v2", "comp_req__persistency__default_value_cfg_v2", "comp_req__persistency__default_value_types_v2"],
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_cfg_v2",
+        "comp_req__persistency__default_value_types_v2",
+    ],
     test_type="requirements-based",
     derivation_technique="requirements-based",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestResetAllKeys(DefaultValuesScenario):
     """Checks that resetting KVS restores all keys to their default values."""
+
     NUM_VALUES = 5
 
     @pytest.fixture(scope="class")
@@ -415,15 +438,18 @@ class TestResetAllKeys(DefaultValuesScenario):
             assert logs[2].current_value == 432.1 * i
 
 
-
 @add_test_properties(
-    partially_verifies=[ "comp_req__persistency__value_default_v2", "comp_req__persistency__default_value_cfg_v2"],
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_cfg_v2",
+    ],
     test_type="requirements-based",
     derivation_technique="requirements-based",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestResetSingleKey(DefaultValuesScenario):
     """Checks that resetting single key restores it to its default value."""
+
     NUM_VALUES = 5
     RESET_INDEX = 2
 
@@ -495,16 +521,19 @@ class TestResetSingleKey(DefaultValuesScenario):
                 assert logs[2].current_value == 123.4 * i
 
 
-
 @add_test_properties(
     fully_verifies=["comp_req__persistency__default_val_chksum_v2"],
-    partially_verifies=[ "comp_req__persistency__value_default_v2", "comp_req__persistency__default_value_cfg_v2"],
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_cfg_v2",
+    ],
     test_type="requirements-based",
     derivation_technique="requirements-based",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestChecksumOnProvidedDefaults(DefaultValuesScenario):
     """Ensures that a checksum file is created when opening KVS with defaults."""
+
     KEY = "test_number"
     VALUE = 111.1
 
