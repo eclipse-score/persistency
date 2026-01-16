@@ -22,8 +22,10 @@
 #include "cit/cit.hpp"
 #include "test_basic.hpp"
 
-int main(int argc, char** argv) {
-    try {
+int main(int argc, char **argv)
+{
+    try
+    {
         std::vector<std::string> raw_arguments{argv, argv + argc};
 
         // Basic group.
@@ -39,7 +41,9 @@ int main(int argc, char** argv) {
         // Run.
         TestContext test_context{root_group};
         run_cli_app(raw_arguments, test_context);
-    } catch (const std::exception& ex) {
+    }
+    catch (const std::exception &ex)
+    {
         std::cerr << ex.what() << std::endl;
         // Match Rust panic return code.
         return 101;

@@ -14,9 +14,10 @@
 #include "helpers/helpers.hpp"
 #include <sstream>
 
-std::pair<std::string, std::string> kvs_hash_paths(const std::string& working_dir,
+std::pair<std::string, std::string> kvs_hash_paths(const std::string &working_dir,
                                                    score::mw::per::kvs::InstanceId instance_id,
-                                                   score::mw::per::kvs::SnapshotId snapshot_id) {
+                                                   score::mw::per::kvs::SnapshotId snapshot_id)
+{
     std::ostringstream kvs_path, hash_path;
     kvs_path << working_dir << "/kvs_" << instance_id.id << "_" << snapshot_id.id << ".json";
     hash_path << working_dir << "/kvs_" << instance_id.id << "_" << snapshot_id.id << ".hash";

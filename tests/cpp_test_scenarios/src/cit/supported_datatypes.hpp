@@ -12,10 +12,6 @@
  ********************************************************************************/
 #pragma once
 
-#include <kvs.hpp>
-#include <string>
-#include <utility>
+#include "scenario.hpp"
 
-std::pair<std::string, std::string> kvs_hash_paths(const std::string &working_dir,
-                                                   score::mw::per::kvs::InstanceId instance_id,
-                                                   score::mw::per::kvs::SnapshotId snapshot_id);
+ScenarioGroup::Ptr supported_datatypes_group();
