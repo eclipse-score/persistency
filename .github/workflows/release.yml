@@ -17,7 +17,7 @@ on:
     types: [created]
 
 jobs:
-  archive-report:
+  release-verification:
     runs-on: ubuntu-latest
     permissions:
       contents: write # required to upload release assets
@@ -60,13 +60,30 @@ jobs:
 
       - name: Build via Bazel
         run: |
-          echo "Running: bazel build //src/..."
-          bazel build //src/...
+          echo "Running: bazel build --config=per-x86_64-linux //src/..."
+          bazel build --config=per-x86_64-linux //src/...
 
       - name: Run Unit Tests via Bazel
         run: |
-          echo "Running: bazel test //:unit_tests"
-          bazel test //:unit_tests
+          echo "Running: bazel test --config=per-x86_64-linux //:unit_tests"
+          bazel test --config=per-x86_64-linux //:unit_tests
+
+      - name: Run Unit Test with Coverage for Rust
+        run: |
+          # Run tests
+          bazel coverage --config=per-x86_64-linux //:unit_tests \
+            --collect_code_coverage \
+            --combined_report=lcov \
+            --experimental_generate_llvm_lcov \
+            --nocache_test_results \
+            --nostamp
+          # Generate HTML report
+          genhtml "$(bazel info output_path)/_coverage/_coverage_report.dat" \
+            -o=rust_coverage \
+            --show-details \
+            --legend \
+            --function-coverage \
+            --branch-coverage
 
       - name: Run Unit Test with Coverage for C++
         run: |
@@ -87,24 +104,8 @@ jobs:
             --show-details \
             --legend \
             --function-coverage \
-            --branch-coverage
-
-      - name: Run Unit Test with Coverage for Rust
-        run: |
-          # Run tests
-          bazel coverage //:unit_tests_rust \
-            --collect_code_coverage \
-            --combined_report=lcov \
-            --experimental_generate_llvm_lcov \
-            --nocache_test_results \
-            --nostamp
-          # Generate HTML report
-          genhtml "$(bazel info output_path)/_coverage/_coverage_report.dat" \
-            -o=rust_coverage \
-            --show-details \
-            --legend \
-            --function-coverage \
-            --branch-coverage
+            --branch-coverage \
+            --ignore-errors=unmapped
 
       - name: Create archive of test report
         run: |
