@@ -74,15 +74,40 @@ checksum = "cd945864f07fe9f5371a27ad7b52a172b4b499999f1d97574c9fa68373937e12"
 
 [[package]]
 name = "log"
-version = "0.4.27"
+version = "0.4.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
+checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
 name = "memchr"
 version = "2.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32a282da65faaf38286cf3be983213fcf1d2e2a58700e808f83f4ea9a4804bc0"
+
+[[package]]
+name = "mw_log"
+version = "0.0.1"
+source = "git+https://github.com/eclipse-score/baselibs_rust.git?rev=54e2af036603107039a2eca4912413763ab112e7#54e2af036603107039a2eca4912413763ab112e7"
+dependencies = [
+ "mw_log_fmt",
+ "mw_log_fmt_macro",
+]
+
+[[package]]
+name = "mw_log_fmt"
+version = "0.0.1"
+source = "git+https://github.com/eclipse-score/baselibs_rust.git?rev=54e2af036603107039a2eca4912413763ab112e7#54e2af036603107039a2eca4912413763ab112e7"
+
+[[package]]
+name = "mw_log_fmt_macro"
+version = "0.0.1"
+source = "git+https://github.com/eclipse-score/baselibs_rust.git?rev=54e2af036603107039a2eca4912413763ab112e7#54e2af036603107039a2eca4912413763ab112e7"
+dependencies = [
+ "mw_log_fmt",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "nu-ansi-term"
@@ -140,6 +165,7 @@ name = "rust_kvs"
 version = "0.1.0"
 dependencies = [
  "adler32",
+ "mw_log",
  "tempfile",
  "tinyjson",
 ]
@@ -148,8 +174,10 @@ dependencies = [
 name = "rust_kvs_tool"
 version = "0.1.0"
 dependencies = [
+ "mw_log",
  "pico-args",
  "rust_kvs",
+ "stdout_logger",
  "tinyjson",
 ]
 
@@ -157,9 +185,11 @@ dependencies = [
 name = "rust_test_scenarios"
 version = "0.1.0"
 dependencies = [
+ "mw_log",
  "rust_kvs",
  "serde",
  "serde_json",
+ "stdout_logger",
  "test_scenarios_rust",
  "tinyjson",
  "tracing",
@@ -231,6 +261,14 @@ name = "smallvec"
 version = "1.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
+
+[[package]]
+name = "stdout_logger"
+version = "0.0.1"
+source = "git+https://github.com/eclipse-score/baselibs_rust.git?rev=54e2af036603107039a2eca4912413763ab112e7#54e2af036603107039a2eca4912413763ab112e7"
+dependencies = [
+ "mw_log",
+]
 
 [[package]]
 name = "syn"

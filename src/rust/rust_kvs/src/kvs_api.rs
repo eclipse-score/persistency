@@ -11,14 +11,14 @@
 
 use crate::error_code::ErrorCode;
 use crate::kvs_value::KvsValue;
-use core::fmt;
+use crate::log::ScoreDebug;
 
 /// Instance ID
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
 pub struct InstanceId(pub usize);
 
-impl fmt::Display for InstanceId {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for InstanceId {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}", self.0)
     }
 }
@@ -30,11 +30,11 @@ impl From<InstanceId> for usize {
 }
 
 /// Snapshot ID
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
 pub struct SnapshotId(pub usize);
 
-impl fmt::Display for SnapshotId {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for SnapshotId {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}", self.0)
     }
 }
@@ -46,7 +46,7 @@ impl From<SnapshotId> for usize {
 }
 
 /// Defaults handling mode.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
 pub enum KvsDefaults {
     /// Defaults are not loaded.
     Ignored,
@@ -59,7 +59,7 @@ pub enum KvsDefaults {
 }
 
 /// KVS load mode.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
 pub enum KvsLoad {
     /// KVS is not loaded.
     Ignored,
@@ -79,8 +79,8 @@ pub trait KvsApi {
     fn get_value(&self, key: &str) -> Result<KvsValue, ErrorCode>;
     fn get_value_as<T>(&self, key: &str) -> Result<T, ErrorCode>
     where
-        for<'a> T: TryFrom<&'a KvsValue> + Clone,
-        for<'a> <T as TryFrom<&'a KvsValue>>::Error: core::fmt::Debug;
+        for<'a> T: TryFrom<&'a KvsValue>,
+        for<'a> <T as TryFrom<&'a KvsValue>>::Error: ScoreDebug;
     fn get_default_value(&self, key: &str) -> Result<KvsValue, ErrorCode>;
     fn is_value_default(&self, key: &str) -> Result<bool, ErrorCode>;
     fn set_value<S: Into<String>, J: Into<KvsValue>>(

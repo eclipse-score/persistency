@@ -12,6 +12,7 @@
 use crate::error_code::ErrorCode;
 use crate::kvs_api::{InstanceId, SnapshotId};
 use crate::kvs_value::KvsMap;
+use crate::log::ScoreDebug;
 use core::any::Any;
 
 /// Trait for comparisons between types.
@@ -40,7 +41,7 @@ where
 }
 
 /// KVS backend interface.
-pub trait KvsBackend: DynEq + Sync + Send {
+pub trait KvsBackend: DynEq + Sync + Send + ScoreDebug {
     /// Load KVS content.
     fn load_kvs(
         &self,

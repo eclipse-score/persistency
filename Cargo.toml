@@ -15,6 +15,9 @@ edition = "2021"
 [workspace.dependencies]
 rust_kvs = { path = "src/rust/rust_kvs" }
 rust_kvs_tool = { path = "src/rust/rust_kvs_tool" }
+mw_log = { git = "https://github.com/eclipse-score/baselibs_rust.git", rev = "54e2af036603107039a2eca4912413763ab112e7", features = [
+    "qm",
+] }
 
 adler32 = "1.2.0"
 tinyjson = "2.5.1"
