@@ -40,12 +40,8 @@ class TestMultipleInstanceIds(CommonScenario):
     @pytest.fixture(scope="class")
     def test_config(self, temp_dir: Path) -> dict[str, Any]:
         return {
-            "kvs_parameters_1": {
-                "kvs_parameters": {"instance_id": 1, "dir": str(temp_dir)}
-            },
-            "kvs_parameters_2": {
-                "kvs_parameters": {"instance_id": 2, "dir": str(temp_dir)}
-            },
+            "kvs_parameters_1": {"kvs_parameters": {"instance_id": 1, "dir": str(temp_dir)}},
+            "kvs_parameters_2": {"kvs_parameters": {"instance_id": 2, "dir": str(temp_dir)}},
         }
 
     def test_ok(self, results: ScenarioResult, logs_info_level: LogContainer):

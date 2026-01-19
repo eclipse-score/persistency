@@ -28,9 +28,7 @@ pytestmark = pytest.mark.parametrize("version", ["cpp", "rust"], scope="class")
     ]
 )
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Verifies that KVS supports UTF-8 string keys for storing and retrieving values."
-)
+@pytest.mark.Description("Verifies that KVS supports UTF-8 string keys for storing and retrieving values.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("interface-test")
 class TestSupportedDatatypesKeys(CommonScenario):
@@ -60,9 +58,7 @@ class TestSupportedDatatypesKeys(CommonScenario):
     ]
 )
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Verifies that KVS supports UTF-8 string keys for storing and retrieving values."
-)
+@pytest.mark.Description("Verifies that KVS supports UTF-8 string keys for storing and retrieving values.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("interface-test")
 class TestSupportedDatatypesValues(CommonScenario):
