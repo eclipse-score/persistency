@@ -12,7 +12,6 @@
  ********************************************************************************/
 #include "test_kvs_general.hpp"
 
-
 TEST(kvs_calculate_hash_adler32, calculate_hash_adler32) {
     /* Test the adler32 hash calculation
     Parsing test is done automatically by the open tests */
@@ -21,22 +20,19 @@ TEST(kvs_calculate_hash_adler32, calculate_hash_adler32) {
     uint32_t calculated_hash = adler32(test_data);
     EXPECT_EQ(calculated_hash, calculate_hash_adler32(test_data));
 
-    std::array<uint8_t,4> buf{};
+    std::array<uint8_t, 4> buf{};
     std::istringstream stream(test_data);
     stream.read(reinterpret_cast<char*>(buf.data()), buf.size());
 
     std::array<uint8_t, 4> value = {
-        uint8_t((calculated_hash >> 24) & 0xFF),
-        uint8_t((calculated_hash >> 16) & 0xFF),
-        uint8_t((calculated_hash >>  8) & 0xFF),
-        uint8_t((calculated_hash      ) & 0xFF)
-    };
+        uint8_t((calculated_hash >> 24) & 0xFF), uint8_t((calculated_hash >> 16) & 0xFF),
+        uint8_t((calculated_hash >> 8) & 0xFF), uint8_t((calculated_hash) & 0xFF)};
     EXPECT_EQ(value, get_hash_bytes(test_data));
-
 }
 
 TEST(kvs_calculate_hash_adler32, calculate_hash_adler32_large_data) {
-    // Create Teststring with more than 5552 characters to ensure that the hash is calculated correctly
+    // Create Teststring with more than 5552 characters to ensure that the hash is calculated
+    // correctly
     std::string large_data(6000, 'A');
     uint32_t hash = calculate_hash_adler32(large_data);
 
@@ -44,15 +40,10 @@ TEST(kvs_calculate_hash_adler32, calculate_hash_adler32_large_data) {
 }
 
 TEST(kvs_check_hash, check_hash_valid) {
-
     std::string test_data = "Hello, World!";
     uint32_t hash = adler32(test_data);
-    std::array<uint8_t, 4> hash_bytes = {
-        uint8_t((hash >> 24) & 0xFF),
-        uint8_t((hash >> 16) & 0xFF),
-        uint8_t((hash >>  8) & 0xFF),
-        uint8_t((hash      ) & 0xFF)
-    };
+    std::array<uint8_t, 4> hash_bytes = {uint8_t((hash >> 24) & 0xFF), uint8_t((hash >> 16) & 0xFF),
+                                         uint8_t((hash >> 8) & 0xFF), uint8_t((hash) & 0xFF)};
     std::string hash_string(reinterpret_cast<const char*>(hash_bytes.data()), hash_bytes.size());
     std::istringstream hash_stream(hash_string);
 
@@ -60,15 +51,10 @@ TEST(kvs_check_hash, check_hash_valid) {
 }
 
 TEST(kvs_check_hash, check_hash_invalid) {
-
     std::string test_data = "Hello, World!";
     uint32_t hash = adler32(test_data);
-    std::array<uint8_t, 4> hash_bytes = {
-        uint8_t((hash >> 24) & 0xFF),
-        uint8_t((hash >> 16) & 0xFF),
-        uint8_t((hash >>  8) & 0xFF),
-        uint8_t((hash      ) & 0xFF)
-    };
+    std::array<uint8_t, 4> hash_bytes = {uint8_t((hash >> 24) & 0xFF), uint8_t((hash >> 16) & 0xFF),
+                                         uint8_t((hash >> 8) & 0xFF), uint8_t((hash) & 0xFF)};
     std::string hash_string(reinterpret_cast<const char*>(hash_bytes.data()), hash_bytes.size());
     std::istringstream hash_stream(hash_string);
 
@@ -233,7 +219,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_no_object) {
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_type_no_string) {
     score::json::Object obj;
-    obj.emplace("t", score::json::Any(42.0)); // Not a string
+    obj.emplace("t", score::json::Any(42.0));  // Not a string
     obj.emplace("v", score::json::Any(true));
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
@@ -253,7 +239,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_type_invalid) {
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_no_string_type) {
     score::json::Object obj;
-    obj.emplace("t", score::json::Any(42.0)); // Not a string
+    obj.emplace("t", score::json::Any(42.0));  // Not a string
     obj.emplace("v", score::json::Any(true));
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
@@ -261,80 +247,80 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_no_string_type) {
     EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
-TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_i32){
+TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_i32) {
     score::json::Object obj;
     obj.emplace("t", score::json::Any(std::string("i32")));
-    obj.emplace("v", score::json::Any("invalid")); // Invalid value for I32
+    obj.emplace("v", score::json::Any("invalid"));  // Invalid value for I32
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
-TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_u32){
+TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_u32) {
     score::json::Object obj;
     obj.emplace("t", score::json::Any(std::string("u32")));
-    obj.emplace("v", score::json::Any("invalid")); // Invalid value for U32
+    obj.emplace("v", score::json::Any("invalid"));  // Invalid value for U32
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
-TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_i64){
+TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_i64) {
     score::json::Object obj;
     obj.emplace("t", score::json::Any(std::string("i64")));
-    obj.emplace("v", score::json::Any("invalid")); // Invalid value for I64
+    obj.emplace("v", score::json::Any("invalid"));  // Invalid value for I64
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
-TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_u64){
+TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_u64) {
     score::json::Object obj;
     obj.emplace("t", score::json::Any(std::string("u64")));
-    obj.emplace("v", score::json::Any("invalid")); // Invalid value for U64
+    obj.emplace("v", score::json::Any("invalid"));  // Invalid value for U64
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
-TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_f64){
+TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_f64) {
     score::json::Object obj;
     obj.emplace("t", score::json::Any(std::string("f64")));
-    obj.emplace("v", score::json::Any("invalid")); // Invalid value for F64
+    obj.emplace("v", score::json::Any("invalid"));  // Invalid value for F64
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
-TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_boolean){
+TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_boolean) {
     score::json::Object obj;
     obj.emplace("t", score::json::Any(std::string("bool")));
-    obj.emplace("v", score::json::Any(42.0)); // Invalid value for Boolean
+    obj.emplace("v", score::json::Any(42.0));  // Invalid value for Boolean
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
-TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_string){
+TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_string) {
     score::json::Object obj;
     obj.emplace("t", score::json::Any(std::string("str")));
-    obj.emplace("v", score::json::Any(42.0)); // Invalid value for String
+    obj.emplace("v", score::json::Any(42.0));  // Invalid value for String
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 }
 
-TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_null){
+TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_null) {
     score::json::Object obj;
     obj.emplace("t", score::json::Any(std::string("null")));
-    obj.emplace("v", score::json::Any(42.0)); // Invalid value for Null
+    obj.emplace("v", score::json::Any(42.0));  // Invalid value for Null
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
@@ -344,7 +330,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_null){
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_array) {
     score::json::Object obj;
     obj.emplace("t", score::json::Any(std::string("arr")));
-    obj.emplace("v", score::json::Any(42.0)); // Invalid value for Array
+    obj.emplace("v", score::json::Any(42.0));  // Invalid value for Array
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
@@ -354,7 +340,7 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_array) {
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_invalid_object) {
     score::json::Object obj;
     obj.emplace("t", score::json::Any(std::string("obj")));
-    obj.emplace("v", score::json::Any(42.0)); // Invalid value for Object
+    obj.emplace("v", score::json::Any(42.0));  // Invalid value for Object
     score::json::Any any_obj(std::move(obj));
     auto result = any_to_kvsvalue(any_obj);
     EXPECT_FALSE(result.has_value());
@@ -507,8 +493,8 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_array) {
 
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_object) {
     KvsValue::Object obj;
-    obj.emplace("flag", std::make_shared<KvsValue>(true)); // Boolean
-    obj.emplace("count", std::make_shared<KvsValue>(42.0)); // F64
+    obj.emplace("flag", std::make_shared<KvsValue>(true));   // Boolean
+    obj.emplace("count", std::make_shared<KvsValue>(42.0));  // F64
     KvsValue obj_val(obj);
 
     auto result = kvsvalue_to_any(obj_val);

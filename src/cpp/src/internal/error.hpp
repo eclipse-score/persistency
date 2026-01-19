@@ -83,9 +83,8 @@ enum class ErrorCode : score::result::ErrorCode {
     InvalidValueType,
 };
 
-class MyErrorDomain final : public score::result::ErrorDomain
-{
-public:
+class MyErrorDomain final : public score::result::ErrorDomain {
+   public:
     std::string_view MessageFor(score::result::ErrorCode const& code) const noexcept override;
 };
 

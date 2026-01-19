@@ -16,10 +16,10 @@ namespace score::mw::per::kvs {
 
 /*********************** KVS Builder Implementation *********************/
 KvsBuilder::KvsBuilder(const InstanceId& instance_id)
-    : instance_id(instance_id)
-    , need_defaults(false)
-    , need_kvs(false)
-    , directory("./data_folder/") /* Default Directory */
+    : instance_id(instance_id),
+      need_defaults(false),
+      need_kvs(false),
+      directory("./data_folder/") /* Default Directory */
 {}
 
 KvsBuilder& KvsBuilder::need_defaults_flag(bool flag) {
@@ -37,7 +37,6 @@ KvsBuilder& KvsBuilder::dir(std::string&& dir_path) {
     return *this;
 }
 
-
 score::Result<Kvs> KvsBuilder::build() {
     score::Result<Kvs> result = score::MakeUnexpected(ErrorCode::UnmappedError);
 
@@ -47,11 +46,8 @@ score::Result<Kvs> KvsBuilder::build() {
     }
 
     result = Kvs::open(
-        instance_id,
-        need_defaults ? OpenNeedDefaults::Required : OpenNeedDefaults::Optional,
-        need_kvs      ? OpenNeedKvs::Required      : OpenNeedKvs::Optional,
-        std::move(directory)
-    );
+        instance_id, need_defaults ? OpenNeedDefaults::Required : OpenNeedDefaults::Optional,
+        need_kvs ? OpenNeedKvs::Required : OpenNeedKvs::Optional, std::move(directory));
 
     return result;
 }

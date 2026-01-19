@@ -18,37 +18,36 @@ using namespace score::json;
 namespace
 {
 
-    /// Deserialize load parameter: "defaults" or "kvs_load".
-    std::optional<bool> deserialize_load_param(const score::json::Object &obj_root,
-                                               const std::string &field_name)
+/// Deserialize load parameter: "defaults" or "kvs_load".
+std::optional<bool> deserialize_load_param(const score::json::Object& obj_root, const std::string& field_name)
+{
+    if (obj_root.find(field_name) != obj_root.end())
     {
-        if (obj_root.find(field_name) != obj_root.end())
+        auto value_str{obj_root.at(field_name).As<std::string>().value().get()};
+        if (value_str.compare("ignored") == 0)
         {
-            auto value_str{obj_root.at(field_name).As<std::string>().value().get()};
-            if (value_str.compare("ignored") == 0)
-            {
-                throw std::runtime_error{"\"ignored\" load parameter is not supported yet"};
-            }
-            else if (value_str.compare("optional") == 0)
-            {
-                return false;
-            }
-            else if (value_str.compare("required") == 0)
-            {
-                return true;
-            }
-            else
-            {
-                throw std::runtime_error{"Unknown load parameter"};
-            }
+            throw std::runtime_error{"\"ignored\" load parameter is not supported yet"};
         }
-
-        return {};
+        else if (value_str.compare("optional") == 0)
+        {
+            return false;
+        }
+        else if (value_str.compare("required") == 0)
+        {
+            return true;
+        }
+        else
+        {
+            throw std::runtime_error{"Unknown load parameter"};
+        }
     }
 
-} // namespace
+    return {};
+}
 
-KvsParameters KvsParameters::from_json(const std::string &json_str)
+}  // namespace
+
+KvsParameters KvsParameters::from_json(const std::string& json_str)
 {
     // Load and parse provided JSON stirng.
     JsonParser parser;
@@ -61,11 +60,11 @@ KvsParameters KvsParameters::from_json(const std::string &json_str)
     return KvsParameters::from_object(any_res.value().As<Object>().value().get());
 }
 
-KvsParameters KvsParameters::from_object(const Object &object)
+KvsParameters KvsParameters::from_object(const Object& object)
 {
     // Take "kvs_parameters" field containing object.
-    const auto &map_root{object.at("kvs_parameters")};
-    const auto &obj_root{map_root.As<Object>().value().get()};
+    const auto& map_root{object.at("kvs_parameters")};
+    const auto& obj_root{map_root.As<Object>().value().get()};
 
     KvsParameters params{.instance_id = obj_root.at("instance_id").As<uint64_t>().value()};
 

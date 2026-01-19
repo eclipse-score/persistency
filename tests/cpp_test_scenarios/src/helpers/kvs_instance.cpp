@@ -14,7 +14,7 @@
 #include "helpers/kvs_instance.hpp"
 #include <kvsbuilder.hpp>
 
-score::mw::per::kvs::Kvs kvs_instance(const KvsParameters &params)
+score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params)
 {
     using namespace score::mw::per::kvs;
     InstanceId instance_id{params.instance_id};

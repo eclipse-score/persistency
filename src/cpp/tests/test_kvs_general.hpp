@@ -15,25 +15,26 @@
 /* The test_kvs_general files provide configuration data and methods needed for KVS tests */
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+#include <unistd.h>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include <string>
-#include <unistd.h>
 
-/* Change Private Members and final to public to allow access to member variables (kvs and kvsbuilder) and derive from kvsvalue in unittests*/
+/* Change Private Members and final to public to allow access to member variables (kvs and
+ * kvsbuilder) and derive from kvsvalue in unittests*/
 #define private public
 #define final
 #include "kvsbuilder.hpp"
 #undef private
 #undef final
 #include "internal/kvs_helper.hpp"
+#include "score/filesystem/filesystem_mock.h"
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
-#include "score/filesystem/filesystem_mock.h"
 using namespace score::mw::per::kvs;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,12 +50,12 @@ void cleanup_environment();
 const std::uint32_t instance = 123;
 const InstanceId instance_id{instance};
 
-/* Notice: score::filesystem::Path could be constructed implicitly from std::string, but for readability,
-           the explicit construction from those strings are used in the testcode */
+/* Notice: score::filesystem::Path could be constructed implicitly from std::string, but for
+   readability, the explicit construction from those strings are used in the testcode */
 const std::string data_dir = "./data_folder/";
-const std::string default_prefix = data_dir + "kvs_"+std::to_string(instance)+"_default";
-const std::string kvs_prefix     = data_dir + "kvs_"+std::to_string(instance)+"_0";
-const std::string filename_prefix = data_dir + "kvs_"+std::to_string(instance);
+const std::string default_prefix = data_dir + "kvs_" + std::to_string(instance) + "_default";
+const std::string kvs_prefix = data_dir + "kvs_" + std::to_string(instance) + "_0";
+const std::string filename_prefix = data_dir + "kvs_" + std::to_string(instance);
 
 const std::string default_json = R"({
     "default": {
@@ -74,7 +75,7 @@ const std::string kvs_json = R"({
 ////////////////////////////////////////////////////////////////////////////////
 
 class BrokenKvsValue : public KvsValue {
-public:
+   public:
     BrokenKvsValue() : KvsValue(nullptr) {
         /* Intentionally break the type by assigning an invalid value */
         *(Type*)&this->type = static_cast<Type>(999);

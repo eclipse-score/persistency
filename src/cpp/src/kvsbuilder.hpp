@@ -57,7 +57,7 @@ namespace score::mw::per::kvs {
  * \endcode
  */
 class KvsBuilder final {
-public:
+   public:
     /**
      * @brief Constructs a KvsBuilder for the given KVS instance.
      * @param instance_id Unique identifier for the KVS instance.
@@ -96,11 +96,11 @@ public:
      */
     score::Result<Kvs> build();
 
-private:
-    InstanceId                         instance_id;   ///< ID of the KVS instance
-    bool                               need_defaults; ///< Whether default values are required
-    bool                               need_kvs;      ///< Whether an existing KVS is required
-    std::string                        directory;     ///< Directory where to store the KVS Files
+   private:
+    InstanceId instance_id;  ///< ID of the KVS instance
+    bool need_defaults;      ///< Whether default values are required
+    bool need_kvs;           ///< Whether an existing KVS is required
+    std::string directory;   ///< Directory where to store the KVS Files
 };
 
 } /* namespace score::mw::per::kvs */
