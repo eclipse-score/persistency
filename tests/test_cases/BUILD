@@ -15,10 +15,10 @@ load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 load("@score_tooling//python_basics:defs.bzl", "score_py_pytest", "score_virtualenv")
 
 # In order to update the requirements, change the `requirements.in` file and run:
-# `bazel run //tests/python_test_cases:requirements.update`.
+# `bazel run //tests/test_cases:requirements.update`.
 # This will update the `requirements.txt` file.
 # To upgrade all dependencies to their latest versions, run:
-# `bazel run //tests/python_test_cases:requirements.update -- --upgrade`.
+# `bazel run //tests/test_cases:requirements.update -- --upgrade`.
 compile_pip_requirements(
     name = "requirements",
     srcs = [
@@ -43,16 +43,16 @@ score_py_pytest(
     srcs = glob(["tests/**/*.py"]),
     args = [
         "-m cpp",
-        "--cpp-target-path=$(rootpath //tests/cpp_test_scenarios)",
+        "--cpp-target-path=$(rootpath //tests/test_scenarios/cpp:test_scenarios)",
     ],
     data = [
         ":python_tc_venv",
-        "//tests/cpp_test_scenarios",
+        "//tests/test_scenarios/cpp:test_scenarios",
     ],
     env = {
         "RUST_BACKTRACE": "1",
     },
-    pytest_ini = "//tests/python_test_cases:pytest.ini",
+    pytest_ini = "//tests/test_cases:pytest.ini",
     deps = all_requirements,
 )
 
@@ -61,16 +61,16 @@ score_py_pytest(
     srcs = glob(["tests/**/*.py"]),
     args = [
         "-m rust",
-        "--rust-target-path=$(rootpath //tests/rust_test_scenarios)",
+        "--rust-target-path=$(rootpath //tests/test_scenarios/rust:test_scenarios)",
     ],
     data = [
         ":python_tc_venv",
-        "//tests/rust_test_scenarios",
+        "//tests/test_scenarios/rust:test_scenarios",
     ],
     env = {
         "RUST_BACKTRACE": "1",
     },
-    pytest_ini = "//tests/python_test_cases:pytest.ini",
+    pytest_ini = "//tests/test_cases:pytest.ini",
     deps = all_requirements,
 )
 

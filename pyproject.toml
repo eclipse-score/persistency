@@ -1,0 +1,16 @@
+[tool.pytest]
+addopts = ["-v"]
+pythonpath = [
+    "tests/test_cases",
+    "tests/test_cases/tests",
+]
+testpaths = ["tests/test_cases/tests"]
+markers = [
+    "root_required",  # root permissions are required for this test
+    "do_not_repeat",  # do not repeat this test when using pytest-repeat
+    "only_nightly",  # run this test only in nightly runs
+]
+junit_log_passing_tests = true
+
+[tool.pytest_env]
+RUST_BACKTRACE =  {value = "1", skip_if_set = true}

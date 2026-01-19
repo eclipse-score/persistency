@@ -154,19 +154,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust_test_scenarios"
-version = "0.1.0"
-dependencies = [
- "rust_kvs",
- "serde",
- "serde_json",
- "test_scenarios_rust",
- "tinyjson",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "rustix"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -254,6 +241,19 @@ dependencies = [
  "once_cell",
  "rustix",
  "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "test_scenarios"
+version = "0.1.0"
+dependencies = [
+ "rust_kvs",
+ "serde",
+ "serde_json",
+ "test_scenarios_rust",
+ "tinyjson",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

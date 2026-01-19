@@ -12,9 +12,10 @@
 # *******************************************************************************
 from pathlib import Path
 from typing import Any, Generator
+
 import pytest
-from .common import CommonScenario, ResultCode, temp_dir_common
-from testing_utils import ScenarioResult, LogContainer
+from common import CommonScenario, ResultCode, temp_dir_common
+from testing_utils import LogContainer, ScenarioResult
 
 pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
 

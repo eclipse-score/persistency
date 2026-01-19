@@ -42,7 +42,7 @@ cc_library(
     includes = ["."],
     visibility = [
         "//:__pkg__",
-        "//tests/cpp_test_scenarios:__pkg__",
+        "//tests/test_scenarios/cpp:__pkg__",
     ],
     deps = [
         ":kvsvalue",
