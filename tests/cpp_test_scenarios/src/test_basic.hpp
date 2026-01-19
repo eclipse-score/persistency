@@ -17,8 +17,9 @@
 
 #include <scenario.hpp>
 
-class BasicScenario final : public Scenario {
-   public:
+class BasicScenario final : public Scenario
+{
+  public:
     ~BasicScenario() final = default;
 
     std::string name() const final;

@@ -19,7 +19,6 @@
 
 ScenarioGroup::Ptr cit_scenario_group()
 {
-    return ScenarioGroup::Ptr{
-        new ScenarioGroupImpl{
-            "cit", {}, {default_values_group(), multiple_kvs_group(), snapshots_group(), supported_datatypes_group()}}};
+    return ScenarioGroup::Ptr{new ScenarioGroupImpl{
+        "cit", {}, {default_values_group(), multiple_kvs_group(), snapshots_group(), supported_datatypes_group()}}};
 }

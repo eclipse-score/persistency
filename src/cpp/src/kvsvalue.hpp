@@ -59,24 +59,13 @@ namespace score::mw::per::kvs {
  */
 
 class KvsValue final {
-public:
+   public:
     /* Define the possible types for KvsValue*/
     using Array = std::vector<std::shared_ptr<KvsValue>>;
     using Object = std::unordered_map<std::string, std::shared_ptr<KvsValue>>;
 
     /* Enum to represent the type of the value*/
-    enum class Type {
-        i32,
-        u32,
-        i64,
-        u64,
-        f64,
-        Boolean,
-        String,
-        Null,
-        Array,
-        Object
-    };
+    enum class Type { i32, u32, i64, u64, f64, Boolean, String, Null, Array, Object };
 
     /* Constructors for each type*/
     explicit KvsValue(int32_t number) : value(number), type(Type::i32) {}
@@ -88,7 +77,7 @@ public:
     explicit KvsValue(const char* str) : value(std::string(str)), type(Type::String) {}
     explicit KvsValue(const std::string& str) : value(str), type(Type::String) {}
     explicit KvsValue(std::nullptr_t) : value(nullptr), type(Type::Null) {}
-    explicit KvsValue(const Array& array) ;
+    explicit KvsValue(const Array& array);
     explicit KvsValue(const Object& object);
     explicit KvsValue(const std::vector<KvsValue>& array);
     explicit KvsValue(const std::unordered_map<std::string, KvsValue>& object);
@@ -109,13 +98,17 @@ public:
     Type getType() const { return type; }
 
     /* Access the underlying value (use std::get to retrieve the value)*/
-    const std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>& getValue() const {
+    const std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string,
+                       std::nullptr_t, Array, Object>&
+    getValue() const {
         return value;
     }
 
-private:
+   private:
     /* The underlying value*/
-    std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object> value;
+    std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t,
+                 Array, Object>
+        value;
 
     /* The type of the value*/
     Type type;

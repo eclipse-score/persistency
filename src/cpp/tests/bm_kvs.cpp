@@ -32,6 +32,6 @@ static void BM_get_hash_bytes(benchmark::State& state) {
 }
 
 // Register the function as a benchmark with different input sizes
-BENCHMARK(BM_get_hash_bytes)->Range(16, 16<<10);
+BENCHMARK(BM_get_hash_bytes)->Range(16, 16 << 10);
 
 BENCHMARK_MAIN();

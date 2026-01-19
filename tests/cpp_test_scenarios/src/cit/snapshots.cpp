@@ -20,27 +20,33 @@
 using namespace score::mw::per::kvs;
 using namespace score::json;
 
-namespace {
+namespace
+{
 const std::string kTargetName{"cpp_test_scenarios::snapshots::count"};
 
 template <typename T>
-T get_field(const Object& obj, const std::string& field) {
+T get_field(const Object& obj, const std::string& field)
+{
     auto it{obj.find(field)};
-    if (it == obj.end()) {
+    if (it == obj.end())
+    {
         throw std::runtime_error("Missing field: " + field);
     }
     return it->second.As<T>().value();
 }
 
-Object get_object(const std::string& data) {
+Object get_object(const std::string& data)
+{
     JsonParser parser;
     auto from_buffer_result{parser.FromBuffer(data)};
-    if (!from_buffer_result) {
+    if (!from_buffer_result)
+    {
         throw std::runtime_error{"Failed to parse JSON"};
     }
 
     auto as_object_result{from_buffer_result.value().As<Object>()};
-    if (!as_object_result) {
+    if (!as_object_result)
+    {
         throw std::runtime_error{"Failed to cast JSON to object"};
     }
 
@@ -48,11 +54,15 @@ Object get_object(const std::string& data) {
 }
 }  // namespace
 
-class SnapshotCount : public Scenario {
-   public:
+class SnapshotCount : public Scenario
+{
+  public:
     ~SnapshotCount() final = default;
 
-    std::string name() const final { return "count"; }
+    std::string name() const final
+    {
+        return "count";
+    }
 
     /**
      * Requirement not being met:
@@ -77,30 +87,34 @@ class SnapshotCount : public Scenario {
      * Raised bugs: https://github.com/eclipse-score/persistency/issues/108
      *              https://github.com/eclipse-score/persistency/issues/192
      */
-    void run(const std::string& input) const final {
+    void run(const std::string& input) const final
+    {
         auto obj{get_object(input)};
         auto count{get_field<int32_t>(obj, "count")};
         auto params{KvsParameters::from_json(input)};
 
         // Create snapshots.
-        for (int32_t i{0}; i < count; ++i) {
+        for (int32_t i{0}; i < count; ++i)
+        {
             auto kvs{kvs_instance(params)};
             auto set_result{kvs.set_value("counter", KvsValue{i})};
-            if (!set_result) {
+            if (!set_result)
+            {
                 throw std::runtime_error{"Failed to set value"};
             }
 
             auto count_result{kvs.snapshot_count()};
-            if (!count_result) {
+            if (!count_result)
+            {
                 throw std::runtime_error{"Unable to get snapshot count"};
             }
 
-            TRACING_INFO(kTargetName,
-                         std::pair{std::string{"snapshot_count"}, count_result.value()});
+            TRACING_INFO(kTargetName, std::pair{std::string{"snapshot_count"}, count_result.value()});
 
             // Flush KVS.
             auto flush_result{kvs.flush()};
-            if (!flush_result) {
+            if (!flush_result)
+            {
                 throw std::runtime_error{"Failed to flush"};
             }
         }
@@ -108,22 +122,27 @@ class SnapshotCount : public Scenario {
         {
             auto kvs{kvs_instance(params)};
             auto count_result{kvs.snapshot_count()};
-            if (!count_result) {
+            if (!count_result)
+            {
                 throw std::runtime_error{"Unable to get snapshot count"};
             }
-            TRACING_INFO(kTargetName,
-                         std::pair{std::string{"snapshot_count"}, count_result.value()});
+            TRACING_INFO(kTargetName, std::pair{std::string{"snapshot_count"}, count_result.value()});
         }
     }
 };
 
-class SnapshotMaxCount : public Scenario {
-   public:
+class SnapshotMaxCount : public Scenario
+{
+  public:
     ~SnapshotMaxCount() final = default;
 
-    std::string name() const final { return "max_count"; }
+    std::string name() const final
+    {
+        return "max_count";
+    }
 
-    void run(const std::string& input) const final {
+    void run(const std::string& input) const final
+    {
         auto obj{get_object(input)};
         auto count{get_field<int32_t>(obj, "count")};
         auto params{KvsParameters::from_json(input)};
@@ -133,29 +152,37 @@ class SnapshotMaxCount : public Scenario {
     }
 };
 
-class SnapshotRestore : public Scenario {
-   public:
+class SnapshotRestore : public Scenario
+{
+  public:
     ~SnapshotRestore() final = default;
 
-    std::string name() const final { return "restore"; }
+    std::string name() const final
+    {
+        return "restore";
+    }
 
-    void run(const std::string& input) const final {
+    void run(const std::string& input) const final
+    {
         auto obj{get_object(input)};
         auto count{get_field<int32_t>(obj, "count")};
         auto snapshot_id{get_field<uint64_t>(obj, "snapshot_id")};
         auto params{KvsParameters::from_json(input)};
 
         // Create snapshots.
-        for (int32_t i{0}; i < count; ++i) {
+        for (int32_t i{0}; i < count; ++i)
+        {
             auto kvs{kvs_instance(params)};
             auto set_result{kvs.set_value("counter", KvsValue{i})};
-            if (!set_result) {
+            if (!set_result)
+            {
                 throw std::runtime_error{"Failed to set value"};
             }
 
             // Flush KVS.
             auto flush_result{kvs.flush()};
-            if (!flush_result) {
+            if (!flush_result)
+            {
                 throw std::runtime_error{"Failed to flush"};
             }
         }
@@ -165,12 +192,13 @@ class SnapshotRestore : public Scenario {
 
             auto restore_result{kvs.snapshot_restore(snapshot_id)};
             TRACING_INFO(kTargetName,
-                         std::pair{std::string{"result"},
-                                   restore_result ? "Ok(())" : "Err(InvalidSnapshotId)"});
+                         std::pair{std::string{"result"}, restore_result ? "Ok(())" : "Err(InvalidSnapshotId)"});
 
-            if (restore_result) {
+            if (restore_result)
+            {
                 auto get_result{kvs.get_value("counter")};
-                if (!get_result) {
+                if (!get_result)
+                {
                     throw std::runtime_error{"Failed to read value"};
                 }
 
@@ -181,13 +209,18 @@ class SnapshotRestore : public Scenario {
     }
 };
 
-class SnapshotPaths : public Scenario {
-   public:
+class SnapshotPaths : public Scenario
+{
+  public:
     ~SnapshotPaths() final = default;
 
-    std::string name() const final { return "paths"; }
+    std::string name() const final
+    {
+        return "paths";
+    }
 
-    void run(const std::string& input) const final {
+    void run(const std::string& input) const final
+    {
         auto obj{get_object(input)};
         auto count{get_field<int32_t>(obj, "count")};
         auto snapshot_id{get_field<uint64_t>(obj, "snapshot_id")};
@@ -196,32 +229,38 @@ class SnapshotPaths : public Scenario {
         auto instance_id{params.instance_id};
 
         // Create snapshots.
-        for (int32_t i{0}; i < count; ++i) {
+        for (int32_t i{0}; i < count; ++i)
+        {
             auto kvs{kvs_instance(params)};
             auto set_result{kvs.set_value("counter", KvsValue{i})};
-            if (!set_result) {
+            if (!set_result)
+            {
                 throw std::runtime_error{"Failed to set value"};
             }
 
             // Flush KVS.
             auto flush_result{kvs.flush()};
-            if (!flush_result) {
+            if (!flush_result)
+            {
                 throw std::runtime_error{"Failed to flush"};
             }
         }
 
         {
             auto [kvs_path, hash_path] = kvs_hash_paths(working_dir, instance_id, snapshot_id);
-            TRACING_INFO(kTargetName, std::make_pair(std::string{"kvs_path"}, kvs_path),
+            TRACING_INFO(kTargetName,
+                         std::make_pair(std::string{"kvs_path"}, kvs_path),
                          std::make_pair(std::string{"hash_path"}, hash_path));
         }
     }
 };
 
-ScenarioGroup::Ptr snapshots_group() {
-    return ScenarioGroup::Ptr{new ScenarioGroupImpl{
-        "snapshots",
-        {std::make_shared<SnapshotCount>(), std::make_shared<SnapshotMaxCount>(),
-         std::make_shared<SnapshotRestore>(), std::make_shared<SnapshotPaths>()},
-        {}}};
+ScenarioGroup::Ptr snapshots_group()
+{
+    return ScenarioGroup::Ptr{new ScenarioGroupImpl{"snapshots",
+                                                    {std::make_shared<SnapshotCount>(),
+                                                     std::make_shared<SnapshotMaxCount>(),
+                                                     std::make_shared<SnapshotRestore>(),
+                                                     std::make_shared<SnapshotPaths>()},
+                                                    {}}};
 }

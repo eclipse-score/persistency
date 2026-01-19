@@ -14,7 +14,7 @@
 
 namespace score::mw::per::kvs {
 
-KvsValue::KvsValue(const Array& array){
+KvsValue::KvsValue(const Array& array) {
     Array shared_array;
     shared_array.reserve(array.size());
     for (const auto& item : array) {
@@ -54,8 +54,8 @@ KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) {
 
 /* copy constructor */
 KvsValue::KvsValue(const KvsValue& other) : type(other.type) {
-    switch(other.type){
-        case Type::Array:{
+    switch (other.type) {
+        case Type::Array: {
             const Array& otherArray = std::get<Array>(other.value);
             Array copiedArray;
             copiedArray.reserve(otherArray.size());
@@ -65,7 +65,7 @@ KvsValue::KvsValue(const KvsValue& other) : type(other.type) {
             value = std::move(copiedArray);
             break;
         }
-        case Type::Object:{
+        case Type::Object: {
             const Object& otherObject = std::get<Object>(other.value);
             Object copiedObject;
             for (const auto& [key, value] : otherObject) {
@@ -75,7 +75,7 @@ KvsValue::KvsValue(const KvsValue& other) : type(other.type) {
             break;
         }
         default:
-            value = other.value; // For other types, just copy the value
+            value = other.value;  // For other types, just copy the value
             break;
     }
 }
@@ -83,7 +83,7 @@ KvsValue::KvsValue(const KvsValue& other) : type(other.type) {
 /* copy Assignment Operator */
 KvsValue& KvsValue::operator=(const KvsValue& other) {
     if (this != &other) {
-        KvsValue temp(other); // deep copy
+        KvsValue temp(other);  // deep copy
         std::swap(value, temp.value);
         type = other.type;
     }
