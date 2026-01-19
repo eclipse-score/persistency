@@ -73,16 +73,17 @@ class SnapshotCount : public Scenario
      *      Issue: The test expects the final snapshot_count to be min(count,
      * snapshot_max_count) (e.g., 1 for count=1, snapshot_max_count=1/3/10).
      *      Observed: C++ emits snapshot_count: 0 after the first flush.
-     *      Possible Root Cause: In C++, the snapshot count is not incremented after
-     * the first flush because the snapshot rotation logic and counting are tied to
-     * the hardcoded max (not the parameter).
+     *      Possible Root Cause: In C++, the snapshot count is not incremented
+     * after the first flush because the snapshot rotation logic and counting are
+     * tied to the hardcoded max (not the parameter).
      *
      * TestSnapshotCountFull
-     *      Issue: The test expects a sequence of snapshot_count values: [0, 1] for count=2, [0, 1,
-     * 2, 3] for count=4, etc. Observed: C++ emits [0, 0, 1] or [0, 0, 1, 2, 3], but the first value
-     * is always 0, and the final value is not as expected. Possible Root Cause: The C++
-     * implementation may not be accumulating the count correctly, it stores or updates the count
-     * only after flush when MAX<3.
+     *      Issue: The test expects a sequence of snapshot_count values: [0, 1]
+     * for count=2, [0, 1, 2, 3] for count=4, etc. Observed: C++ emits [0, 0, 1]
+     * or [0, 0, 1, 2, 3], but the first value is always 0, and the final value is
+     * not as expected. Possible Root Cause: The C++ implementation may not be
+     * accumulating the count correctly, it stores or updates the count only after
+     * flush when MAX<3.
      *
      * Raised bugs: https://github.com/eclipse-score/persistency/issues/108
      *              https://github.com/eclipse-score/persistency/issues/192
