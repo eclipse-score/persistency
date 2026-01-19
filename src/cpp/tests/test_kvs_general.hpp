@@ -74,9 +74,11 @@ const std::string kvs_json = R"({
 /* Mock KvsValue for testing purposes (kvsvalue_to_any) */
 ////////////////////////////////////////////////////////////////////////////////
 
-class BrokenKvsValue : public KvsValue {
-   public:
-    BrokenKvsValue() : KvsValue(nullptr) {
+class BrokenKvsValue : public KvsValue
+{
+  public:
+    BrokenKvsValue() : KvsValue(nullptr)
+    {
         /* Intentionally break the type by assigning an invalid value */
         *(Type*)&this->type = static_cast<Type>(999);
     }

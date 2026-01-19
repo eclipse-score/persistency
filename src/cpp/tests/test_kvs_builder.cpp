@@ -12,7 +12,8 @@
  ********************************************************************************/
 #include "test_kvs_general.hpp"
 
-TEST(kvs_kvsbuilder, kvsbuilder_build) {
+TEST(kvs_kvsbuilder, kvsbuilder_build)
+{
     /* This test also checks the kvs open function with the KvsBuilder */
 
     /* Test the KvsBuilder constructor */
@@ -46,28 +47,25 @@ TEST(kvs_kvsbuilder, kvsbuilder_build) {
     builder.need_kvs_flag(false);
     result_build = builder.build();
     EXPECT_TRUE(result_build);
-    EXPECT_EQ(result_build.value().filename_prefix.CStr(),
-              "./kvsbuilder/kvs_" + std::to_string(instance_id.id));
+    EXPECT_EQ(result_build.value().filename_prefix.CStr(), "./kvsbuilder/kvs_" + std::to_string(instance_id.id));
 }
 
-TEST(kvs_kvsbuilder, kvsbuilder_directory_check) {
+TEST(kvs_kvsbuilder, kvsbuilder_directory_check)
+{
     /* Test the KvsBuilder with all configurations for the current working directory */
     KvsBuilder builder(instance_id);
     builder.dir("");
     auto result_build = builder.build();
     EXPECT_TRUE(result_build);
-    EXPECT_EQ(result_build.value().filename_prefix.CStr(),
-              "./kvs_" + std::to_string(instance_id.id));
+    EXPECT_EQ(result_build.value().filename_prefix.CStr(), "./kvs_" + std::to_string(instance_id.id));
 
     builder.dir("./");
     result_build = builder.build();
     EXPECT_TRUE(result_build);
-    EXPECT_EQ(result_build.value().filename_prefix.CStr(),
-              "./kvs_" + std::to_string(instance_id.id));
+    EXPECT_EQ(result_build.value().filename_prefix.CStr(), "./kvs_" + std::to_string(instance_id.id));
 
     builder.dir(".");
     result_build = builder.build();
     EXPECT_TRUE(result_build);
-    EXPECT_EQ(result_build.value().filename_prefix.CStr(),
-              "./kvs_" + std::to_string(instance_id.id));
+    EXPECT_EQ(result_build.value().filename_prefix.CStr(), "./kvs_" + std::to_string(instance_id.id));
 }

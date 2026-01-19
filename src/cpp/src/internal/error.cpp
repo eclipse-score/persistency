@@ -12,12 +12,15 @@
  ********************************************************************************/
 #include "error.hpp"
 
-namespace score::mw::per::kvs {
+namespace score::mw::per::kvs
+{
 
 /*********************** Error Implementation *********************/
-std::string_view MyErrorDomain::MessageFor(score::result::ErrorCode const& code) const noexcept {
+std::string_view MyErrorDomain::MessageFor(const score::result::ErrorCode& code) const noexcept
+{
     std::string_view msg;
-    switch (static_cast<ErrorCode>(code)) {
+    switch (static_cast<ErrorCode>(code))
+    {
         case ErrorCode::UnmappedError:
             msg = "Error that was not yet mapped";
             break;
@@ -89,7 +92,8 @@ std::string_view MyErrorDomain::MessageFor(score::result::ErrorCode const& code)
     return msg;
 }
 
-score::result::Error MakeError(ErrorCode code, std::string_view user_message) noexcept {
+score::result::Error MakeError(ErrorCode code, std::string_view user_message) noexcept
+{
     return {static_cast<score::result::ErrorCode>(code), my_error_domain, user_message};
 }
 

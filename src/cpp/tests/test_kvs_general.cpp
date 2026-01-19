@@ -13,10 +13,12 @@
 #include "test_kvs_general.hpp"
 
 /* adler32 control instance */
-uint32_t adler32(const std::string& data) {
+uint32_t adler32(const std::string& data)
+{
     const uint32_t mod = 65521;
     uint32_t a = 1, b = 0;
-    for (unsigned char c : data) {
+    for (unsigned char c : data)
+    {
         a = (a + c) % mod;
         b = (b + a) % mod;
     }
@@ -24,7 +26,8 @@ uint32_t adler32(const std::string& data) {
 }
 
 /* Create Test environment with default data, which is needed in most testcases */
-void prepare_environment() {
+void prepare_environment()
+{
     /* Prepare the test environment */
     mkdir(data_dir.c_str(), 0777);
 
@@ -54,13 +57,15 @@ void prepare_environment() {
     kvs_hash_file.close();
 }
 
-void cleanup_environment() {
+void cleanup_environment()
+{
     /* Cleanup the test environment */
-    if (std::filesystem::exists(data_dir)) {
-        for (auto& p : std::filesystem::recursive_directory_iterator(data_dir)) {
+    if (std::filesystem::exists(data_dir))
+    {
+        for (auto& p : std::filesystem::recursive_directory_iterator(data_dir))
+        {
             std::filesystem::permissions(p,
-                                         std::filesystem::perms::owner_all |
-                                             std::filesystem::perms::group_all |
+                                         std::filesystem::perms::owner_all | std::filesystem::perms::group_all |
                                              std::filesystem::perms::others_all,
                                          std::filesystem::perm_options::replace);
         }

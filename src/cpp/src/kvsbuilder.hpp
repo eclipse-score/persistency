@@ -13,10 +13,11 @@
 #ifndef SCORE_LIB_KVS_KVSBUILDER_HPP
 #define SCORE_LIB_KVS_KVSBUILDER_HPP
 
-#include <string>
 #include "kvs.hpp"
+#include <string>
 
-namespace score::mw::per::kvs {
+namespace score::mw::per::kvs
+{
 
 /**
  * @class KvsBuilder
@@ -56,8 +57,9 @@ namespace score::mw::per::kvs {
  *  }
  * \endcode
  */
-class KvsBuilder final {
-   public:
+class KvsBuilder final
+{
+  public:
     /**
      * @brief Constructs a KvsBuilder for the given KVS instance.
      * @param instance_id Unique identifier for the KVS instance.
@@ -96,7 +98,7 @@ class KvsBuilder final {
      */
     score::Result<Kvs> build();
 
-   private:
+  private:
     InstanceId instance_id;  ///< ID of the KVS instance
     bool need_defaults;      ///< Whether default values are required
     bool need_kvs;           ///< Whether an existing KVS is required
