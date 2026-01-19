@@ -12,8 +12,10 @@
  ********************************************************************************/
 #include "test_kvs_general.hpp"
 
-TEST(kvs_MessageFor, MessageFor) {
-    struct {
+TEST(kvs_MessageFor, MessageFor)
+{
+    struct
+    {
         ErrorCode code;
         std::string_view expected_message;
     } test_cases[] = {
@@ -39,7 +41,8 @@ TEST(kvs_MessageFor, MessageFor) {
         {ErrorCode::MutexLockFailed, "Mutex failed"},
         {ErrorCode::InvalidValueType, "Invalid value type"},
     };
-    for (const auto& test : test_cases) {
+    for (const auto& test : test_cases)
+    {
         SCOPED_TRACE(static_cast<int>(test.code));
         score::result::ErrorCode code = static_cast<score::result::ErrorCode>(test.code);
         EXPECT_EQ(my_error_domain.MessageFor(code), test.expected_message);

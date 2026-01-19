@@ -13,13 +13,6 @@
 #ifndef SCORE_LIB_KVS_KVS_HPP
 #define SCORE_LIB_KVS_KVS_HPP
 
-#include <atomic>
-#include <mutex>
-#include <optional>
-#include <stdexcept>
-#include <string>
-#include <unordered_map>
-#include <vector>
 #include "internal/error.hpp"
 #include "kvsvalue.hpp"
 #include "score/filesystem/filesystem.h"
@@ -27,43 +20,62 @@
 #include "score/json/json_writer.h"
 #include "score/mw/log/logger.h"
 #include "score/result/result.h"
+#include <atomic>
+#include <mutex>
+#include <optional>
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 #define KVS_MAX_SNAPSHOTS 3
 
-namespace score::mw::per::kvs {
+namespace score::mw::per::kvs
+{
 
-struct InstanceId {
+struct InstanceId
+{
     size_t id;
 
     /* Constructor to initialize 'id' */
     /* Not explicit to allow implicit construction e.g. function(0) instead function(InstanceId(0))
      */
-    InstanceId(size_t id) { this->id = id; }
+    InstanceId(size_t id)
+    {
+        this->id = id;
+    }
 };
 
-struct SnapshotId {
+struct SnapshotId
+{
     size_t id;
 
     /* Constructor to initialize 'id'*/
     /* Not explicit to allow implicit construction e.g. function(0) instead function(SnapshotId(0))
      */
-    SnapshotId(size_t id) { this->id = id; }
+    SnapshotId(size_t id)
+    {
+        this->id = id;
+    }
 };
 
 /* Need-Defaults flag*/
-enum class OpenNeedDefaults {
+enum class OpenNeedDefaults
+{
     Optional = 0, /* Optional: Use an empty defaults Storage if not available*/
     Required = 1  /* Required: Defaults must be available*/
 };
 
 /* Need-KVS flag*/
-enum class OpenNeedKvs {
+enum class OpenNeedKvs
+{
     Optional = 0, /* Optional: Use an empty KVS if no KVS is available*/
     Required = 1  /* Required: KVS must be already exist*/
 };
 
 /* Need-File flag */
-enum class OpenJsonNeedFile {
+enum class OpenJsonNeedFile
+{
     Optional = 0, /* Optional: If the file doesn't exist, start with empty data */
     Required = 1  /* Required: The file must already exist */
 };
@@ -120,8 +132,9 @@ enum class OpenJsonNeedFile {
  *
  */
 
-class Kvs final {
-   public:
+class Kvs final
+{
+  public:
     // Deleted copy constructor and assignment operator to prevent copying
     Kvs(const Kvs&) = delete;
     Kvs& operator=(const Kvs&) = delete;
@@ -156,8 +169,10 @@ class Kvs final {
      * KvsBuilder class.
      *
      */
-    static score::Result<Kvs> open(const InstanceId& instance_id, OpenNeedDefaults need_defaults,
-                                   OpenNeedKvs need_kvs, const std::string&& dir);
+    static score::Result<Kvs> open(const InstanceId& instance_id,
+                                   OpenNeedDefaults need_defaults,
+                                   OpenNeedKvs need_kvs,
+                                   const std::string&& dir);
 
     /**
      * @brief Resets a key-value-storage to its initial state
@@ -337,7 +352,7 @@ class Kvs final {
      */
     score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const;
 
-   private:
+  private:
     /* Private constructor to prevent direct instantiation */
     Kvs();
 
@@ -363,10 +378,9 @@ class Kvs final {
 
     /* Private Methods */
     score::ResultBlank snapshot_rotate();
-    score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(
-        const std::string& data);
-    score::Result<std::unordered_map<std::string, KvsValue>> open_json(
-        const score::filesystem::Path& prefix, OpenJsonNeedFile need_file);
+    score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
+    score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix,
+                                                                       OpenJsonNeedFile need_file);
     score::ResultBlank write_json_data(const std::string& buf);
 };
 

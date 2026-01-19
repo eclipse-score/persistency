@@ -13,17 +13,18 @@
 #ifndef SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP
 #define SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP
 
-#include <sstream>
-#include <string>
 #include "error.hpp"
 #include "kvsvalue.hpp"
 #include "score/json/json_parser.h" /* For JSON Any Type */
+#include <sstream>
+#include <string>
 
 /*
  * This header defines helper functions used internally by the Key-Value Store (KVS) implementation.
  * It exists to allow unit tests to access these internal functions.
  */
-namespace score::mw::per::kvs {
+namespace score::mw::per::kvs
+{
 
 uint32_t parse_hash_adler32(std::istream& in);
 uint32_t calculate_hash_adler32(const std::string& data);
