@@ -5,6 +5,10 @@ pythonpath = [
     "tests/test_cases/tests",
 ]
 testpaths = ["tests/test_cases/tests"]
+log_cli = "true"
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s %(levelname)s %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 markers = [
     "root_required",  # root permissions are required for this test
     "do_not_repeat",  # do not repeat this test when using pytest-repeat

@@ -11,12 +11,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 import json
+import logging
 import os
 from pathlib import Path
 
 import pytest
 from testing_utils import BazelTools
 
+logger = logging.getLogger(__name__)
 FAILED_CONFIGS = []
 
 
@@ -81,13 +83,13 @@ def pytest_sessionstart(session):
             build_timeout = session.config.getoption("--build-scenarios-timeout")
 
             # Build Rust test scenarios.
-            print("Building Rust test scenarios executable...")
+            logger.info("Building Rust test scenarios executable...")
             cargo_tools = BazelTools(option_prefix="rust", build_timeout=build_timeout)
             rust_target_name = session.config.getoption("--rust-target-name")
             cargo_tools.build(rust_target_name)
 
             # Build C++ test scenarios.
-            print("Building C++ test scenarios executable...")
+            logger.info("Building C++ test scenarios executable...")
             bazel_tools = BazelTools(option_prefix="cpp", build_timeout=build_timeout)
             cpp_target_name = session.config.getoption("--cpp-target-name")
             bazel_tools.build(cpp_target_name, "--config=per-x86_64-linux")
