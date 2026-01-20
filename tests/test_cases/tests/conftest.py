@@ -161,22 +161,16 @@ def pytest_terminal_summary(terminalreporter):
         return
     # Print failed scenarios info
     terminalreporter.write_sep("=", "Failed tests reproduction info")
-    terminalreporter.write_line(
-        "Run failed scenarios from the repo root working directory\n"
-    )
+    terminalreporter.write_line("Run failed scenarios from the repo root working directory\n")
 
     for entry in FAILED_CONFIGS:
-        terminalreporter.write_line(
-            f"{entry['nodeid']} | Run command:\n{entry['command']}\n"
-        )
+        terminalreporter.write_line(f"{entry['nodeid']} | Run command:\n{entry['command']}\n")
 
 
 def pytest_collection_modifyitems(items: list[pytest.Function]):
     for item in items:
         # Automatically mark tests parametrized with 'version' as 'cpp' or 'rust'
-        if hasattr(item, "callspec") and "version" in getattr(
-            item.callspec, "params", {}
-        ):
+        if hasattr(item, "callspec") and "version" in getattr(item.callspec, "params", {}):
             version = item.callspec.params["version"]
             if version == "cpp":
                 item.add_marker(pytest.mark.cpp)

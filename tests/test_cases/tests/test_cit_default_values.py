@@ -40,9 +40,7 @@ def create_defaults_json(values: dict[str, TaggedValue]) -> str:
     return json.dumps(json_value)
 
 
-def create_defaults_file(
-    dir_path: Path, instance_id: int, values: dict[str, TaggedValue]
-) -> Path:
+def create_defaults_file(dir_path: Path, instance_id: int, values: dict[str, TaggedValue]) -> Path:
     """
     Create file containing default values, along with a matching hash file.
     Returns path to default values file.
@@ -84,9 +82,7 @@ class DefaultValuesScenario(CommonScenario):
         """
         Create temporary directory and remove it after test.
         """
-        yield from temp_dir_common(
-            tmp_path_factory, self.__class__.__name__, version, defaults
-        )
+        yield from temp_dir_common(tmp_path_factory, self.__class__.__name__, version, defaults)
 
 
 @pytest.mark.PartiallyVerifies(
@@ -132,9 +128,7 @@ class TestDefaultValues(DefaultValuesScenario):
         if defaults == "without":
             return None
 
-        return create_defaults_file(
-            temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)}
-        )
+        return create_defaults_file(temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)})
 
     def test_valid(
         self,
@@ -144,9 +138,7 @@ class TestDefaultValues(DefaultValuesScenario):
         version: str,
     ) -> None:
         if version == "cpp":
-            pytest.xfail(
-                reason="https://github.com/eclipse-score/persistency/issues/182"
-            )
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
 
         assert results.return_code == ResultCode.SUCCESS
 
@@ -216,9 +208,7 @@ class TestRemoveKey(DefaultValuesScenario):
         if defaults == "without":
             return None
 
-        return create_defaults_file(
-            temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)}
-        )
+        return create_defaults_file(temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)})
 
     def test_valid(
         self,
@@ -228,9 +218,7 @@ class TestRemoveKey(DefaultValuesScenario):
         version: str,
     ) -> None:
         if version == "cpp":
-            pytest.xfail(
-                reason="https://github.com/eclipse-score/persistency/issues/182"
-            )
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
         assert results.return_code == ResultCode.SUCCESS
 
         logs = logs_info_level.get_logs("key", value=self.KEY)
@@ -273,9 +261,7 @@ class TestRemoveKey(DefaultValuesScenario):
     ]
 )
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Verifies that KVS fails to open when the defaults file contains invalid JSON."
-)
+@pytest.mark.Description("Verifies that KVS fails to open when the defaults file contains invalid JSON.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
@@ -344,9 +330,7 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
     ]
 )
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Verifies that KVS fails to open when the defaults file is missing."
-)
+@pytest.mark.Description("Verifies that KVS fails to open when the defaults file is missing.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["required"], scope="class")
@@ -383,9 +367,7 @@ class TestMissingDefaultsFile(DefaultValuesScenario):
     ]
 )
 @pytest.mark.FullyVerifies(["comp_req__persistency__value_reset_v2"])
-@pytest.mark.Description(
-    "Checks that resetting KVS restores all keys to their default values."
-)
+@pytest.mark.Description("Checks that resetting KVS restores all keys to their default values.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
@@ -424,9 +406,7 @@ class TestResetAllKeys(DefaultValuesScenario):
         version: str,
     ):
         if version == "cpp":
-            pytest.xfail(
-                reason="https://github.com/eclipse-score/persistency/issues/182"
-            )
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
         assert defaults_file is not None
         assert results.return_code == ResultCode.SUCCESS
 
@@ -453,9 +433,7 @@ class TestResetAllKeys(DefaultValuesScenario):
     ]
 )
 @pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Checks that resetting single key restores it to its default value."
-)
+@pytest.mark.Description("Checks that resetting single key restores it to its default value.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
@@ -495,9 +473,7 @@ class TestResetSingleKey(DefaultValuesScenario):
         version: str,
     ):
         if version == "cpp":
-            pytest.xfail(
-                reason="https://github.com/eclipse-score/persistency/issues/182"
-            )
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
         assert defaults_file is not None
         assert results.return_code == ResultCode.SUCCESS
 
@@ -538,9 +514,7 @@ class TestResetSingleKey(DefaultValuesScenario):
     ]
 )
 @pytest.mark.FullyVerifies(["comp_req__persistency__default_val_chksum_v2"])
-@pytest.mark.Description(
-    "Ensures that a checksum file is created when opening KVS with defaults."
-)
+@pytest.mark.Description("Ensures that a checksum file is created when opening KVS with defaults.")
 @pytest.mark.TestType("requirements-based")
 @pytest.mark.DerivationTechnique("requirements-based")
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
@@ -568,9 +542,7 @@ class TestChecksumOnProvidedDefaults(DefaultValuesScenario):
         if defaults == "without":
             return None
 
-        return create_defaults_file(
-            temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)}
-        )
+        return create_defaults_file(temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)})
 
     def test_valid(
         self,
