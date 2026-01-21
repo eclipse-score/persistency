@@ -16,22 +16,23 @@ from typing import Any
 
 import pytest
 from common import CommonScenario, ResultCode
+from test_properties import add_test_properties
 from testing_utils import LogContainer, ScenarioResult
 
 pytestmark = pytest.mark.parametrize("version", ["cpp", "rust"], scope="class")
 
 
-@pytest.mark.PartiallyVerifies(
-    [
+@add_test_properties(
+    partially_verifies=[
         "comp_req__persistency__key_encoding_v2",
         "comp_req__persistency__value_data_types_v2",
-    ]
+    ],
+    test_type="requirements-based",
+    derivation_technique="interface-test",
 )
-@pytest.mark.FullyVerifies([])
-@pytest.mark.Description("Verifies that KVS supports UTF-8 string keys for storing and retrieving values.")
-@pytest.mark.TestType("requirements-based")
-@pytest.mark.DerivationTechnique("interface-test")
 class TestSupportedDatatypesKeys(CommonScenario):
+    """Verifies that KVS supports UTF-8 string keys for storing and retrieving values."""
+
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.supported_datatypes.keys"
@@ -51,17 +52,17 @@ class TestSupportedDatatypesKeys(CommonScenario):
         assert len(act_keys.symmetric_difference(exp_keys)) == 0
 
 
-@pytest.mark.PartiallyVerifies(
-    [
+@add_test_properties(
+    partially_verifies=[
         "comp_req__persistency__key_encoding_v2",
         "comp_req__persistency__value_data_types_v2",
-    ]
+    ],
+    test_type="requirements-based",
+    derivation_technique="interface-test",
 )
-@pytest.mark.FullyVerifies([])
-@pytest.mark.Description("Verifies that KVS supports UTF-8 string keys for storing and retrieving values.")
-@pytest.mark.TestType("requirements-based")
-@pytest.mark.DerivationTechnique("interface-test")
 class TestSupportedDatatypesValues(CommonScenario):
+    """Verifies that KVS supports UTF-8 string keys for storing and retrieving values."""
+
     @abstractmethod
     def exp_key(self) -> str:
         pass

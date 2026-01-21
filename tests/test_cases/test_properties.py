@@ -10,20 +10,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-[pytest]
-addopts = -v
-testpaths = tests
-pythonpath = 
-    .
-    tests
-markers =
-        cpp
-        rust
-        test_properties(dict): Add custom properties to test XML output
+try:
+    from attribute_plugin import add_test_properties  # type: ignore[import-untyped]
+except ImportError:
+    # Define no-op decorator if attribute_plugin is not available (outside bazel)
+    # Keeps IDE debugging functionality
+    def add_test_properties(*args, **kwargs):
+        def decorator(func):
+            return func  # No-op decorator
 
-; Additional environment variables
-env = D:RUST_BACKTRACE = 1
-junit_family = xunit1
-filterwarnings = 
-    ignore:record_property is incompatible with junit_family:pytest.PytestWarning
-    ignore:record_xml_attribute is an experimental feature:pytest.PytestExperimentalApiWarning
+        return decorator

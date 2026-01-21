@@ -16,23 +16,22 @@ from typing import Any
 import pytest
 from common import CommonScenario, ResultCode
 from testing_utils import LogContainer, ScenarioResult
+from test_properties import add_test_properties
 
 pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
 
 
-@pytest.mark.PartiallyVerifies(
-    [
+@add_test_properties(
+    partially_verifies=[
         "comp_req__persistency__multi_instance_v2",
         "comp_req__persistency__concurrency_v2",
-    ]
+    ],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
 )
-@pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Verifies that multiple KVS instances with different IDs store and retrieve independent values without interference."
-)
-@pytest.mark.TestType("requirements-based")
-@pytest.mark.DerivationTechnique("requirements-based")
 class TestMultipleInstanceIds(CommonScenario):
+    """Verifies that multiple KVS instances with different IDs store and retrieve independent values without interference."""
+
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.multiple_kvs.multiple_instance_ids"
@@ -59,19 +58,17 @@ class TestMultipleInstanceIds(CommonScenario):
         assert round(log2.value, 1) == 222.2
 
 
-@pytest.mark.PartiallyVerifies(
-    [
+@add_test_properties(
+    partially_verifies=[
         "comp_req__persistency__multi_instance_v2",
         "comp_req__persistency__concurrency_v2",
-    ]
+    ],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
 )
-@pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Checks that multiple KVS instances with the same ID and key maintain consistent values across instances."
-)
-@pytest.mark.TestType("requirements-based")
-@pytest.mark.DerivationTechnique("requirements-based")
 class TestSameInstanceIdSameValue(CommonScenario):
+    """Checks that multiple KVS instances with the same ID and key maintain consistent values across instances."""
+
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.multiple_kvs.same_instance_id_same_value"
@@ -97,19 +94,17 @@ class TestSameInstanceIdSameValue(CommonScenario):
         assert log1.value == log2.value
 
 
-@pytest.mark.PartiallyVerifies(
-    [
+@add_test_properties(
+    partially_verifies=[
         "comp_req__persistency__multi_instance_v2",
         "comp_req__persistency__concurrency_v2",
-    ]
+    ],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
 )
-@pytest.mark.FullyVerifies([])
-@pytest.mark.Description(
-    "Verifies that changes in one KVS instance with a shared ID and key are reflected in another instance, demonstrating interference."
-)
-@pytest.mark.TestType("requirements-based")
-@pytest.mark.DerivationTechnique("requirements-based")
 class TestSameInstanceIdDifferentValue(CommonScenario):
+    """Verifies that changes in one KVS instance with a shared ID and key are reflected in another instance, demonstrating interference."""
+
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.multiple_kvs.same_instance_id_diff_value"
