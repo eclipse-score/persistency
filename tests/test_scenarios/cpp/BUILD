@@ -27,6 +27,7 @@ cc_binary(
     visibility = ["//visibility:public"],
     deps = [
         "//src/cpp/src:kvs_cpp",
+        "@score_logging//score/mw/log",
         "@score_test_scenarios//test_scenarios_cpp",
     ],
 )

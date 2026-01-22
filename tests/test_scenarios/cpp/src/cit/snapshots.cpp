@@ -143,7 +143,7 @@ class SnapshotMaxCount : public Scenario
     void run(const std::string& input) const final
     {
         auto obj{get_object(input)};
-        auto count{get_field<int32_t>(obj, "count")};
+        [[maybe_unused]] auto count{get_field<int32_t>(obj, "count")};
         auto params{KvsParameters::from_json(input)};
 
         auto kvs{kvs_instance(params)};

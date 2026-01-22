@@ -49,7 +49,7 @@ cc_library(
         "//src/cpp/src/internal:error",
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/json",
-        "@score_baselibs//score/mw/log",
+        "@score_baselibs//score/mw/log:frontend",
         "@score_baselibs//score/result",
     ],
 )
