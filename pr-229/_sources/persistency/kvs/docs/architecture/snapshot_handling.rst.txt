@@ -71,7 +71,7 @@ New snapshot handling  proposal
 - If the application need to know; we can introduce new public API to query the last shutdown status.
 - Storing several snapshots as complete copy is consuming disk space, without any improvement of robustness.
 - Snapshots shall not be used to achieve transactional safe write operations.
-- Snapshots shall be used to create point in time frozen view on the data
+- Snapshots shall be used to create point in time frozen view on the values.
 - Snapshots shall be created, restored and deleted explicitly by the application.
 - Example use cases:
 
