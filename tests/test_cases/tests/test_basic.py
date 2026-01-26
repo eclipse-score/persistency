@@ -37,3 +37,6 @@ class TestBasic(CommonScenario):
     def test_trace_ok(self, logs_target: LogContainer):
         lc = logs_target.get_logs("example_key", value="example_value")
         assert len(lc) == 1
+
+    def test_trace_content(self):
+        assert True
