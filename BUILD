@@ -84,6 +84,10 @@ cli_helper(
     visibility = ["//visibility:public"],
 )
 
+exports_files(
+    ["pyproject.toml"],
+)
+
 # Add target for formatting checks
 use_format_targets()
 

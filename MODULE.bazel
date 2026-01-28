@@ -87,21 +87,29 @@ bazel_dep(name = "platforms", version = "1.0.0")
 ## S-CORE bazel registry
 bazel_dep(name = "score_baselibs", version = "0.1.2")
 bazel_dep(name = "score_bazel_platforms", version = "0.0.2")
-bazel_dep(name = "score_docs_as_code", version = "2.2.0")
+bazel_dep(name = "score_docs_as_code", version = "2.3.3")
+git_override(
+    module_name = "score_docs_as_code",
+    commit = "f784d4370240cc0eafce779e5c317f6bf8988fb2",
+    remote = "https://github.com/eclipse-score/docs-as-code.git",
+)
 
 bazel_dep(name = "score_platform", version = "0.5.2", dev_dependency = True)
-
-bazel_dep(name = "score_process", version = "1.3.2")
-bazel_dep(name = "score_python_basics", version = "0.3.4")
-bazel_dep(name = "score_tooling", version = "1.0.3")
-
-# ToDo: remove this once 1.0.4 is released,
-# since it will contain updated cr_checker
 git_override(
-    module_name = "score_tooling",
-    commit = "654664dae7df2700fd5840c5ed6c07ac6c61705d",  #until 1.0.4 is released
-    remote = "https://github.com/eclipse-score/tooling.git",
+    module_name = "score_platform",
+    commit = "10a944aceb5d2790e67a965fc4c2d063c95b3347",
+    remote = "https://github.com/eclipse-score/score.git",
 )
+
+bazel_dep(name = "score_process", version = "1.4.2")
+git_override(
+    module_name = "score_process",
+    commit = "da05640b35e35ad050bd4fcec2b66ad35e963841",
+    remote = "https://github.com/eclipse-score/process_description.git",
+)
+
+bazel_dep(name = "score_python_basics", version = "0.3.4")
+bazel_dep(name = "score_tooling", version = "1.1.0")
 
 # ToDo: implicit dependencies for score_tooling, but needed directly here??
 bazel_dep(name = "aspect_rules_lint", version = "1.10.2")
