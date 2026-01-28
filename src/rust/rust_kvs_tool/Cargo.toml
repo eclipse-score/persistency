@@ -13,6 +13,13 @@ path = "src/kvs_tool.rs"
 rust_kvs.workspace = true
 tinyjson.workspace = true
 pico-args.workspace = true
+score_log.workspace = true
+stdout_logger = { git = "https://github.com/eclipse-score/baselibs_rust.git", tag = "v0.0.3", optional = true }
+
+
+[features]
+default = ["stdout_logger"]
+score_log_bridge = []
 
 
 [lints]
