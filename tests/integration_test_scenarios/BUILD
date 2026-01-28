@@ -100,6 +100,11 @@ qnx_ifs(
         ":is_qnx_aarch64": ["install"],  # relative to the .build file’s dir
         "//conditions:default": [],
     }),
+    target_compatible_with = select({
+        ":is_qnx_aarch64": [],
+        ":is_qnx_x86_64": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 sh_binary(
@@ -118,4 +123,9 @@ sh_binary(
         "@toolchains_qnx_sdp//:host_all",
         "@toolchains_qnx_sdp//:host_dir",
     ],
+    target_compatible_with = select({
+        ":is_qnx_aarch64": [],
+        ":is_qnx_x86_64": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
