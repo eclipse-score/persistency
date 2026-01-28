@@ -1,1 +1,1877 @@
-[]
+[
+  {
+    "need": "comp_req__persistency__value_default_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestDefaultValues__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[without-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[without-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 352,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 466,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 466,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestDefaultValues__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestDefaultValues__test_valid[without-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestRemoveKey__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestRemoveKey__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestRemoveKey__test_valid[without-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 352,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 466,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 466,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__value_default_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__default_value_cfg_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestDefaultValues__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[without-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[without-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 352,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 466,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 466,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestDefaultValues__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestDefaultValues__test_valid[without-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestRemoveKey__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestRemoveKey__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestRemoveKey__test_valid[without-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 352,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 466,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 466,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__default_value_cfg_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__default_value_types_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestDefaultValues__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[without-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[without-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 352,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestDefaultValues__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestDefaultValues__test_valid[without-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestRemoveKey__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestRemoveKey__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestRemoveKey__test_valid[without-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 210,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 310,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 352,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__default_value_types_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__default_value_query_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestDefaultValues__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_query_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_query_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[without-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_query_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_query_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestDefaultValues__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_query_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestDefaultValues__test_valid[without-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 132,
+          "need": "comp_req__persistency__default_value_query_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__value_reset_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestResetAllKeys__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__value_reset_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__value_reset_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__value_reset_v2",
+          "verify_type": "fully",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 399,
+          "need": "comp_req__persistency__value_reset_v2",
+          "verify_type": "fully",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/182"
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__default_val_chksum_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__default_val_chksum_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__default_val_chksum_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__default_val_chksum_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
+          "file": "tests/test_cit_default_values.py",
+          "line": 546,
+          "need": "comp_req__persistency__default_val_chksum_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__multi_instance_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestMultipleInstanceIds__test_ok[rust]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 46,
+          "need": "comp_req__persistency__multi_instance_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSameInstanceIdSameValue__test_ok[rust]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 80,
+          "need": "comp_req__persistency__multi_instance_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 116,
+          "need": "comp_req__persistency__multi_instance_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMultipleInstanceIds__test_ok[cpp]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 46,
+          "need": "comp_req__persistency__multi_instance_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSameInstanceIdSameValue__test_ok[cpp]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 80,
+          "need": "comp_req__persistency__multi_instance_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSameInstanceIdDifferentValue__test_ok[cpp]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 116,
+          "need": "comp_req__persistency__multi_instance_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__concurrency_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestMultipleInstanceIds__test_ok[rust]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 46,
+          "need": "comp_req__persistency__concurrency_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSameInstanceIdSameValue__test_ok[rust]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 80,
+          "need": "comp_req__persistency__concurrency_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 116,
+          "need": "comp_req__persistency__concurrency_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestMultipleInstanceIds__test_ok[cpp]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 46,
+          "need": "comp_req__persistency__concurrency_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSameInstanceIdSameValue__test_ok[cpp]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 80,
+          "need": "comp_req__persistency__concurrency_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSameInstanceIdDifferentValue__test_ok[cpp]",
+          "file": "tests/test_cit_multiple_kvs.py",
+          "line": 116,
+          "need": "comp_req__persistency__concurrency_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__persist_data_com_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestExplicitFlush__test_data_stored[rust]",
+          "file": "tests/test_cit_persistency.py",
+          "line": 47,
+          "need": "comp_req__persistency__persist_data_com_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__snapshot_creation_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[0-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[1-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[3-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[10-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[0-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[1-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[3-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[10-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestoreCurrent__test_error[rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 216,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 259,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotPathsExist__test_ok[rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 291,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotPathsNonexistent__test_error[rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 327,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[0-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[1-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[3-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[10-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[0-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[1-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[3-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[10-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[3-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[10-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestoreCurrent__test_error[cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 216,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestoreNonexistent__test_error[cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 259,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotPathsExist__test_ok[cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 291,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotPathsNonexistent__test_error[cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 327,
+          "need": "comp_req__persistency__snapshot_creation_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__snapshot_max_num_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestSnapshotMaxCount__test_ok[0-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__persistency__snapshot_max_num_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[1-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__persistency__snapshot_max_num_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[3-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__persistency__snapshot_max_num_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[10-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__persistency__snapshot_max_num_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[0-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__persistency__snapshot_max_num_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[1-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__persistency__snapshot_max_num_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[3-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__persistency__snapshot_max_num_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[10-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__persistency__snapshot_max_num_v2",
+          "verify_type": "partially",
+          "result": "skipped",
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__snapshot_rotate_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_rotate_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_rotate_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[3-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_rotate_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[10-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_rotate_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__snapshot_restore_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_restore_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_restore_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 259,
+          "need": "comp_req__persistency__snapshot_restore_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[3-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_restore_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[10-cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__persistency__snapshot_restore_v2",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSnapshotRestoreNonexistent__test_error[cpp]",
+          "file": "tests/test_cit_snapshots.py",
+          "line": 259,
+          "need": "comp_req__persistency__snapshot_restore_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__key_encoding_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestSupportedDatatypesKeys__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 44,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I32__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U32__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I64__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U64__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_F64__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Bool__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_String__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Array__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Object__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesKeys__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 44,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I32__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U32__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I64__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U64__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_F64__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Bool__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_String__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Array__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Object__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__key_encoding_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__persistency__value_data_types_v2",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
+        {
+          "name": "TestSupportedDatatypesKeys__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 44,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I32__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U32__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I64__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U64__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_F64__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Bool__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_String__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Array__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Object__test_ok[rust]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesKeys__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 44,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I32__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U32__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I64__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U64__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_F64__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Bool__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_String__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Array__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Object__test_ok[cpp]",
+          "file": "tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__persistency__value_data_types_v2",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": ""
+        }
+      ]
+    }
+  }
+]
