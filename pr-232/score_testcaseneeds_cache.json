@@ -1,7 +1,7 @@
 [
   {
     "name": "TestDefaultValues__test_valid[optional-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "132",
     "result": "passed",
     "TestType": "requirements-based",
@@ -12,7 +12,7 @@
   },
   {
     "name": "TestDefaultValues__test_valid[required-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "132",
     "result": "passed",
     "TestType": "requirements-based",
@@ -23,7 +23,7 @@
   },
   {
     "name": "TestDefaultValues__test_valid[without-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "132",
     "result": "passed",
     "TestType": "requirements-based",
@@ -34,7 +34,7 @@
   },
   {
     "name": "TestRemoveKey__test_valid[optional-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "210",
     "result": "passed",
     "TestType": "requirements-based",
@@ -45,7 +45,7 @@
   },
   {
     "name": "TestRemoveKey__test_valid[required-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "210",
     "result": "passed",
     "TestType": "requirements-based",
@@ -56,7 +56,7 @@
   },
   {
     "name": "TestRemoveKey__test_valid[without-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "210",
     "result": "passed",
     "TestType": "requirements-based",
@@ -67,7 +67,7 @@
   },
   {
     "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "310",
     "result": "passed",
     "TestType": "requirements-based",
@@ -78,7 +78,7 @@
   },
   {
     "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "310",
     "result": "passed",
     "TestType": "requirements-based",
@@ -89,7 +89,7 @@
   },
   {
     "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "352",
     "result": "passed",
     "TestType": "requirements-based",
@@ -100,7 +100,7 @@
   },
   {
     "name": "TestResetAllKeys__test_valid[optional-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "399",
     "result": "passed",
     "TestType": "requirements-based",
@@ -111,7 +111,7 @@
   },
   {
     "name": "TestResetAllKeys__test_valid[required-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "399",
     "result": "passed",
     "TestType": "requirements-based",
@@ -122,7 +122,7 @@
   },
   {
     "name": "TestResetSingleKey__test_valid[optional-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "466",
     "result": "passed",
     "TestType": "requirements-based",
@@ -133,7 +133,7 @@
   },
   {
     "name": "TestResetSingleKey__test_valid[required-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "466",
     "result": "passed",
     "TestType": "requirements-based",
@@ -144,7 +144,7 @@
   },
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "546",
     "result": "passed",
     "TestType": "requirements-based",
@@ -155,7 +155,7 @@
   },
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "546",
     "result": "passed",
     "TestType": "requirements-based",
@@ -166,7 +166,7 @@
   },
   {
     "name": "TestMultipleInstanceIds__test_ok[rust]",
-    "file": "tests/test_cit_multiple_kvs.py",
+    "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
     "line": "46",
     "result": "passed",
     "TestType": "requirements-based",
@@ -177,7 +177,7 @@
   },
   {
     "name": "TestSameInstanceIdSameValue__test_ok[rust]",
-    "file": "tests/test_cit_multiple_kvs.py",
+    "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
     "line": "80",
     "result": "passed",
     "TestType": "requirements-based",
@@ -188,7 +188,7 @@
   },
   {
     "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
-    "file": "tests/test_cit_multiple_kvs.py",
+    "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
     "line": "116",
     "result": "passed",
     "TestType": "requirements-based",
@@ -199,7 +199,7 @@
   },
   {
     "name": "TestExplicitFlush__test_data_stored[rust]",
-    "file": "tests/test_cit_persistency.py",
+    "file": "tests/test_cases/tests/test_cit_persistency.py",
     "line": "47",
     "result": "passed",
     "TestType": "requirements-based",
@@ -210,7 +210,7 @@
   },
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[0-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
@@ -221,7 +221,7 @@
   },
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[1-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
@@ -232,7 +232,7 @@
   },
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[3-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
@@ -243,7 +243,7 @@
   },
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[10-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
@@ -254,7 +254,7 @@
   },
   {
     "name": "TestSnapshotCountFull__test_ok[0-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
@@ -265,7 +265,7 @@
   },
   {
     "name": "TestSnapshotCountFull__test_ok[1-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
@@ -276,7 +276,7 @@
   },
   {
     "name": "TestSnapshotCountFull__test_ok[3-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
@@ -287,7 +287,7 @@
   },
   {
     "name": "TestSnapshotCountFull__test_ok[10-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
@@ -298,7 +298,7 @@
   },
   {
     "name": "TestSnapshotMaxCount__test_ok[0-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "passed",
     "TestType": "requirements-based",
@@ -309,7 +309,7 @@
   },
   {
     "name": "TestSnapshotMaxCount__test_ok[1-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "passed",
     "TestType": "requirements-based",
@@ -320,7 +320,7 @@
   },
   {
     "name": "TestSnapshotMaxCount__test_ok[3-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "passed",
     "TestType": "requirements-based",
@@ -331,7 +331,7 @@
   },
   {
     "name": "TestSnapshotMaxCount__test_ok[10-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "passed",
     "TestType": "requirements-based",
@@ -342,7 +342,7 @@
   },
   {
     "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "177",
     "result": "passed",
     "TestType": "requirements-based",
@@ -353,7 +353,7 @@
   },
   {
     "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "177",
     "result": "passed",
     "TestType": "requirements-based",
@@ -364,7 +364,7 @@
   },
   {
     "name": "TestSnapshotRestoreCurrent__test_error[rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "216",
     "result": "passed",
     "TestType": "requirements-based",
@@ -375,7 +375,7 @@
   },
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "259",
     "result": "passed",
     "TestType": "requirements-based",
@@ -386,7 +386,7 @@
   },
   {
     "name": "TestSnapshotPathsExist__test_ok[rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "291",
     "result": "passed",
     "TestType": "requirements-based",
@@ -397,7 +397,7 @@
   },
   {
     "name": "TestSnapshotPathsNonexistent__test_error[rust]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "327",
     "result": "passed",
     "TestType": "requirements-based",
@@ -408,7 +408,7 @@
   },
   {
     "name": "TestSupportedDatatypesKeys__test_ok[rust]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "44",
     "result": "passed",
     "TestType": "requirements-based",
@@ -419,7 +419,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_I32__test_ok[rust]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -430,7 +430,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_U32__test_ok[rust]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -441,7 +441,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_I64__test_ok[rust]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -452,7 +452,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_U64__test_ok[rust]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -463,7 +463,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_F64__test_ok[rust]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -474,7 +474,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_Bool__test_ok[rust]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -485,7 +485,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_String__test_ok[rust]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -496,7 +496,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_Array__test_ok[rust]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -507,7 +507,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_Object__test_ok[rust]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -518,7 +518,7 @@
   },
   {
     "name": "TestDefaultValues__test_valid[optional-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "132",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -529,7 +529,7 @@
   },
   {
     "name": "TestDefaultValues__test_valid[required-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "132",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -540,7 +540,7 @@
   },
   {
     "name": "TestDefaultValues__test_valid[without-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "132",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -551,7 +551,7 @@
   },
   {
     "name": "TestRemoveKey__test_valid[optional-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "210",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -562,7 +562,7 @@
   },
   {
     "name": "TestRemoveKey__test_valid[required-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "210",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -573,7 +573,7 @@
   },
   {
     "name": "TestRemoveKey__test_valid[without-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "210",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -584,7 +584,7 @@
   },
   {
     "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "310",
     "result": "passed",
     "TestType": "requirements-based",
@@ -595,7 +595,7 @@
   },
   {
     "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "310",
     "result": "passed",
     "TestType": "requirements-based",
@@ -606,7 +606,7 @@
   },
   {
     "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "352",
     "result": "passed",
     "TestType": "requirements-based",
@@ -617,7 +617,7 @@
   },
   {
     "name": "TestResetAllKeys__test_valid[optional-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "399",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -628,7 +628,7 @@
   },
   {
     "name": "TestResetAllKeys__test_valid[required-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "399",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -639,7 +639,7 @@
   },
   {
     "name": "TestResetSingleKey__test_valid[optional-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "466",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -650,7 +650,7 @@
   },
   {
     "name": "TestResetSingleKey__test_valid[required-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "466",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -661,7 +661,7 @@
   },
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "546",
     "result": "passed",
     "TestType": "requirements-based",
@@ -672,7 +672,7 @@
   },
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
-    "file": "tests/test_cit_default_values.py",
+    "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "546",
     "result": "passed",
     "TestType": "requirements-based",
@@ -683,7 +683,7 @@
   },
   {
     "name": "TestMultipleInstanceIds__test_ok[cpp]",
-    "file": "tests/test_cit_multiple_kvs.py",
+    "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
     "line": "46",
     "result": "passed",
     "TestType": "requirements-based",
@@ -694,7 +694,7 @@
   },
   {
     "name": "TestSameInstanceIdSameValue__test_ok[cpp]",
-    "file": "tests/test_cit_multiple_kvs.py",
+    "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
     "line": "80",
     "result": "passed",
     "TestType": "requirements-based",
@@ -705,7 +705,7 @@
   },
   {
     "name": "TestSameInstanceIdDifferentValue__test_ok[cpp]",
-    "file": "tests/test_cit_multiple_kvs.py",
+    "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
     "line": "116",
     "result": "passed",
     "TestType": "requirements-based",
@@ -716,7 +716,7 @@
   },
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[0-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -727,7 +727,7 @@
   },
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[1-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -738,7 +738,7 @@
   },
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[3-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -749,7 +749,7 @@
   },
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[10-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -760,7 +760,7 @@
   },
   {
     "name": "TestSnapshotCountFull__test_ok[0-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -771,7 +771,7 @@
   },
   {
     "name": "TestSnapshotCountFull__test_ok[1-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -782,7 +782,7 @@
   },
   {
     "name": "TestSnapshotCountFull__test_ok[3-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -793,7 +793,7 @@
   },
   {
     "name": "TestSnapshotCountFull__test_ok[10-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -804,7 +804,7 @@
   },
   {
     "name": "TestSnapshotMaxCount__test_ok[0-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -815,7 +815,7 @@
   },
   {
     "name": "TestSnapshotMaxCount__test_ok[1-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -826,7 +826,7 @@
   },
   {
     "name": "TestSnapshotMaxCount__test_ok[3-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -837,7 +837,7 @@
   },
   {
     "name": "TestSnapshotMaxCount__test_ok[10-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "skipped",
     "TestType": "requirements-based",
@@ -848,7 +848,7 @@
   },
   {
     "name": "TestSnapshotRestorePrevious__test_ok[3-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "177",
     "result": "passed",
     "TestType": "requirements-based",
@@ -859,7 +859,7 @@
   },
   {
     "name": "TestSnapshotRestorePrevious__test_ok[10-cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "177",
     "result": "passed",
     "TestType": "requirements-based",
@@ -870,7 +870,7 @@
   },
   {
     "name": "TestSnapshotRestoreCurrent__test_error[cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "216",
     "result": "passed",
     "TestType": "requirements-based",
@@ -881,7 +881,7 @@
   },
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "259",
     "result": "passed",
     "TestType": "requirements-based",
@@ -892,7 +892,7 @@
   },
   {
     "name": "TestSnapshotPathsExist__test_ok[cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "291",
     "result": "passed",
     "TestType": "requirements-based",
@@ -903,7 +903,7 @@
   },
   {
     "name": "TestSnapshotPathsNonexistent__test_error[cpp]",
-    "file": "tests/test_cit_snapshots.py",
+    "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "327",
     "result": "passed",
     "TestType": "requirements-based",
@@ -914,7 +914,7 @@
   },
   {
     "name": "TestSupportedDatatypesKeys__test_ok[cpp]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "44",
     "result": "passed",
     "TestType": "requirements-based",
@@ -925,7 +925,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_I32__test_ok[cpp]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -936,7 +936,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_U32__test_ok[cpp]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -947,7 +947,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_I64__test_ok[cpp]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -958,7 +958,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_U64__test_ok[cpp]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -969,7 +969,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_F64__test_ok[cpp]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -980,7 +980,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_Bool__test_ok[cpp]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -991,7 +991,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_String__test_ok[cpp]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -1002,7 +1002,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_Array__test_ok[cpp]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",
@@ -1013,7 +1013,7 @@
   },
   {
     "name": "TestSupportedDatatypesValues_Object__test_ok[cpp]",
-    "file": "tests/test_cit_supported_datatypes.py",
+    "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
     "TestType": "requirements-based",

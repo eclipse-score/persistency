@@ -54,7 +54,7 @@ In Detail
 
       Failed Tests
 
-      *Hint: this table is empty by definition, as PRs with failing tests are not allowed to be merged in persistency repo.*
+      *Hint: This table should be empty. Before a PR can be merged all tests have to be successful.*
 
       .. needtable:: FAILED TESTS
          :filter: result == "failed"
