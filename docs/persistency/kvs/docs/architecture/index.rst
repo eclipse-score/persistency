@@ -87,6 +87,9 @@ Dynamic Architecture
 
    put here a sequence diagram
 
+.. toctree::
+
+   snapshot_handling.rst
 
 Interfaces
 ----------
