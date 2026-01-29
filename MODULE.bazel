@@ -74,7 +74,7 @@ use_repo(toolchains_qnx, "toolchains_qnx_ifs")
 # Module dependencies
 bazel_dep(name = "googletest", version = "1.17.0.bcr.1")
 
-bazel_dep(name = "google_benchmark", version = "1.9.4", dev_dependency = True)
+bazel_dep(name = "google_benchmark", version = "1.9.4")
 
 bazel_dep(name = "platforms", version = "1.0.0")
 
