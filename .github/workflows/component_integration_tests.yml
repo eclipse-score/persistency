@@ -75,7 +75,7 @@ jobs:
       - name: Run Python tests with pytest
         run: |
           source .venv/bin/activate
-          python -m pytest --traces=all
+          python -m pytest --traces=all --log-cli-level=DEBUG
 
       - name: Run Python tests with bazel
         run: |

@@ -45,6 +45,7 @@ score_py_pytest(
         "-m cpp",
         "--cpp-target-path=$(rootpath //tests/test_scenarios/cpp:test_scenarios)",
         "--traces=all",
+        "--log-cli-level=DEBUG",
     ],
     data = [
         ":python_tc_venv",
@@ -64,6 +65,7 @@ score_py_pytest(
         "-m rust",
         "--rust-target-path=$(rootpath //tests/test_scenarios/rust:test_scenarios)",
         "--traces=all",
+        "--log-cli-level=DEBUG",
     ],
     data = [
         ":python_tc_venv",
