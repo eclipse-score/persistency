@@ -157,5 +157,5 @@ pytest-repeat==0.9.4 \
     # via testing-utils
 # WARNING: pip install will require the following package to be hashed.
 # Consider using a hashable URL like https://github.com/jazzband/pip-tools/archive/SOMECOMMIT.zip
-testing-utils @ git+https://github.com/eclipse-score/testing_tools.git@v0.3.0
+testing-utils @ git+https://github.com/eclipse-score/testing_tools.git@479f0fdc8e28688df0fb8db80de25592c8386a93
     # via -r tests/test_cases/requirements.txt
