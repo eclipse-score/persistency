@@ -52,10 +52,6 @@
     "url": "https://eclipse-score.github.io/persistency/pr-177/"
   },
   {
-    "version": "pr-201",
-    "url": "https://eclipse-score.github.io/persistency/pr-201/"
-  },
-  {
     "version": "pr-221",
     "url": "https://eclipse-score.github.io/persistency/pr-221/"
   },
@@ -70,9 +66,5 @@
   {
     "version": "pr-232",
     "url": "https://eclipse-score.github.io/persistency/pr-232/"
-  },
-  {
-    "version": "pr-236",
-    "url": "https://eclipse-score.github.io/persistency/pr-236/"
   }
 ]
