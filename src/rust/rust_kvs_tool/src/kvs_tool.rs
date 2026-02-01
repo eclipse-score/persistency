@@ -1,4 +1,5 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -8,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-
+// *******************************************************************************
 //! # Key-Value Handling Command Line Tool based on the KVS API
 //!
 //! ## Introduction
@@ -333,6 +334,17 @@ fn _snapshotrestore(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
     Ok(())
 }
 
+/// Take backend and downcast it to `JsonBackend`.
+fn _downcast_backend(kvs: &Kvs) -> Result<&JsonBackend, ErrorCode> {
+    match kvs.parameters().backend.as_any().downcast_ref() {
+        Some(backend) => Ok(backend),
+        None => {
+            eprintln!("Invalid backend type");
+            Err(ErrorCode::UnmappedError)
+        }
+    }
+}
+
 /// Retrieves the KVS filename for a given snapshot ID.
 fn _getkvsfilename(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
     println!("----------------------");
@@ -347,8 +359,10 @@ fn _getkvsfilename(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
             }
         },
     };
+    let instance_id = kvs.parameters().instance_id;
     let snapshot_id = SnapshotId(snapshot_id as usize);
-    let filename = kvs.get_kvs_filename(snapshot_id)?;
+    let backend = _downcast_backend(&kvs)?;
+    let filename = backend.kvs_file_path(instance_id, snapshot_id);
     println!("KVS Filename: {}", filename.display());
     println!("----------------------");
     Ok(())
@@ -369,9 +383,11 @@ fn _gethashfilename(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
             }
         },
     };
+    let instance_id = kvs.parameters().instance_id;
     let snapshot_id = SnapshotId(snapshot_id as usize);
-    let filename = kvs.get_hash_filename(snapshot_id);
-    println!("Hash Filename: {}", filename?.display());
+    let backend = _downcast_backend(&kvs)?;
+    let filename = backend.hash_file_path(instance_id, snapshot_id);
+    println!("Hash Filename: {}", filename.display());
     println!("----------------------");
     Ok(())
 }
@@ -521,7 +537,8 @@ fn main() -> Result<(), ErrorCode> {
         .kvs_load(KvsLoad::Optional);
 
     let builder = if let Some(dir) = directory {
-        builder.dir(dir)
+        let backend = JsonBackendBuilder::new().working_dir(dir.into()).build();
+        builder.backend(Box::new(backend))
     } else {
         builder
     };

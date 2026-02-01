@@ -15,10 +15,12 @@
 
 #include "score/result/result.h"
 
-namespace score::mw::per::kvs {
+namespace score::mw::per::kvs
+{
 
 /* @brief */
-enum class ErrorCode : score::result::ErrorCode {
+enum class ErrorCode : score::result::ErrorCode
+{
     /* Error that was not yet mapped*/
     UnmappedError,
 
@@ -85,8 +87,8 @@ enum class ErrorCode : score::result::ErrorCode {
 
 class MyErrorDomain final : public score::result::ErrorDomain
 {
-public:
-    std::string_view MessageFor(score::result::ErrorCode const& code) const noexcept override;
+  public:
+    std::string_view MessageFor(const score::result::ErrorCode& code) const noexcept override;
 };
 
 constexpr MyErrorDomain my_error_domain;

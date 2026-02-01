@@ -1,4 +1,5 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -8,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-
+// *******************************************************************************
 //! # Key-Value-Storage API and Implementation
 //!
 //! ## Introduction
@@ -132,26 +133,23 @@
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 pub mod error_code;
-mod json_backend;
+pub mod json_backend;
 pub mod kvs;
 pub mod kvs_api;
-mod kvs_backend;
+pub mod kvs_backend;
 pub mod kvs_builder;
 pub mod kvs_mock;
 pub mod kvs_serialize;
 pub mod kvs_value;
 
-use json_backend::JsonBackend;
-pub type KvsBuilder = kvs_builder::GenericKvsBuilder<JsonBackend>;
-pub type Kvs = kvs::GenericKvs<JsonBackend>;
-
 /// Prelude module for convenient imports
 pub mod prelude {
     pub use crate::error_code::ErrorCode;
-    pub use crate::kvs::GenericKvs;
+    pub use crate::json_backend::{JsonBackend, JsonBackendBuilder};
+    pub use crate::kvs::Kvs;
     pub use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
-    pub use crate::kvs_builder::GenericKvsBuilder;
+    pub use crate::kvs_backend::KvsBackend;
+    pub use crate::kvs_builder::KvsBuilder;
     pub use crate::kvs_serialize::{KvsDeserialize, KvsSerialize};
     pub use crate::kvs_value::{KvsMap, KvsValue};
-    pub use crate::{Kvs, KvsBuilder};
 }

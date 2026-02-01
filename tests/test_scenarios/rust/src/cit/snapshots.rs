@@ -1,0 +1,161 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
+use crate::helpers::kvs_hash_paths;
+use crate::helpers::kvs_instance::kvs_instance;
+use crate::helpers::kvs_parameters::KvsParameters;
+use rust_kvs::prelude::{KvsApi, SnapshotId};
+use serde_json::Value;
+use test_scenarios_rust::scenario::{Scenario, ScenarioGroup, ScenarioGroupImpl};
+use tracing::info;
+
+struct SnapshotCount;
+
+impl Scenario for SnapshotCount {
+    fn name(&self) -> &str {
+        "count"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
+        let count =
+            serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
+        let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
+
+        // Create snapshots.
+        for i in 0..count {
+            let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
+            kvs.set_value("counter", i).expect("Failed to set value");
+            info!(snapshot_count = kvs.snapshot_count());
+
+            // Flush KVS.
+            kvs.flush().expect("Failed to flush");
+        }
+
+        {
+            let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+            info!(snapshot_count = kvs.snapshot_count());
+        }
+
+        Ok(())
+    }
+}
+
+struct SnapshotMaxCount;
+
+impl Scenario for SnapshotMaxCount {
+    fn name(&self) -> &str {
+        "max_count"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
+        let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
+
+        let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
+        info!(max_count = kvs.snapshot_max_count());
+        Ok(())
+    }
+}
+
+struct SnapshotRestore;
+
+impl Scenario for SnapshotRestore {
+    fn name(&self) -> &str {
+        "restore"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
+        let count =
+            serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
+        let snapshot_id = serde_json::from_value(v["snapshot_id"].clone())
+            .expect("Failed to parse \"snapshot_id\" field");
+        let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
+
+        // Create snapshots.
+        for i in 0..count {
+            let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
+            kvs.set_value("counter", i).expect("Failed to set value");
+
+            // Flush KVS.
+            kvs.flush().expect("Failed to flush");
+        }
+
+        {
+            let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+
+            let result = kvs.snapshot_restore(SnapshotId(snapshot_id));
+            info!(result = format!("{result:?}"));
+            if let Ok(()) = result {
+                let value = kvs
+                    .get_value_as::<i32>("counter")
+                    .expect("Failed to read value");
+                info!(value);
+            }
+        }
+
+        Ok(())
+    }
+}
+
+struct SnapshotPaths;
+
+impl Scenario for SnapshotPaths {
+    fn name(&self) -> &str {
+        "paths"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
+        let count =
+            serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
+        let snapshot_id = serde_json::from_value(v["snapshot_id"].clone())
+            .expect("Failed to parse \"snapshot_id\" field");
+        let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
+        let instance_id = params.instance_id;
+        let working_dir = params.dir.clone().expect("Working directory must be set");
+
+        // Create snapshots.
+        for i in 0..count {
+            let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
+            kvs.set_value("counter", i).expect("Failed to set value");
+
+            // Flush KVS.
+            kvs.flush().expect("Failed to flush");
+        }
+
+        {
+            let (kvs_path, hash_path) =
+                kvs_hash_paths(&working_dir, instance_id, SnapshotId(snapshot_id));
+            info!(
+                kvs_path = format!("{}", kvs_path.display()),
+                hash_path = format!("{}", hash_path.display())
+            );
+        }
+
+        Ok(())
+    }
+}
+
+pub fn snapshots_group() -> Box<dyn ScenarioGroup> {
+    Box::new(ScenarioGroupImpl::new(
+        "snapshots",
+        vec![
+            Box::new(SnapshotCount),
+            Box::new(SnapshotMaxCount),
+            Box::new(SnapshotRestore),
+            Box::new(SnapshotPaths),
+        ],
+        vec![],
+    ))
+}

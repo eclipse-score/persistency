@@ -1,4 +1,5 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -8,52 +9,63 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-
+// *******************************************************************************
 use crate::error_code::ErrorCode;
 use crate::kvs_api::{InstanceId, SnapshotId};
 use crate::kvs_value::KvsMap;
-use std::path::{Path, PathBuf};
+use core::any::Any;
 
-/// KVS backend interface.
-pub trait KvsBackend {
-    /// Load KvsMap from given file.
-    fn load_kvs(kvs_path: &Path, hash_path: &Path) -> Result<KvsMap, ErrorCode>;
-
-    /// Store KvsMap at given file path.
-    fn save_kvs(kvs_map: &KvsMap, kvs_path: &Path, hash_path: &Path) -> Result<(), ErrorCode>;
+/// Trait for comparisons between types.
+pub trait DynEq: Any {
+    /// Tests for `self` and `other` values to be of same type and equal.
+    fn dyn_eq(&self, other: &dyn Any) -> bool;
+    /// Cast to `&dyn Any`.
+    fn as_any(&self) -> &dyn Any;
 }
 
-/// KVS path resolver interface.
-pub trait KvsPathResolver {
-    /// Get KVS file name.
-    fn kvs_file_name(instance_id: InstanceId, snapshot_id: SnapshotId) -> String;
+impl<T: PartialEq + Any> DynEq for T
+where
+    T: KvsBackend,
+{
+    fn dyn_eq(&self, other: &dyn Any) -> bool {
+        if let Some(other) = other.downcast_ref::<T>() {
+            self == other
+        } else {
+            false
+        }
+    }
 
-    /// Get KVS file path in working directory.
-    fn kvs_file_path(
-        working_dir: &Path,
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
+/// KVS backend interface.
+pub trait KvsBackend: DynEq + Sync + Send {
+    /// Load KVS content.
+    fn load_kvs(
+        &self,
         instance_id: InstanceId,
         snapshot_id: SnapshotId,
-    ) -> PathBuf;
+    ) -> Result<KvsMap, ErrorCode>;
 
-    /// Get hash file name.
-    fn hash_file_name(instance_id: InstanceId, snapshot_id: SnapshotId) -> String;
+    /// Load default values.
+    fn load_defaults(&self, instance_id: InstanceId) -> Result<KvsMap, ErrorCode>;
 
-    /// Get hash file path in working directory.
-    fn hash_file_path(
-        working_dir: &Path,
+    /// Flush KvsMap to persistent storage.
+    /// Snapshots are rotated and current state is stored as first (0).
+    fn flush(&self, instance_id: InstanceId, kvs_map: &KvsMap) -> Result<(), ErrorCode>;
+
+    /// Count available snapshots.
+    fn snapshot_count(&self, instance_id: InstanceId) -> usize;
+
+    /// Max number of snapshots.
+    fn snapshot_max_count(&self) -> usize;
+
+    /// Restore snapshot with given ID.
+    fn snapshot_restore(
+        &self,
         instance_id: InstanceId,
         snapshot_id: SnapshotId,
-    ) -> PathBuf;
-
-    /// Get defaults file name.
-    fn defaults_file_name(instance_id: InstanceId) -> String;
-
-    /// Get defaults file path in working directory.
-    fn defaults_file_path(working_dir: &Path, instance_id: InstanceId) -> PathBuf;
-
-    /// Get defaults hash file name.
-    fn defaults_hash_file_name(instance_id: InstanceId) -> String;
-
-    /// Get defaults hash file path in working directory.
-    fn defaults_hash_file_path(working_dir: &Path, instance_id: InstanceId) -> PathBuf;
+    ) -> Result<KvsMap, ErrorCode>;
 }

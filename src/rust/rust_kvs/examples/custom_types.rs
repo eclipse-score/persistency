@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 //! Example for custom types usage for KVS, with serialization and deserialization.
 //! - Implementing serialization/deserialization traits for custom types.
 //! - Handling external and nested types.
@@ -182,7 +194,7 @@ impl KvsDeserialize for Example {
 fn main() -> Result<(), ErrorCode> {
     // Temporary directory.
     let dir = tempdir()?;
-    let dir_string = dir.path().to_string_lossy().to_string();
+    let dir_path = dir.path().to_path_buf();
 
     // Create initial example object.
     let object = Example {
@@ -219,7 +231,9 @@ fn main() -> Result<(), ErrorCode> {
     let kvs = KvsBuilder::new(InstanceId(0))
         .kvs_load(KvsLoad::Ignored)
         .defaults(KvsDefaults::Ignored)
-        .dir(dir_string)
+        .backend(Box::new(
+            JsonBackendBuilder::new().working_dir(dir_path).build(),
+        ))
         .build()?;
 
     // Serialize and set object.

@@ -29,7 +29,21 @@ on:
     types: [checks_requested]
 
 jobs:
+  docs-verify:
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs-verify.yml@main
+    permissions:
+      pull-requests: write
+      contents: read
+    with:
+      bazel-docs-verify-target: "//:docs_check"
+
+  cit-tests:
+    uses: ./.github/workflows/component_integration_tests.yml
+    secrets: inherit
+
   build-docs:
+    needs: [docs-verify, cit-tests] # Test reports are needed for traceability links
+    if: ${{ always() && needs.docs-verify.result == 'success' }}
     uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@main
     permissions:
       contents: write
@@ -40,3 +54,4 @@ jobs:
     with:
       bazel-target: "//:docs -- --github_user=${{ github.repository_owner }} --github_repo=${{ github.event.repository.name }}"
       retention-days: 3
+      tests-report-artifact: tests-report

@@ -13,7 +13,7 @@
 
 load("@rules_rust//rust:defs.bzl", "rust_clippy")
 load("@score_docs_as_code//:docs.bzl", "docs")
-load("@score_tooling//:defs.bzl", "cli_helper", "copyright_checker", "dash_license_checker", "setup_starpls", "use_format_targets")
+load("@score_tooling//:defs.bzl", "cli_helper", "copyright_checker", "dash_license_checker", "rust_coverage_report", "setup_starpls", "use_format_targets")
 load("//:project_config.bzl", "PROJECT_CONFIG")
 
 # Creates all documentation targets:
@@ -84,6 +84,22 @@ cli_helper(
     visibility = ["//visibility:public"],
 )
 
+rust_coverage_report(
+    name = "rust_coverage",
+    bazel_configs = [
+        "per-x86_64-linux",
+        "ferrocene-coverage",
+    ],
+    query = 'kind("rust_test", //src/rust/...)',
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "rust_coverage_report",
+    actual = ":rust_coverage",
+    visibility = ["//visibility:public"],
+)
+
 # Add target for formatting checks
 use_format_targets()
 
@@ -129,8 +145,8 @@ test_suite(
 test_suite(
     name = "cit_tests",
     tests = [
-        "//tests/python_test_cases:cit_cpp",
-        "//tests/python_test_cases:cit_rust",
+        "//tests/test_cases:cit_cpp",
+        "//tests/test_cases:cit_rust",
     ],
     visibility = ["//visibility:public"],
 )

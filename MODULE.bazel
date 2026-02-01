@@ -12,7 +12,7 @@
 # *******************************************************************************
 module(
     name = "score_persistency",
-    version = "0.2.1",
+    version = "0.2.2",
     compatibility_level = 0,
 )
 
@@ -33,7 +33,7 @@ pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip", dev_depen
 pip.parse(
     hub_name = "pip_score_venv_test",
     python_version = PYTHON_VERSION,
-    requirements_lock = "//tests/python_test_cases:requirements.txt.lock",
+    requirements_lock = "//tests/test_cases:requirements.txt.lock",
 )
 use_repo(pip, "pip_score_venv_test")
 
@@ -42,12 +42,6 @@ bazel_dep(name = "rules_rust", version = "0.61.0")
 
 # Shared Rust policies (Clippy config, etc.), overridden locally during development.
 bazel_dep(name = "score_rust_policies", version = "0.0.2", dev_dependency = True)
-
-rust = use_extension("@rules_rust//rust:extensions.bzl", "rust", dev_dependency = True)
-rust.toolchain(
-    edition = "2021",
-    versions = ["1.85.0"],
-)
 
 # bazel cc rules
 bazel_dep(name = "rules_cc", version = "0.1.2")
@@ -88,32 +82,16 @@ bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "score_baselibs", version = "0.1.2")
 bazel_dep(name = "score_bazel_platforms", version = "0.0.2")
 bazel_dep(name = "score_docs_as_code", version = "2.2.0")
-bazel_dep(name = "score_platform", version = "0.5.0")
+
+bazel_dep(name = "score_platform", version = "0.5.2", dev_dependency = True)
+
 bazel_dep(name = "score_process", version = "1.3.2")
 bazel_dep(name = "score_python_basics", version = "0.3.4")
-bazel_dep(name = "score_tooling", version = "1.0.3")
-
-# ToDo: remove this once 1.0.4 is released,
-# since it will contain updated cr_checker
-git_override(
-    module_name = "score_tooling",
-    commit = "654664dae7df2700fd5840c5ed6c07ac6c61705d",  #until 1.0.4 is released
-    remote = "https://github.com/eclipse-score/tooling.git",
-)
+bazel_dep(name = "score_tooling", version = "1.1.0")
 
 # ToDo: implicit dependencies for score_tooling, but needed directly here??
 bazel_dep(name = "aspect_rules_lint", version = "1.10.2")
 bazel_dep(name = "buildifier_prebuilt", version = "8.2.0.2")
-
-## additional settings / config
-bazel_dep(name = "rust_qnx8_toolchain", version = "1.0.0", dev_dependency = True)
-archive_override(
-    module_name = "rust_qnx8_toolchain",
-    strip_prefix = "qnx8",
-    urls = [
-        "https://github.com/qorix-group/rust-lang-qnx8/releases/download/1.0.0/qnx8_rust_toolchain.tar.gz",
-    ],
-)
 
 ## temporary overrides / tools
 # Testing utils dependency.
@@ -133,13 +111,7 @@ git_override(
     remote = "https://github.com/eclipse-score/baselibs.git",
 )
 
-bazel_dep(name = "score_toolchains_rust", version = "0.1", dev_dependency = True)
-git_override(
-    module_name = "score_toolchains_rust",
-    commit = "5614e4b273f2f5302d47a05d7e58dae86f97a3c3",
-    remote = "https://github.com/eclipse-score/toolchains_rust.git",
-)
-
+bazel_dep(name = "score_toolchains_rust", version = "0.4.0", dev_dependency = True)
 bazel_dep(name = "custom_qemu", version = "1.0.0", dev_dependency = True)
 archive_override(
     module_name = "custom_qemu",
@@ -148,12 +120,6 @@ archive_override(
     urls = [
         "https://github.com/qorix-group/custom-qemu/releases/download/1.0.0/custom_qemu.tar.gz",
     ],
-)
-
-# Registers the custom Rust toolchain wired to @qnx_rust
-register_toolchains(
-    "@score_toolchains_rust//toolchains/aarch64-unknown-qnx8_0:toolchain_aarch64_qnx8_0",
-    dev_dependency = True,
 )
 
 # S-CORE crates

@@ -56,14 +56,14 @@ genrule(
 )
 
 # state the tests too
-#TODO: enable when rust_test_scenarios is built for QNX
+#TODO: enable when test_scenarios/rust:test_scenarios is built for QNX
 #genrule(
 #    name = "stage_rust_test_scenarios",
-#    srcs = ["//tests/rust_test_scenarios:rust_test_scenarios"],
-#    outs = ["install/usr/bin/rust_test_scenarios"],
+#    srcs = ["//tests/test_scenarios/rust:test_scenarios"],
+#    outs = ["install/usr/bin/test_scenarios/rust"],
 #    cmd = """
 #      mkdir -p $(RULEDIR)/install/usr/bin
-#      cp $(location //tests/rust_test_scenarios:rust_test_scenarios) $@
+#      cp $(location //tests/test_scenarios/rust:test_scenarios) $@
 #      chmod +x $@
 #    """,
 #)

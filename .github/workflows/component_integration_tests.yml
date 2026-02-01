@@ -20,6 +20,7 @@ on:
       - main
   merge_group:
     types: [checks_requested]
+  workflow_call:
 
 jobs:
   component-integration-tests:
@@ -28,13 +29,21 @@ jobs:
       run:
         shell: bash
     steps:
+      - name: Checkout repository (pull_request_target via workflow_call)
+        if: ${{ github.event_name == 'pull_request_target' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.event.pull_request.head.ref || github.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+
       - name: Checkout repository
+        if: ${{ github.event_name != 'pull_request_target' }}
         uses: actions/checkout@v4
 
       - name: Setup Rust build environment
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: 1.83.0
+          toolchain: 1.90.0
 
       - name: Setup Bazel
         uses: bazel-contrib/setup-bazel@0.15.0
@@ -46,11 +55,11 @@ jobs:
 
       - name: Build C++ test scenarios with Bazel
         run: |
-          bazel build --config=per-x86_64-linux //tests/cpp_test_scenarios:cpp_test_scenarios
+          bazel build --config=per-x86_64-linux //tests/test_scenarios/cpp:test_scenarios
 
       - name: Build Rust test scenarios with Bazel
         run: |
-          bazel build //tests/rust_test_scenarios:rust_test_scenarios
+          bazel build //tests/test_scenarios/rust:test_scenarios
 
       - name: Set up Python 3
         uses: actions/setup-python@v5
@@ -58,14 +67,32 @@ jobs:
           python-version: '3.12'
 
       - name: Set up Python virtual environment
-        working-directory: tests/python_test_cases
         run: |
           python -m venv .venv
           source .venv/bin/activate
-          pip install .
+          pip install -r tests/test_cases/requirements.txt
 
       - name: Run Python tests with pytest
-        working-directory: tests/python_test_cases
         run: |
           source .venv/bin/activate
-          python -m pytest
+          python -m pytest --traces=all
+
+      - name: Run Python tests with bazel
+        run: |
+          bazel test //tests/test_cases:cit
+
+      - name: Prepare test reports
+        if: always()
+        # Creating tests-report directory
+        # Follow Symlinks via '-L' to copy correctly
+        # Copy everything inside the 'test-reports' folder
+        run: |
+          mkdir -p tests-report
+          rsync -amL --include='*/' --include='test.xml' --include='test.log' --exclude='*' bazel-testlogs/ tests-report/
+
+      - name: Upload bundled test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-report
+          path: tests-report

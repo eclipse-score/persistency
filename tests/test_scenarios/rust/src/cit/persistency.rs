@@ -1,0 +1,82 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
+use crate::helpers::kvs_instance::kvs_instance;
+use crate::helpers::kvs_parameters::KvsParameters;
+use crate::helpers::{kvs_hash_paths, to_str};
+use rust_kvs::prelude::*;
+use test_scenarios_rust::scenario::{Scenario, ScenarioGroup, ScenarioGroupImpl};
+use tracing::info;
+
+struct ExplicitFlush;
+
+impl Scenario for ExplicitFlush {
+    fn name(&self) -> &str {
+        "explicit_flush"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        // List of keys and corresponding values.
+        let num_values = 5;
+        let mut key_values = Vec::new();
+        for i in 0..num_values {
+            let key = format!("test_number_{i}");
+            let value = 12.3 * i as f64;
+            key_values.push((key, value));
+        }
+
+        // Check parameters.
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
+        let working_dir = params.dir.clone().expect("Working directory must be set");
+        {
+            // First KVS instance object - used for setting and flushing data.
+            let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
+
+            // Set values.
+            for (key, value) in key_values.iter() {
+                kvs.set_value(key, *value).expect("Failed to set value");
+            }
+
+            // Explicit flush.
+            kvs.flush().expect("Failed to flush");
+        }
+
+        {
+            // Second KVS instance object - used for flush check.
+            let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+            let (kvs_path, hash_path) =
+                kvs_hash_paths(&working_dir, kvs.parameters().instance_id, SnapshotId(0));
+            info!(
+                kvs_path = to_str(&kvs_path),
+                kvs_path_exists = kvs_path.exists(),
+                hash_path = to_str(&hash_path),
+                hash_path_exists = hash_path.exists(),
+            );
+
+            // Get values.
+            for (key, _) in key_values.iter() {
+                let value = kvs.get_value(key);
+                info!(key, value = to_str(&value));
+            }
+        }
+
+        Ok(())
+    }
+}
+
+pub fn persistency_group() -> Box<dyn ScenarioGroup> {
+    Box::new(ScenarioGroupImpl::new(
+        "persistency",
+        vec![Box::new(ExplicitFlush)],
+        vec![],
+    ))
+}

@@ -21,7 +21,8 @@
 #include <variant>
 #include <vector>
 
-namespace score::mw::per::kvs {
+namespace score::mw::per::kvs
+{
 
 /* Define the KvsValue class*/
 /**
@@ -58,14 +59,16 @@ namespace score::mw::per::kvs {
  * @endcode
  */
 
-class KvsValue final {
-public:
+class KvsValue final
+{
+  public:
     /* Define the possible types for KvsValue*/
     using Array = std::vector<std::shared_ptr<KvsValue>>;
     using Object = std::unordered_map<std::string, std::shared_ptr<KvsValue>>;
 
     /* Enum to represent the type of the value*/
-    enum class Type {
+    enum class Type
+    {
         i32,
         u32,
         i64,
@@ -88,7 +91,7 @@ public:
     explicit KvsValue(const char* str) : value(std::string(str)), type(Type::String) {}
     explicit KvsValue(const std::string& str) : value(str), type(Type::String) {}
     explicit KvsValue(std::nullptr_t) : value(nullptr), type(Type::Null) {}
-    explicit KvsValue(const Array& array) ;
+    explicit KvsValue(const Array& array);
     explicit KvsValue(const Object& object);
     explicit KvsValue(const std::vector<KvsValue>& array);
     explicit KvsValue(const std::unordered_map<std::string, KvsValue>& object);
@@ -106,14 +109,19 @@ public:
     KvsValue& operator=(KvsValue&& other) noexcept;
 
     /* Get the type of the value*/
-    Type getType() const { return type; }
+    Type getType() const
+    {
+        return type;
+    }
 
     /* Access the underlying value (use std::get to retrieve the value)*/
-    const std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>& getValue() const {
+    const std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>&
+    getValue() const
+    {
         return value;
     }
 
-private:
+  private:
     /* The underlying value*/
     std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object> value;
 
