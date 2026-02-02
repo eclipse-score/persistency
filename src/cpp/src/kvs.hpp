@@ -33,8 +33,8 @@
 static constexpr size_t HASH_FILE_SIZE = 4;
 
 namespace score::mw::per::kvs
-{
 
+{
 struct InstanceId
 {
     size_t id;
@@ -354,106 +354,20 @@ class Kvs final
      */
     score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const;
 
-  private:
-    /* Private constructor to prevent direct instantiation */
-    Kvs();
-
-    /* Internal storage and configuration details.*/
-    std::mutex kvs_mutex;
-    std::unordered_map<std::string, KvsValue> kvs;
-
-    /* Optional default values */
-    std::unordered_map<std::string, KvsValue> default_values;
-
-    /* Filename prefix */
-    score::filesystem::Path filename_prefix;
-
-    /* Filesystem handling */
-    std::unique_ptr<score::filesystem::Filesystem> filesystem;
-
-    /* Json handling */
-    std::unique_ptr<score::json::IJsonParser> parser;
-    std::unique_ptr<score::json::IJsonWriter> writer;
-
-    /* Logging */
-    std::unique_ptr<score::mw::log::Logger> logger;
-
-        /**
-         * @brief Performs a 'dry run' to check if the current in-memory store would
-         *        exceed the storage limit upon flushing.
-         *
-         * This function serializes the current key-value data to a temporary buffer
-         * and calculates the potential total storage size. It checks this size against
-         * the compile-time `KVS_MAX_STORAGE_BYTES` limit.
-         *
-         * @return A score::Result object containing either:
-         *         - On success: The estimated total size (size_t) that the KVS would occupy after a flush.
-         *         - On failure: An `OutOfStorageSpace` error if the limit would be exceeded,
-         *           or another ErrorCode for other failures (e.g., serialization).
-         */
-        score::Result<size_t> calculate_potential_size();
-
-
-        /**
-         * @brief Retrieves the number of snapshots currently stored in the key-value store.
-         *
-         * @return A score::Result object that indicates the success or failure of the operation.
-         *         - On success: The total count of snapshots as a size_t value.
-         *         - On failure: Returns an ErrorCode describing the error.
-         */
-        score::Result<size_t> snapshot_count() const;
-
-
-        /**
-         * @brief Retrieves the maximum number of snapshots that can be stored.
-         *
-         * This function returns the upper limit on the number of snapshots
-         * that the key-value store can maintain at any given time.
-         *
-         * @return The maximum count of snapshots as a size_t value.
-         */
-        size_t snapshot_max_count() const;
-
-
-        /**
-         * @brief Restores the state of the key-value store from a specified snapshot.
-         *
-         * This function attempts to restore the key-value store to the state
-         * captured in the snapshot identified by the given snapshot ID. If the
-         * restoration process fails, an appropriate error code is returned.
-         *
-         * @param snapshot_id The identifier of the snapshot to restore from.
-         * @return score::ResultBlank
-         *         - On success: An empty score::Result indicating the restoration was successful.
-         *         - On failure: An error code describing the reason for the failure.
-         */
-        score::ResultBlank snapshot_restore(const SnapshotId& snapshot_id);
-
-
-        /**
-         * @brief Retrieves the filename associated with a given snapshot ID in the key-value store.
-         *
-         * @param snapshot_id The identifier of the snapshot for which the filename is to be retrieved.
-         * @return score::ResultBlank
-         *         - On success: A score::filesystem::Path with the filename (path) associated with the snapshot ID.
-         *         - On failure: An error code describing the reason for the failure.
-         */
-        score::Result<score::filesystem::Path> get_kvs_filename(const SnapshotId& snapshot_id) const;
-
-
-        /**
-         * @brief Retrieves the filename of the hash file associated with a given snapshot ID.
-         *
-         * This function returns a string view representing the filename of the hash file
-         * corresponding to the provided snapshot ID. The hash file is typically used to
-         * store metadata or integrity information for the snapshot.
-         *
-         * @param snapshot_id The identifier of the snapshot for which the hash filename is requested.
-         * @return score::ResultBlank
-         *         - On success: A score::filesystem::Path with the filename (path) of the hash file associated with the snapshot ID.
-         *         - On failure: An error code describing the reason for the failure.
-         */
-        score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const;
+    /**
+     * @brief Performs a 'dry run' to check if the current in-memory store would
+     *        exceed the storage limit upon flushing.
+     *
+     * This function serializes the current key-value data to a temporary buffer
+     * and calculates the potential total storage size. It checks this size against
+     * the compile-time `KVS_MAX_STORAGE_BYTES` limit.
+     *
+     * @return A score::Result object containing either:
+     *         - On success: The estimated total size (size_t) that the KVS would occupy after a flush.
+     *         - On failure: An `OutOfStorageSpace` error if the limit would be exceeded,
+     *           or another ErrorCode for other failures (e.g., serialization).
+    */
+    score::Result<size_t> calculate_potential_size();
 
     private:
         /* Private constructor to prevent direct instantiation */
@@ -488,8 +402,8 @@ class Kvs final
         score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix, OpenJsonNeedFile need_file);
         score::ResultBlank write_json_data(const std::string& buf);
 
-};
+    };
 
-} /* namespace score::mw::per::kvs */
+}/* namespace score::mw::per::kvs */
 
 #endif /* SCORE_LIB_KVS_KVS_HPP */
