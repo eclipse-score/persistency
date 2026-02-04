@@ -55,12 +55,14 @@ static void info_log(const std::string& key,
  *
  * @tparam T The type of the current value to log.
  * @param key The key being queried or modified in the KVS.
- * @param value_is_default Boolean indicating whether the current value matches the default.
+ * @param value_is_default Boolean indicating whether the current value matches
+ * the default.
  * @param current_value The current value for the key, of type T.
  *
  * This function emits logs in a structured format so that the Python test suite
- * can parse and validate scenario output. Unlike the string overload, this version
- * logs the current value as a typed parameter and omits the default value.
+ * can parse and validate scenario output. Unlike the string overload, this
+ * version logs the current value as a typed parameter and omits the default
+ * value.
  */
 template <typename T>
 static void info_log(const std::string& key, const bool value_is_default, T current_value)

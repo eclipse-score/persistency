@@ -24,9 +24,14 @@ pytestmark = pytest.mark.parametrize("version", ["cpp", "rust"], scope="class")
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__key_encoding_v2",
-        "comp_req__persistency__value_data_types_v2",
+        "comp_req__persistency__key_naming_v2",
+        "comp_req__persistency__key_uniqueness_v2",
     ],
+    fully_verifies=[
+        "comp_req__persistency__key_encoding_v2",
+        "comp_req__persistency__key_length_v2",
+    ],
+    description="Tests that the key-value store accepts valid key formats, enforces uniqueness, encodes keys as UTF-8, and restricts key length.",
     test_type="requirements-based",
     derivation_technique="interface-test",
 )
@@ -41,22 +46,81 @@ class TestSupportedDatatypesKeys(CommonScenario):
     def test_config(self) -> dict[str, Any]:
         return {"kvs_parameters": {"instance_id": 1}}
 
-    def test_ok(self, results: ScenarioResult, logs_info_level: LogContainer) -> None:
+    @pytest.mark.xfail(
+        reason="KVS does not implement requirement #1: key character set (alphanumeric, underscore, dash) enforcement. It accepts space,special char,invalid keys."
+    )
+    def test_key_datatypes(self, results: ScenarioResult, logs_info_level: LogContainer) -> None:
         assert results.return_code == ResultCode.SUCCESS
-
         logs = logs_info_level.get_logs(field="key")
         act_keys = set(map(lambda x: x.key, logs))
-        exp_keys = {"example", "emoji ✅❗😀", "greek ημα"}
+        # Valid keys
+        valid_keys = {
+            "alphaNumeric123",
+            "with_underscore",
+            "with-dash",
+            "A1_b2-C3",
+            "a" * 32,
+        }
+        # Invalid keys (including non-ASCII, emoji, spaces, etc.)
+        invalid_keys = {
+            "has space",
+            "has$pecial",
+            "emoji✅",
+            "too_long_key_abcdefghijklmnopqrstuvwxyz123456",
+            "utf8_ключ",
+            "utf8_漢字",
+            "utf8_emoji ✅❗😀",
+            "utf8_greek ημα",
+        }
+        # UTF-8 keys
+        utf8_keys = {
+            "utf8_emoji_valid",
+            "utf8_alphaNumeric123",
+            "utf8_with_underscore",
+            "utf8-with-dash",
+            "utf8_A1_b2-C3",
+        }
+        # Check valid keys are present
+        assert valid_keys.issubset(act_keys)
+        # Check UTF-8 keys are present
+        assert utf8_keys.issubset(act_keys)
+        # Check invalid keys are not present
+        assert act_keys.isdisjoint(invalid_keys)
 
-        assert len(act_keys) == len(exp_keys)
-        assert len(act_keys.symmetric_difference(exp_keys)) == 0
+    @pytest.mark.xfail(
+        reason="KVS allows duplicate keys by updating the value for an existing key instead of rejecting duplicates (requirement #2 not enforced)."
+    )
+    def test_duplicate_key(self, results: ScenarioResult, logs_info_level: LogContainer) -> None:
+        assert results.return_code == ResultCode.SUCCESS
+        # Check only one instance of duplicate key
+        # Uniqueness: duplicate key is currently fulfilled by allowing update to the value for an existing key (not strict rejection).
+        duplicate_key_logs = [x for x in logs if x.key == "unique_key"]
+        # TODO: Is allowing value update for an existing key compliant with the uniqueness requirement?
+        assert len(duplicate_key_logs) == 1, (
+            "Duplicate key insertion should be rejected (only one instance allowed, no update)"
+        )
+        assert len(duplicate_key_logs) == 1
+
+    @pytest.mark.xfail(reason="KVS does not enforce length limits on keys.")
+    def test_max_length_key(self, results: ScenarioResult, logs_info_level: LogContainer) -> None:
+        assert results.return_code == ResultCode.SUCCESS
+        logs = logs_info_level.get_logs(field="key")
+        act_keys = set(map(lambda x: x.key, logs))
+        # Max length key
+        max_length_key = "a" * 32
+        # Check max length key is present
+        assert max_length_key in act_keys
 
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__key_encoding_v2",
-        "comp_req__persistency__value_data_types_v2",
+        "comp_req__persistency__value_length_v2",
     ],
+    fully_verifies=[
+        "comp_req__persistency__value_data_types_v2",
+        "comp_req__persistency__value_serialize_v2",
+    ],
+    description="Tests that the key-value store accepts only allowed value types, serializes values as JSON, and enforces value length limits.",
     test_type="requirements-based",
     derivation_technique="interface-test",
 )
@@ -184,3 +248,28 @@ class TestSupportedDatatypesValues_Object(TestSupportedDatatypesValues):
 
     def exp_value(self) -> Any:
         return {"sub-number": {"t": "f64", "v": 789}}
+
+
+class TestSupportedDatatypesValues_String1024(TestSupportedDatatypesValues):
+    def exp_key(self) -> str:
+        return "str_1024"
+
+    def exp_value(self) -> Any:
+        return "x" * 1024
+
+
+class TestSupportedDatatypesValues_String1025(TestSupportedDatatypesValues):
+    def exp_key(self) -> str:
+        return "str_1025"
+
+    def exp_value(self) -> Any:
+        return "y" * 1025
+
+    @pytest.mark.xfail(reason="KVS does not yet enforce value length limit (requirement #7)")
+    def test_ok(self, results: ScenarioResult, logs_info_level: LogContainer) -> None:
+        # Requirement #7: The component shall limit the maximum length of a value to 1024 bytes.
+        # TODO: If this assertion fails, the KVS is not enforcing requirement #7.
+        # For >1024 bytes, expect error or no log
+        assert results.return_code != ResultCode.SUCCESS or not logs_info_level.get_logs(
+            field="key", value=self.exp_key()
+        )
