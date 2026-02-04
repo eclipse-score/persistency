@@ -124,3 +124,11 @@ archive_override(
 
 # S-CORE crates
 bazel_dep(name = "score_crates", version = "0.0.6")
+
+# S-CORE Logging
+bazel_dep(name = "score_logging", version = "", dev_dependency = True)
+git_override(
+    module_name = "score_logging",
+    commit = "d5267a5d89ca7462bec29c49d3b295a10ee834c3",  # latest
+    remote = "https://github.com/eclipse-score/logging.git",
+)
