@@ -86,7 +86,7 @@ Module Workproducts List
         * - :need:`wp__fdr_reports` (module Safety Plan)
           - :need:`gd_chklst__safety_plan`
           - :ndf:`copy('status', need_id='gd_chklst__safety_plan')`
-          - :need:`doc__persistency_safety_plan_v2`
+          - :need:`doc__persistency_safety_plan_v2_fdr_v2`
 
         * - :need:`wp__fdr_reports` (module Safety Package)
           - :need:`gd_chklst__safety_package`

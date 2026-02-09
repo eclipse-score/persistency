@@ -155,14 +155,14 @@ Security Module Workproducts
           - :need:`gd_temp__req_comp_req`
           - :ndf:`copy('status', need_id='gd_temp__req_comp_req')`
           - <Link to issue>
-          - :need:`doc__persistency_kvs_requirements`
+          - :need:`doc__persistency_kvs_requirements_v2`
           - <automated>
 
         * - :need:`wp__requirements_comp_aou`
           - :need:`gd_temp__req_aou_req`
           - :ndf:`copy('status', need_id='gd_temp__req_aou_req')`
           - <Link to issue>
-          - :need:`doc__persistency_kvs_requirements`
+          - :need:`doc__persistency_kvs_requirements_v2`
           - <automated>
 
         * - :need:`wp__requirements_inspect`
@@ -176,7 +176,7 @@ Security Module Workproducts
           - :need:`gd_temp__arch_comp`
           - :ndf:`copy('status', need_id='gd_temp__arch_comp')`
           - <Link to issue>
-          - :need:`doc__persistency_kvs_architecture`
+          - :need:`doc__persistency_kvs_architecture_v2`
           - <automated>
 
         * - :need:`wp__sw_component_security_analysis`
