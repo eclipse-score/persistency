@@ -5,7 +5,7 @@
     "line": "132",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2, comp_req__persistency__default_value_query_v2",
     "FullyVerifies": null
@@ -16,7 +16,7 @@
     "line": "132",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2, comp_req__persistency__default_value_query_v2",
     "FullyVerifies": null
@@ -27,7 +27,7 @@
     "line": "132",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2, comp_req__persistency__default_value_query_v2",
     "FullyVerifies": null
@@ -38,7 +38,7 @@
     "line": "210",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -49,7 +49,7 @@
     "line": "210",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -60,7 +60,7 @@
     "line": "210",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -71,7 +71,7 @@
     "line": "310",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -82,7 +82,7 @@
     "line": "310",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -93,7 +93,7 @@
     "line": "352",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -104,7 +104,7 @@
     "line": "399",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": "comp_req__persistency__value_reset_v2"
@@ -115,7 +115,7 @@
     "line": "399",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": "comp_req__persistency__value_reset_v2"
@@ -126,7 +126,7 @@
     "line": "466",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2",
     "FullyVerifies": null
@@ -137,7 +137,7 @@
     "line": "466",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2",
     "FullyVerifies": null
@@ -148,7 +148,7 @@
     "line": "546",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2",
     "FullyVerifies": "comp_req__persistency__default_val_chksum_v2"
@@ -159,7 +159,7 @@
     "line": "546",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2",
     "FullyVerifies": "comp_req__persistency__default_val_chksum_v2"
@@ -170,7 +170,7 @@
     "line": "46",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__multi_instance_v2, comp_req__persistency__concurrency_v2",
     "FullyVerifies": null
@@ -181,7 +181,7 @@
     "line": "80",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__multi_instance_v2, comp_req__persistency__concurrency_v2",
     "FullyVerifies": null
@@ -192,7 +192,7 @@
     "line": "116",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__multi_instance_v2, comp_req__persistency__concurrency_v2",
     "FullyVerifies": null
@@ -203,7 +203,7 @@
     "line": "47",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": null,
     "FullyVerifies": "comp_req__persistency__persist_data_com_v2"
@@ -214,7 +214,7 @@
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -225,7 +225,7 @@
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -236,7 +236,7 @@
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -247,7 +247,7 @@
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -258,7 +258,7 @@
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -269,7 +269,7 @@
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -280,7 +280,7 @@
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -291,7 +291,7 @@
     "line": "66",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -301,8 +301,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "inspection",
+    "TestType": "inspection",
+    "DerivationTechnique": "boundary-values",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_max_num_v2",
     "FullyVerifies": null
@@ -312,8 +312,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "inspection",
+    "TestType": "inspection",
+    "DerivationTechnique": "boundary-values",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_max_num_v2",
     "FullyVerifies": null
@@ -323,8 +323,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "inspection",
+    "TestType": "inspection",
+    "DerivationTechnique": "boundary-values",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_max_num_v2",
     "FullyVerifies": null
@@ -334,8 +334,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "inspection",
+    "TestType": "inspection",
+    "DerivationTechnique": "boundary-values",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_max_num_v2",
     "FullyVerifies": null
@@ -345,8 +345,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "177",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "control-flow-analysis",
+    "TestType": "control-flow-analysis",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2, comp_req__persistency__snapshot_rotate_v2",
     "FullyVerifies": "comp_req__persistency__snapshot_restore_v2"
@@ -356,8 +356,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "177",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "control-flow-analysis",
+    "TestType": "control-flow-analysis",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2, comp_req__persistency__snapshot_rotate_v2",
     "FullyVerifies": "comp_req__persistency__snapshot_restore_v2"
@@ -367,8 +367,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "216",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "fault-injection",
+    "TestType": "fault-injection",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -378,8 +378,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "259",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "fault-injection",
+    "TestType": "fault-injection",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2, comp_req__persistency__snapshot_restore_v2",
     "FullyVerifies": null
@@ -389,8 +389,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "291",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -400,8 +400,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "327",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "fault-injection",
+    "TestType": "fault-injection",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -411,8 +411,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "44",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -422,8 +422,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -433,8 +433,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -444,8 +444,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -455,8 +455,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -466,8 +466,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -477,8 +477,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -488,8 +488,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -499,8 +499,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -510,8 +510,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -522,7 +522,7 @@
     "line": "132",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/182",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2, comp_req__persistency__default_value_query_v2",
     "FullyVerifies": null
@@ -533,7 +533,7 @@
     "line": "132",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/182",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2, comp_req__persistency__default_value_query_v2",
     "FullyVerifies": null
@@ -544,7 +544,7 @@
     "line": "132",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/182",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2, comp_req__persistency__default_value_query_v2",
     "FullyVerifies": null
@@ -555,7 +555,7 @@
     "line": "210",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/182",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -566,7 +566,7 @@
     "line": "210",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/182",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -577,7 +577,7 @@
     "line": "210",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/182",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -588,7 +588,7 @@
     "line": "310",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -599,7 +599,7 @@
     "line": "310",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -610,7 +610,7 @@
     "line": "352",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": null
@@ -621,7 +621,7 @@
     "line": "399",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/182",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": "comp_req__persistency__value_reset_v2"
@@ -632,7 +632,7 @@
     "line": "399",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/182",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2, comp_req__persistency__default_value_types_v2",
     "FullyVerifies": "comp_req__persistency__value_reset_v2"
@@ -643,7 +643,7 @@
     "line": "466",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/182",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2",
     "FullyVerifies": null
@@ -654,7 +654,7 @@
     "line": "466",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/182",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2",
     "FullyVerifies": null
@@ -665,7 +665,7 @@
     "line": "546",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2",
     "FullyVerifies": "comp_req__persistency__default_val_chksum_v2"
@@ -676,7 +676,7 @@
     "line": "546",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__value_default_v2, comp_req__persistency__default_value_cfg_v2",
     "FullyVerifies": "comp_req__persistency__default_val_chksum_v2"
@@ -687,7 +687,7 @@
     "line": "46",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__multi_instance_v2, comp_req__persistency__concurrency_v2",
     "FullyVerifies": null
@@ -698,7 +698,7 @@
     "line": "80",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__multi_instance_v2, comp_req__persistency__concurrency_v2",
     "FullyVerifies": null
@@ -709,7 +709,7 @@
     "line": "116",
     "result": "passed",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__multi_instance_v2, comp_req__persistency__concurrency_v2",
     "FullyVerifies": null
@@ -720,7 +720,7 @@
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -731,7 +731,7 @@
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -742,7 +742,7 @@
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -753,7 +753,7 @@
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -764,7 +764,7 @@
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -775,7 +775,7 @@
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -786,7 +786,7 @@
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -797,7 +797,7 @@
     "line": "66",
     "result": "skipped",
     "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -807,8 +807,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "skipped",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "inspection",
+    "TestType": "inspection",
+    "DerivationTechnique": "boundary-values",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_max_num_v2",
     "FullyVerifies": null
@@ -818,8 +818,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "skipped",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "inspection",
+    "TestType": "inspection",
+    "DerivationTechnique": "boundary-values",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_max_num_v2",
     "FullyVerifies": null
@@ -829,8 +829,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "skipped",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "inspection",
+    "TestType": "inspection",
+    "DerivationTechnique": "boundary-values",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_max_num_v2",
     "FullyVerifies": null
@@ -840,8 +840,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "133",
     "result": "skipped",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "inspection",
+    "TestType": "inspection",
+    "DerivationTechnique": "boundary-values",
     "result_text": "https://github.com/eclipse-score/persistency/issues/108",
     "PartiallyVerifies": "comp_req__persistency__snapshot_max_num_v2",
     "FullyVerifies": null
@@ -851,8 +851,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "177",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "control-flow-analysis",
+    "TestType": "control-flow-analysis",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2, comp_req__persistency__snapshot_rotate_v2",
     "FullyVerifies": "comp_req__persistency__snapshot_restore_v2"
@@ -862,8 +862,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "177",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "control-flow-analysis",
+    "TestType": "control-flow-analysis",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2, comp_req__persistency__snapshot_rotate_v2",
     "FullyVerifies": "comp_req__persistency__snapshot_restore_v2"
@@ -873,8 +873,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "216",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "fault-injection",
+    "TestType": "fault-injection",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -884,8 +884,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "259",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "fault-injection",
+    "TestType": "fault-injection",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2, comp_req__persistency__snapshot_restore_v2",
     "FullyVerifies": null
@@ -895,8 +895,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "291",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -906,8 +906,8 @@
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
     "line": "327",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "fault-injection",
+    "TestType": "fault-injection",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__snapshot_creation_v2",
     "FullyVerifies": null
@@ -917,8 +917,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "44",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -928,8 +928,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -939,8 +939,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -950,8 +950,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -961,8 +961,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -972,8 +972,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -983,8 +983,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -994,8 +994,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -1005,8 +1005,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null
@@ -1016,8 +1016,8 @@
     "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "85",
     "result": "passed",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "interface-test",
+    "TestType": "interface-test",
+    "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__persistency__key_encoding_v2, comp_req__persistency__value_data_types_v2",
     "FullyVerifies": null

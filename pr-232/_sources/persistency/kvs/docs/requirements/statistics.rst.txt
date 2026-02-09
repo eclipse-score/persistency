@@ -86,25 +86,31 @@ Details About Testcases
 ------------------------
 
 .. needpie:: Test Types Used In Testcases
-   :labels: fault-injection, interface-test, requirements-based, resource-usage
+   :labels: static-code-analysis, structural-statement-coverage, structural-branch-coverage, walkthrough, inspection, interface-test, requirements-based, resource-usage, control-flow-analysis, data-flow-analysis, fault-injection, struct-func-cov, struct-call-cov
    :legend:
 
-   type == 'testcase' and test_type == 'fault-injection'
+   type == 'testcase' and test_type == 'static-code-analysis'
+   type == 'testcase' and test_type == 'structural-statement-coverage'
+   type == 'testcase' and test_type == 'structural-branch-coverage'
+   type == 'testcase' and test_type == 'walkthrough'
+   type == 'testcase' and test_type == 'inspection'
    type == 'testcase' and test_type == 'interface-test'
    type == 'testcase' and test_type == 'requirements-based'
    type == 'testcase' and test_type == 'resource-usage'
+   type == 'testcase' and test_type == 'control-flow-analysis'
+   type == 'testcase' and test_type == 'data-flow-analysis'
+   type == 'testcase' and test_type == 'fault-injection'
+   type == 'testcase' and test_type == 'struct-func-cov'
+   type == 'testcase' and test_type == 'struct-call-cov'
 
 
 .. needpie:: Derivation Techniques Used In Testcases
-   :labels: requirements-based, design-analysis, boundary-values, equivalence-classes, fuzz-testing, error-guessing, explorative-testing, fault-injection, interface-test
+   :labels: requirements-analysis, boundary-values, equivalence-classes, fuzz-testing, error-guessing, explorative-testing
    :legend:
 
-   type == 'testcase' and derivation_technique == 'requirements-based'
-   type == 'testcase' and derivation_technique == 'design-analysis'
+   type == 'testcase' and derivation_technique == 'requirements-analysis'
    type == 'testcase' and derivation_technique == 'boundary-values'
    type == 'testcase' and derivation_technique == 'equivalence-classes'
    type == 'testcase' and derivation_technique == 'fuzz-testing'
    type == 'testcase' and derivation_technique == 'error-guessing'
    type == 'testcase' and derivation_technique == 'explorative-testing'
-   type == 'testcase' and derivation_technique == 'fault-injection'
-   type == 'testcase' and derivation_technique == 'interface-test'
