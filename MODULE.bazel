@@ -98,9 +98,16 @@ git_override(
     commit = "650b51a47264a4f232b3341f473527710fc32669",  # trlc-2.0.2 release
     remote = "https://github.com/bmw-software-engineering/trlc.git",
 )
+
 bazel_dep(name = "score_bazel_platforms", version = "0.0.4")
 
+# Override score_docs_as_code to resolve compatibility level conflicts between dependencies
 bazel_dep(name = "score_docs_as_code", version = "3.0.0", dev_dependency = True)
+single_version_override(
+    module_name = "score_docs_as_code",
+    version = "3.0.0",
+)
+
 bazel_dep(name = "score_platform", version = "0.5.3", dev_dependency = True)
 bazel_dep(name = "score_process", version = "1.4.0", dev_dependency = True)
 
