@@ -29,10 +29,12 @@
 #include <vector>
 
 #define KVS_MAX_SNAPSHOTS 3
+#define KVS_MAX_STORAGE_BYTES (10000) /* Max total storage size for all snapshots including hash files in bytes */
+static constexpr size_t HASH_FILE_SIZE = 4;
 
 namespace score::mw::per::kvs
-{
 
+{
 struct InstanceId
 {
     size_t id;
@@ -352,38 +354,56 @@ class Kvs final
      */
     score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const;
 
-  private:
-    /* Private constructor to prevent direct instantiation */
-    Kvs();
+    /**
+     * @brief Performs a 'dry run' to check if the current in-memory store would
+     *        exceed the storage limit upon flushing.
+     *
+     * This function serializes the current key-value data to a temporary buffer
+     * and calculates the potential total storage size. It checks this size against
+     * the compile-time `KVS_MAX_STORAGE_BYTES` limit.
+     *
+     * @return A score::Result object containing either:
+     *         - On success: The estimated total size (size_t) that the KVS would occupy after a flush.
+     *         - On failure: An `OutOfStorageSpace` error if the limit would be exceeded,
+     *           or another ErrorCode for other failures (e.g., serialization).
+    */
+    score::Result<size_t> calculate_potential_size();
 
-    /* Internal storage and configuration details.*/
-    std::mutex kvs_mutex;
-    std::unordered_map<std::string, KvsValue> kvs;
+    private:
+        /* Private constructor to prevent direct instantiation */
+        Kvs();
 
-    /* Optional default values */
-    std::unordered_map<std::string, KvsValue> default_values;
+        /* Internal storage and configuration details.*/
+        std::mutex kvs_mutex;
+        std::unordered_map<std::string, KvsValue> kvs;
 
-    /* Filename prefix */
-    score::filesystem::Path filename_prefix;
+        /* Optional default values */
+        std::unordered_map<std::string, KvsValue> default_values;
 
-    /* Filesystem handling */
-    std::unique_ptr<score::filesystem::Filesystem> filesystem;
+        /* Filename prefix */
+        score::filesystem::Path filename_prefix;
 
-    /* Json handling */
-    std::unique_ptr<score::json::IJsonParser> parser;
-    std::unique_ptr<score::json::IJsonWriter> writer;
+        /* Filesystem handling */
+        std::unique_ptr<score::filesystem::Filesystem> filesystem;
 
-    /* Logging */
-    std::unique_ptr<score::mw::log::Logger> logger;
+        /* Json handling */
+        std::unique_ptr<score::json::IJsonParser> parser;
+        std::unique_ptr<score::json::IJsonWriter> writer;
 
-    /* Private Methods */
-    score::ResultBlank snapshot_rotate();
-    score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
-    score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix,
-                                                                       OpenJsonNeedFile need_file);
-    score::ResultBlank write_json_data(const std::string& buf);
-};
+        /* Logging */
+        std::unique_ptr<score::mw::log::Logger> logger;
 
-} /* namespace score::mw::per::kvs */
+        /* Private Methods */
+        score::Result<std::string> serialize_and_check();
+        score::Result<size_t> get_file_size(const score::filesystem::Path& file_path);
+        score::Result<size_t> get_current_storage_size();
+        score::ResultBlank snapshot_rotate();
+        score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
+        score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix, OpenJsonNeedFile need_file);
+        score::ResultBlank write_json_data(const std::string& buf);
+
+    };
+
+}/* namespace score::mw::per::kvs */
 
 #endif /* SCORE_LIB_KVS_KVS_HPP */
