@@ -15,9 +15,11 @@ use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_builder::KvsData;
 use crate::kvs_value::{KvsMap, KvsValue};
+use crate::log::{error, warn, ScoreDebug};
 use std::sync::{Arc, Mutex};
 
 /// KVS instance parameters.
+#[derive(ScoreDebug)]
 pub struct KvsParameters {
     /// Instance ID.
     pub instance_id: InstanceId,
@@ -76,7 +78,7 @@ impl KvsApi for Kvs {
     fn reset_key(&self, key: &str) -> Result<(), ErrorCode> {
         let mut data = self.data.lock()?;
         if !data.defaults_map.contains_key(key) {
-            eprintln!("error: resetting key without a default value");
+            error!("Resetting key without a default value: {}", key);
             return Err(ErrorCode::KeyDefaultNotFound);
         }
 
@@ -127,7 +129,7 @@ impl KvsApi for Kvs {
         } else if let Some(value) = data.defaults_map.get(key) {
             Ok(value.clone())
         } else {
-            eprintln!("error: get_value could not find key: {key}");
+            error!("Key not found: {}", key);
             Err(ErrorCode::KeyNotFound)
         }
     }
@@ -150,15 +152,15 @@ impl KvsApi for Kvs {
     ///   * `ErrorCode::KeyNotFound`: Key wasn't found in KVS nor in defaults
     fn get_value_as<T>(&self, key: &str) -> Result<T, ErrorCode>
     where
-        for<'a> T: TryFrom<&'a KvsValue> + core::clone::Clone,
-        for<'a> <T as TryFrom<&'a KvsValue>>::Error: core::fmt::Debug,
+        for<'a> T: TryFrom<&'a KvsValue>,
+        for<'a> <T as TryFrom<&'a KvsValue>>::Error: ScoreDebug,
     {
         let data = self.data.lock()?;
         if let Some(value) = data.kvs_map.get(key) {
             match T::try_from(value) {
                 Ok(value) => Ok(value),
                 Err(err) => {
-                    eprintln!("error: get_value could not convert KvsValue from KVS store: {err:#?}");
+                    error!("Failed to convert KVS value: {:#?}", err);
                     Err(ErrorCode::ConversionFailed)
                 },
             }
@@ -167,13 +169,12 @@ impl KvsApi for Kvs {
             match T::try_from(value) {
                 Ok(value) => Ok(value),
                 Err(err) => {
-                    eprintln!("error: get_value could not convert KvsValue from default store: {err:#?}");
+                    error!("Failed to convert default value: {:#?}", err);
                     Err(ErrorCode::ConversionFailed)
                 },
             }
         } else {
-            eprintln!("error: get_value could not find key: {key}");
-
+            error!("Key not found: {}", key);
             Err(ErrorCode::KeyNotFound)
         }
     }
@@ -195,6 +196,7 @@ impl KvsApi for Kvs {
         if let Some(value) = data.defaults_map.get(key) {
             Ok(value.clone())
         } else {
+            error!("Key not found: {}", key);
             Err(ErrorCode::KeyNotFound)
         }
     }
@@ -219,6 +221,7 @@ impl KvsApi for Kvs {
         } else if data.defaults_map.contains_key(key) {
             Ok(true)
         } else {
+            error!("Key not found: {}", key);
             Err(ErrorCode::KeyNotFound)
         }
     }
@@ -252,6 +255,7 @@ impl KvsApi for Kvs {
         if data.kvs_map.remove(key).is_some() {
             Ok(())
         } else {
+            error!("Key not found: {}", key);
             Err(ErrorCode::KeyNotFound)
         }
     }
@@ -271,7 +275,7 @@ impl KvsApi for Kvs {
     ///   * `ErrorCode::UnmappedError`: Unmapped error
     fn flush(&self) -> Result<(), ErrorCode> {
         if self.snapshot_max_count() == 0 {
-            eprintln!("warn: snapshot_max_count == 0, flush ignored");
+            warn!("snapshot_max_count == 0, flush ignored");
             return Ok(());
         }
 
@@ -334,12 +338,13 @@ mod kvs_tests {
     use crate::kvs_backend::KvsBackend;
     use crate::kvs_builder::KvsData;
     use crate::kvs_value::{KvsMap, KvsValue};
+    use crate::log::ScoreDebug;
     use std::sync::{Arc, Mutex};
     use tempfile::tempdir;
 
     /// Most tests can be performed with mocked backend.
     /// Only those with file handling must use concrete implementation.
-    #[derive(PartialEq)]
+    #[derive(PartialEq, Debug, ScoreDebug)]
     struct MockBackend;
 
     impl KvsBackend for MockBackend {

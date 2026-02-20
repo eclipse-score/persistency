@@ -12,11 +12,12 @@
 // *******************************************************************************
 extern crate alloc;
 
+use crate::log::{error, ScoreDebug};
 use alloc::string::FromUtf8Error;
 use core::array::TryFromSliceError;
 
 /// Runtime Error Codes
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, ScoreDebug)]
 pub enum ErrorCode {
     /// Error that was not yet mapped
     UnmappedError,
@@ -94,7 +95,7 @@ impl From<std::io::Error> for ErrorCode {
         match kind {
             std::io::ErrorKind::NotFound => ErrorCode::FileNotFound,
             _ => {
-                eprintln!("error: unmapped error: {kind}");
+                error!("Unmapped IO error: {:?}", kind.to_string());
                 ErrorCode::UnmappedError
             },
         }
@@ -103,21 +104,21 @@ impl From<std::io::Error> for ErrorCode {
 
 impl From<FromUtf8Error> for ErrorCode {
     fn from(cause: FromUtf8Error) -> Self {
-        eprintln!("error: UTF-8 conversion failed: {cause:#?}");
+        error!("Conversion from UTF-8 failed: {:#?}", cause);
         ErrorCode::ConversionFailed
     }
 }
 
 impl From<TryFromSliceError> for ErrorCode {
     fn from(cause: TryFromSliceError) -> Self {
-        eprintln!("error: try_into from slice failed: {cause:#?}");
+        error!("Conversion from slice failed: {:#?}", cause);
         ErrorCode::ConversionFailed
     }
 }
 
 impl From<Vec<u8>> for ErrorCode {
     fn from(cause: Vec<u8>) -> Self {
-        eprintln!("error: try_into from u8 vector failed: {cause:#?}");
+        error!("Conversion from vector of u8 failed: {:#?}", cause);
         ErrorCode::ConversionFailed
     }
 }

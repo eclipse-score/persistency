@@ -17,6 +17,7 @@ rust_library(
     srcs = glob(["src/**/*.rs"]),
     visibility = ["//visibility:public"],
     deps = [
+        "@score_baselibs_rust//src/log/score_log",
         "@score_crates//:adler32",
         "@score_crates//:tinyjson",
     ],

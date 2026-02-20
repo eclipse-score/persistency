@@ -14,10 +14,11 @@
 //! Example for migrations between backends.
 
 use rust_kvs::prelude::*;
+use score_log::ScoreDebug;
 
 /// Example custom backend.
 /// Returns some data on `load_kvs`.
-#[derive(PartialEq)]
+#[derive(PartialEq, ScoreDebug)]
 struct FromBackend;
 
 impl KvsBackend for FromBackend {
@@ -51,7 +52,7 @@ impl KvsBackend for FromBackend {
 
 /// Example custom backend.
 /// Prints provided data to stdout.
-#[derive(PartialEq)]
+#[derive(PartialEq, ScoreDebug)]
 struct ToBackend;
 
 impl KvsBackend for ToBackend {

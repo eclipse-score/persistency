@@ -210,9 +210,6 @@ class TestSnapshotRestoreCurrent(CommonScenario):
             "count": 3,
         }
 
-    def capture_stderr(self) -> bool:
-        return True
-
     def test_error(
         self,
         results: ScenarioResult,
@@ -222,8 +219,7 @@ class TestSnapshotRestoreCurrent(CommonScenario):
         assert results.return_code == ResultCode.SUCCESS
 
         if version == "rust":
-            assert results.stderr is not None
-            assert "error: tried to restore current KVS as snapshot" in results.stderr
+            assert "Restoring current KVS snapshot is not allowed" in results.stdout
 
         result_log = logs_info_level.find_log("result")
         assert result_log is not None
@@ -253,15 +249,11 @@ class TestSnapshotRestoreNonexistent(CommonScenario):
             "count": 1,
         }
 
-    def capture_stderr(self) -> bool:
-        return True
-
     def test_error(self, results: ScenarioResult, logs_info_level: LogContainer, version: str):
         assert results.return_code == ResultCode.SUCCESS
 
         if version == "rust":
-            assert results.stderr is not None
-            assert "error: tried to restore a non-existing snapshot" in results.stderr
+            assert "Unable to restore non-existing snapshot" in results.stdout
 
         result_log = logs_info_level.find_log("result")
         assert result_log is not None
