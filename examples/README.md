@@ -1,122 +1,94 @@
 
 # Getting Started with Key-Value-Storage (persistency)
 
-This guide will help you get started with the C++ and Rust implementations of the Key-Value-Storage (KVS) library, including how to use it and link it with Bazel.
+This guide demonstrates how to use the Key-Value-Storage (KVS) library in a standalone Bazel workspace. The example module shows how to integrate `score_persistency` with modern C++ toolchains and build a simple KVS application.
 
-## 1. Integrating with Bazel
+## 1. About this Example Module
 
-### 1.1 Add this to your MODULE.bazel:
-<details>
-  <summary>MODULE.bazel</summary>
+This example workspace demonstrates a minimal setup for using the `score_persistency` library. It's configured as a standalone Bazel module with the following features:
 
-    module(name = "your_project_name")
+### Module Structure
+- **MODULE.bazel**: Defines dependencies and toolchain configuration
+- **.bazelrc**: Contains build configurations for different target platforms
+- **src/main.cpp**: Simple example application using the KVS C++ API
+- **src/BUILD**: Bazel build target for the example
 
-    # Add the persistency dependency (replace version as needed)
-    bazel_dep(name = "persistency", version = "0.2.0")
+### Supported Toolchains
+The example is configured to build with three different toolchains:
+- **x86_64-gcc**: GCC for Linux x86_64 (POSIX)
+- **x86_64-qcc**: QNX compiler for x86_64
+- **aarch64-qcc**: QNX compiler for ARM64/AArch64
 
-    # Add required toolchains and dependencies for C++ and Rust
-    bazel_dep(name = "score_toolchains_gcc", version = "0.4", dev_dependency=True)
-    gcc = use_extension("@score_toolchains_gcc//extentions:gcc.bzl", "gcc", dev_dependency=True)
-    gcc.toolchain(
-        url = "https://github.com/eclipse-score/toolchains_gcc_packages/releases/download/0.0.1/x86_64-unknown-linux-gnu_gcc12.tar.gz",
-        sha256 = "457f5f20f57528033cb840d708b507050d711ae93e009388847e113b11bf3600",
-        strip_prefix = "x86_64-unknown-linux-gnu",
-    )
-    use_repo(gcc, "gcc_toolchain", "gcc_toolchain_gcc")
+## 2. Bazel Configuration Explained
 
-    bazel_dep(name = "rules_rust", version = "0.61.0")
-    crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
-    crate.from_specs(name = "crate_index")
-    use_repo(crate, "crate_index")
+### 2.1 Module Dependencies (MODULE.bazel)
 
-    # Add any other dependencies required by persistency (see persistency's own MODULE.bazel for details)
+The [MODULE.bazel](MODULE.bazel) file defines the workspace and its dependencies:
 
-</details>
+**Core Dependencies:**
+- `rules_cc`: C++ build rules
+- `score_bazel_platforms`: Platform definitions for different OS/CPU combinations
+- `score_bazel_cpp_toolchains`: GCC and QCC toolchain support
+- `score_persistency`: The KVS library itself
+- `score_baselibs`: Common utilities and result types
 
-### 1.2 Insert this into your .bazelrc:
-<details>
-  <summary>.bazelrc</summary>
+*See [MODULE.bazel](MODULE.bazel) for specific versions currently in use.*
 
-  ```
-  build --@score_baselibs//score/json:base_library=nlohmann
-  build --@score_baselibs//score/mw/log/flags:KRemote_Logging=False
+**Toolchain Configuration:**
+The module uses the `gcc` extension from `score_bazel_cpp_toolchains` to configure three toolchains with automatic package downloading enabled (`use_default_package = True`). This means the toolchain packages are downloaded automatically during the build.
 
-  ```
-</details>
+**Local Override:**
+The example uses `local_path_override` to reference the parent persistency directory, allowing testing against the latest local version instead of a published release.
 
-### 1.3 Run Bazel
-If you start with a plain project add an empty file called `BUILD` into your project folder.
+### 2.2 Build Configuration (.bazelrc)
 
-Now you can build the project with the command:
+The [.bazelrc](.bazelrc) file configures how Bazel builds for different platforms:
+
+**Registry Configuration:**
+Specifies the S-CORE Bazel registry and Bazel Central Registry for downloading dependencies.
+
+**Build Configurations:**
+- **x86_64-gcc**: Linux x86_64 target with GCC, includes pthread support
+- **x86_64-qcc**: QNX x86_64 target with QCC
+- **aarch64-qcc**: QNX ARM64 target with QCC
+
+**Common Build Flags:**
+- Uses nlohmann JSON library via `score_baselibs`
+- Disables remote logging for the KVS logger
+
+### 2.3 Build Target (src/BUILD)
+
+The [src/BUILD](src/BUILD) file defines a simple binary target:
+- **Name**: `hello_kvs_world`
+- **Source**: `main.cpp`
+- **Dependencies**: `@score_persistency//:kvs_cpp`
+
+The target is minimal and focused on demonstrating basic KVS usage.
+
+## 3. Using the C++ Implementation
+
+### 3.1 Example Application
+
+The [src/main.cpp](src/main.cpp) demonstrates basic KVS operations:
+
+- Building the KVS instance
+- Show some key operations
+- Error handling
+
+### 3.2 Building the Example
+
+To build for different platforms:
+
 ```sh
-bazel build //...
-```
-(So far nothing happens, because no targets were defined.)
+# within the examples folder (not the top level persistency folder)
+# Linux x86_64 with GCC
+bazel build --config=x86_64-gcc //src:hello_kvs_world
 
-You can now continue in this guide to create a simple consumer-producer program or start on your own.
+# QNX x86_64
+bazel build --config=x86_64-qcc //src:hello_kvs_world
 
-
-
-## 2. Using the C++ Implementation
-
-### 2.1 Basic Usage
-
-The C++ API is centered around `KvsBuilder` and `Kvs` classes. Here is a minimal example based on the test scenarios:
-
-```cpp
-#include "kvsbuilder.hpp"
-#include <iostream>
-
-int main() {
-  // Use fully qualified names instead of 'using namespace'
-  auto open_res = score::mw::per::kvs::KvsBuilder(score::mw::per::kvs::InstanceId(0))
-            .need_defaults_flag(true)
-            .need_kvs_flag(false)
-            .dir(".")
-            .build();
-  if (!open_res) {
-    std::cerr << "Failed to open KVS: " << static_cast<int>(open_res.error()) << std::endl;
-    return 1;
-  }
-  score::mw::per::kvs::Kvs kvs = std::move(open_res.value());
-
-  // Set a key-value pair
-  kvs.set_value("username", score::mw::per::kvs::KvsValue("alice"));
-
-  // Read a value (will fall back to default if not set)
-  score::mw::per::kvs::Result<score::mw::per::kvs::KvsValue> get_res = kvs.get_value("username");
-  if (get_res) {
-    std::cout << "username: " << get_res.value().as_string() << std::endl;
-  }
-
-  // Read a default value (not set, but present in defaults)
-  auto get_default = kvs.get_value("language");
-  if (get_default) {
-    std::cout << "language (default): " << get_default.value().as_string() << std::endl;
-  }
-
-  // Check if a key exists (only if written)
-  if (kvs.key_exists("username").value_or(false)) {
-    std::cout << "username exists!" << std::endl;
-  }
-
-  // Remove a key
-  kvs.remove_key("username");
-
-  // List all keys (only written keys, not defaults)
-  auto keys_res = kvs.get_all_keys();
-  if (keys_res) {
-    std::cout << "All keys in KVS:" << std::endl;
-    for (const auto& key : keys_res.value()) {
-      std::cout << "  " << key << std::endl;
-    }
-  }
-
-  // Flush changes to disk
-  kvs.flush();
-
-  return 0;
-}
+# QNX ARM64
+bazel build --config=aarch64-qcc //src:hello_kvs_world
 ```
 
 ## 3. Using the Rust Implementation

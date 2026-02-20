@@ -1,0 +1,32 @@
+# *******************************************************************************
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+# Links to S-CORE Bazel registry and Bazel Central Registry
+common --registry=https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/
+common --registry=https://bcr.bazel.build
+
+#common --credential_helper=*.qnx.com=/<full>/bazel_cpp_toolchains/tools/qnx_credential_helper.py
+
+build:x86_64-gcc --host_platform=@score_bazel_platforms//:x86_64-linux-gcc_12.2.0-posix
+build:x86_64-gcc --extra_toolchains=@score_gcc_x86_64//:x86_64-linux-gcc_12.2.0
+build:x86_64-gcc --host_features=use_pthread
+
+build:x86_64-qcc --platforms=@score_bazel_platforms//:x86_64-qnx-sdp_8.0.0-posix
+build:x86_64-qcc --extra_toolchains=@score_qcc_x86_64//:x86_64-qnx-sdp_8.0.0
+
+build:aarch64-qcc --platforms=@score_bazel_platforms//:aarch64-qnx-sdp_8.0.0-posix
+build:aarch64-qcc --extra_toolchains=@score_qcc_aarch64//:aarch64-qnx-sdp_8.0.0
+
+build --@score_baselibs//score/json:base_library=nlohmann
+
+try-import %workspace%/user.bazelrc
