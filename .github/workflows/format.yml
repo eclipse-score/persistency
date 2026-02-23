@@ -26,4 +26,4 @@ defaults:
 
 jobs:
   formatting-check:
-    uses: eclipse-score/cicd-workflows/.github/workflows/format.yml@main
+    uses: eclipse-score/cicd-workflows/.github/workflows/format.yml@dcalavrezo_containerized

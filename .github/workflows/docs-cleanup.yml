@@ -28,6 +28,6 @@ defaults:
 
 jobs:
   docs-cleanup:
-    uses: eclipse-score/cicd-workflows/.github/workflows/docs-cleanup.yml@main
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs-cleanup.yml@dcalavrezo_containerized
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}

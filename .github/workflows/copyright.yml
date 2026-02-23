@@ -25,4 +25,4 @@ defaults:
 
 jobs:
   copyright-check:
-    uses: eclipse-score/cicd-workflows/.github/workflows/copyright.yml@main
+    uses: eclipse-score/cicd-workflows/.github/workflows/copyright.yml@dcalavrezo_containerized

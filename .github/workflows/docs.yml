@@ -36,7 +36,7 @@ defaults:
 
 jobs:
   docs-verify:
-    uses: eclipse-score/cicd-workflows/.github/workflows/docs-verify.yml@main
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs-verify.yml@dcalavrezo_containerized
     permissions:
       pull-requests: write
       contents: read
@@ -50,7 +50,7 @@ jobs:
   build-docs:
     needs: [docs-verify, cit-tests] # Test reports are needed for traceability links
     if: ${{ always() && needs.docs-verify.result == 'success' }}
-    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@main
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@dcalavrezo_containerized
     permissions:
       contents: write
       pages: write
