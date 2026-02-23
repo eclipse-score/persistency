@@ -17,6 +17,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   lint-commits:
     name: check-commit-messages

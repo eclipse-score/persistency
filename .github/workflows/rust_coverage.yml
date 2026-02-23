@@ -16,6 +16,10 @@ on:
     types: [opened, reopened, synchronize]
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   rust_coverage:
     runs-on: ubuntu-latest

@@ -22,6 +22,10 @@ on:
   schedule:
     - cron: '0 0 * * *' # Runs every day at midnight UTC
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   docs-cleanup:
     uses: eclipse-score/cicd-workflows/.github/workflows/docs-cleanup.yml@main

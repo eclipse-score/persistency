@@ -16,6 +16,10 @@ on:
   release:
     types: [created]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   release-verification:
     runs-on: ubuntu-latest

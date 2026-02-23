@@ -30,6 +30,10 @@ on:
   release:
     types: [created]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   docs-verify:
     uses: eclipse-score/cicd-workflows/.github/workflows/docs-verify.yml@main

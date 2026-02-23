@@ -20,6 +20,10 @@ on:
   merge_group:
     types: [checks_requested]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   formatting-check:
     uses: eclipse-score/cicd-workflows/.github/workflows/format.yml@main

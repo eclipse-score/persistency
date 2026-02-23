@@ -15,6 +15,10 @@ name: QNX Integration Test
 
 on: workflow_dispatch
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   qnx-kvs-test:
     name: Build & Run QNX Integration Scenario
