@@ -19,6 +19,8 @@ on:
 jobs:
   release-verification:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     permissions:
       contents: write # required to upload release assets
 

@@ -28,6 +28,8 @@ defaults:
 jobs:
   cargo-build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     steps:
       - uses: actions/checkout@v4
 
@@ -42,6 +44,8 @@ jobs:
 
   cargo-miri:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     env:
       MIRIFLAGS: "-Zmiri-disable-isolation"
     steps:
@@ -63,6 +67,8 @@ jobs:
 
   cargo-coverage:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     steps:
       - uses: actions/checkout@v4
 
@@ -81,6 +87,8 @@ jobs:
 
   rust-bazel:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -105,6 +113,8 @@ jobs:
 
   cpp-bazel:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

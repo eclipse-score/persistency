@@ -17,6 +17,8 @@ on: workflow_dispatch
 jobs:
   qnx-rust-build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     environment: workflow-approval
     steps:
       - name: Checkout repository
