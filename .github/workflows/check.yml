@@ -140,7 +140,8 @@ jobs:
             --show-details \
             --legend \
             --function-coverage \
-            --branch-coverage
+            --branch-coverage \
+            --filter branch
         shell: bash
       - name: Upload Coverage Artifacts
         uses: actions/upload-artifact@v6
