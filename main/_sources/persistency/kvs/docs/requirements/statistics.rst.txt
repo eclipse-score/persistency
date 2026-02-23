@@ -1,4 +1,4 @@
-.. _statistics:
+.. _per_statistics:
 
 Component Requirements Statistics
 =================================
