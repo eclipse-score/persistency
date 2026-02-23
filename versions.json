@@ -46,5 +46,9 @@
   {
     "version": "pr-248",
     "url": "https://eclipse-score.github.io/persistency/pr-248/"
+  },
+  {
+    "version": "pr-249",
+    "url": "https://eclipse-score.github.io/persistency/pr-249/"
   }
 ]
