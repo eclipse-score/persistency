@@ -365,7 +365,7 @@
   {
     "name": "TestSnapshotRestoreCurrent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "216",
+    "line": "213",
     "result": "passed",
     "TestType": "fault-injection",
     "DerivationTechnique": "requirements-analysis",
@@ -376,7 +376,7 @@
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "259",
+    "line": "252",
     "result": "passed",
     "TestType": "fault-injection",
     "DerivationTechnique": "requirements-analysis",
@@ -387,7 +387,7 @@
   {
     "name": "TestSnapshotPathsExist__test_ok[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "291",
+    "line": "283",
     "result": "passed",
     "TestType": "interface-test",
     "DerivationTechnique": "requirements-analysis",
@@ -398,7 +398,7 @@
   {
     "name": "TestSnapshotPathsNonexistent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "327",
+    "line": "319",
     "result": "passed",
     "TestType": "fault-injection",
     "DerivationTechnique": "requirements-analysis",
@@ -871,7 +871,7 @@
   {
     "name": "TestSnapshotRestoreCurrent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "216",
+    "line": "213",
     "result": "passed",
     "TestType": "fault-injection",
     "DerivationTechnique": "requirements-analysis",
@@ -882,7 +882,7 @@
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "259",
+    "line": "252",
     "result": "passed",
     "TestType": "fault-injection",
     "DerivationTechnique": "requirements-analysis",
@@ -893,7 +893,7 @@
   {
     "name": "TestSnapshotPathsExist__test_ok[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "291",
+    "line": "283",
     "result": "passed",
     "TestType": "interface-test",
     "DerivationTechnique": "requirements-analysis",
@@ -904,7 +904,7 @@
   {
     "name": "TestSnapshotPathsNonexistent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "327",
+    "line": "319",
     "result": "passed",
     "TestType": "fault-injection",
     "DerivationTechnique": "requirements-analysis",

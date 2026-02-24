@@ -659,7 +659,7 @@
   {
     "name": "TestSnapshotRestoreCurrent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": 216,
+    "line": 213,
     "need": "comp_req__persistency__snapshot_creation_v2",
     "verify_type": "partially",
     "result": "passed",
@@ -668,7 +668,7 @@
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": 259,
+    "line": 252,
     "need": "comp_req__persistency__snapshot_creation_v2",
     "verify_type": "partially",
     "result": "passed",
@@ -677,7 +677,7 @@
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": 259,
+    "line": 252,
     "need": "comp_req__persistency__snapshot_restore_v2",
     "verify_type": "partially",
     "result": "passed",
@@ -686,7 +686,7 @@
   {
     "name": "TestSnapshotPathsExist__test_ok[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": 291,
+    "line": 283,
     "need": "comp_req__persistency__snapshot_creation_v2",
     "verify_type": "partially",
     "result": "passed",
@@ -695,7 +695,7 @@
   {
     "name": "TestSnapshotPathsNonexistent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": 327,
+    "line": 319,
     "need": "comp_req__persistency__snapshot_creation_v2",
     "verify_type": "partially",
     "result": "passed",
@@ -1532,7 +1532,7 @@
   {
     "name": "TestSnapshotRestoreCurrent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": 216,
+    "line": 213,
     "need": "comp_req__persistency__snapshot_creation_v2",
     "verify_type": "partially",
     "result": "passed",
@@ -1541,7 +1541,7 @@
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": 259,
+    "line": 252,
     "need": "comp_req__persistency__snapshot_creation_v2",
     "verify_type": "partially",
     "result": "passed",
@@ -1550,7 +1550,7 @@
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": 259,
+    "line": 252,
     "need": "comp_req__persistency__snapshot_restore_v2",
     "verify_type": "partially",
     "result": "passed",
@@ -1559,7 +1559,7 @@
   {
     "name": "TestSnapshotPathsExist__test_ok[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": 291,
+    "line": 283,
     "need": "comp_req__persistency__snapshot_creation_v2",
     "verify_type": "partially",
     "result": "passed",
@@ -1568,7 +1568,7 @@
   {
     "name": "TestSnapshotPathsNonexistent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": 327,
+    "line": 319,
     "need": "comp_req__persistency__snapshot_creation_v2",
     "verify_type": "partially",
     "result": "passed",
