@@ -14,9 +14,15 @@ name: QNX Rust Build Test
 
 on: workflow_dispatch
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   qnx-rust-build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     environment: workflow-approval
     steps:
       - name: Checkout repository

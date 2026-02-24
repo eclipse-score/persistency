@@ -22,9 +22,15 @@ on:
     types: [checks_requested]
   workflow_call:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   component-integration-tests:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     defaults:
       run:
         shell: bash

@@ -15,10 +15,16 @@ name: QNX Integration Test
 
 on: workflow_dispatch
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   qnx-kvs-test:
     name: Build & Run QNX Integration Scenario
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
 
     steps:
       - name: Checkout repository

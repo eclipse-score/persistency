@@ -21,9 +21,13 @@ on:
   merge_group:
     types: [checks_requested]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   bazel-clippy:
-    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@main
+    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@dcalavrezo_containerized
     with:
       bazel-targets: "//src/rust/..."
       bazel-config: "lint"

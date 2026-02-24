@@ -16,9 +16,15 @@ on:
     types: [opened, reopened, synchronize]
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   rust_coverage:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2

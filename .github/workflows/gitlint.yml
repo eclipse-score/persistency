@@ -17,10 +17,16 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   lint-commits:
     name: check-commit-messages
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/eclipse-score/devcontainer:v1.1.0
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
