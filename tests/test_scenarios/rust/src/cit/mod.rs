@@ -1,3 +1,4 @@
+use crate::cit::constraints::constraints_group;
 use crate::cit::default_values::default_values_group;
 use crate::cit::multiple_kvs::multiple_kvs_group;
 use crate::cit::persistency::persistency_group;
@@ -5,6 +6,7 @@ use crate::cit::snapshots::snapshots_group;
 use crate::cit::supported_datatypes::supported_datatypes_group;
 use test_scenarios_rust::scenario::{ScenarioGroup, ScenarioGroupImpl};
 
+mod constraints;
 mod default_values;
 mod multiple_kvs;
 mod persistency;
@@ -17,6 +19,7 @@ pub fn cit_scenario_group() -> Box<dyn ScenarioGroup> {
         "cit",
         vec![],
         vec![
+            constraints_group(),
             default_values_group(),
             multiple_kvs_group(),
             persistency_group(),

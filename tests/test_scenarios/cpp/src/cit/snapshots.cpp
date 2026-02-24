@@ -17,6 +17,8 @@
 #include "helpers/kvs_parameters.hpp"
 #include "tracing.hpp"
 
+#include <fstream>
+
 using namespace score::mw::per::kvs;
 using namespace score::json;
 
@@ -255,12 +257,181 @@ class SnapshotPaths : public Scenario
     }
 };
 
+class SnapshotIDAssignment : public Scenario
+{
+  public:
+    ~SnapshotIDAssignment() final = default;
+
+    std::string name() const final
+    {
+        return "id_assignment";
+    }
+
+    void run(const std::string& input) const final
+    {
+        auto obj{get_object(input)};
+        auto count{get_field<int32_t>(obj, "count")};
+        auto params{KvsParameters::from_json(input)};
+
+        // Create snapshots and track their IDs.
+        for (int32_t i{0}; i < count; ++i)
+        {
+            auto kvs{kvs_instance(params)};
+            auto set_result{kvs.set_value("counter", KvsValue{i})};
+            if (!set_result)
+            {
+                throw std::runtime_error{"Failed to set value"};
+            }
+
+            auto flush_result{kvs.flush()};
+            if (!flush_result)
+            {
+                throw std::runtime_error{"Failed to flush"};
+            }
+        }
+
+        // Verify snapshot IDs exist
+        auto kvs{kvs_instance(params)};
+        auto snapshot_count_result{kvs.snapshot_count()};
+        if (!snapshot_count_result)
+        {
+            throw std::runtime_error{"Failed to get snapshot count"};
+        }
+
+        TRACING_INFO(kTargetName,
+                     std::make_pair(std::string{"snapshot_ids"},
+                                    std::string{"count="} + std::to_string(snapshot_count_result.value())));
+    }
+};
+
+class SnapshotDeletion : public Scenario
+{
+  public:
+    ~SnapshotDeletion() final = default;
+
+    std::string name() const final
+    {
+        return "deletion";
+    }
+
+    void run(const std::string& input) const final
+    {
+        auto obj{get_object(input)};
+        auto count{get_field<int32_t>(obj, "count")};
+        auto params{KvsParameters::from_json(input)};
+
+        auto kvs_temp{kvs_instance(params)};
+        auto snapshot_max_count{kvs_temp.snapshot_max_count()};
+
+        // Create more snapshots than the maximum to trigger deletion.
+        for (int32_t i{0}; i < count; ++i)
+        {
+            auto kvs{kvs_instance(params)};
+            auto set_result{kvs.set_value("counter", KvsValue{i})};
+            if (!set_result)
+            {
+                throw std::runtime_error{"Failed to set value"};
+            }
+
+            auto flush_result{kvs.flush()};
+            if (!flush_result)
+            {
+                throw std::runtime_error{"Failed to flush"};
+            }
+        }
+
+        // Verify that only max_count snapshots exist
+        auto kvs{kvs_instance(params)};
+        auto final_snapshot_count_result{kvs.snapshot_count()};
+        if (!final_snapshot_count_result)
+        {
+            throw std::runtime_error{"Failed to get final snapshot count"};
+        }
+
+        auto final_snapshot_count{final_snapshot_count_result.value()};
+        bool oldest_deleted{final_snapshot_count == snapshot_max_count &&
+                            count > static_cast<int32_t>(snapshot_max_count)};
+
+        TRACING_INFO(kTargetName, std::make_pair(std::string{"oldest_deleted"}, oldest_deleted));
+    }
+};
+
+class SnapshotNoVersioning : public Scenario
+{
+  public:
+    ~SnapshotNoVersioning() final = default;
+
+    std::string name() const final
+    {
+        return "no_versioning";
+    }
+
+    void run(const std::string& input) const final
+    {
+        auto obj{get_object(input)};
+        auto params{KvsParameters::from_json(input)};
+
+        // Create a KVS and flush it
+        auto kvs{kvs_instance(params)};
+        auto set_result{kvs.set_value("test_key", KvsValue{42})};
+        if (!set_result)
+        {
+            throw std::runtime_error{"Failed to set value"};
+        }
+
+        auto flush_result{kvs.flush()};
+        if (!flush_result)
+        {
+            throw std::runtime_error{"Failed to flush"};
+        }
+
+        // Get the KVS filename
+        auto kvs_filename_result{kvs.get_kvs_filename(0)};
+        if (!kvs_filename_result)
+        {
+            throw std::runtime_error{"Failed to get KVS filename"};
+        }
+
+        // Read the JSON file
+        std::ifstream file{kvs_filename_result.value().Native()};
+        if (!file.is_open())
+        {
+            throw std::runtime_error{"Failed to open KVS file"};
+        }
+
+        std::string content{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+        file.close();
+
+        // Parse the JSON and check for version field
+        JsonParser parser;
+        auto parse_result{parser.FromBuffer(content)};
+        if (!parse_result)
+        {
+            throw std::runtime_error{"Failed to parse KVS JSON"};
+        }
+
+        auto obj_result{parse_result.value().As<Object>()};
+        if (!obj_result)
+        {
+            throw std::runtime_error{"Failed to cast JSON to object"};
+        }
+
+        auto& kvs_data{obj_result.value().get()};
+        bool no_version_field{kvs_data.find("version") == kvs_data.end()};
+
+        TRACING_INFO(kTargetName, std::make_pair(std::string{"no_version_field"}, no_version_field));
+    }
+};
+
 ScenarioGroup::Ptr snapshots_group()
 {
     return ScenarioGroup::Ptr{new ScenarioGroupImpl{"snapshots",
                                                     {std::make_shared<SnapshotCount>(),
                                                      std::make_shared<SnapshotMaxCount>(),
                                                      std::make_shared<SnapshotRestore>(),
-                                                     std::make_shared<SnapshotPaths>()},
+                                                     std::make_shared<SnapshotPaths>(),
+                                                     std::make_shared<SnapshotIDAssignment>(),
+                                                     std::make_shared<SnapshotDeletion>(),
+                                                     std::make_shared<SnapshotNoVersioning>()},
                                                     {}}};
 }
