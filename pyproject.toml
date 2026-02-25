@@ -1,3 +1,16 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
 [tool.pytest]
 addopts = ["-v"]
 pythonpath = [
@@ -5,12 +18,24 @@ pythonpath = [
     "tests/test_cases/tests",
 ]
 testpaths = ["tests/test_cases/tests"]
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s %(levelname)s %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 markers = [
+    "cpp",
+    "rust",
+    "test_properties(dict)",  # add custom properties to test XML output
     "root_required",  # root permissions are required for this test
     "do_not_repeat",  # do not repeat this test when using pytest-repeat
     "only_nightly",  # run this test only in nightly runs
 ]
 junit_log_passing_tests = true
+junit_family = "xunit1"
+filterwarnings = [
+    'ignore:record_property is incompatible with junit_family:pytest.PytestWarning',
+    'ignore:record_xml_attribute is an experimental feature:pytest.PytestExperimentalApiWarning',
+]
 
 [tool.pytest_env]
 RUST_BACKTRACE =  {value = "1", skip_if_set = true}

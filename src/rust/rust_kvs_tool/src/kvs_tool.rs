@@ -1,4 +1,5 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -8,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-
+// *******************************************************************************
 //! # Key-Value Handling Command Line Tool based on the KVS API
 //!
 //! ## Introduction
@@ -75,6 +76,7 @@
 
 use pico_args::Arguments;
 use rust_kvs::prelude::*;
+use score_log::error;
 use std::collections::HashMap;
 use tinyjson::JsonValue;
 
@@ -104,14 +106,11 @@ fn from_tinyjson(value: &JsonValue) -> KvsValue {
         JsonValue::Array(arr) => {
             let v = arr.iter().map(from_tinyjson).collect();
             KvsValue::Array(v)
-        }
+        },
         JsonValue::Object(obj) => {
-            let map = obj
-                .iter()
-                .map(|(k, v)| (k.clone(), from_tinyjson(v)))
-                .collect();
+            let map = obj.iter().map(|(k, v)| (k.clone(), from_tinyjson(v))).collect();
             KvsValue::Object(map)
-        }
+        },
     }
 }
 
@@ -126,21 +125,19 @@ fn _getkey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
         Ok(None) | Err(_) => match args.opt_value_from_str("-k") {
             Ok(Some(val)) => val,
             _ => {
-                eprintln!("Error: Key (-k or --key) needs to be specified!");
+                error!("Key (-k or --key) needs to be specified!");
                 return Err(ErrorCode::UnmappedError);
-            }
+            },
         },
     };
     println!("Read Key {}", &key);
 
-    let key_exist = kvs.key_exists(&key).map_err(|e| {
-        eprintln!("KVS get:key_exists failed: {e:?}");
-        e
+    let key_exist = kvs.key_exists(&key).inspect_err(|e| {
+        error!("KVS get:key_exists failed: {:?}", e);
     })?;
 
-    let is_default = kvs.is_value_default(&key).map_err(|e| {
-        eprintln!("KVS get:is_value_default failed: {e:?}");
-        e
+    let is_default = kvs.is_value_default(&key).inspect_err(|e| {
+        error!("KVS get:is_value_default failed: {:?}", e);
     })?;
 
     if key_exist {
@@ -148,10 +145,10 @@ fn _getkey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
         match kvs.get_value(&key) {
             Ok(value) => {
                 println!("Key Value: {value:?}");
-            }
+            },
             Err(e) => {
-                eprintln!("Get Key Error: {e:?}");
-            }
+                error!("Get Key Error: {:?}", e);
+            },
         };
     } else {
         println!("Key '{key}' does not exist!");
@@ -166,10 +163,10 @@ fn _getkey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
     match kvs.get_default_value(&key) {
         Ok(value) => {
             println!("Default Value: {value:?}");
-        }
+        },
         Err(e) => {
-            eprintln!("Default Value Error: {e:?}");
-        }
+            error!("Default Value Error: {:?}", e);
+        },
     };
 
     println!("----------------------");
@@ -189,9 +186,9 @@ fn _setkey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
         Ok(None) | Err(_) => match args.opt_value_from_str("-k") {
             Ok(Some(val)) => val,
             _ => {
-                eprintln!("Error: Key (-k or --key) needs to be specified!");
+                error!("Key (-k or --key) needs to be specified!");
                 return Err(ErrorCode::UnmappedError);
-            }
+            },
         },
     };
 
@@ -208,24 +205,21 @@ fn _setkey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
             if let Ok(json_val) = value.parse::<JsonValue>() {
                 let kvs_val = from_tinyjson(&json_val);
                 println!("Key:'{}' \nParsed as JSON Value: {:?}", &key, kvs_val);
-                kvs.set_value(key, kvs_val).map_err(|e| {
-                    eprintln!("KVS set failed: {e:?}");
-                    e
+                kvs.set_value(key, kvs_val).inspect_err(|e| {
+                    error!("KVS set failed: {:?}", e);
                 })?;
             } else {
                 println!("Key:'{}' \nParsed as String Value: {}", &key, value);
-                kvs.set_value(key, KvsValue::String(value)).map_err(|e| {
-                    eprintln!("KVS set failed: {e:?}");
-                    e
+                kvs.set_value(key, KvsValue::String(value)).inspect_err(|e| {
+                    error!("KVS set failed: {:?}", e);
                 })?;
             }
-        }
+        },
         None => {
-            kvs.set_value(key, KvsValue::Null).map_err(|e| {
-                eprintln!("KVS set failed: {e:?}");
-                e
+            kvs.set_value(key, KvsValue::Null).inspect_err(|e| {
+                error!("KVS set failed: {:?}", e);
             })?;
-        }
+        },
     }
     kvs.flush()?;
     println!("----------------------");
@@ -240,15 +234,14 @@ fn _removekey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
         Ok(None) | Err(_) => match args.opt_value_from_str("-k") {
             Ok(Some(val)) => val,
             _ => {
-                eprintln!("Error: Key (-k or --key) needs to be specified!");
+                error!("Key (-k or --key) needs to be specified!");
                 return Err(ErrorCode::UnmappedError);
-            }
+            },
         },
     };
     println!("Remove Key {}", &key);
-    kvs.remove_key(&key).map_err(|e| {
-        eprintln!("KVS remove failed: {e:?}");
-        e
+    kvs.remove_key(&key).inspect_err(|e| {
+        error!("KVS remove failed: {:?}", e);
     })?;
     kvs.flush()?;
     println!("----------------------");
@@ -260,9 +253,8 @@ fn _removekey(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
 fn _listkeys(kvs: Kvs) -> Result<(), ErrorCode> {
     println!("----------------------");
     println!("List Keys");
-    let keys = kvs.get_all_keys().map_err(|e| {
-        eprintln!("KVS list failed: {e:?}");
-        e
+    let keys = kvs.get_all_keys().inspect_err(|e| {
+        error!("KVS list failed: {:?}", e);
     })?;
 
     for key in keys {
@@ -277,9 +269,8 @@ fn _listkeys(kvs: Kvs) -> Result<(), ErrorCode> {
 fn _reset(kvs: Kvs) -> Result<(), ErrorCode> {
     println!("----------------------");
     println!("Reset KVS");
-    kvs.reset().map_err(|e| {
-        eprintln!("KVS set failed: {e:?}");
-        e
+    kvs.reset().inspect_err(|e| {
+        error!("KVS set failed: {:?}", e);
     })?;
     kvs.flush()?;
     println!("----------------------");
@@ -317,16 +308,15 @@ fn _snapshotrestore(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
         Ok(None) | Err(_) => match args.opt_value_from_str("-s") {
             Ok(Some(val)) => val,
             _ => {
-                eprintln!("Error: Snapshot ID (-s or --snapshotid) needs to be specified!");
+                error!("Snapshot ID (-s or --snapshotid) needs to be specified!");
                 return Err(ErrorCode::UnmappedError);
-            }
+            },
         },
     };
     println!("Restore Snapshot {}", &snapshot_id);
     let snapshot_id = SnapshotId(snapshot_id as usize);
-    kvs.snapshot_restore(snapshot_id).map_err(|e| {
-        eprintln!("KVS restore failed: {e:?}");
-        e
+    kvs.snapshot_restore(snapshot_id).inspect_err(|e| {
+        error!("KVS restore failed: {:?}", e);
     })?;
     kvs.flush()?;
     println!("----------------------");
@@ -338,9 +328,9 @@ fn _downcast_backend(kvs: &Kvs) -> Result<&JsonBackend, ErrorCode> {
     match kvs.parameters().backend.as_any().downcast_ref() {
         Some(backend) => Ok(backend),
         None => {
-            eprintln!("Invalid backend type");
+            error!("Invalid backend type");
             Err(ErrorCode::UnmappedError)
-        }
+        },
     }
 }
 
@@ -353,9 +343,9 @@ fn _getkvsfilename(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
         Ok(None) | Err(_) => match args.opt_value_from_str("-s") {
             Ok(Some(val)) => val,
             _ => {
-                eprintln!("Error: Snapshot ID (-s or --snapshotid) needs to be specified!");
+                error!("Snapshot ID (-s or --snapshotid) needs to be specified!");
                 return Err(ErrorCode::UnmappedError);
-            }
+            },
         },
     };
     let instance_id = kvs.parameters().instance_id;
@@ -377,9 +367,9 @@ fn _gethashfilename(kvs: Kvs, mut args: Arguments) -> Result<(), ErrorCode> {
         Ok(None) | Err(_) => match args.opt_value_from_str("-s") {
             Ok(Some(val)) => val,
             _ => {
-                eprintln!("Error: Snapshot ID (-s or --snapshotid) needs to be specified!");
+                error!("Snapshot ID (-s or --snapshotid) needs to be specified!");
                 return Err(ErrorCode::UnmappedError);
-            }
+            },
         },
     };
     let instance_id = kvs.parameters().instance_id;
@@ -396,33 +386,24 @@ fn _createtestdata(kvs: Kvs) -> Result<(), ErrorCode> {
     println!("----------------------");
     println!("Create Test Data");
 
-    kvs.set_value("number", 123.0).map_err(|e| {
-        eprintln!("KVS Create Test Data Error (number): {e:?}");
-        e
+    kvs.set_value("number", 123.0).inspect_err(|e| {
+        error!("KVS Create Test Data Error (number): {:?}", e);
     })?;
-    kvs.set_value("bool", true).map_err(|e| {
-        eprintln!("KVS Create Test Data Error (bool): {e:?}");
-        e
+    kvs.set_value("bool", true).inspect_err(|e| {
+        error!("KVS Create Test Data Error (bool): {:?}", e);
     })?;
-    kvs.set_value("string", "First".to_string()).map_err(|e| {
-        eprintln!("KVS Create Test Data Error (string): {e:?}");
-        e
+    kvs.set_value("string", "First".to_string()).inspect_err(|e| {
+        error!("KVS Create Test Data Error (string): {:?}", e);
     })?;
-    kvs.set_value("null", ()).map_err(|e| {
-        eprintln!("KVS Create Test Data Error (null): {e:?}");
-        e
+    kvs.set_value("null", ()).inspect_err(|e| {
+        error!("KVS Create Test Data Error (null): {:?}", e);
     })?;
     kvs.set_value(
         "array",
-        vec![
-            KvsValue::from(456.0),
-            false.into(),
-            "Second".to_string().into(),
-        ],
+        vec![KvsValue::from(456.0), false.into(), "Second".to_string().into()],
     )
-    .map_err(|e| {
-        eprintln!("KVS Create Test Data Error (array): {e:?}");
-        e
+    .inspect_err(|e| {
+        error!("KVS Create Test Data Error (array): {:?}", e);
     })?;
     kvs.set_value(
         "object",
@@ -433,17 +414,12 @@ fn _createtestdata(kvs: Kvs) -> Result<(), ErrorCode> {
             ("sub-null".into(), ().into()),
             (
                 "sub-array".into(),
-                KvsValue::from(vec![
-                    KvsValue::from(1246.0),
-                    false.into(),
-                    "Fourth".to_string().into(),
-                ]),
+                KvsValue::from(vec![KvsValue::from(1246.0), false.into(), "Fourth".to_string().into()]),
             ),
         ]),
     )
-    .map_err(|e| {
-        eprintln!("KVS Create Test Data Error (object): {e:?}");
-        e
+    .inspect_err(|e| {
+        error!("KVS Create Test Data Error (object): {:?}", e);
     })?;
     kvs.flush()?;
     println!("Done!");
@@ -451,9 +427,19 @@ fn _createtestdata(kvs: Kvs) -> Result<(), ErrorCode> {
     Ok(())
 }
 
+fn init_logging() {
+    #[cfg(feature = "stdout_logger")]
+    stdout_logger::StdoutLoggerBuilder::new().set_as_default_logger();
+
+    #[cfg(feature = "score_log_bridge")]
+    score_log_bridge::ScoreLogBridgeBuilder::new().set_as_default_logger();
+}
+
 /// Main function to run the KVS tool command line interface.
 fn main() -> Result<(), ErrorCode> {
     let mut args = Arguments::from_env();
+
+    init_logging();
 
     if args.contains(["-h", "--help"]) {
         const HELP: &str = r#"
@@ -545,9 +531,9 @@ fn main() -> Result<(), ErrorCode> {
     let kvs = match builder.build() {
         Ok(kvs) => kvs,
         Err(e) => {
-            eprintln!("Error opening KVS: {e:?}");
+            error!("Error opening KVS: {:?}", e);
             return Err(e);
-        }
+        },
     };
 
     let operation: Option<String> = match args.opt_value_from_str("--operation") {
@@ -555,11 +541,9 @@ fn main() -> Result<(), ErrorCode> {
         Ok(None) | Err(_) => match args.opt_value_from_str("-o") {
             Ok(Some(val)) => Some(val),
             _ => {
-                eprintln!(
-                    "Error: No operation specified. Use -o or --operation followed by a value."
-                );
+                error!("No operation specified. Use -o or --operation followed by a value.");
                 return Err(ErrorCode::UnmappedError);
-            }
+            },
         },
     };
     let op_mode = match operation {
@@ -584,52 +568,50 @@ fn main() -> Result<(), ErrorCode> {
         OperationMode::GetKey => {
             _getkey(kvs, args)?;
             Ok(())
-        }
+        },
         OperationMode::SetKey => {
             _setkey(kvs, args)?;
             Ok(())
-        }
+        },
         OperationMode::RemoveKey => {
             _removekey(kvs, args)?;
             Ok(())
-        }
+        },
         OperationMode::ListKeys => {
             _listkeys(kvs)?;
             Ok(())
-        }
+        },
         OperationMode::Reset => {
             _reset(kvs)?;
             Ok(())
-        }
+        },
         OperationMode::SnapshotCount => {
             _snapshotcount(kvs)?;
             Ok(())
-        }
+        },
         OperationMode::SnapshotMaxCount => {
             _snapshotmaxcount(kvs)?;
             Ok(())
-        }
+        },
         OperationMode::SnapshotRestore => {
             _snapshotrestore(kvs, args)?;
             Ok(())
-        }
+        },
         OperationMode::GetKvsFilename => {
             _getkvsfilename(kvs, args)?;
             Ok(())
-        }
+        },
         OperationMode::GetHashFilename => {
             _gethashfilename(kvs, args)?;
             Ok(())
-        }
+        },
         OperationMode::CreateTestData => {
             _createtestdata(kvs)?;
             Ok(())
-        }
+        },
         OperationMode::Invalid => {
-            println!("----------------------");
-            eprintln!("Invalid operation specified. Use -o or --operation to specify a valid operation. (See -h or --help for more information)");
-            println!("----------------------");
+            error!("Invalid operation specified. Use -o or --operation to specify a valid operation. (See -h or --help for more information)");
             Err(ErrorCode::UnmappedError)
-        }
+        },
     }
 }

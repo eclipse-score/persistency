@@ -44,6 +44,8 @@ score_py_pytest(
     args = [
         "-m cpp",
         "--cpp-target-path=$(rootpath //tests/test_scenarios/cpp:test_scenarios)",
+        "--traces=all",
+        "--log-cli-level=DEBUG",
     ],
     data = [
         ":python_tc_venv",
@@ -52,7 +54,7 @@ score_py_pytest(
     env = {
         "RUST_BACKTRACE": "1",
     },
-    pytest_ini = "//tests/test_cases:pytest.ini",
+    pytest_config = "//:pyproject.toml",
     deps = all_requirements,
 )
 
@@ -62,6 +64,8 @@ score_py_pytest(
     args = [
         "-m rust",
         "--rust-target-path=$(rootpath //tests/test_scenarios/rust:test_scenarios)",
+        "--traces=all",
+        "--log-cli-level=DEBUG",
     ],
     data = [
         ":python_tc_venv",
@@ -70,7 +74,7 @@ score_py_pytest(
     env = {
         "RUST_BACKTRACE": "1",
     },
-    pytest_ini = "//tests/test_cases:pytest.ini",
+    pytest_config = "//:pyproject.toml",
     deps = all_requirements,
 )
 

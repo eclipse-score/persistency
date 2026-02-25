@@ -20,6 +20,7 @@ on:
       - main
   merge_group:
     types: [checks_requested]
+  workflow_call:
 
 jobs:
   component-integration-tests:
@@ -28,7 +29,15 @@ jobs:
       run:
         shell: bash
     steps:
+      - name: Checkout repository (pull_request_target via workflow_call)
+        if: ${{ github.event_name == 'pull_request_target' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.event.pull_request.head.ref || github.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+
       - name: Checkout repository
+        if: ${{ github.event_name != 'pull_request_target' }}
         uses: actions/checkout@v4
 
       - name: Setup Rust build environment
@@ -50,7 +59,7 @@ jobs:
 
       - name: Build Rust test scenarios with Bazel
         run: |
-          bazel build //tests/test_scenarios/rust:test_scenarios
+          bazel build --config=per-x86_64-linux //tests/test_scenarios/rust:test_scenarios
 
       - name: Set up Python 3
         uses: actions/setup-python@v5
@@ -66,4 +75,24 @@ jobs:
       - name: Run Python tests with pytest
         run: |
           source .venv/bin/activate
-          python -m pytest --traces=all
+          python -m pytest --traces=all --log-cli-level=DEBUG
+
+      - name: Run Python tests with bazel
+        run: |
+          bazel test --config=per-x86_64-linux //tests/test_cases:cit
+
+      - name: Prepare test reports
+        if: always()
+        # Creating tests-report directory
+        # Follow Symlinks via '-L' to copy correctly
+        # Copy everything inside the 'test-reports' folder
+        run: |
+          mkdir -p tests-report
+          rsync -amL --include='*/' --include='test.xml' --include='test.log' --exclude='*' bazel-testlogs/ tests-report/
+
+      - name: Upload bundled test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-report
+          path: tests-report

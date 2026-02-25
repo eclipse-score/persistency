@@ -87,7 +87,6 @@ class SnapshotCount : public Scenario
      * only after flush when MAX<3.
      *
      * Raised bugs: https://github.com/eclipse-score/persistency/issues/108
-     *              https://github.com/eclipse-score/persistency/issues/192
      */
     void run(const std::string& input) const final
     {

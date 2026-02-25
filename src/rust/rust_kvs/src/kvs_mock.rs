@@ -1,4 +1,5 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -8,10 +9,11 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-
+// *******************************************************************************
 use crate::error_code::ErrorCode;
 use crate::kvs_api::{KvsApi, SnapshotId};
 use crate::kvs_value::{KvsMap, KvsValue};
+use crate::log::ScoreDebug;
 use std::sync::{Arc, Mutex};
 
 #[derive(Clone)]
@@ -70,17 +72,12 @@ impl KvsApi for MockKvs {
         if self.fail {
             return Err(ErrorCode::UnmappedError);
         }
-        self.map
-            .lock()
-            .unwrap()
-            .get(key)
-            .cloned()
-            .ok_or(ErrorCode::KeyNotFound)
+        self.map.lock().unwrap().get(key).cloned().ok_or(ErrorCode::KeyNotFound)
     }
     fn get_value_as<T>(&self, key: &str) -> Result<T, ErrorCode>
     where
-        for<'a> T: TryFrom<&'a KvsValue> + Clone,
-        for<'a> <T as TryFrom<&'a KvsValue>>::Error: core::fmt::Debug,
+        for<'a> T: TryFrom<&'a KvsValue>,
+        for<'a> <T as TryFrom<&'a KvsValue>>::Error: ScoreDebug,
     {
         if self.fail {
             return Err(ErrorCode::UnmappedError);
@@ -100,11 +97,7 @@ impl KvsApi for MockKvs {
         }
         Ok(false)
     }
-    fn set_value<S: Into<String>, V: Into<KvsValue>>(
-        &self,
-        key: S,
-        value: V,
-    ) -> Result<(), ErrorCode> {
+    fn set_value<S: Into<String>, V: Into<KvsValue>>(&self, key: S, value: V) -> Result<(), ErrorCode> {
         if self.fail {
             return Err(ErrorCode::UnmappedError);
         }

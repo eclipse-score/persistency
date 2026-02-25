@@ -1,4 +1,5 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -8,7 +9,9 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 
+use crate::log::ScoreDebug;
 use core::convert::TryFrom;
 use std::collections::HashMap;
 
@@ -16,7 +19,7 @@ use std::collections::HashMap;
 pub type KvsMap = HashMap<String, KvsValue>;
 
 /// Key-value-storage value
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, ScoreDebug)]
 pub enum KvsValue {
     /// 32-bit signed integer
     I32(i32),

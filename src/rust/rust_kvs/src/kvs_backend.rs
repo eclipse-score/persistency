@@ -1,4 +1,5 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -8,10 +9,11 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-
+// *******************************************************************************
 use crate::error_code::ErrorCode;
 use crate::kvs_api::{InstanceId, SnapshotId};
 use crate::kvs_value::KvsMap;
+use crate::log::ScoreDebug;
 use core::any::Any;
 
 /// Trait for comparisons between types.
@@ -40,13 +42,9 @@ where
 }
 
 /// KVS backend interface.
-pub trait KvsBackend: DynEq + Sync + Send {
+pub trait KvsBackend: DynEq + Sync + Send + ScoreDebug {
     /// Load KVS content.
-    fn load_kvs(
-        &self,
-        instance_id: InstanceId,
-        snapshot_id: SnapshotId,
-    ) -> Result<KvsMap, ErrorCode>;
+    fn load_kvs(&self, instance_id: InstanceId, snapshot_id: SnapshotId) -> Result<KvsMap, ErrorCode>;
 
     /// Load default values.
     fn load_defaults(&self, instance_id: InstanceId) -> Result<KvsMap, ErrorCode>;
@@ -62,9 +60,5 @@ pub trait KvsBackend: DynEq + Sync + Send {
     fn snapshot_max_count(&self) -> usize;
 
     /// Restore snapshot with given ID.
-    fn snapshot_restore(
-        &self,
-        instance_id: InstanceId,
-        snapshot_id: SnapshotId,
-    ) -> Result<KvsMap, ErrorCode>;
+    fn snapshot_restore(&self, instance_id: InstanceId, snapshot_id: SnapshotId) -> Result<KvsMap, ErrorCode>;
 }

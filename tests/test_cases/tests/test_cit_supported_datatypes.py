@@ -28,8 +28,8 @@ pytestmark = pytest.mark.parametrize("version", ["cpp", "rust"], scope="class")
         "comp_req__persistency__key_uniqueness_v2",
     ],
     fully_verifies=["comp_req__persistency__value_data_types_v2"],
-    test_type="requirements-based",
-    derivation_technique="interface-test",
+    test_type="interface-test",
+    derivation_technique="requirements-analysis",
 )
 class TestSupportedDatatypesKeys(CommonScenario):
     """Verifies that KVS supports UTF-8 string keys for storing and retrieving values."""
@@ -60,8 +60,8 @@ class TestSupportedDatatypesKeys(CommonScenario):
         "comp_req__persistency__key_uniqueness_v2",
     ],
     fully_verifies=["comp_req__persistency__value_data_types_v2"],
-    test_type="requirements-based",
-    derivation_technique="interface-test",
+    test_type="interface-test",
+    derivation_technique="requirements-analysis",
 )
 class TestSupportedDatatypesValues(CommonScenario):
     """Verifies that KVS supports UTF-8 string keys for storing and retrieving values."""

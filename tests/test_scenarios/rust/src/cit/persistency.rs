@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 use crate::helpers::kvs_instance::kvs_instance;
 use crate::helpers::kvs_parameters::KvsParameters;
 use crate::helpers::{kvs_hash_paths, to_str};
@@ -41,8 +53,7 @@ impl Scenario for ExplicitFlush {
         {
             // Second KVS instance object - used for flush check.
             let kvs = kvs_instance(params).expect("Failed to create KVS instance");
-            let (kvs_path, hash_path) =
-                kvs_hash_paths(&working_dir, kvs.parameters().instance_id, SnapshotId(0));
+            let (kvs_path, hash_path) = kvs_hash_paths(&working_dir, kvs.parameters().instance_id, SnapshotId(0));
             info!(
                 kvs_path = to_str(&kvs_path),
                 kvs_path_exists = kvs_path.exists(),

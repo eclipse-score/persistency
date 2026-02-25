@@ -25,4 +25,5 @@ jobs:
   bazel-clippy:
     uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@main
     with:
-      bazel-target: "build //:clippy"
+      bazel-targets: "//src/rust/..."
+      bazel-config: "lint"

@@ -589,7 +589,7 @@ score::Result<size_t> Kvs::snapshot_count() const
     score::Result<size_t> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     size_t count = 0;
     bool error = false;
-    for (size_t idx = 1; idx <= KVS_MAX_SNAPSHOTS; ++idx)
+    for (size_t idx = 0; idx < KVS_MAX_SNAPSHOTS; ++idx)
     {
         const score::filesystem::Path fname = filename_prefix.Native() + "_" + to_string(idx) + ".json";
         const auto fname_exists_res = filesystem->standard->Exists(fname);
@@ -605,7 +605,7 @@ score::Result<size_t> Kvs::snapshot_count() const
             error = true;
             break;
         }
-        count = idx;
+        count = idx+1;
     }
     if (error)
     {

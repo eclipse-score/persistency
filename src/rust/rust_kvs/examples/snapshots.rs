@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 //! Example for snapshots handling.
 //! - Snapshot count and max count.
 //! - Snapshot restore.
@@ -18,9 +30,7 @@ fn main() -> Result<(), ErrorCode> {
 
         // Build KVS instance for given instance ID and temporary directory.
         let builder = KvsBuilder::new(instance_id).backend(Box::new(
-            JsonBackendBuilder::new()
-                .working_dir(dir_path.clone())
-                .build(),
+            JsonBackendBuilder::new().working_dir(dir_path.clone()).build(),
         ));
         let kvs = builder.build()?;
 
@@ -42,9 +52,8 @@ fn main() -> Result<(), ErrorCode> {
         println!("-> `snapshot_restore` usage");
 
         // Build KVS instance for given instance ID and temporary directory.
-        let builder = KvsBuilder::new(instance_id).backend(Box::new(
-            JsonBackendBuilder::new().working_dir(dir_path).build(),
-        ));
+        let builder =
+            KvsBuilder::new(instance_id).backend(Box::new(JsonBackendBuilder::new().working_dir(dir_path).build()));
         let kvs = builder.build()?;
 
         let max_count = kvs.snapshot_max_count() as u32;

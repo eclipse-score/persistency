@@ -15,8 +15,8 @@ from typing import Any
 
 import pytest
 from common import CommonScenario, ResultCode
-from testing_utils import LogContainer, ScenarioResult
 from test_properties import add_test_properties
+from testing_utils import LogContainer, ScenarioResult
 
 pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
 
@@ -27,7 +27,7 @@ pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
         "comp_req__persistency__concurrency_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 class TestMultipleInstanceIds(CommonScenario):
     """Verifies that multiple KVS instances with different IDs store and retrieve independent values without interference."""
@@ -64,7 +64,7 @@ class TestMultipleInstanceIds(CommonScenario):
         "comp_req__persistency__concurrency_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 class TestSameInstanceIdSameValue(CommonScenario):
     """Checks that multiple KVS instances with the same ID and key maintain consistent values across instances."""
@@ -100,7 +100,7 @@ class TestSameInstanceIdSameValue(CommonScenario):
         "comp_req__persistency__concurrency_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 class TestSameInstanceIdDifferentValue(CommonScenario):
     """Verifies that changes in one KVS instance with a shared ID and key are reflected in another instance, demonstrating interference."""

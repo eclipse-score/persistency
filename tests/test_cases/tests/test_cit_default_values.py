@@ -96,7 +96,7 @@ class DefaultValuesScenario(CommonScenario):
         "comp_req__persistency__value_reset_v2"
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required", "without"], scope="class")
 class TestDefaultValues(DefaultValuesScenario):
@@ -174,7 +174,7 @@ class TestDefaultValues(DefaultValuesScenario):
         "comp_req__persistency__default_value_types_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required", "without"], scope="class")
 class TestRemoveKey(DefaultValuesScenario):
@@ -259,7 +259,7 @@ class TestRemoveKey(DefaultValuesScenario):
         "comp_req__persistency__default_value_types_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestMalformedDefaultsFile(DefaultValuesScenario):
@@ -317,7 +317,7 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         assert defaults_file is not None
         assert results.return_code == ResultCode.PANIC
         assert results.stderr is not None
-        pattern = r'error: file ".*" could not be read: JsonParserError'
+        pattern = r'file ".*" could not be read: JsonParserError'
         assert re.findall(pattern, results.stderr) is not None
 
 
@@ -328,7 +328,7 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         "comp_req__persistency__default_value_types_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["required"], scope="class")
 class TestMissingDefaultsFile(DefaultValuesScenario):
@@ -354,7 +354,7 @@ class TestMissingDefaultsFile(DefaultValuesScenario):
     def test_invalid(self, results: ScenarioResult) -> None:
         assert results.return_code == ResultCode.PANIC
         assert results.stderr is not None
-        pattern = r'error: file ".*" could not be read: KvsFileReadError'
+        pattern = r'file ".*" could not be read: KvsFileReadError'
         assert re.findall(pattern, results.stderr) is not None
 
 
@@ -366,7 +366,7 @@ class TestMissingDefaultsFile(DefaultValuesScenario):
         "comp_req__persistency__default_value_types_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestResetAllKeys(DefaultValuesScenario):
@@ -432,7 +432,7 @@ class TestResetAllKeys(DefaultValuesScenario):
         "comp_req__persistency__default_value_cfg_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestResetSingleKey(DefaultValuesScenario):
@@ -514,7 +514,7 @@ class TestResetSingleKey(DefaultValuesScenario):
         "comp_req__persistency__default_value_cfg_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestChecksumOnProvidedDefaults(DefaultValuesScenario):
