@@ -86,12 +86,12 @@ Module Workproducts List
         * - :need:`wp__fdr_reports` (module Safety Plan)
           - :need:`gd_chklst__safety_plan`
           - :ndf:`copy('status', need_id='gd_chklst__safety_plan')`
-          - :need:`doc__persistency_safety_plan_fdr`
+          - :need:`doc__persistency_safety_plan_v2_fdr_v2`
 
         * - :need:`wp__fdr_reports` (module Safety Package)
           - :need:`gd_chklst__safety_package`
           - :ndf:`copy('status', need_id='gd_chklst__safety_package')`
-          - :need:`doc__persistency_safety_package_fdr`
+          - :need:`doc__persistency_safety_package_fdr_v2`
 
         * - :need:`wp__fdr_reports` (module's Safety Analyses & DFA)
           - :need:`gd_guidl__safety_analysis`
@@ -106,17 +106,17 @@ Module Workproducts List
         * - :need:`wp__module_safety_manual`
           - :need:`gd_temp__safety_manual`
           - :ndf:`copy('status', need_id='gd_temp__safety_manual')`
-          - :need:`doc__persistency_safety_manual`
+          - :need:`doc__persistency_safety_manual_v2`
 
         * - :need:`wp__verification_module_ver_report`
           - :need:`gd_temp__mod_ver_report`
           - :ndf:`copy('status', need_id='gd_temp__mod_ver_report')`
-          - :need:`doc__persistency_verification_report`
+          - :need:`doc__persistency_verification_report_v2`
 
         * - :need:`wp__module_sw_release_note`
           - :need:`gd_temp__rel_mod_rel_note`
           - :ndf:`copy('status', need_id='gd_temp__rel_mod_rel_note')`
-          - :need:`doc__persistency_release_note`
+          - :need:`doc__persistency_release_note_v2`
 
 Component KVS Workproducts List
 -------------------------------
@@ -147,7 +147,7 @@ Component KVS Workproducts List
         * - :need:`wp__component_arch`
           - :need:`gd_temp__arch_comp`
           - :ndf:`copy('status', need_id='gd_temp__arch_comp')`
-          - :need:`doc__persistency_kvs_architecture`
+          - :need:`doc__persistency_kvs_architecture_v2`
 
         * - :need:`wp__sw_arch_verification`
           - :need:`gd_chklst__arch_inspection_checklist`
@@ -157,12 +157,12 @@ Component KVS Workproducts List
         * - :need:`wp__sw_component_fmea`
           - :need:`wp__sw_component_fmea`
           - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
-          - :need:`doc__persistency_kvs_fmea`
+          - :need:`doc__persistency_kvs_fmea_v2`
 
         * - :need:`wp__sw_component_dfa`
           - :need:`wp__sw_component_dfa`
           - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
-          - :need:`doc__persistency_kvs_dfa`
+          - :need:`doc__persistency_kvs_dfa_v2`
 
         * - :need:`wp__sw_implementation`
           - :need:`gd_guidl__implementation`
@@ -187,7 +187,7 @@ Component KVS Workproducts List
         * - :need:`wp__sw_component_class`
           - :need:`gd_guidl__component_classification`
           - :ndf:`copy('status', need_id='gd_guidl__component_classification')`
-          - :need:`doc__persistency_component_classification`
+          - :need:`doc__persistency_component_classification_v2`
 
 
 OSS (sub-)component qualification plan
