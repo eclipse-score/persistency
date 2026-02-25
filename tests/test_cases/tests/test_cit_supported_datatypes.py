@@ -15,7 +15,7 @@ from abc import abstractmethod
 from typing import Any
 
 import pytest
-from common import CommonScenario, ResultCode
+from .common import CommonScenario, ResultCode
 from test_properties import add_test_properties
 from testing_utils import LogContainer, ScenarioResult
 

@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any, Generator
 
 import pytest
-from common import CommonScenario, ResultCode, temp_dir_common
+from .common import CommonScenario, ResultCode, temp_dir_common
 from test_properties import add_test_properties
 from testing_utils import LogContainer, ScenarioResult
 

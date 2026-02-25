@@ -18,6 +18,7 @@ use crate::cit::supported_datatypes::supported_datatypes_group;
 use test_scenarios_rust::scenario::{ScenarioGroup, ScenarioGroupImpl};
 
 mod constraints;
+use crate::cit::constraints::constraints_group;
 mod default_values;
 mod multiple_kvs;
 mod persistency;

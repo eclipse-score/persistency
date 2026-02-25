@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from common import CommonScenario, ResultCode
+from .common import CommonScenario, ResultCode
 from testing_utils import LogContainer, ScenarioResult
 from test_properties import add_test_properties
 
