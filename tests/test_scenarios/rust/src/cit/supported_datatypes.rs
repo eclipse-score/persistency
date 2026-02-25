@@ -180,8 +180,8 @@ impl Scenario for ValueLength {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
-        let byte_size: usize = serde_json::from_value(v["byte_size"].clone())
-            .expect("Failed to parse \"byte_size\" field");
+        let byte_size: usize =
+            serde_json::from_value(v["byte_size"].clone()).expect("Failed to parse \"byte_size\" field");
         let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
 
         let kvs = kvs_instance(params).expect("Failed to create KVS instance");
@@ -205,10 +205,10 @@ impl Scenario for ValueLength {
                     } else {
                         info!(retrieve_success = false, "Retrieved value is not a string");
                     }
-                }
+                },
                 Err(e) => {
                     info!(retrieve_success = false, error = ?e, "Failed to retrieve value");
-                }
+                },
             }
         } else {
             info!(retrieve_success = false, "Store failed, skipping retrieval");

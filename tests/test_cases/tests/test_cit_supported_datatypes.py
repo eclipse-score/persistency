@@ -248,8 +248,7 @@ class TestValueLength(CommonScenario):
             log_size = logs_info_level.find_log("value_size")
             assert log_size is not None, f"value_size log not found for {byte_size} bytes"
             value_size = int(log_size.value_size)
-            assert value_size == byte_size, \
-                f"Retrieved value size mismatch: expected {byte_size}, got {value_size}"
+            assert value_size == byte_size, f"Retrieved value size mismatch: expected {byte_size}, got {value_size}"
         else:
             # Exceeds limit - current KVS implementation may accept > 1024 bytes
             # Just verify the scenario completed successfully

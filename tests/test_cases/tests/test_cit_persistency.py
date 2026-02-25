@@ -56,6 +56,7 @@ class TestExplicitFlush(CommonScenario):
 # Note: The following tests verify requirements but need extended scenarios
 # They are marked as TODO until scenario implementations are added
 
+
 @pytest.mark.skip(reason="Requires scenario implementation - comp_req__persistency__pers_data_csum_v2")
 @add_test_properties(
     fully_verifies=["comp_req__persistency__pers_data_csum_v2"],
@@ -64,6 +65,7 @@ class TestExplicitFlush(CommonScenario):
 )
 class TestDataChecksumGeneration:
     """TODO: Verifies checksum file generation - needs scenario support"""
+
     pass
 
 
@@ -75,6 +77,7 @@ class TestDataChecksumGeneration:
 )
 class TestDataChecksumVerification:
     """TODO: Verifies checksum verification - needs scenario support"""
+
     pass
 
 
@@ -86,6 +89,7 @@ class TestDataChecksumVerification:
 )
 class TestValueSerialization:
     """TODO: Verifies JSON serialization - needs scenario support"""
+
     pass
 
 
@@ -97,6 +101,7 @@ class TestValueSerialization:
 )
 class TestDataStorageFormat:
     """TODO: Verifies JSON storage format - needs scenario support"""
+
     pass
 
 
@@ -108,6 +113,7 @@ class TestDataStorageFormat:
 )
 class TestFileAPIUsage:
     """TODO: Verifies file API usage - needs scenario support"""
+
     pass
 
 
@@ -119,4 +125,5 @@ class TestFileAPIUsage:
 )
 class TestJSONSchemaFlexibility:
     """TODO: Verifies JSON schema flexibility - needs scenario support"""
+
     pass

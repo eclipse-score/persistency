@@ -93,7 +93,7 @@ class DefaultValuesScenario(CommonScenario):
         "comp_req__persistency__default_value_types_v2",
         "comp_req__persistency__default_value_query_v2",
         "comp_req__persistency__default_val_chksum_v2",
-        "comp_req__persistency__value_reset_v2"
+        "comp_req__persistency__value_reset_v2",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",

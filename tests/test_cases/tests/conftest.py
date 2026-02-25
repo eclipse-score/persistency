@@ -84,13 +84,13 @@ def pytest_sessionstart(session):
 
             # Build Rust test scenarios.
             logger.info("Building Rust test scenarios executable...")
-            rust_build_tools = BazelTools(option_prefix="rust", build_timeout=build_timeout)
+            rust_build_tools = BazelTools(option_prefix="rust", command_timeout=60.0, build_timeout=build_timeout)
             rust_target_name = session.config.getoption("--rust-target-name")
             rust_build_tools.build(rust_target_name, "--config=per-x86_64-linux")
 
             # Build C++ test scenarios.
             logger.info("Building C++ test scenarios executable...")
-            cpp_build_tools = BazelTools(option_prefix="cpp", build_timeout=build_timeout)
+            cpp_build_tools = BazelTools(option_prefix="cpp", command_timeout=60.0, build_timeout=build_timeout)
             cpp_target_name = session.config.getoption("--cpp-target-name")
             cpp_build_tools.build(cpp_target_name, "--config=per-x86_64-linux")
 

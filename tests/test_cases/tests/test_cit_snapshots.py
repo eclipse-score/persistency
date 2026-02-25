@@ -46,7 +46,7 @@ class MaxSnapshotsScenario(CommonScenario):
         "comp_req__persistency__snapshot_id_v2",
         "comp_req__persistency__snapshot_rotate_v2",
         "comp_req__persistency__snapshot_restore_v2",
-        "comp_req__persistency__snapshot_delete_v2"
+        "comp_req__persistency__snapshot_delete_v2",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
@@ -444,9 +444,7 @@ class TestSnapshotDeletion(MaxSnapshotsScenario):
         deletion_log = logs_info_level.find_log("oldest_deleted")
         assert deletion_log is not None, "Deletion should be logged"
         # Handle both bool (Rust) and int (C++) values - just check truthiness
-        assert deletion_log.oldest_deleted, (
-            f"Expected oldest_deleted to be truthy, got {deletion_log.oldest_deleted}"
-        )
+        assert deletion_log.oldest_deleted, f"Expected oldest_deleted to be truthy, got {deletion_log.oldest_deleted}"
 
 
 @add_test_properties(

@@ -65,7 +65,7 @@ class CommonScenario(Scenario):
     @pytest.fixture(scope="class")
     def build_tools(self, version: str) -> BuildTools:
         assert version in ("cpp", "rust")
-        return BazelTools(option_prefix=version)
+        return BazelTools(option_prefix=version, command_timeout=60.0)
 
     @pytest.fixture(scope="class")
     def temp_dir(self, tmp_path_factory: pytest.TempPathFactory, version: str) -> Generator[Path, None, None]:

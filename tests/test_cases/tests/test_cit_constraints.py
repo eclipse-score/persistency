@@ -1,3 +1,15 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
 # Copyright (c) 2025 Qorix
 #
 # Test cases for KVS constraint configuration
@@ -86,8 +98,9 @@ class TestConstraintConfiguration(CommonScenario):
                 # Rust accepts the runtime config value without compile-time capping
                 expected_max = constraint_value
 
-            assert configured_max == expected_max, \
+            assert configured_max == expected_max, (
                 f"Runtime constraint not properly configured: expected {expected_max}, got {configured_max}"
+            )
 
             log_applied = logs_info_level.find_log("constraint_applied")
             assert log_applied is not None, "constraint_applied log not found"
@@ -105,8 +118,9 @@ class TestConstraintConfiguration(CommonScenario):
             log_compile_max = logs_info_level.find_log("compile_time_max")
             assert log_compile_max is not None, "compile_time_max log not found"
             compile_time_max = int(log_compile_max.compile_time_max)
-            assert compile_time_max == constraint_value, \
+            assert compile_time_max == constraint_value, (
                 f"Compile-time KVS_MAX_SNAPSHOTS should be {constraint_value}, got {compile_time_max}"
+            )
 
             log_exists = logs_info_level.find_log("compile_time_constraint_exists")
             assert log_exists is not None, "compile_time_constraint_exists log not found"
@@ -120,10 +134,7 @@ class TestConstraintConfiguration(CommonScenario):
 
 
 @add_test_properties(
-    fully_verifies=[
-        "comp_req__persistency__permission_control_v2",
-        "comp_req__persistency__permission_err_hndl_v2"
-    ],
+    fully_verifies=["comp_req__persistency__permission_control_v2", "comp_req__persistency__permission_err_hndl_v2"],
     test_type="requirements-based",
     derivation_technique="error-test",
 )
@@ -241,14 +252,12 @@ class TestPermissionErrorHandling(CommonScenario):
         log_detected = logs_info_level.find_log("error_detected")
         assert log_detected is not None, f"error_detected log not found for {error_type}"
         error_detected = int(log_detected.error_detected)
-        assert error_detected == 1, \
-            f"Permission error should be detected for {error_type}"
+        assert error_detected == 1, f"Permission error should be detected for {error_type}"
 
         log_reported = logs_info_level.find_log("error_reported")
         assert log_reported is not None, f"error_reported log not found for {error_type}"
         error_reported = int(log_reported.error_reported)
-        assert error_reported == 1, \
-            f"Permission error should be reported to application for {error_type}"
+        assert error_reported == 1, f"Permission error should be reported to application for {error_type}"
 
         # Check that error message contains useful information
         log_msg = logs_info_level.find_log("error_message")
@@ -256,8 +265,7 @@ class TestPermissionErrorHandling(CommonScenario):
         error_msg = str(log_msg.error_message).lower()
         assert len(error_msg) > 0, "Error message should not be empty"
         # Check for various error indicators (flexible matching)
-        has_error_indicator = any(keyword in error_msg for keyword in [
-            "permission", "access", "denied", "error", "fail", "cannot", "unable"
-        ])
-        assert has_error_indicator, \
-            f"Error message should indicate permission/access issue, got: {error_msg}"
+        has_error_indicator = any(
+            keyword in error_msg for keyword in ["permission", "access", "denied", "error", "fail", "cannot", "unable"]
+        )
+        assert has_error_indicator, f"Error message should indicate permission/access issue, got: {error_msg}"
