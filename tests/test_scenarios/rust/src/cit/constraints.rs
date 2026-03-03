@@ -10,8 +10,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 // *******************************************************************************
-// Copyright (c) 2025 Qorix
-//
+
 // Test scenarios for KVS constraint configuration
 
 use crate::helpers::kvs_instance::kvs_instance;
@@ -32,10 +31,10 @@ impl Scenario for ConstraintConfiguration {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
-        let constraint_type: String =
-            serde_json::from_value(v["constraint_type"].clone()).expect("Failed to parse \"constraint_type\" field");
-        let constraint_value: usize =
-            serde_json::from_value(v["constraint_value"].clone()).expect("Failed to parse \"constraint_value\" field");
+        let constraint_type: String = serde_json::from_value(v["constraint_type"].clone())
+            .expect("Failed to parse \"constraint_type\" field");
+        let constraint_value: usize = serde_json::from_value(v["constraint_value"].clone())
+            .expect("Failed to parse \"constraint_value\" field");
         let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
 
         if constraint_type == "runtime" {
@@ -58,7 +57,10 @@ impl Scenario for ConstraintConfiguration {
             info!(compile_time_max, "Compile-time max");
 
             let compile_time_constraint_exists = true; // Constants are defined in source
-            info!(compile_time_constraint_exists, "Compile-time constraint exists");
+            info!(
+                compile_time_constraint_exists,
+                "Compile-time constraint exists"
+            );
         }
 
         Ok(())
@@ -80,7 +82,8 @@ impl Scenario for PermissionControl {
         let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
 
         // Write a value to ensure filesystem is used
-        kvs.set_value("test_key", "test_value").expect("Failed to set value");
+        kvs.set_value("test_key", "test_value")
+            .expect("Failed to set value");
         kvs.flush().expect("Failed to flush");
 
         // Check that files exist on filesystem (proof of filesystem usage)
@@ -106,8 +109,8 @@ impl Scenario for PermissionErrorHandling {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
-        let error_type: String =
-            serde_json::from_value(v["error_type"].clone()).expect("Failed to parse \"error_type\" field");
+        let error_type: String = serde_json::from_value(v["error_type"].clone())
+            .expect("Failed to parse \"error_type\" field");
         let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
 
         let dir_path = params.dir.clone().expect("No directory specified");
@@ -131,12 +134,12 @@ impl Scenario for PermissionErrorHandling {
                     error_detected = false;
                     error_reported = false;
                     error_message = "No error occurred".to_string();
-                },
+                }
                 Err(e) => {
                     error_detected = true;
                     error_reported = true;
                     error_message = format!("{:?}", e);
-                },
+                }
             }
 
             // Restore permissions for cleanup
@@ -157,25 +160,25 @@ impl Scenario for PermissionErrorHandling {
                                 error_detected = false;
                                 error_reported = false;
                                 error_message = "No error occurred".to_string();
-                            },
+                            }
                             Err(e) => {
                                 error_detected = true;
                                 error_reported = true;
                                 error_message = format!("{:?}", e);
-                            },
+                            }
                         }
-                    },
+                    }
                     Err(e) => {
                         error_detected = true;
                         error_reported = true;
                         error_message = format!("{:?}", e);
-                    },
+                    }
                 },
                 Err(e) => {
                     error_detected = true;
                     error_reported = true;
                     error_message = format!("{:?}", e);
-                },
+                }
             }
 
             // Restore permissions for cleanup

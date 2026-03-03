@@ -10,8 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-// Copyright (c) 2025 Qorix
-//
+
 // Test scenarios for KVS constraint configuration
 
 #pragma once

@@ -10,8 +10,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-# Copyright (c) 2025 Qorix
-#
+
 # Test cases for KVS constraint configuration
 
 """Test cases for constraints configuration (compile-time and runtime)"""
