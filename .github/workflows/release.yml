@@ -60,18 +60,18 @@ jobs:
 
       - name: Build via Bazel
         run: |
-          echo "Running: bazel build --config=per-x86_64-linux //src/..."
-          bazel build --config=per-x86_64-linux //src/...
+          echo "Running: bazel build --lockfile_mode=error --config=per-x86_64-linux //src/..."
+          bazel build --lockfile_mode=error --config=per-x86_64-linux //src/...
 
       - name: Run Unit Tests via Bazel
         run: |
-          echo "Running: bazel test --config=per-x86_64-linux //:unit_tests"
-          bazel test --config=per-x86_64-linux //:unit_tests
+          echo "Running: bazel test --lockfile_mode=error --config=per-x86_64-linux //:unit_tests"
+          bazel test --lockfile_mode=error --config=per-x86_64-linux //:unit_tests
 
       - name: Run Unit Test with Coverage for Rust
         run: |
           # Run tests
-          bazel coverage --config=per-x86_64-linux //:unit_tests \
+          bazel coverage --lockfile_mode=error --config=per-x86_64-linux //:unit_tests \
             --collect_code_coverage \
             --combined_report=lcov \
             --experimental_generate_llvm_lcov \

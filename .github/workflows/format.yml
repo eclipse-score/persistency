@@ -23,3 +23,5 @@ on:
 jobs:
   formatting-check:
     uses: eclipse-score/cicd-workflows/.github/workflows/format.yml@main
+    with:
+      bazel-target: "test --lockfile_mode=error //:format.check"
