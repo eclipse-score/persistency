@@ -94,14 +94,14 @@ jobs:
 
       - name: Bazel Build
         run: |
-          bazel build \
+          bazel build --lockfile_mode=error \
             --config=per-x86_64-linux \
             //src/rust/rust_kvs:rust_kvs \
             //src/rust/rust_kvs_tool:kvs_tool
 
       - name: Bazel Unit Tests
         run: |
-          bazel test --config=per-x86_64-linux //src/rust/rust_kvs:tests
+          bazel test --lockfile_mode=error --config=per-x86_64-linux //src/rust/rust_kvs:tests
 
   cpp-bazel:
     runs-on: ubuntu-latest
@@ -117,11 +117,11 @@ jobs:
           bazelisk-cache: true
 
       - name: Bazel Build
-        run: bazel build --config=per-x86_64-linux //:kvs_cpp
+        run: bazel build --lockfile_mode=error --config=per-x86_64-linux //:kvs_cpp
 
       - name: Bazel Unit Test with Coverage
         run: |
-          bazel coverage --config=per-x86_64-linux //:test_kvs_cpp \
+          bazel coverage --lockfile_mode=error --config=per-x86_64-linux //:test_kvs_cpp \
             --collect_code_coverage \
             --combined_report=lcov \
             --experimental_generate_llvm_lcov \
@@ -150,4 +150,4 @@ jobs:
           retention-days: 10
 
       - name: Bazel Benchmark
-        run: bazel run --config=per-x86_64-linux -c opt //:bm_kvs_cpp
+        run: bazel run --lockfile_mode=error --config=per-x86_64-linux -c opt //:bm_kvs_cpp

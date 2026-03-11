@@ -55,11 +55,11 @@ jobs:
 
       - name: Build C++ test scenarios with Bazel
         run: |
-          bazel build --config=per-x86_64-linux //tests/test_scenarios/cpp:test_scenarios
+          bazel build --lockfile_mode=error --config=per-x86_64-linux //tests/test_scenarios/cpp:test_scenarios
 
       - name: Build Rust test scenarios with Bazel
         run: |
-          bazel build --config=per-x86_64-linux //tests/test_scenarios/rust:test_scenarios
+          bazel build --lockfile_mode=error --config=per-x86_64-linux //tests/test_scenarios/rust:test_scenarios
 
       - name: Set up Python 3
         uses: actions/setup-python@v5
@@ -79,7 +79,7 @@ jobs:
 
       - name: Run Python tests with bazel
         run: |
-          bazel test --config=per-x86_64-linux //tests/test_cases:cit
+          bazel test --lockfile_mode=error --config=per-x86_64-linux //tests/test_cases:cit
 
       - name: Prepare test reports
         if: always()
