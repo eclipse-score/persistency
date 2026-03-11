@@ -12,6 +12,8 @@
  ********************************************************************************/
 #include "kvs.hpp"
 #include "internal/kvs_helper.hpp"
+#include <unistd.h>  // fileno(), fdatasync()
+#include <cstdio>    // std::fopen, std::fwrite, std::fflush, std::fclose
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -475,6 +477,46 @@ score::ResultBlank Kvs::remove_key(const std::string_view key)
     return result;
 }
 
+/* Helper: write data to a file and ensure it reaches physical storage.*/
+score::ResultBlank Kvs::write_and_sync(const std::string& path, const void* data, std::size_t size)
+{
+    auto file_deleter = [](std::FILE* f) {
+        if (f != nullptr)
+        {
+            (void)std::fclose(f);
+        }
+    };
+    std::unique_ptr<std::FILE, decltype(file_deleter)> file{std::fopen(path.c_str(), "wb"), file_deleter};
+
+    if (file == nullptr)
+    {
+        logger->LogError() << "Failed to open file '" << path << "'";
+        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+    }
+
+    if (std::fwrite(data, sizeof(char), size, file.get()) != size)
+    {
+        logger->LogError() << "Failed to write to file '" << path << "'";
+        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+    }
+
+    /* Flush the C library buffer to the OS. */
+    if (std::fflush(file.get()) != 0)
+    {
+        logger->LogError() << "Failed to flush file '" << path << "'";
+        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+    }
+
+    /* Request the OS to commit the data from its buffers to physical storage */
+    if (::fdatasync(::fileno(file.get())) != 0)
+    {
+        logger->LogError() << "Failed to sync file '" << path << "'";
+        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+    }
+
+    return {};
+}
+
 /* Helper Function to write JSON data to a file for flush process (also adds Hash file)*/
 score::ResultBlank Kvs::write_json_data(const std::string& buf)
 {
@@ -490,26 +532,18 @@ score::ResultBlank Kvs::write_json_data(const std::string& buf)
         }
         else
         {
-            std::ofstream out(json_path.CStr(), std::ios::binary);
-            if (!out.write(buf.data(), buf.size()))
+            /* Write JSON file */
+            result = write_and_sync(json_path.Native(), buf.data(), buf.size());
+            if (!result.has_value())
             {
-                result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+                return result;
             }
-            else
-            {
-                /* Write Hash File */
-                std::array<uint8_t, 4> hash_bytes = get_hash_bytes(buf);
-                score::filesystem::Path fn_hash = filename_prefix.Native() + "_0.hash";
-                std::ofstream hout(fn_hash.CStr(), std::ios::binary);
-                if (!hout.write(reinterpret_cast<const char*>(hash_bytes.data()), hash_bytes.size()))
-                {
-                    result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
-                }
-                else
-                {
-                    result = score::ResultBlank{};
-                }
-            }
+
+            /* Write Hash File */
+            std::array<uint8_t, 4> hash_bytes = get_hash_bytes(buf);
+            score::filesystem::Path fn_hash = filename_prefix.Native() + "_0.hash";
+
+            result = write_and_sync(fn_hash.Native(), hash_bytes.data(), hash_bytes.size());
         }
     }
     else
@@ -605,7 +639,7 @@ score::Result<size_t> Kvs::snapshot_count() const
             error = true;
             break;
         }
-        count = idx+1;
+        count = idx + 1;
     }
     if (error)
     {

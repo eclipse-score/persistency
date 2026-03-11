@@ -382,6 +382,7 @@ class Kvs final
     score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix,
                                                                        OpenJsonNeedFile need_file);
     score::ResultBlank write_json_data(const std::string& buf);
+    score::ResultBlank write_and_sync(const std::string& path, const void* data, std::size_t size);
 };
 
 } /* namespace score::mw::per::kvs */
