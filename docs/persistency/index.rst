@@ -15,11 +15,19 @@
 Persistency KVS Module
 ######################
 
-.. toctree::
-   :titlesonly:
-   :maxdepth: 2
+.. _module_documentation:
 
-   ./docs/index
+Module Documents
+================
+
+.. toctree::
+   :maxdepth: 1
+
+   manual/index.rst
+   safety_mgt/index.rst
+   security_mgt/index.rst
+   verification/module_verification_report.rst
+   release/release_note.rst
 
 Components
 ==========
@@ -29,4 +37,4 @@ Components
    :maxdepth: 1
    :glob:
 
-   ./*/docs/index
+   ./*/index
