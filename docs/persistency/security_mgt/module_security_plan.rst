@@ -31,7 +31,7 @@ This Security Plan adds to the :need:`gd_guidl__security_plan_definitions` all t
 Security Management Scope
 =========================
 
-This Security Plan's scope is a SW module of the SW platform :ref:`module_documentation`.
+This Security Plan's scope is a SW module of the SW platform :ref:`persistency_module_documentation`.
 The module consists of one or more SW components and will be qualified as a EooC.
 
 Security Management Roles

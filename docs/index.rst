@@ -15,7 +15,7 @@
 Persistency Documentation
 =========================
 
-.. _module_documentation:
+.. _persistency_module_documentation:
 
 Module Documents
 ----------------
