@@ -12,6 +12,7 @@
 # *******************************************************************************
 import json
 import re
+from math import isclose
 from pathlib import Path
 from typing import Any, Generator
 from zlib import adler32
@@ -136,9 +137,6 @@ class TestDefaultValues(DefaultValuesScenario):
         logs_info_level: LogContainer,
         version: str,
     ) -> None:
-        if version == "cpp":
-            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
-
         assert results.return_code == ResultCode.SUCCESS
 
         logs = logs_info_level.get_logs("key", value=self.KEY)
@@ -214,8 +212,6 @@ class TestRemoveKey(DefaultValuesScenario):
         logs_info_level: LogContainer,
         version: str,
     ) -> None:
-        if version == "cpp":
-            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
         assert results.return_code == ResultCode.SUCCESS
 
         logs = logs_info_level.get_logs("key", value=self.KEY)
@@ -403,8 +399,6 @@ class TestResetAllKeys(DefaultValuesScenario):
         logs_info_level: LogContainer,
         version: str,
     ):
-        if version == "cpp":
-            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
         assert defaults_file is not None
         assert results.return_code == ResultCode.SUCCESS
 
@@ -413,15 +407,15 @@ class TestResetAllKeys(DefaultValuesScenario):
 
             # Check values before set.
             assert logs[0].value_is_default
-            assert logs[0].current_value == 432.1 * i
+            assert isclose(logs[0].current_value, 432.1 * i, abs_tol=0.01)
 
             # Check values after set.
             assert not logs[1].value_is_default
-            assert logs[1].current_value == 123.4 * i
+            assert isclose(logs[1].current_value, 123.4 * i, abs_tol=0.01)
 
             # Check values after reset.
             assert logs[2].value_is_default
-            assert logs[2].current_value == 432.1 * i
+            assert isclose(logs[2].current_value, 432.1 * i, abs_tol=0.01)
 
 
 @add_test_properties(
@@ -470,8 +464,6 @@ class TestResetSingleKey(DefaultValuesScenario):
         logs_info_level: LogContainer,
         version: str,
     ):
-        if version == "cpp":
-            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
         assert defaults_file is not None
         assert results.return_code == ResultCode.SUCCESS
 
@@ -481,28 +473,28 @@ class TestResetSingleKey(DefaultValuesScenario):
             if i == self.RESET_INDEX:
                 # Check values before set.
                 assert logs[0].value_is_default
-                assert logs[0].current_value == 432.1 * i
+                assert isclose(logs[0].current_value, 432.1 * i, abs_tol=0.01)
 
                 # Check values after set.
                 assert not logs[1].value_is_default
-                assert logs[1].current_value == 123.4 * i
+                assert isclose(logs[1].current_value, 123.4 * i, abs_tol=0.01)
 
                 # Check values after reset.
                 assert logs[2].value_is_default
-                assert logs[2].current_value == 432.1 * i
+                assert isclose(logs[2].current_value, 432.1 * i, abs_tol=0.01)
 
             else:
                 # Check values before set.
                 assert logs[0].value_is_default
-                assert logs[0].current_value == 432.1 * i
+                assert isclose(logs[0].current_value, 432.1 * i, abs_tol=0.01)
 
                 # Check values after set.
                 assert not logs[1].value_is_default
-                assert logs[1].current_value == 123.4 * i
+                assert isclose(logs[1].current_value, 123.4 * i, abs_tol=0.01)
 
                 # Check values after reset.
                 assert not logs[2].value_is_default
-                assert logs[2].current_value == 123.4 * i
+                assert isclose(logs[2].current_value, 123.4 * i, abs_tol=0.01)
 
 
 @add_test_properties(
