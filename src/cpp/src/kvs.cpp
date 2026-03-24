@@ -495,7 +495,7 @@ score::ResultBlank Kvs::write_and_sync(const std::string& path, const void* data
         return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
     }
 
-    /* Flush the C library buffer to the OS. */
+    /* Flush the buffer to the OS. */
     if (std::fflush(file.get()) != 0)
     {
         logger->LogError() << "Failed to flush file '" << path << "'";
