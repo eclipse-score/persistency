@@ -31,7 +31,7 @@ This Safety Plan adds to the :need:`gd_guidl__saf_plan_definitions` all the modu
 Functional Safety Management Scope
 ==================================
 
-This Safety Plan's scope is a SW module of the SW platform :ref:`module_documentation`.
+This Safety Plan's scope is a SW module of the SW platform :ref:`persistency_module_documentation`.
 The module consists of one or more SW components and will be qualified as a SEooC.
 
 Functional Safety Management Roles
