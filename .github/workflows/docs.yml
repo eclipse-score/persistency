@@ -32,7 +32,7 @@ on:
 
 jobs:
   docs-verify:
-    uses: eclipse-score/cicd-workflows/.github/workflows/docs-verify.yml@main
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs-verify.yml@c1c90b1a82a1fab0fc202979dde6686b2162d5a8 # v0.0.0
     permissions:
       pull-requests: write
       contents: read
@@ -46,7 +46,7 @@ jobs:
   build-docs:
     needs: [docs-verify, cit-tests] # Test reports are needed for traceability links
     if: ${{ always() && needs.docs-verify.result == 'success' }}
-    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@main
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@c1c90b1a82a1fab0fc202979dde6686b2162d5a8 # v0.0.0
     permissions:
       contents: write
       pages: write

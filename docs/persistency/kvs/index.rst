@@ -145,6 +145,7 @@ Footnotes
 .. toctree::
    :hidden:
 
+   kvs.rst
    requirements/index.rst
    requirements/statistics.rst
    architecture/index.rst
