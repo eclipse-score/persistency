@@ -13,6 +13,13 @@ path = "src/kvs_tool.rs"
 rust_kvs.workspace = true
 tinyjson.workspace = true
 pico-args.workspace = true
+score_log.workspace = true
+stdout_logger = { workspace = true, optional = true }
+
+
+[features]
+default = ["stdout_logger"]
+score_log_bridge = []
 
 
 [lints]

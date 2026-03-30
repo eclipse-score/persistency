@@ -494,25 +494,38 @@ TEST(kvs_reset_key, reset_key_failure)
     cleanup_environment();
 }
 
-TEST(kvs_has_default_value, has_default_value)
+TEST(kvs_is_value_default, is_value_default)
 {
     prepare_environment();
 
     auto result = Kvs::open(instance_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
     ASSERT_TRUE(result);
+    auto kvs{std::move(result.value())};
 
     /* Create Test Default Data */
-    result.value().default_values.insert_or_assign("default", KvsValue(42.0));
+    kvs.kvs.insert_or_assign("not-default", KvsValue(123.4));
+    kvs.default_values.insert_or_assign("default", KvsValue(42.0));
 
-    /* Check if default value exists */
-    auto has_default_result = result.value().has_default_value("default");
-    EXPECT_TRUE(has_default_result);
-    EXPECT_TRUE(has_default_result.value());
+    /* Check non-default value */
+    {
+        auto result{kvs.is_value_default("not-default")};
+        ASSERT_TRUE(result);
+        ASSERT_FALSE(result.value());
+    }
 
-    /* Check if non-existing key returns false */
-    has_default_result = result.value().has_default_value("non_existing_key");
-    EXPECT_TRUE(has_default_result);
-    EXPECT_FALSE(has_default_result.value());
+    /* Check default value */
+    {
+        auto result{kvs.is_value_default("default")};
+        ASSERT_TRUE(result);
+        ASSERT_TRUE(result.value());
+    }
+
+    /* Check key not found */
+    {
+        auto result{kvs.is_value_default("non_existing_key")};
+        ASSERT_FALSE(result);
+        ASSERT_EQ(result.error(), ErrorCode::KeyNotFound);
+    }
 
     cleanup_environment();
 }

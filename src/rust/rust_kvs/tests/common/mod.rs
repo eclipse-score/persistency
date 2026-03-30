@@ -50,7 +50,7 @@ pub fn compare_kvs_values(left: &KvsValue, right: &KvsValue) -> bool {
             }
 
             true
-        }
+        },
         (KvsValue::Object(l), KvsValue::Object(r)) => {
             // Check size.
             if l.len() != r.len() {
@@ -71,7 +71,7 @@ pub fn compare_kvs_values(left: &KvsValue, right: &KvsValue) -> bool {
             }
 
             true
-        }
+        },
         // Return false for all other type combinations (mismatched or unsupported types)
         (_, _) => false,
     }

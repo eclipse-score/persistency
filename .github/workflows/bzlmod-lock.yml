@@ -10,20 +10,19 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-[pytest]
-addopts = -v
-testpaths = tests
-pythonpath = 
-    .
-    tests
-markers =
-        cpp
-        rust
-        test_properties(dict): Add custom properties to test XML output
-
-; Additional environment variables
-env = D:RUST_BACKTRACE = 1
-junit_family = xunit1
-filterwarnings = 
-    ignore:record_property is incompatible with junit_family:pytest.PytestWarning
-    ignore:record_xml_attribute is an experimental feature:pytest.PytestExperimentalApiWarning
+name: Bzlmod Lockfile Check
+permissions:
+  contents: read
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  merge_group:
+    types: [checks_requested]
+  push:
+    branches:
+      - main
+jobs:
+  bzlmod-lock:
+    uses: eclipse-score/cicd-workflows/.github/workflows/bzlmod-lock-check.yml@c1c90b1a82a1fab0fc202979dde6686b2162d5a8 # v0.0.0
+    with:
+      working-directory: .

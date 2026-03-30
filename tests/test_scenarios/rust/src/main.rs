@@ -26,17 +26,13 @@ use tracing_subscriber::FmtSubscriber;
 struct NumericUnixTime;
 
 impl FormatTime for NumericUnixTime {
-    fn format_time(
-        &self,
-        w: &mut tracing_subscriber::fmt::format::Writer<'_>,
-    ) -> core::fmt::Result {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or_default();
+    fn format_time(&self, w: &mut tracing_subscriber::fmt::format::Writer<'_>) -> core::fmt::Result {
+        let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default();
         write!(w, "{}", now.as_secs())
     }
 }
 
+/// `tracing` is used for test outputs.
 fn init_tracing_subscriber() {
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::TRACE)
@@ -45,30 +41,31 @@ fn init_tracing_subscriber() {
         .json()
         .finish();
 
-    tracing::subscriber::set_global_default(subscriber)
-        .expect("Setting default subscriber failed!");
+    tracing::subscriber::set_global_default(subscriber).expect("Setting default subscriber failed!");
+}
+
+/// Logging is used for regular logs.
+fn init_logging() {
+    #[cfg(feature = "stdout_logger")]
+    stdout_logger::StdoutLoggerBuilder::new().set_as_default_logger();
+
+    #[cfg(feature = "score_log_bridge")]
+    score_log_bridge::ScoreLogBridgeBuilder::new().set_as_default_logger();
 }
 
 fn main() -> Result<(), String> {
     let raw_arguments: Vec<String> = std::env::args().collect();
+    init_logging();
 
     // Basic group.
     let basic_scenario = Box::new(BasicScenario);
-    let basic_group = Box::new(ScenarioGroupImpl::new(
-        "basic",
-        vec![basic_scenario],
-        vec![],
-    ));
+    let basic_group = Box::new(ScenarioGroupImpl::new("basic", vec![basic_scenario], vec![]));
 
     // CIT group.
     let cit_group = cit_scenario_group();
 
     // Root group.
-    let root_group = Box::new(ScenarioGroupImpl::new(
-        "root",
-        vec![],
-        vec![basic_group, cit_group],
-    ));
+    let root_group = Box::new(ScenarioGroupImpl::new("root", vec![], vec![basic_group, cit_group]));
 
     // Run.
     init_tracing_subscriber();

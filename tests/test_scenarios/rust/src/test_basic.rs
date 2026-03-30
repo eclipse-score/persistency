@@ -40,9 +40,7 @@ impl Scenario for BasicScenario {
         let key = "example_key";
         let value = "example_value".to_string();
         kvs.set_value(key, value).expect("Failed to set value");
-        let value_read = kvs
-            .get_value_as::<String>(key)
-            .expect("Failed to read value");
+        let value_read = kvs.get_value_as::<String>(key).expect("Failed to read value");
 
         // Trace.
         info!(example_key = value_read);

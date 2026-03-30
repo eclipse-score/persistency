@@ -30,9 +30,7 @@ fn main() -> Result<(), ErrorCode> {
     {
         // Build KVS instance for given instance ID and temporary directory.
         let builder = KvsBuilder::new(instance_id).backend(Box::new(
-            JsonBackendBuilder::new()
-                .working_dir(dir_path.clone())
-                .build(),
+            JsonBackendBuilder::new().working_dir(dir_path.clone()).build(),
         ));
         let kvs = builder.build()?;
 
@@ -43,11 +41,7 @@ fn main() -> Result<(), ErrorCode> {
         kvs.set_value("null", ())?;
         kvs.set_value(
             "array",
-            vec![
-                KvsValue::from(456.0),
-                false.into(),
-                "Second".to_string().into(),
-            ],
+            vec![KvsValue::from(456.0), false.into(), "Second".to_string().into()],
         )?;
         kvs.set_value(
             "object",
@@ -58,11 +52,7 @@ fn main() -> Result<(), ErrorCode> {
                 ("sub-null".into(), ().into()),
                 (
                     "sub-array".into(),
-                    KvsValue::from(vec![
-                        KvsValue::from(1246.0),
-                        false.into(),
-                        "Fourth".to_string().into(),
-                    ]),
+                    KvsValue::from(vec![KvsValue::from(1246.0), false.into(), "Fourth".to_string().into()]),
                 ),
             ]),
         )?;
@@ -75,9 +65,8 @@ fn main() -> Result<(), ErrorCode> {
 
     {
         // Build KVS instance for given instance ID and temporary directory.
-        let builder = KvsBuilder::new(instance_id).backend(Box::new(
-            JsonBackendBuilder::new().working_dir(dir_path).build(),
-        ));
+        let builder =
+            KvsBuilder::new(instance_id).backend(Box::new(JsonBackendBuilder::new().working_dir(dir_path).build()));
         let kvs = builder.build()?;
 
         // `get_value` usage - print all existing keys with their values.

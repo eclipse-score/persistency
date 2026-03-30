@@ -42,7 +42,7 @@ class MaxSnapshotsScenario(CommonScenario):
 @add_test_properties(
     partially_verifies=["comp_req__persistency__snapshot_creation_v2"],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("snapshot_max_count", [0, 1, 3, 10], scope="class")
 class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
@@ -90,7 +90,7 @@ class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
 @add_test_properties(
     partially_verifies=["comp_req__persistency__snapshot_creation_v2"],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 class TestSnapshotCountFull(TestSnapshotCountFirstFlush):
     """ "Checks that the snapshot count increases with each flush, up to the maximum allowed count."""
@@ -109,8 +109,8 @@ class TestSnapshotCountFull(TestSnapshotCountFirstFlush):
 
 @add_test_properties(
     partially_verifies=["comp_req__persistency__snapshot_max_num_v2"],
-    test_type="requirements-based",
-    derivation_technique="inspection",
+    test_type="inspection",
+    derivation_technique="boundary-values",
 )
 @pytest.mark.parametrize("snapshot_max_count", [0, 1, 3, 10], scope="class")
 class TestSnapshotMaxCount(MaxSnapshotsScenario):
@@ -151,8 +151,8 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
         "comp_req__persistency__snapshot_creation_v2",
         "comp_req__persistency__snapshot_rotate_v2",
     ],
-    test_type="requirements-based",
-    derivation_technique="control-flow-analysis",
+    test_type="control-flow-analysis",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("snapshot_max_count", [3, 10], scope="class")
 class TestSnapshotRestorePrevious(MaxSnapshotsScenario):
@@ -192,8 +192,8 @@ class TestSnapshotRestorePrevious(MaxSnapshotsScenario):
 
 @add_test_properties(
     partially_verifies=["comp_req__persistency__snapshot_creation_v2"],
-    test_type="requirements-based",
-    derivation_technique="fault-injection",
+    test_type="fault-injection",
+    derivation_technique="requirements-analysis",
 )
 class TestSnapshotRestoreCurrent(CommonScenario):
     """Checks that restoring the current snapshot ID fails with InvalidSnapshotId error."""
@@ -210,9 +210,6 @@ class TestSnapshotRestoreCurrent(CommonScenario):
             "count": 3,
         }
 
-    def capture_stderr(self) -> bool:
-        return True
-
     def test_error(
         self,
         results: ScenarioResult,
@@ -222,8 +219,7 @@ class TestSnapshotRestoreCurrent(CommonScenario):
         assert results.return_code == ResultCode.SUCCESS
 
         if version == "rust":
-            assert results.stderr is not None
-            assert "error: tried to restore current KVS as snapshot" in results.stderr
+            assert "Restoring current KVS snapshot is not allowed" in results.stdout
 
         result_log = logs_info_level.find_log("result")
         assert result_log is not None
@@ -235,8 +231,8 @@ class TestSnapshotRestoreCurrent(CommonScenario):
         "comp_req__persistency__snapshot_creation_v2",
         "comp_req__persistency__snapshot_restore_v2",
     ],
-    test_type="requirements-based",
-    derivation_technique="fault-injection",
+    test_type="fault-injection",
+    derivation_technique="requirements-analysis",
 )
 class TestSnapshotRestoreNonexistent(CommonScenario):
     """Checks that restoring a non-existing snapshot fails with InvalidSnapshotId error."""
@@ -253,15 +249,11 @@ class TestSnapshotRestoreNonexistent(CommonScenario):
             "count": 1,
         }
 
-    def capture_stderr(self) -> bool:
-        return True
-
     def test_error(self, results: ScenarioResult, logs_info_level: LogContainer, version: str):
         assert results.return_code == ResultCode.SUCCESS
 
         if version == "rust":
-            assert results.stderr is not None
-            assert "error: tried to restore a non-existing snapshot" in results.stderr
+            assert "Unable to restore non-existing snapshot" in results.stdout
 
         result_log = logs_info_level.find_log("result")
         assert result_log is not None
@@ -270,8 +262,8 @@ class TestSnapshotRestoreNonexistent(CommonScenario):
 
 @add_test_properties(
     partially_verifies=["comp_req__persistency__snapshot_creation_v2"],
-    test_type="requirements-based",
-    derivation_technique="interface-test",
+    test_type="interface-test",
+    derivation_technique="requirements-analysis",
 )
 class TestSnapshotPathsExist(CommonScenario):
     """Verifies that the KVS and hash filenames for an existing snapshot is generated correctly."""
@@ -306,8 +298,8 @@ class TestSnapshotPathsExist(CommonScenario):
 
 @add_test_properties(
     partially_verifies=["comp_req__persistency__snapshot_creation_v2"],
-    test_type="requirements-based",
-    derivation_technique="fault-injection",
+    test_type="fault-injection",
+    derivation_technique="requirements-analysis",
 )
 class TestSnapshotPathsNonexistent(CommonScenario):
     """Checks that requesting the KVS and hash filenames for a non-existing snapshot returns FileNotFound error."""

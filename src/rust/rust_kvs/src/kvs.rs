@@ -15,9 +15,11 @@ use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_builder::KvsData;
 use crate::kvs_value::{KvsMap, KvsValue};
+use crate::log::{error, warn, ScoreDebug};
 use std::sync::{Arc, Mutex};
 
 /// KVS instance parameters.
+#[derive(ScoreDebug)]
 pub struct KvsParameters {
     /// Instance ID.
     pub instance_id: InstanceId,
@@ -76,7 +78,7 @@ impl KvsApi for Kvs {
     fn reset_key(&self, key: &str) -> Result<(), ErrorCode> {
         let mut data = self.data.lock()?;
         if !data.defaults_map.contains_key(key) {
-            eprintln!("error: resetting key without a default value");
+            error!("Resetting key without a default value: {}", key);
             return Err(ErrorCode::KeyDefaultNotFound);
         }
 
@@ -127,7 +129,7 @@ impl KvsApi for Kvs {
         } else if let Some(value) = data.defaults_map.get(key) {
             Ok(value.clone())
         } else {
-            eprintln!("error: get_value could not find key: {key}");
+            error!("Key not found: {}", key);
             Err(ErrorCode::KeyNotFound)
         }
     }
@@ -150,34 +152,29 @@ impl KvsApi for Kvs {
     ///   * `ErrorCode::KeyNotFound`: Key wasn't found in KVS nor in defaults
     fn get_value_as<T>(&self, key: &str) -> Result<T, ErrorCode>
     where
-        for<'a> T: TryFrom<&'a KvsValue> + core::clone::Clone,
-        for<'a> <T as TryFrom<&'a KvsValue>>::Error: core::fmt::Debug,
+        for<'a> T: TryFrom<&'a KvsValue>,
+        for<'a> <T as TryFrom<&'a KvsValue>>::Error: ScoreDebug,
     {
         let data = self.data.lock()?;
         if let Some(value) = data.kvs_map.get(key) {
             match T::try_from(value) {
                 Ok(value) => Ok(value),
                 Err(err) => {
-                    eprintln!(
-                        "error: get_value could not convert KvsValue from KVS store: {err:#?}"
-                    );
+                    error!("Failed to convert KVS value: {:#?}", err);
                     Err(ErrorCode::ConversionFailed)
-                }
+                },
             }
         } else if let Some(value) = data.defaults_map.get(key) {
             // check if key has a default value
             match T::try_from(value) {
                 Ok(value) => Ok(value),
                 Err(err) => {
-                    eprintln!(
-                        "error: get_value could not convert KvsValue from default store: {err:#?}"
-                    );
+                    error!("Failed to convert default value: {:#?}", err);
                     Err(ErrorCode::ConversionFailed)
-                }
+                },
             }
         } else {
-            eprintln!("error: get_value could not find key: {key}");
-
+            error!("Key not found: {}", key);
             Err(ErrorCode::KeyNotFound)
         }
     }
@@ -199,6 +196,7 @@ impl KvsApi for Kvs {
         if let Some(value) = data.defaults_map.get(key) {
             Ok(value.clone())
         } else {
+            error!("Key not found: {}", key);
             Err(ErrorCode::KeyNotFound)
         }
     }
@@ -223,6 +221,7 @@ impl KvsApi for Kvs {
         } else if data.defaults_map.contains_key(key) {
             Ok(true)
         } else {
+            error!("Key not found: {}", key);
             Err(ErrorCode::KeyNotFound)
         }
     }
@@ -236,11 +235,7 @@ impl KvsApi for Kvs {
     /// # Return Values
     ///   * Ok: Value was assigned to key
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
-    fn set_value<S: Into<String>, V: Into<KvsValue>>(
-        &self,
-        key: S,
-        value: V,
-    ) -> Result<(), ErrorCode> {
+    fn set_value<S: Into<String>, V: Into<KvsValue>>(&self, key: S, value: V) -> Result<(), ErrorCode> {
         let mut data = self.data.lock()?;
         data.kvs_map.insert(key.into(), value.into());
         Ok(())
@@ -260,6 +255,7 @@ impl KvsApi for Kvs {
         if data.kvs_map.remove(key).is_some() {
             Ok(())
         } else {
+            error!("Key not found: {}", key);
             Err(ErrorCode::KeyNotFound)
         }
     }
@@ -279,7 +275,7 @@ impl KvsApi for Kvs {
     ///   * `ErrorCode::UnmappedError`: Unmapped error
     fn flush(&self) -> Result<(), ErrorCode> {
         if self.snapshot_max_count() == 0 {
-            eprintln!("warn: snapshot_max_count == 0, flush ignored");
+            warn!("snapshot_max_count == 0, flush ignored");
             return Ok(());
         }
 
@@ -294,9 +290,7 @@ impl KvsApi for Kvs {
     /// # Return Values
     ///   * usize: Count of found snapshots
     fn snapshot_count(&self) -> usize {
-        self.parameters
-            .backend
-            .snapshot_count(self.parameters.instance_id)
+        self.parameters.backend.snapshot_count(self.parameters.instance_id)
     }
 
     /// Return maximum number of snapshots to store.
@@ -344,20 +338,17 @@ mod kvs_tests {
     use crate::kvs_backend::KvsBackend;
     use crate::kvs_builder::KvsData;
     use crate::kvs_value::{KvsMap, KvsValue};
+    use crate::log::ScoreDebug;
     use std::sync::{Arc, Mutex};
     use tempfile::tempdir;
 
     /// Most tests can be performed with mocked backend.
     /// Only those with file handling must use concrete implementation.
-    #[derive(PartialEq)]
+    #[derive(PartialEq, Debug, ScoreDebug)]
     struct MockBackend;
 
     impl KvsBackend for MockBackend {
-        fn load_kvs(
-            &self,
-            _instance_id: InstanceId,
-            _snapshot_id: SnapshotId,
-        ) -> Result<KvsMap, ErrorCode> {
+        fn load_kvs(&self, _instance_id: InstanceId, _snapshot_id: SnapshotId) -> Result<KvsMap, ErrorCode> {
             unimplemented!()
         }
 
@@ -377,21 +368,14 @@ mod kvs_tests {
             unimplemented!()
         }
 
-        fn snapshot_restore(
-            &self,
-            _instance_id: InstanceId,
-            _snapshot_id: SnapshotId,
-        ) -> Result<KvsMap, ErrorCode> {
+        fn snapshot_restore(&self, _instance_id: InstanceId, _snapshot_id: SnapshotId) -> Result<KvsMap, ErrorCode> {
             unimplemented!()
         }
     }
 
     fn get_kvs(backend: Box<dyn KvsBackend>, kvs_map: KvsMap, defaults_map: KvsMap) -> Kvs {
         let instance_id = InstanceId(1);
-        let data = Arc::new(Mutex::new(KvsData {
-            kvs_map,
-            defaults_map,
-        }));
+        let data = Arc::new(Mutex::new(KvsData { kvs_map, defaults_map }));
         let parameters = Arc::new(KvsParameters {
             instance_id,
             defaults: KvsDefaults::Optional,
@@ -429,10 +413,7 @@ mod kvs_tests {
 
         kvs.reset().unwrap();
         assert_eq!(kvs.get_all_keys().unwrap().len(), 0);
-        assert_eq!(
-            kvs.get_value_as::<String>("example1").unwrap(),
-            "default_value"
-        );
+        assert_eq!(kvs.get_value_as::<String>("example1").unwrap(), "default_value");
         assert!(kvs
             .get_value_as::<bool>("example2")
             .is_err_and(|e| e == ErrorCode::KeyNotFound));
@@ -451,10 +432,7 @@ mod kvs_tests {
         );
 
         kvs.reset_key("example1").unwrap();
-        assert_eq!(
-            kvs.get_value_as::<String>("example1").unwrap(),
-            "default_value"
-        );
+        assert_eq!(kvs.get_value_as::<String>("example1").unwrap(), "default_value");
 
         // TODO: determine why resetting entry without default value is an error.
         assert!(kvs
@@ -552,9 +530,7 @@ mod kvs_tests {
             KvsMap::from([("example1".to_string(), KvsValue::from("default_value"))]),
         );
 
-        assert!(kvs
-            .get_value("invalid_key")
-            .is_err_and(|e| e == ErrorCode::KeyNotFound));
+        assert!(kvs.get_value("invalid_key").is_err_and(|e| e == ErrorCode::KeyNotFound));
     }
 
     #[test]

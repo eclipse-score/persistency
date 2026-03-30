@@ -12,6 +12,7 @@
 # *******************************************************************************
 import json
 import re
+from math import isclose
 from pathlib import Path
 from typing import Any, Generator
 from zlib import adler32
@@ -94,7 +95,7 @@ class DefaultValuesScenario(CommonScenario):
         "comp_req__persistency__default_value_query_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required", "without"], scope="class")
 class TestDefaultValues(DefaultValuesScenario):
@@ -136,9 +137,6 @@ class TestDefaultValues(DefaultValuesScenario):
         logs_info_level: LogContainer,
         version: str,
     ) -> None:
-        if version == "cpp":
-            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
-
         assert results.return_code == ResultCode.SUCCESS
 
         logs = logs_info_level.get_logs("key", value=self.KEY)
@@ -172,7 +170,7 @@ class TestDefaultValues(DefaultValuesScenario):
         "comp_req__persistency__default_value_types_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required", "without"], scope="class")
 class TestRemoveKey(DefaultValuesScenario):
@@ -214,8 +212,6 @@ class TestRemoveKey(DefaultValuesScenario):
         logs_info_level: LogContainer,
         version: str,
     ) -> None:
-        if version == "cpp":
-            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
         assert results.return_code == ResultCode.SUCCESS
 
         logs = logs_info_level.get_logs("key", value=self.KEY)
@@ -257,7 +253,7 @@ class TestRemoveKey(DefaultValuesScenario):
         "comp_req__persistency__default_value_types_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestMalformedDefaultsFile(DefaultValuesScenario):
@@ -315,7 +311,7 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         assert defaults_file is not None
         assert results.return_code == ResultCode.PANIC
         assert results.stderr is not None
-        pattern = r'error: file ".*" could not be read: JsonParserError'
+        pattern = r'file ".*" could not be read: JsonParserError'
         assert re.findall(pattern, results.stderr) is not None
 
 
@@ -326,7 +322,7 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         "comp_req__persistency__default_value_types_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["required"], scope="class")
 class TestMissingDefaultsFile(DefaultValuesScenario):
@@ -352,7 +348,7 @@ class TestMissingDefaultsFile(DefaultValuesScenario):
     def test_invalid(self, results: ScenarioResult) -> None:
         assert results.return_code == ResultCode.PANIC
         assert results.stderr is not None
-        pattern = r'error: file ".*" could not be read: KvsFileReadError'
+        pattern = r'file ".*" could not be read: KvsFileReadError'
         assert re.findall(pattern, results.stderr) is not None
 
 
@@ -364,7 +360,7 @@ class TestMissingDefaultsFile(DefaultValuesScenario):
         "comp_req__persistency__default_value_types_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestResetAllKeys(DefaultValuesScenario):
@@ -403,8 +399,6 @@ class TestResetAllKeys(DefaultValuesScenario):
         logs_info_level: LogContainer,
         version: str,
     ):
-        if version == "cpp":
-            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
         assert defaults_file is not None
         assert results.return_code == ResultCode.SUCCESS
 
@@ -413,15 +407,15 @@ class TestResetAllKeys(DefaultValuesScenario):
 
             # Check values before set.
             assert logs[0].value_is_default
-            assert logs[0].current_value == 432.1 * i
+            assert isclose(logs[0].current_value, 432.1 * i, abs_tol=0.01)
 
             # Check values after set.
             assert not logs[1].value_is_default
-            assert logs[1].current_value == 123.4 * i
+            assert isclose(logs[1].current_value, 123.4 * i, abs_tol=0.01)
 
             # Check values after reset.
             assert logs[2].value_is_default
-            assert logs[2].current_value == 432.1 * i
+            assert isclose(logs[2].current_value, 432.1 * i, abs_tol=0.01)
 
 
 @add_test_properties(
@@ -430,7 +424,7 @@ class TestResetAllKeys(DefaultValuesScenario):
         "comp_req__persistency__default_value_cfg_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestResetSingleKey(DefaultValuesScenario):
@@ -470,8 +464,6 @@ class TestResetSingleKey(DefaultValuesScenario):
         logs_info_level: LogContainer,
         version: str,
     ):
-        if version == "cpp":
-            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
         assert defaults_file is not None
         assert results.return_code == ResultCode.SUCCESS
 
@@ -481,28 +473,28 @@ class TestResetSingleKey(DefaultValuesScenario):
             if i == self.RESET_INDEX:
                 # Check values before set.
                 assert logs[0].value_is_default
-                assert logs[0].current_value == 432.1 * i
+                assert isclose(logs[0].current_value, 432.1 * i, abs_tol=0.01)
 
                 # Check values after set.
                 assert not logs[1].value_is_default
-                assert logs[1].current_value == 123.4 * i
+                assert isclose(logs[1].current_value, 123.4 * i, abs_tol=0.01)
 
                 # Check values after reset.
                 assert logs[2].value_is_default
-                assert logs[2].current_value == 432.1 * i
+                assert isclose(logs[2].current_value, 432.1 * i, abs_tol=0.01)
 
             else:
                 # Check values before set.
                 assert logs[0].value_is_default
-                assert logs[0].current_value == 432.1 * i
+                assert isclose(logs[0].current_value, 432.1 * i, abs_tol=0.01)
 
                 # Check values after set.
                 assert not logs[1].value_is_default
-                assert logs[1].current_value == 123.4 * i
+                assert isclose(logs[1].current_value, 123.4 * i, abs_tol=0.01)
 
                 # Check values after reset.
                 assert not logs[2].value_is_default
-                assert logs[2].current_value == 123.4 * i
+                assert isclose(logs[2].current_value, 123.4 * i, abs_tol=0.01)
 
 
 @add_test_properties(
@@ -512,7 +504,7 @@ class TestResetSingleKey(DefaultValuesScenario):
         "comp_req__persistency__default_value_cfg_v2",
     ],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestChecksumOnProvidedDefaults(DefaultValuesScenario):

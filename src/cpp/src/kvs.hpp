@@ -100,7 +100,7 @@ enum class OpenJsonNeedFile
  * written).
  * - `get_default_value`: Retrieves the default value associated with a specific key.
  * - `reset_key`: Resets a key to its default value if available.
- * - `has_default_value`: Checks if a default value exists for a specific key.
+ * - `is_value_default`: Checks if a default value exists for a specific key.
  * - `set_value`: Sets the value for a specific key in the KVS.
  * - `remove_key`: Removes a specific key from the KVS.
  * - `flush`: Flushes the KVS to storage.
@@ -248,7 +248,7 @@ class Kvs final
     score::ResultBlank reset_key(const std::string_view key);
 
     /**
-     * @brief Checks if the specified key has a default value.
+     * @brief Checks if the specified key wasn't set yet and uses its default value.
      *
      * This function determines whether the given key is associated with a default
      * value in the key-value store.
@@ -259,7 +259,7 @@ class Kvs final
      * exists.
      *         - On failure: Returns a score::Result containing an appropriate ErrorCode.
      */
-    score::Result<bool> has_default_value(const std::string_view key);
+    score::Result<bool> is_value_default(const std::string_view key) const;
 
     /**
      * @brief Stores a key-value pair in the key-value store.

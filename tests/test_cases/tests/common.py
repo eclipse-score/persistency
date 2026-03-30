@@ -10,12 +10,15 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
+import logging
 import shutil
 from pathlib import Path
 from typing import Generator
 
 import pytest
 from testing_utils import BazelTools, BuildTools, LogContainer, Scenario
+
+logger = logging.getLogger(__name__)
 
 
 class ResultCode:
@@ -52,15 +55,17 @@ def temp_dir_common(
     parts = [base_name, *args]
     dir_name = "-".join(parts)
     dir_path = tmp_path_factory.mktemp(dir_name, numbered=True)
+    logger.info("Created temporary directory: %s", dir_path)
     yield dir_path
     shutil.rmtree(dir_path)
+    logger.info("Removed temporary directory: %s", dir_path)
 
 
 class CommonScenario(Scenario):
     @pytest.fixture(scope="class")
     def build_tools(self, version: str) -> BuildTools:
         assert version in ("cpp", "rust")
-        return BazelTools(option_prefix=version)
+        return BazelTools(option_prefix=version, config="per-x86_64-linux")
 
     @pytest.fixture(scope="class")
     def temp_dir(self, tmp_path_factory: pytest.TempPathFactory, version: str) -> Generator[Path, None, None]:

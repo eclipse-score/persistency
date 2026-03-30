@@ -30,9 +30,7 @@ fn main() -> Result<(), ErrorCode> {
 
         // Build KVS instance for given instance ID and temporary directory.
         let builder = KvsBuilder::new(instance_id).backend(Box::new(
-            JsonBackendBuilder::new()
-                .working_dir(dir_path.clone())
-                .build(),
+            JsonBackendBuilder::new().working_dir(dir_path.clone()).build(),
         ));
         let kvs = builder.build()?;
 
@@ -54,9 +52,8 @@ fn main() -> Result<(), ErrorCode> {
         println!("-> `snapshot_restore` usage");
 
         // Build KVS instance for given instance ID and temporary directory.
-        let builder = KvsBuilder::new(instance_id).backend(Box::new(
-            JsonBackendBuilder::new().working_dir(dir_path).build(),
-        ));
+        let builder =
+            KvsBuilder::new(instance_id).backend(Box::new(JsonBackendBuilder::new().working_dir(dir_path).build()));
         let kvs = builder.build()?;
 
         let max_count = kvs.snapshot_max_count() as u32;

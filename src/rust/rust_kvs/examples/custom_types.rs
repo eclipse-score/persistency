@@ -44,12 +44,14 @@ impl KvsDeserialize for Point {
     fn from_kvs(kvs_value: &KvsValue) -> Result<Self, Self::Error> {
         if let KvsValue::Object(map) = kvs_value {
             Ok(Point {
-                x: f64::from_kvs(map.get("x").ok_or(ErrorCode::DeserializationFailed(
-                    "Field not found".to_string(),
-                ))?)?,
-                y: f64::from_kvs(map.get("y").ok_or(ErrorCode::DeserializationFailed(
-                    "Field not found".to_string(),
-                ))?)?,
+                x: f64::from_kvs(
+                    map.get("x")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                y: f64::from_kvs(
+                    map.get("y")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
             })
         } else {
             Err(ErrorCode::DeserializationFailed(
@@ -145,42 +147,54 @@ impl KvsDeserialize for Example {
     fn from_kvs(kvs_value: &KvsValue) -> Result<Self, Self::Error> {
         if let KvsValue::Object(map) = kvs_value {
             Ok(Example {
-                i32: i32::from_kvs(map.get("i32").ok_or(ErrorCode::DeserializationFailed(
-                    "Field not found".to_string(),
-                ))?)?,
-                u32: u32::from_kvs(map.get("u32").ok_or(ErrorCode::DeserializationFailed(
-                    "Field not found".to_string(),
-                ))?)?,
-                i64: i64::from_kvs(map.get("i64").ok_or(ErrorCode::DeserializationFailed(
-                    "Field not found".to_string(),
-                ))?)?,
-                u64: u64::from_kvs(map.get("u64").ok_or(ErrorCode::DeserializationFailed(
-                    "Field not found".to_string(),
-                ))?)?,
-                f64: f64::from_kvs(map.get("f64").ok_or(ErrorCode::DeserializationFailed(
-                    "Field not found".to_string(),
-                ))?)?,
-                bool: bool::from_kvs(map.get("bool").ok_or(ErrorCode::DeserializationFailed(
-                    "Field not found".to_string(),
-                ))?)?,
-                string: String::from_kvs(map.get("string").ok_or(
-                    ErrorCode::DeserializationFailed("Field not found".to_string()),
-                )?)?,
-                vec: Vec::from_kvs(map.get("vec").ok_or(ErrorCode::DeserializationFailed(
-                    "Field not found".to_string(),
-                ))?)?,
-                object: KvsMap::from_kvs(map.get("object").ok_or(
-                    ErrorCode::DeserializationFailed("Field not found".to_string()),
-                )?)?,
-                u8: u8::from_kvs(map.get("u8").ok_or(ErrorCode::DeserializationFailed(
-                    "Field not found".to_string(),
-                ))?)?,
-                nested: Point::from_kvs(map.get("nested").ok_or(
-                    ErrorCode::DeserializationFailed("Field not found".to_string()),
-                )?)?,
-                ip: IpAddrWrapper::from_kvs(map.get("ip").ok_or(
-                    ErrorCode::DeserializationFailed("Field not found".to_string()),
-                )?)?
+                i32: i32::from_kvs(
+                    map.get("i32")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                u32: u32::from_kvs(
+                    map.get("u32")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                i64: i64::from_kvs(
+                    map.get("i64")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                u64: u64::from_kvs(
+                    map.get("u64")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                f64: f64::from_kvs(
+                    map.get("f64")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                bool: bool::from_kvs(
+                    map.get("bool")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                string: String::from_kvs(
+                    map.get("string")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                vec: Vec::from_kvs(
+                    map.get("vec")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                object: KvsMap::from_kvs(
+                    map.get("object")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                u8: u8::from_kvs(
+                    map.get("u8")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                nested: Point::from_kvs(
+                    map.get("nested")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?,
+                ip: IpAddrWrapper::from_kvs(
+                    map.get("ip")
+                        .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
+                )?
                 .0,
             })
         } else {
@@ -205,18 +219,11 @@ fn main() -> Result<(), ErrorCode> {
         f64: 444.4,
         bool: true,
         string: "example".to_string(),
-        vec: vec![
-            KvsValue::from("one"),
-            KvsValue::from("two"),
-            KvsValue::from("three"),
-        ],
+        vec: vec![KvsValue::from("one"), KvsValue::from("two"), KvsValue::from("three")],
         object: KvsMap::from([
             ("first".to_string(), KvsValue::from(-123i32)),
             ("second".to_string(), KvsValue::from(321u32)),
-            (
-                "third".to_string(),
-                KvsValue::String("map_example".to_string()),
-            ),
+            ("third".to_string(), KvsValue::String("map_example".to_string())),
         ]),
         u8: 200,
         nested: Point { x: 432.1, y: 654.3 },
@@ -231,9 +238,7 @@ fn main() -> Result<(), ErrorCode> {
     let kvs = KvsBuilder::new(InstanceId(0))
         .kvs_load(KvsLoad::Ignored)
         .defaults(KvsDefaults::Ignored)
-        .backend(Box::new(
-            JsonBackendBuilder::new().working_dir(dir_path).build(),
-        ))
+        .backend(Box::new(JsonBackendBuilder::new().working_dir(dir_path).build()))
         .build()?;
 
     // Serialize and set object.

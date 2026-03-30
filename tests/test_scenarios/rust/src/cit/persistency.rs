@@ -53,8 +53,7 @@ impl Scenario for ExplicitFlush {
         {
             // Second KVS instance object - used for flush check.
             let kvs = kvs_instance(params).expect("Failed to create KVS instance");
-            let (kvs_path, hash_path) =
-                kvs_hash_paths(&working_dir, kvs.parameters().instance_id, SnapshotId(0));
+            let (kvs_path, hash_path) = kvs_hash_paths(&working_dir, kvs.parameters().instance_id, SnapshotId(0));
             info!(
                 kvs_path = to_str(&kvs_path),
                 kvs_path_exists = kvs_path.exists(),

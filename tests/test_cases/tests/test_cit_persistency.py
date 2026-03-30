@@ -15,8 +15,8 @@ from typing import Any
 
 import pytest
 from common import CommonScenario, ResultCode
-from testing_utils import LogContainer, ScenarioResult
 from test_properties import add_test_properties
+from testing_utils import LogContainer, ScenarioResult
 
 pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 
@@ -24,7 +24,7 @@ pytestmark = pytest.mark.parametrize("version", ["rust"], scope="class")
 @add_test_properties(
     fully_verifies=["comp_req__persistency__persist_data_com_v2"],
     test_type="requirements-based",
-    derivation_technique="requirements-based",
+    derivation_technique="requirements-analysis",
 )
 class TestExplicitFlush(CommonScenario):
     """Verifies that disabling flush on exit but manually flushing ensures data is persisted correctly."""

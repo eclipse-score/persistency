@@ -414,24 +414,19 @@ score::ResultBlank Kvs::reset_key(const std::string_view key)
     return result;
 }
 
-/* Check if a key has a default value*/
-score::Result<bool> Kvs::has_default_value(const std::string_view key)
+/* Check if the value wasn't set yet and uses its default value */
+score::Result<bool> Kvs::is_value_default(const std::string_view key) const
 {
-    score::Result<bool> result = score::MakeUnexpected(ErrorCode::UnmappedError);
-
-    auto search = default_values.find(
-        std::string(key)); /* unordered_map find() needs string and doesnt work with string_view, workaround for
-                              c++20: heterogeneous lookup (applies to more functions) */
-    if (search != default_values.end())
-    {
-        result = true;
+    std::string key_str{key};
+    if (kvs.find(key_str) != kvs.end()) {
+        return false;
     }
-    else
-    {
-        result = false;
+    else if (default_values.find(key_str) != default_values.end()) {
+        return true;
     }
-
-    return result;
+    else {
+        return score::MakeUnexpected(ErrorCode::KeyNotFound);
+    }
 }
 
 /* Set the value for a key*/

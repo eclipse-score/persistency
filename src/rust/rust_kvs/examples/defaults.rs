@@ -61,9 +61,7 @@ fn main() -> Result<(), ErrorCode> {
     // Build KVS instance for given instance ID and temporary directory.
     // `defaults` is set to `KvsDefaults::Required` - defaults are required.
     let builder = KvsBuilder::new(instance_id)
-        .backend(Box::new(
-            JsonBackendBuilder::new().working_dir(dir_path).build(),
-        ))
+        .backend(Box::new(JsonBackendBuilder::new().working_dir(dir_path).build()))
         .defaults(KvsDefaults::Required);
     let kvs = builder.build()?;
 

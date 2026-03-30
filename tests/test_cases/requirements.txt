@@ -1,4 +1,4 @@
 psutil
 pytest-metadata
 pytest-env
-testing-utils @ git+https://github.com/eclipse-score/testing_tools.git@675395d4088c8eba708e21d9e5c4efbc75f6a6b0
+testing-utils @ git+https://github.com/eclipse-score/testing_tools.git@007c9027d69ee5408add68fd598179129166ceb9

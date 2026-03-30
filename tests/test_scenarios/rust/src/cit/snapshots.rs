@@ -27,8 +27,7 @@ impl Scenario for SnapshotCount {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
-        let count =
-            serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
+        let count = serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
         let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
 
         // Create snapshots.
@@ -76,10 +75,9 @@ impl Scenario for SnapshotRestore {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
-        let count =
-            serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
-        let snapshot_id = serde_json::from_value(v["snapshot_id"].clone())
-            .expect("Failed to parse \"snapshot_id\" field");
+        let count = serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
+        let snapshot_id =
+            serde_json::from_value(v["snapshot_id"].clone()).expect("Failed to parse \"snapshot_id\" field");
         let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
 
         // Create snapshots.
@@ -97,9 +95,7 @@ impl Scenario for SnapshotRestore {
             let result = kvs.snapshot_restore(SnapshotId(snapshot_id));
             info!(result = format!("{result:?}"));
             if let Ok(()) = result {
-                let value = kvs
-                    .get_value_as::<i32>("counter")
-                    .expect("Failed to read value");
+                let value = kvs.get_value_as::<i32>("counter").expect("Failed to read value");
                 info!(value);
             }
         }
@@ -117,10 +113,9 @@ impl Scenario for SnapshotPaths {
 
     fn run(&self, input: &str) -> Result<(), String> {
         let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
-        let count =
-            serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
-        let snapshot_id = serde_json::from_value(v["snapshot_id"].clone())
-            .expect("Failed to parse \"snapshot_id\" field");
+        let count = serde_json::from_value(v["count"].clone()).expect("Failed to parse \"count\" field");
+        let snapshot_id =
+            serde_json::from_value(v["snapshot_id"].clone()).expect("Failed to parse \"snapshot_id\" field");
         let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
         let instance_id = params.instance_id;
         let working_dir = params.dir.clone().expect("Working directory must be set");
@@ -135,8 +130,7 @@ impl Scenario for SnapshotPaths {
         }
 
         {
-            let (kvs_path, hash_path) =
-                kvs_hash_paths(&working_dir, instance_id, SnapshotId(snapshot_id));
+            let (kvs_path, hash_path) = kvs_hash_paths(&working_dir, instance_id, SnapshotId(snapshot_id));
             info!(
                 kvs_path = format!("{}", kvs_path.display()),
                 hash_path = format!("{}", hash_path.display())

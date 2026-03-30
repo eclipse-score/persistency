@@ -29,6 +29,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__support_datatype_keys
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall accept keys that consist solely of alphanumeric characters, underscores, or dashes.
 
@@ -39,7 +40,8 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__support_datatype_keys
    :status: valid
-
+   :belongs_to: comp__persistency_kvs
+   
    The component shall encode each key as valid UTF-8.
 
 .. comp_req:: Key Uniqueness
@@ -49,6 +51,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__support_datatype_keys
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall guarantee that each key is unique.
 
@@ -59,6 +62,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__support_datatype_keys
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall limit the maximum length of a key to 32 bytes.
 
@@ -69,7 +73,8 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__support_datatype_value
    :status: valid
-
+   :belongs_to: comp__persistency_kvs
+   
    The component shall accept only values of the following data types: Number,
    String, Null, Array[Value], or Dictionary{Key:Value}.
 
@@ -80,6 +85,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__support_datatype_value
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall serialize and deserialize all values to and from JSON.
 
@@ -90,6 +96,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__support_datatype_value
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall limit the maximum length of a value to 1024 bytes.
 
@@ -100,6 +107,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__support_datatype_value,feat_req__persistency__default_values
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall support unset values and shall provide a default value
    when a value is unset.
@@ -111,6 +119,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__support_datatype_value,feat_req__persistency__default_values
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall allow resetting a value to its default if a default is
    defined.
@@ -122,6 +131,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__default_values,feat_req__persistency__default_value_get,feat_req__persistency__reset_to_default,feat_req__persistency__default_value_file
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall accept default values of only permitted value data
    types.
@@ -133,6 +143,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__default_values,feat_req__persistency__default_value_get,feat_req__persistency__reset_to_default,feat_req__persistency__default_value_file
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall provide an API to retrieve default values.
 
@@ -143,6 +154,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__default_values,feat_req__persistency__default_value_get,feat_req__persistency__reset_to_default,feat_req__persistency__default_value_file
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall allow configuration of default values in code or in a
    separate configuration file.
@@ -154,6 +166,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__default_values,feat_req__persistency__default_value_get,feat_req__persistency__reset_to_default,feat_req__persistency__default_value_file
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall secure the configuration file for default values with an
    associated checksum file when default values are stored in a file.
@@ -165,6 +178,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__cfg
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall allow configuration of KVS constraints at compile-time
    using source code constants or at runtime using a configuration file.
@@ -176,6 +190,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__concurrency
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall implement thread-safe mechanisms to enable concurrent
    access to data without data races.
@@ -187,6 +202,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__multiple_kvs
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall manage all runtime variables within an instance to
    enable creation and use of multiple KVS instances concurrently within a
@@ -199,6 +215,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__integrity_check,feat_req__persistency__store_data
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall use the file API and the JSON data format to persist data.
 
@@ -209,6 +226,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__integrity_check,feat_req__persistency__store_data
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall generate a checksum for each data file and shall store
    it alongside the data.
@@ -220,6 +238,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__integrity_check,feat_req__persistency__load_data
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall verify the checksum when loading data.
 
@@ -230,6 +249,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__integrity_check,feat_req__persistency__store_data
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall use the file API to persist data.
 
@@ -240,6 +260,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__integrity_check,feat_req__persistency__store_data
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall use the JSON data format to persist data.
 
@@ -250,6 +271,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__versioning,feat_req__persistency__update_mechanism
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall not provide built-in versioning.
 
@@ -260,6 +282,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__versioning,feat_req__persistency__update_mechanism
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall use a JSON file storage format that enables the
    application to implement versioning, including upgrade and downgrade paths,
@@ -272,6 +295,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__snapshot_create
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall create a snapshot each time data is stored.
 
@@ -282,6 +306,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__cfg
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall maintain a configurable maximum number of snapshots.
 
@@ -292,6 +317,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__snapshot_create
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall assign the ID 1 to the newest snapshot and shall increment the IDs of older snapshots accordingly.
 
@@ -302,6 +328,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__snapshot_remove, feat_req__persistency__snapshot_restore
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall rotate and delete the oldest snapshot when the maximum number is reached.
 
@@ -312,6 +339,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__snapshot_restore
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall allow restoration of a snapshot by its ID.
 
@@ -322,6 +350,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__snapshot_remove
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall allow deletion of individual snapshots.
 
@@ -332,6 +361,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__dev_mode
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall provide an engineering mode that can be enabled during
    build time to display debugging and internal information.
@@ -343,6 +373,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__prod_mode
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall provide a field mode that can be enabled during build
    time to restrict access as much as possible.
@@ -354,6 +385,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__async_api
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall provide an asynchronous API in addition to the standard API.
 
@@ -364,6 +396,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__access_control
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall rely on the underlying filesystem for access and
    permission management and shall not implement its own access or permission
@@ -376,6 +409,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__access_control
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall report any access or permission errors encountered at
    the filesystem level to the application.
@@ -387,6 +421,7 @@ Requirements
    :safety: ASIL_B
    :satisfies: feat_req__persistency__async_api, feat_req__persistency__async_completion
    :status: valid
+   :belongs_to: comp__persistency_kvs
 
    The component shall provide an API for registering callbacks that are triggered by data change events.
 
