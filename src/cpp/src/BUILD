@@ -53,3 +53,13 @@ cc_library(
         "@score_baselibs//score/result",
     ],
 )
+
+# Public API wrapper — allows external projects to depend on KVS
+cc_library(
+    name = "kvs",                          # the clean public target
+    visibility = ["//visibility:public"],  # open to everyone
+    deps = [
+        ":kvs_cpp",
+        ":kvsvalue",
+    ],
+)
