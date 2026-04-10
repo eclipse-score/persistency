@@ -13,7 +13,7 @@
    # *******************************************************************************
 
 .. document:: Persistency Implementation Inspection Checklist
-   :id: doc__persistency_impl_inspection_V2
+   :id: doc__persistency_impl_inspection_v2
    :status: draft
    :safety: ASIL_B
    :security: YES

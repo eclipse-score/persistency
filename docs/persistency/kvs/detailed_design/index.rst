@@ -17,7 +17,7 @@ Detailed Design
 ###############
 
 .. document:: Persistency Detailed Design
-   :id: doc__persistency_detailed_design_V2
+   :id: doc__persistency_detailed_design_v2
    :status: draft
    :safety: ASIL_B
    :security: NO
