@@ -96,7 +96,7 @@ Module Workproducts List
         * - :need:`wp__fdr_reports` (module's Safety Analyses & DFA)
           - :need:`gd_guidl__safety_analysis`
           - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
-          - <Link to WP>
+          - n/a because no safety analysis performed for the components. They will be overtaken from the feature.
 
         * - :need:`wp__audit_report`
           - performed by external experts
@@ -117,6 +117,7 @@ Module Workproducts List
           - :need:`gd_temp__rel_mod_rel_note`
           - :ndf:`copy('status', need_id='gd_temp__rel_mod_rel_note')`
           - :need:`doc__persistency_release_note_v2`
+
 
 Component KVS Workproducts List
 -------------------------------
