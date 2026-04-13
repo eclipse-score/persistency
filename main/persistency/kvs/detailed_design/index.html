@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Safety Analysis: FMEA &#8212; Score Persistency  documentation</title>
+    <title>Detailed Design &#8212; Score Persistency  documentation</title>
   
   
   
@@ -62,7 +62,7 @@
     <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
     <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
     <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'persistency/kvs/safety_analysis/fmea';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'persistency/kvs/detailed_design/index';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://eclipse-score.github.io/persistency/versions.json';
@@ -72,8 +72,8 @@
         </script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Dependent Failure Analysis" href="dfa.html" />
-    <link rel="prev" title="Component Requirements Statistics" href="../requirements/statistics.html" />
+    <link rel="next" title="Implementation Inspection Checklist" href="chklst_impl_inspection.html" />
+    <link rel="prev" title="Architecture Inspection Checklist" href="../architecture/chklst_arc_inspection.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.1.0" />
@@ -419,14 +419,14 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture/chklst_arc_inspection.html">Architecture Inspection Checklist</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../detailed_design/index.html">Detailed Design</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../detailed_design/chklst_impl_inspection.html">Implementation Inspection Checklist</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Detailed Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chklst_impl_inspection.html">Implementation Inspection Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../kvs.html">Key-Value-Storage (rust_kvs) Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../requirements/index.html">Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../requirements/chklst_req_inspection.html">Requirement Inspection Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../requirements/statistics.html">Component Requirements Statistics</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Safety Analysis: FMEA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dfa.html">Dependent Failure Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../safety_analysis/fmea.html">Safety Analysis: FMEA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../safety_analysis/dfa.html">Dependent Failure Analysis</a></li>
 </ul>
 </div>
 </nav></div>
@@ -470,7 +470,7 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">KVS (Key Value Store)</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Safety Analysis: FMEA</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Detailed Design</span></li>
   </ul>
 </nav>
 </div>
@@ -487,17 +487,17 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="safety-analysis-fmea">
-<h1>Safety Analysis: FMEA<a class="headerlink" href="#safety-analysis-fmea" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-7c868414">
-<div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_kvs_fmea_v2">
+  <section id="detailed-design">
+<h1>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading">#</a></h1>
+<div class="need_container docutils container" id="SNCB-645ddae2">
+<div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_detailed_design_v2">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
-<div class="line"><span><span class="needs_title"><span class="needs_data">KVS FMEA</span></span></span></div>
+<div class="line"><span><span class="needs_title"><span class="needs_data">Persistency Detailed Design</span></span></span></div>
 </div>
 </td>
 <td class="head_center" colspan="2"><div class="needs_head line-block">
-<div class="line"><span><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">valid</span></span></span></div>
+<div class="line"><span><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">draft</span></span></span></div>
 <div class="line"><span><span class="needs_security"><span class="needs_label">security: </span><span class="needs_data">NO</span></span></span></div>
 <div class="line"><span><span class="needs_safety"><span class="needs_label">safety: </span><span class="needs_data">ASIL_B</span></span></span></div>
 </div>
@@ -508,9 +508,9 @@
 </td>
 </tr>
 <tr class="meta row-even"><td class="meta" colspan="3"><div class="needs_meta_left line-block">
-<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">Persistency KVS</span></span></span></div>
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">template</span></span></span></div>
 </span></span></div>
-<div class="line"><span><div class="line">realizes: <span class="realizes"><span><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/safety_analysis_workproducts.html#wp__sw_component_fmea">wp__sw_component_fmea</a></span></span></div>
+<div class="line"><span><div class="line">realizes: <span class="realizes"><span><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/implementation/implementation_workproducts.html#wp__sw_implementation">wp__sw_implementation</a></span></span></div>
 </span></div>
 </div>
 </td>
@@ -519,7 +519,7 @@
 <tr class="content row-odd"><td class="content" colspan="6"></td>
 </tr>
 <tr class="footer row-even"><td class="footer_left" colspan="2"><div class="needs_footer_left line-block">
-<div class="line"><span><span class="needs-id"><a class="reference internal" href="#doc__persistency_kvs_fmea_v2" title="doc__persistency_kvs_fmea_v2">doc__persistency_kvs_fmea_v2</a></span></span></div>
+<div class="line"><span><span class="needs-id"><a class="reference internal" href="#doc__persistency_detailed_design_v2" title="doc__persistency_detailed_design_v2">doc__persistency_detailed_design_v2</a></span></span></div>
 </div>
 </td>
 <td class="footer" colspan="2"><div class="needs_footer line-block">
@@ -532,7 +532,127 @@
 </table>
 </div>
 </div>
-<p>Because there is no sub-components in KVS, the results of the FMEA are the same as on feature level <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/safety_analysis/fmea.html#doc__persistency_fmea">doc__persistency_fmea</a>.</p>
+<section id="detailed-design-for-component-component-name">
+<h2>Detailed Design for Component: &lt;Component Name&gt;<a class="headerlink" href="#detailed-design-for-component-component-name" title="Link to this heading">#</a></h2>
+<section id="description">
+<h3>Description<a class="headerlink" href="#description" title="Link to this heading">#</a></h3>
+<div class="line-block">
+<div class="line">Design Decisions - For the documentation of the decision the <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/change_management/guidance/change_management_decision_record_template.html#gd_temp__change_decision_record">gd_temp__change_decision_record</a> can be used.</div>
+<div class="line">Design Constraints</div>
+</div>
+<section id="rationale-behind-decomposition-into-units">
+<h4>Rationale Behind Decomposition into Units<a class="headerlink" href="#rationale-behind-decomposition-into-units" title="Link to this heading">#</a></h4>
+<div class="line-block">
+<div class="line">mandatory: a motivation for the decomposition into one or more units.</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Reason for split into multiple units could be-
+- Based on design principles like SOLID,DRY etc
+- Based on design pattern’s etc.</p>
+</div>
+</section>
+</section>
+<section id="static-diagrams-for-unit-interactions">
+<h3>Static Diagrams for Unit Interactions<a class="headerlink" href="#static-diagrams-for-unit-interactions" title="Link to this heading">#</a></h3>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">dd_sta</span><span class="p">::</span> <span class="nt">&lt;Title&gt;</span>
+   <span class="nc">:id:</span> dd_sta__&lt;Component&gt;__&lt;Title&gt;
+   <span class="nc">:security:</span> <span class="nt">&lt;YES|NO&gt;</span>
+   <span class="nc">:safety:</span> <span class="nt">&lt;QM|ASIL_B&gt;</span>
+   <span class="nc">:status:</span> <span class="nt">&lt;valid|invalid&gt;</span>
+   <span class="nc">:implements:</span> <span class="nt">&lt;link to component requirement id&gt;</span>
+   <span class="nc">:satisfies:</span> <span class="nt">&lt;link to component architecture id&gt;</span>
+   <span class="nc">:belongs_to:</span> <span class="nt">&lt;link to component id&gt;</span>
+   <span class="nc">:includes:</span> <span class="nt">&lt;link to sw_unit id&gt;</span>, &lt;link to sw_unit interface id&gt;
+
+<span class="p">   ..</span> <span class="ow">needarch</span><span class="p">::</span> or .. image:: &lt;link to drawio image&gt;
+</pre></div>
+</div>
+</section>
+<section id="dynamic-diagrams-for-unit-interactions">
+<h3>Dynamic Diagrams for Unit Interactions<a class="headerlink" href="#dynamic-diagrams-for-unit-interactions" title="Link to this heading">#</a></h3>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">dd_dyn</span><span class="p">::</span> <span class="nt">&lt;Title&gt;</span>
+   <span class="nc">:id:</span> dd_dyn__&lt;Component&gt;__&lt;Title&gt;
+   <span class="nc">:security:</span> <span class="nt">&lt;YES|NO&gt;</span>
+   <span class="nc">:safety:</span> <span class="nt">&lt;QM|ASIL_B&gt;</span>
+   <span class="nc">:status:</span> <span class="nt">&lt;valid|invalid&gt;</span>
+   <span class="nc">:implements:</span> <span class="nt">&lt;link to component requirement id&gt;</span>
+   <span class="nc">:satisfies:</span> <span class="nt">&lt;link to component architecture id&gt;</span>
+   <span class="nc">:belongs_to:</span> <span class="nt">&lt;link to component id&gt;</span>
+   <span class="nc">:includes:</span> <span class="nt">&lt;link to sw_unit id&gt;</span>, &lt;link to sw_unit interface id&gt;
+
+<span class="p">   ..</span> <span class="ow">needarch</span><span class="p">::</span> or .. image:: &lt;link to drawio image&gt;
+</pre></div>
+</div>
+</section>
+<section id="units-within-the-component">
+<h3>Units within the Component<a class="headerlink" href="#units-within-the-component" title="Link to this heading">#</a></h3>
+<p>In your rst file:</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">sw_unit</span><span class="p">::</span> cpp unit
+   <span class="nc">:id:</span> sw_unit__&lt;Component&gt;__&lt;title&gt;
+   <span class="nc">:belongs_to:</span> <span class="nt">&lt;link to component id&gt;</span>
+
+   This implements the ....
+</pre></div>
+</div>
+<p>In your source file, any programming language, here with C++:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp"># need-Id: sw_unit__&lt;Component&gt;__&lt;title&gt;</span>
+<span class="k">class</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">name</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">public</span><span class="o">:</span>
+
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="interface-view">
+<h3>Interface View<a class="headerlink" href="#interface-view" title="Link to this heading">#</a></h3>
+<p>In your rst file:</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">sw_unit_int</span><span class="p">::</span> <span class="nt">&lt;here InterfaceDemo - change it&gt;</span>
+   <span class="nc">:id:</span> sw_unit_int__&lt;Component&gt;__&lt;title&gt;
+   <span class="nc">:belongs_to:</span> <span class="nt">&lt;link to sw_unit id&gt;</span>
+   <span class="nc">:implements:</span> <span class="nt">&lt;real_arc_int, real_arc_int_op&gt;</span>
+
+   This implements the ....
+</pre></div>
+</div>
+<p>In your source file, any programming language, here with C++:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp"># need-Id: sw_unit__&lt;Component&gt;__&lt;title&gt;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InterfaceDemo</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">public</span><span class="o">:</span>
+<span class="w">      </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">InterfaceDemo</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">      </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">OverrideMe</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>For cpp using doxygen comments</p></li>
+</ul>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm">   * @rst</span>
+<span class="cm">   * .. sw_unit_int:: cpp unit</span>
+<span class="cm">   *    :id: sw_unit_int__&lt;Component&gt;__&lt;title&gt;</span>
+<span class="cm">   *    :belongs_to: &lt;link to sw_unit id&gt;</span>
+<span class="cm">   *    :implements: &lt;real_arc_int, real_arc_int_op&gt;</span>
+<span class="cm">   *</span>
+<span class="cm">   *    This implements the ....</span>
+<span class="cm">   * @endrst</span>
+<span class="cm">*/</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>For rust</p></li>
+</ul>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="sd">//! .. sw_unit_int:: rust unit</span>
+<span class="sd">//!     :id: sw_unit_int__&lt;Component&gt;__&lt;title&gt;</span>
+<span class="sd">//!     :belongs_to: &lt;link to sw_unit id&gt;</span>
+<span class="sd">//!     :implements: &lt;real_arc_int, real_arc_int_op&gt;</span>
+<span class="sd">//!</span>
+<span class="sd">//!     This implements the ....</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
 
@@ -546,20 +666,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../requirements/statistics.html"
+       href="../architecture/chklst_arc_inspection.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Component Requirements Statistics</p>
+        <p class="prev-next-title">Architecture Inspection Checklist</p>
       </div>
     </a>
     <a class="right-next"
-       href="dfa.html"
+       href="chklst_impl_inspection.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Dependent Failure Analysis</p>
+        <p class="prev-next-title">Implementation Inspection Checklist</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -575,10 +695,32 @@
 
 
   <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detailed-design-for-component-component-name">Detailed Design for Component: &lt;Component Name&gt;</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#description">Description</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#rationale-behind-decomposition-into-units">Rationale Behind Decomposition into Units</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#static-diagrams-for-unit-interactions">Static Diagrams for Unit Interactions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-diagrams-for-unit-interactions">Dynamic Diagrams for Unit Interactions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#units-within-the-component">Units within the Component</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interface-view">Interface View</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/eclipse-score/persistency/edit/main/docs/persistency/kvs/safety_analysis/fmea.rst">
+    <a href="https://github.com/eclipse-score/persistency/edit/main/docs/persistency/kvs/detailed_design/index.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -594,7 +736,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../../../_sources/persistency/kvs/safety_analysis/fmea.rst.txt"
+      <li><a href="../../../_sources/persistency/kvs/detailed_design/index.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>

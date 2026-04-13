@@ -1,6 +1,6 @@
 ..
    # *******************************************************************************
-   # Copyright (c) 2024 Contributors to the Eclipse Foundation
+   # Copyright (c) 2025 Contributors to the Eclipse Foundation
    #
    # See the NOTICE file(s) distributed with this work for additional
    # information regarding copyright ownership.
@@ -12,10 +12,15 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-Manuals
-#######
+Module Documents
+################
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 1
+   :glob:
 
-   safety_manual
+   manual/index.rst
+   safety_mgt/index.rst
+   security_mgt/index.rst
+   verification/module_verification_report.rst
+   release/release_note.rst

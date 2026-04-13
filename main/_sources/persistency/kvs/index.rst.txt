@@ -145,9 +145,13 @@ Footnotes
 .. toctree::
    :hidden:
 
+   architecture/index.rst
+   architecture/chklst_arc_inspection.rst
+   detailed_design/index.rst
+   detailed_design/chklst_impl_inspection.rst
    kvs.rst
    requirements/index.rst
+   requirements/chklst_req_inspection.rst
    requirements/statistics.rst
-   architecture/index.rst
    safety_analysis/fmea.rst
    safety_analysis/dfa.rst
