@@ -23,11 +23,18 @@ Safety Package Formal Review Report
    :realizes: wp__fdr_reports
    :tags: persistency
 
-**1. Purpose**
+**Purpose**
 
 The purpose of this review checklist is to report status of the formal review for the safety package.
 
-**2. Checklist**
+**Conduct**
+As described in :need:`wf__p_formal_rv`, the formal document review is performed by an "external" safety manager:
+
+- reviewer: <committer with safety manager skills explicitly named here>
+
+**Checklist**
+
+See also :ref:`review_concept` for further information about reviews in general and inspection in particular.
 
 .. list-table:: Safety Package Checklist
         :header-rows: 1
@@ -35,29 +42,36 @@ The purpose of this review checklist is to report status of the formal review fo
         * - Id
           - Safety package activity
           - Compliant to ISO 26262?
+          - Reference
           - Comment
 
         * - 1
-          - Is a safety package provided which matches the safety plan (i.e. all planned workproducts referenced)?
+          - Is a safety package provided which matches the safety plan (i.e. all planned work products referenced)?
           - [YES | NO ]
+          - :need:`[[title]] <std_req__iso26262__management_6481>`
           - <Rationale for result>
 
         * - 2
           - Is the argument how functional safety is achieved, provided in the safety package, plausible and sufficient?
           - NO
-          - The argument is intentionally not provided by S-CORE.
+          - :need:`[[title]] <std_req__iso26262__management_6481>`
+          - The argument is intentionally not provided by the project.
 
         * - 3
           - Are the referenced work products available?
           - [YES | NO ]
+          - :need:`[[title]] <std_req__iso26262__management_6482>`
           - <Rationale for result>
 
         * - 4
           - Are the referenced work products in released state, including the process safety audit?
           - [YES | NO ]
+          - :need:`[[title]] <std_req__iso26262__management_6482>`
+            :need:`[[title]] <std_req__iso26262__management_6469>`
           - <Rationale for result>
 
         * - 5
           - If safety related deviations from the process or safety concept are documented, are these argued understandably?
           - [YES | NO ]
+          - :need:`[[title]] <std_req__iso26262__management_6481>`
           - <Rationale for result>
