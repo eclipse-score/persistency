@@ -420,6 +420,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../manual/index.html">Manuals</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Safety Management</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="module_codeowners.html">Module Persistency Skill Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_safety_analysis_fdr.html">Safety Analysis Checklist</a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_safety_plan.html">Module Safety Plan</a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_safety_plan_fdr.html">Safety Plan Formal Review Report</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Safety Package Formal Review Report</a></li>
@@ -493,7 +494,7 @@
                   
   <section id="safety-package-formal-review-report">
 <h1>Safety Package Formal Review Report<a class="headerlink" href="#safety-package-formal-review-report" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-929c1a6e">
+<div class="need_container docutils container" id="SNCB-7b561927">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_safety_package_fdr_v2">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -536,42 +537,55 @@
 </table>
 </div>
 </div>
-<p><strong>1. Purpose</strong></p>
+<p><strong>Purpose</strong></p>
 <p>The purpose of this review checklist is to report status of the formal review for the safety package.</p>
-<p><strong>2. Checklist</strong></p>
+<p><strong>Conduct</strong>
+As described in <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_management/safety_management_workflow.html#wf__p_formal_rv">wf__p_formal_rv</a>, the formal document review is performed by an “external” safety manager:</p>
+<ul class="simple">
+<li><p>reviewer: &lt;committer with safety manager skills explicitly named here&gt;</p></li>
+</ul>
+<p><strong>Checklist</strong></p>
+<p>See also <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/general_concepts/score_review_concept.html#doc_concept__wp_inspections">doc_concept__wp_inspections</a> for further information about reviews in general and inspection in particular.</p>
 <div class="pst-scrollable-table-container"><table class="table" id="id1">
-<caption><span class="caption-number">Table 6 </span><span class="caption-text">Safety Package Checklist</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<caption><span class="caption-number">Table 7 </span><span class="caption-text">Safety Package Checklist</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Id</p></th>
 <th class="head"><p>Safety package activity</p></th>
 <th class="head"><p>Compliant to ISO 26262?</p></th>
+<th class="head"><p>Reference</p></th>
 <th class="head"><p>Comment</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>1</p></td>
-<td><p>Is a safety package provided which matches the safety plan (i.e. all planned workproducts referenced)?</p></td>
+<td><p>Is a safety package provided which matches the safety plan (i.e. all planned work products referenced)?</p></td>
 <td><p>[YES | NO ]</p></td>
+<td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__management_6481">std_req__iso26262__management_6481</a></p></td>
 <td><p>&lt;Rationale for result&gt;</p></td>
 </tr>
 <tr class="row-odd"><td><p>2</p></td>
 <td><p>Is the argument how functional safety is achieved, provided in the safety package, plausible and sufficient?</p></td>
 <td><p>NO</p></td>
-<td><p>The argument is intentionally not provided by S-CORE.</p></td>
+<td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__management_6481">std_req__iso26262__management_6481</a></p></td>
+<td><p>The argument is intentionally not provided by the project.</p></td>
 </tr>
 <tr class="row-even"><td><p>3</p></td>
 <td><p>Are the referenced work products available?</p></td>
 <td><p>[YES | NO ]</p></td>
+<td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__management_6482">std_req__iso26262__management_6482</a></p></td>
 <td><p>&lt;Rationale for result&gt;</p></td>
 </tr>
 <tr class="row-odd"><td><p>4</p></td>
 <td><p>Are the referenced work products in released state, including the process safety audit?</p></td>
 <td><p>[YES | NO ]</p></td>
+<td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__management_6482">std_req__iso26262__management_6482</a>
+<a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__management_6469">std_req__iso26262__management_6469</a></p></td>
 <td><p>&lt;Rationale for result&gt;</p></td>
 </tr>
 <tr class="row-even"><td><p>5</p></td>
 <td><p>If safety related deviations from the process or safety concept are documented, are these argued understandably?</p></td>
 <td><p>[YES | NO ]</p></td>
+<td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__management_6481">std_req__iso26262__management_6481</a></p></td>
 <td><p>&lt;Rationale for result&gt;</p></td>
 </tr>
 </tbody>

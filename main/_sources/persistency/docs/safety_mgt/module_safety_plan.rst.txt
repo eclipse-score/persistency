@@ -26,7 +26,7 @@ Module Safety Plan
 Functional Safety Management Context
 ====================================
 
-This Safety Plan adds to the :need:`gd_guidl__saf_plan_definitions` all the module development relevant workproducts needed for ISO 26262 conformity.
+This Safety Plan adds to the :need:`wp__platform_safety_plan` all the module development relevant workproducts needed for ISO 26262 conformity.
 
 Functional Safety Management Scope
 ==================================
@@ -52,10 +52,10 @@ Functional Safety Management Roles
 Tailoring
 =========
 
-Additional to the tailoring in the SW platform project as defined in the :need:`gd_guidl__saf_plan_definitions` we define here the additional tailoring on module level.
+Additional to the tailoring in the SW platform project as defined in the :need:`wp__platform_safety_plan` we define here the additional tailoring on module level.
 
 | - Excluded for this module are additionally the following workproducts (and their related requirements):
-|   - No work products excluded
+|   - Safety Analysis will not be performed on module level, because they are identical to the feature level.
 
 Functional Safety Module Workproducts
 =====================================
@@ -203,41 +203,60 @@ If the OSS element is classified as
 .. list-table:: OSS (sub-)component Tiny JSON Workproducts
         :header-rows: 1
 
-        * - Workproduct Id
+        * - Work product Id
+          - Link to process
           - Reasoning for tailoring
 
         * - :need:`wp__requirements_comp`
+          - :need:`gd_temp__req_comp_req`
           - Always needed (for Q and QR classification) and also improves process Id 2
 
         * - :need:`wp__requirements_comp_aou`
+          - :need:`gd_temp__req_aou_req`
           - Always needed (for Q and QR classification) and also improves process Id 5
 
         * - :need:`wp__requirements_inspect`
+          - :need:`gd_chklst__req_inspection`
           - <Reasoning for tailoring>
 
         * - :need:`wf__cr_mt_comparch`
+          - :need:`gd_temp__arch_comp`
           - <Reasoning for tailoring, needed for example in case of deficits in process Id 3&4 and complexity Ids 1&4>
 
         * - :need:`wp__sw_component_fmea`
+          - :need:`gd_temp__comp_saf_fmea`
           - <Reasoning for tailoring, could help arguing too high cyclomatic complexity covered by safety mechanisms>
 
         * - :need:`wp__sw_arch_verification`
+          - :need:`gd_chklst__arch_inspection_checklist`
           - <Reasoning for tailoring, needed if also wf__cr_mt_comparch is required>
 
         * - :need:`wp__sw_implementation`
+          - n/a
           - Tailored - If source code is modified, this is not a OSS qualification any more.
 
         * - :need:`wp__verification_sw_unit_test`
+          - :need:`gd_guidl__verification_guide`
           - <Reasoning for tailoring, can improve deficits in process Id 6 and complexity Id 3>
 
         * - :need:`wp__sw_implementation_inspection`
+          - :need:`gd_chklst__impl_inspection_checklist`
           - <Reasoning for tailoring, can improve deficits in process Id 6 and complexity Id 2>
 
         * - :need:`wp__verification_comp_int_test`
+          - :need:`gd_guidl__verification_guide`
           - Always needed (for Q and QR classification)
 
         * - :need:`wp__sw_component_class`
+          - :need:`gd_guidl__component_classification`
           - Always needed as basis for tailoring.
+
+
+Link to project planning
+------------------------
+
+<add here a link to your module's planning for the above work products, e.g. a link to a ticket.>
+
 
 Module Safety Package
 =====================
@@ -245,24 +264,21 @@ Module Safety Package
 To create the safety package (according to :need:`gd_guidl__saf_package`) the following
 documents and work products status have to go to "valid" (after the relevant verification were performed).
 
-.. needtable::
-   :style: table
-   :columns: title;id;safety;security;status
-   :colwidths: 25,45,10,10,10
-   :sort: id
+Module Documents Status
+-----------------------
 
-   results = []
-   for need in needs.filter_types(["document"]):
-       if need["is_external"]:  # ignore external documents
-           continue
-       if need["safety"] == "QM":  # ignore non-safety-critical documents
-           continue
-       results.append(need)
+For all the work product documents the status can be seen by following the "Link to WP".
+A summary of the status is also documented in the project's documentation management plan.
+
+See <add here the section reference to the documentation management plan>
 
 Component Documents Status
 --------------------------
 
-For all the work product documents the status can be seen above in the module section.
+For all the work product documents the status can be seen by following the "Link to WP".
+A summary of the status is also documented in the project's documentation management plan.
+
+See <add here the section reference to the documentation management plan>
 
 Component Requirements Status
 -----------------------------
@@ -271,7 +287,7 @@ Component Requirements Status
    :filter: docname is not None and "persistency" in docname and "requirements" in docname
    :style: table
    :types: comp_req
-   :tags: kvs
+   :tags: component_name
    :columns: id;status;tags
    :colwidths: 25,25,25
    :sort: title
@@ -283,7 +299,7 @@ Component AoU Status
    :filter: docname is not None and "persistency" in docname and "requirements" in docname
    :style: table
    :types: aou_req
-   :tags: kvs
+   :tags: component_name
    :columns: id;status;tags
    :colwidths: 25,25,25
    :sort: title
@@ -295,7 +311,19 @@ Component Architecture Status
    :filter: docname is not None and "persistency" in docname and "architecture" in docname
    :style: table
    :types: comp_arc_sta; comp_arc_dyn
-   :tags: kvs
+   :tags: component_name
    :columns: id;status;tags
    :colwidths: 25,25,25
    :sort: title
+
+.. _persistency_safety_package_deviations:
+
+Deviations from Module Safety Plan
+----------------------------------
+
+The following deviations from the module safety plan are present in the module safety package.
+These are deviations from planned processes execution and/or work product results,
+safety anomalies in the sense of known bugs in the software are reported in the release notes.
+
+<Describe here the deviations, whether they have an impact on module's safety functions,
+how these can be mitigated or argued and if and when a resolution is planned.>
