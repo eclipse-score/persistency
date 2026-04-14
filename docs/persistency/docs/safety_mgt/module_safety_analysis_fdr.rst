@@ -36,7 +36,7 @@ As described in :need:`wf__p_formal_rv`, the formal document review is performed
 
 **Checklist**
 
-Please note that the "passed" column must contain "yes" or "no" for each checklist item. Additionally, the remarks column must explain why item passed or did not passed. In case of "no" an issue link to the issue tracking system has to be added in the last column. See also :doc:`doc_concept__wp_inspections` for further information about reviews in general and inspection in particular.
+Please note that the "passed" column must contain "yes" or "no" for each checklist item. Additionally, the remarks column must explain why item passed or did not passed. In case of "no" an issue link to the issue tracking system has to be added in the last column. See also :need:`doc_concept__wp_inspections` for further information about reviews in general and inspection in particular.
 
 .. list-table:: Safety Analysis Checklist
       :header-rows: 1
@@ -85,7 +85,7 @@ Please note that the "passed" column must contain "yes" or "no" for each checkli
         - <Rationale for result>
 
       * - 7
-        - Are the templates for DFA and/or FMEA used? See :doc:`doc__component_name_dfa` / :doc:`doc__component_name_fmea` and also :doc:`doc__process_requirements_safety_analysis`
+        - Are the templates for DFA and/or FMEA used? See :need:`doc__component_name_dfa` / :need:`doc__component_name_fmea` and also :need:`doc__process_requirements_safety_analysis`
         - [YES | NO ]
         - :need:`[[title]] <std_req__iso26262__analysis_748>`, :need:`[[title]] <std_req__iso26262__analysis_849>`, :need:`[[title]] <std_req__iso26262__analysis_8410>`
         - <Rationale for result>

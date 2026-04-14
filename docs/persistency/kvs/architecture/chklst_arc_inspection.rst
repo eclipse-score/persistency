@@ -82,7 +82,7 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
     * - ARC_01_04
       - Is the architectural element traceable to the lower level artifacts as defined by the workproduct traceability?
       - Will be removed from checklist once the requirement (:need:`Correlations of the architectural building blocks <gd_req__arch_build_blocks_corr>`) is implemented by automated tool check. See `Tool Requirements <https://eclipse-score.github.io/docs-as-code/main/internals/requirements/requirements.html>`_.
-        Details of possible linking can be depicted from :doc:`doc_concept__general_traceability`.
+        Details of possible linking can be depicted from :need:`doc_concept__general_traceability`.
       -
       -
       -
