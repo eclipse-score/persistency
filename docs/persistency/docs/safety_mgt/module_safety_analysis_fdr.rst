@@ -85,7 +85,7 @@ Please note that the "passed" column must contain "yes" or "no" for each checkli
         - <Rationale for result>
 
       * - 7
-        - Are the templates for DFA and/or FMEA used? See :need:`doc__component_name_dfa` / :need:`doc__component_name_fmea` and also :ref:`process_requirements_safety_analysis`
+        - Are the templates for DFA and/or FMEA used? See :need:`doc__component_name_dfa` / :need:`doc__component_name_fmea`
         - [YES | NO ]
         - :need:`[[title]] <std_req__iso26262__analysis_748>`, :need:`[[title]] <std_req__iso26262__analysis_849>`, :need:`[[title]] <std_req__iso26262__analysis_8410>`
         - <Rationale for result>
