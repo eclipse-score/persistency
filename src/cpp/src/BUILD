@@ -21,8 +21,7 @@ cc_library(
     hdrs = ["kvsvalue.hpp"],
     includes = ["."],
     visibility = [
-        "//:__pkg__",
-        "//src/cpp/src/internal:__pkg__",
+        "//visibility:public",
     ],
 )
 
@@ -41,8 +40,7 @@ cc_library(
     ],
     includes = ["."],
     visibility = [
-        "//:__pkg__",
-        "//tests/test_scenarios/cpp:__pkg__",
+        "//visibility:public",
     ],
     deps = [
         ":kvsvalue",
