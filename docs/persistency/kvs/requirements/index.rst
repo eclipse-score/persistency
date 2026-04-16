@@ -22,6 +22,9 @@ Requirements
    :security: NO
    :realizes: wp__requirements_comp
 
+Component Requirements
+----------------------
+
 .. comp_req:: Key Naming
    :id: comp_req__persistency__key_naming_v2
    :reqtype: Functional
@@ -424,6 +427,49 @@ Requirements
    :belongs_to: comp__persistency_kvs
 
    The component shall provide an API for registering callbacks that are triggered by data change events.
+
+
+Assumption of Use Requirements
+------------------------------
+
+.. code-block:: rst
+
+   .. aou_req:: Next Title
+      :id: aou_req__component_name__next_title
+      :reqtype: Process
+      :security: YES
+      :safety: ASIL_B
+      :status: invalid
+
+      The Component User shall do xyz to use the component safely/securely
+
+Environmental Requirements
+--------------------------
+
+.. code-block:: rst
+
+   .. aou_req:: Another Title
+      :id: aou_req__component_name__another_title
+      :reqtype: Process
+      :security: YES
+      :safety: ASIL_B
+      :status: invalid
+      :tags: environment
+
+      The Component shall only be used in a xyz environment to ensure its proper functioning.
+
+Hints
+-----
+
+.. attention::
+    The above directives must be updated according to your feature requirements.
+
+    - Replace the example content by the real content for your first requirement (according to :need:`gd_guidl__req_engineering`)
+    - Set ``safety`` and ``security`` to the right value (ASIL B/QM; YES/NO)
+    - Set ``reqtype`` with a link to the right value (<Functional|Interface|Process|Non-Functional>)
+    - Add other needed requirements for your feature
+    - Set ``status`` to ``valid`` and start the review/merge process
+
 
 .. needextend:: docname is not None and "persistency/kvs/docs/requirements" in docname
    :+tags: kvs

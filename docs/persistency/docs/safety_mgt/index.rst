@@ -12,10 +12,14 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-Manuals
-#######
+Safety Management
+#################
 
 .. toctree::
    :titlesonly:
 
-   safety_manual
+   module_codeowners
+   module_safety_analysis_fdr
+   module_safety_plan
+   module_safety_plan_fdr
+   module_safety_package_fdr
