@@ -23,12 +23,9 @@ Module Documents
 .. toctree::
    :maxdepth: 1
 
-   persistency/manual/index.rst
-   persistency/safety_mgt/index.rst
-   persistency/security_mgt/index.rst
-   persistency/verification/module_verification_report.rst
-   persistency/release/release_note.rst
-   persistency/kvs/kvs.rst
+   persistency/docs/index.rst
+   persistency/json/index.rst
+   persistency/kvs/index.rst
 
 Components
 ----------
