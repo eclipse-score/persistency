@@ -44,7 +44,7 @@ Security Management Roles
           - Assignee
 
         * - Security Manager
-          - TBD
+          - Karthik Vanka
 
         * - Module Project Manager (= Feature team lead)
           - TBD
