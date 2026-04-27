@@ -10,7 +10,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-load("@rules_rust//rust:defs.bzl", "rust_binary")
+load("@rules_rust//rust:defs.bzl", "miri_binary", "rust_binary")
 
 rust_binary(
     name = "kvs_tool",
@@ -32,4 +32,11 @@ rust_binary(
         "@score_crates//:tinyjson",
         "@score_logging//score/mw/log/rust/score_log_bridge",
     ],
+)
+
+miri_binary(
+    name = "kvs_tool_miri",
+    crate = ":kvs_tool",
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
 )

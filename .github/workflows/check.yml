@@ -40,27 +40,6 @@ jobs:
         run: |
           cargo build
 
-  cargo-miri:
-    runs-on: ubuntu-latest
-    env:
-      MIRIFLAGS: "-Zmiri-disable-isolation"
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: nightly-2025-12-15
-          components: miri, rust-src
-
-      - name: Install Clang
-        run: |
-          sudo apt update
-          sudo apt install -y clang
-
-      - name: Cargo Miri
-        run: |
-          cargo +nightly-2025-12-15 miri test
-
   cargo-coverage:
     runs-on: ubuntu-latest
     steps:
@@ -102,6 +81,10 @@ jobs:
       - name: Bazel Unit Tests
         run: |
           bazel test --lockfile_mode=error --config=per-x86_64-linux //src/rust/rust_kvs:tests
+
+      - name: Bazel Miri Tests
+        run: |
+          bazel test --config=per-x86_64-linux //src/rust/rust_kvs:tests_miri --test_output=all
 
   cpp-bazel:
     runs-on: ubuntu-latest
