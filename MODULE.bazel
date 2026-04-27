@@ -47,7 +47,7 @@ bazel_dep(name = "rules_cc", version = "0.1.2")
 
 # Toolchains and extensions
 bazel_dep(name = "score_bazel_cpp_toolchains", version = "0.2.2", dev_dependency = True)
-bazel_dep(name = "score_toolchains_rust", version = "0.9.0", dev_dependency = True)
+bazel_dep(name = "score_toolchains_rust", version = "0.9.1", dev_dependency = True)
 
 ## Bazel registry
 # Module dependencies

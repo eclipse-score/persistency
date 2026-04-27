@@ -781,8 +781,6 @@
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_starpls_lsp/0.1.0/source.json": "3c7c49977b01a990f4f0a6d65c00e75a88433af7ad21a564db338cd079a92913",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_qnx/0.0.5/MODULE.bazel": "868382fb16c73e0cdfb151f8ea06698fa9be77d1b5236f4018db70931523d470",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_qnx/0.0.5/source.json": "c16c0ef2ae176228450dc24df9ec2e5bb89a7c15f303bbfd595f99e55f24e5de",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_rust/0.9.0/MODULE.bazel": "38fa819127a3785977b2915a5dab6b07825df3d7a60fca7b7474ab7a82e3f930",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_rust/0.9.0/source.json": "a1da27ae2b58086f172997bedfacccfa0b464bed181837ee3e755d4b598393e9",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_tooling/1.0.2/MODULE.bazel": "e70f396375b9d612b4f41ebceff7f18f68ab423b14625c138a354cc01bc62a10",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_tooling/1.0.4/MODULE.bazel": "89da6c5a0a5fab61ff842648bc9d7d26e4a389ba33b459a9f5449257ddd04c5a",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_tooling/1.1.0/MODULE.bazel": "5a04a5ce3512eb742a036600fba58b465f427e2e193db8e88857132e4a4eb513",
@@ -9121,7 +9119,7 @@
     "@@score_toolchains_rust+//extensions:ferrocene_toolchain_ext.bzl%ferrocene_rules_rust_miri_toolchain_ext": {
       "general": {
         "bzlTransitiveDigest": "JTR6scmBZuukTYspnbvaNFU27CfBHiQyu6OywcI1QPE=",
-        "usagesDigest": "EnA38rn8KpYJA09jvIs6cQo4cTY3WzxE3CHKqdVEZks=",
+        "usagesDigest": "NG3i4rQHKaVxy3XP3whXIzcWtClNEorly453cLKCW04=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -9197,7 +9195,7 @@
     "@@score_toolchains_rust+//extensions:ferrocene_toolchain_ext.bzl%ferrocene_toolchain_ext": {
       "general": {
         "bzlTransitiveDigest": "JTR6scmBZuukTYspnbvaNFU27CfBHiQyu6OywcI1QPE=",
-        "usagesDigest": "oi3kOxd5hNMzBTRl20l1DUoT43gQ6K3cO031WQLS3J8=",
+        "usagesDigest": "Ca3ETU1aVV2W9nZID58rjM4fuxKuOudKOYIcWSS7rWo=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -9233,7 +9231,7 @@
                 "@platforms//os:linux"
               ],
               "coverage_tools_url": "https://github.com/eclipse-score/ferrocene_toolchain_builder/releases/download/1.2.0/coverage-tools-779fbed05ae9e9fe2a04137929d99cc9b3d516fd-x86_64-unknown-linux-gnu.tar.gz",
-              "coverage_tools_sha256": "5a136b0b654625b794aec9e189ab1be92a23c0a56eb6fc16984b629fee034cab",
+              "coverage_tools_sha256": "841172d34b2fc0a8bed2756cf16f38d29ac18c13ee29fbb87af3ae047aa2a6a0",
               "coverage_tools_strip_prefix": "779fbed05ae9e9fe2a04137929d99cc9b3d516fd/x86_64-unknown-linux-gnu",
               "miri_sysroot_url": "https://github.com/eclipse-score/ferrocene_toolchain_builder/releases/download/1.2.0/miri-sysroot-779fbed05ae9e9fe2a04137929d99cc9b3d516fd-x86_64-unknown-linux-gnu.tar.gz",
               "miri_sysroot_sha256": "8b745cc64fe4d9d27081196cc565ea3cd198b24fce0ef7e2f014a11d85629745",
@@ -9271,7 +9269,7 @@
                 "@platforms//os:linux"
               ],
               "coverage_tools_url": "https://github.com/eclipse-score/ferrocene_toolchain_builder/releases/download/1.2.0/coverage-tools-779fbed05ae9e9fe2a04137929d99cc9b3d516fd-x86_64-unknown-linux-gnu.tar.gz",
-              "coverage_tools_sha256": "5a136b0b654625b794aec9e189ab1be92a23c0a56eb6fc16984b629fee034cab",
+              "coverage_tools_sha256": "841172d34b2fc0a8bed2756cf16f38d29ac18c13ee29fbb87af3ae047aa2a6a0",
               "coverage_tools_strip_prefix": "779fbed05ae9e9fe2a04137929d99cc9b3d516fd/x86_64-unknown-linux-gnu",
               "miri_sysroot_url": "https://github.com/eclipse-score/ferrocene_toolchain_builder/releases/download/1.2.0/miri-sysroot-779fbed05ae9e9fe2a04137929d99cc9b3d516fd-aarch64-unknown-linux-gnu.tar.gz",
               "miri_sysroot_sha256": "74f90eabcb34809e44300535016f25eb0cf4a500763c0d18e7f587583b5b9908",
@@ -9309,7 +9307,7 @@
                 "@platforms//os:qnx"
               ],
               "coverage_tools_url": "https://github.com/eclipse-score/ferrocene_toolchain_builder/releases/download/1.2.0/coverage-tools-779fbed05ae9e9fe2a04137929d99cc9b3d516fd-x86_64-unknown-linux-gnu.tar.gz",
-              "coverage_tools_sha256": "5a136b0b654625b794aec9e189ab1be92a23c0a56eb6fc16984b629fee034cab",
+              "coverage_tools_sha256": "841172d34b2fc0a8bed2756cf16f38d29ac18c13ee29fbb87af3ae047aa2a6a0",
               "coverage_tools_strip_prefix": "779fbed05ae9e9fe2a04137929d99cc9b3d516fd/x86_64-unknown-linux-gnu",
               "miri_sysroot_url": "https://github.com/eclipse-score/ferrocene_toolchain_builder/releases/download/1.2.0/miri-sysroot-779fbed05ae9e9fe2a04137929d99cc9b3d516fd-x86_64-pc-nto-qnx800.tar.gz",
               "miri_sysroot_sha256": "ac434b7dc3cc3d67d31f73513a027aea50cca355c189c3a3f8c3162b1fccbca0",
@@ -9347,7 +9345,7 @@
                 "@platforms//os:qnx"
               ],
               "coverage_tools_url": "https://github.com/eclipse-score/ferrocene_toolchain_builder/releases/download/1.2.0/coverage-tools-779fbed05ae9e9fe2a04137929d99cc9b3d516fd-x86_64-unknown-linux-gnu.tar.gz",
-              "coverage_tools_sha256": "5a136b0b654625b794aec9e189ab1be92a23c0a56eb6fc16984b629fee034cab",
+              "coverage_tools_sha256": "841172d34b2fc0a8bed2756cf16f38d29ac18c13ee29fbb87af3ae047aa2a6a0",
               "coverage_tools_strip_prefix": "779fbed05ae9e9fe2a04137929d99cc9b3d516fd/x86_64-unknown-linux-gnu",
               "miri_sysroot_url": "https://github.com/eclipse-score/ferrocene_toolchain_builder/releases/download/1.2.0/miri-sysroot-779fbed05ae9e9fe2a04137929d99cc9b3d516fd-aarch64-unknown-nto-qnx800.tar.gz",
               "miri_sysroot_sha256": "8fc8f406c33a7dc31362133b8a2ffbb66b44f62354bfc98a3bc21a1fcbc9a7e6",
