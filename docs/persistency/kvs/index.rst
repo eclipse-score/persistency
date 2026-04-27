@@ -125,6 +125,19 @@ License Impact
       used libraries are need to be checked.
 
 
+Rejected Ideas
+==============
+
+[Why certain ideas that were brought while discussing this CR were not ultimately pursued.]
+
+.. note::
+   Throughout the discussion of a CR, various ideas will be proposed which are not accepted.
+   Those rejected ideas should be recorded along with the reasoning as to why they were rejected.
+   This both helps record the thought process behind the final version of the CR as well as preventing people from bringing up the same rejected idea again in subsequent discussions.
+   In a way this section can be thought of as a breakout section of the Rationale section that is focused specifically on why certain ideas were not ultimately pursued.
+
+
+
 Open Issues
 ===========
 
@@ -145,9 +158,13 @@ Footnotes
 .. toctree::
    :hidden:
 
+   architecture/index.rst
+   architecture/chklst_arc_inspection.rst
+   detailed_design/index.rst
+   detailed_design/chklst_impl_inspection.rst
    kvs.rst
    requirements/index.rst
+   requirements/chklst_req_inspection.rst
    requirements/statistics.rst
-   architecture/index.rst
    safety_analysis/fmea.rst
    safety_analysis/dfa.rst
