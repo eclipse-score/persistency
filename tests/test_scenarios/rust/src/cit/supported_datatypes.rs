@@ -13,6 +13,7 @@
 use crate::helpers::kvs_instance::kvs_instance;
 use crate::helpers::kvs_parameters::KvsParameters;
 use rust_kvs::prelude::*;
+use serde_json::Value;
 use std::collections::HashMap;
 use test_scenarios_rust::scenario::{Scenario, ScenarioGroup, ScenarioGroupImpl};
 use tinyjson::JsonValue;
@@ -170,10 +171,57 @@ fn value_types_group() -> Box<dyn ScenarioGroup> {
     Box::new(group)
 }
 
+struct ValueLength;
+
+impl Scenario for ValueLength {
+    fn name(&self) -> &str {
+        "ValueLength"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
+        let byte_size: usize =
+            serde_json::from_value(v["byte_size"].clone()).expect("Failed to parse \"byte_size\" field");
+        let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
+
+        let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+
+        // Create a string of specified byte size
+        let test_value = "x".repeat(byte_size);
+        let actual_size = test_value.len();
+        info!(byte_size, actual_size, "Testing value length");
+
+        // Attempt to store the value
+        let store_result = kvs.set_value("test_key", test_value.clone()).is_ok();
+        info!(store_result, "Store operation result");
+
+        if store_result {
+            // If store succeeded, try to retrieve and verify
+            match kvs.get_value("test_key") {
+                Ok(retrieved_value) => {
+                    if let KvsValue::String(retrieved_str) = retrieved_value {
+                        let value_size = retrieved_str.len();
+                        info!(retrieve_success = true, value_size, "Retrieved value");
+                    } else {
+                        info!(retrieve_success = false, "Retrieved value is not a string");
+                    }
+                },
+                Err(e) => {
+                    info!(retrieve_success = false, error = ?e, "Failed to retrieve value");
+                },
+            }
+        } else {
+            info!(retrieve_success = false, "Store failed, skipping retrieval");
+        }
+
+        Ok(())
+    }
+}
+
 pub fn supported_datatypes_group() -> Box<dyn ScenarioGroup> {
     Box::new(ScenarioGroupImpl::new(
         "supported_datatypes",
-        vec![Box::new(SupportedDatatypesKeys)],
+        vec![Box::new(SupportedDatatypesKeys), Box::new(ValueLength)],
         vec![value_types_group()],
     ))
 }

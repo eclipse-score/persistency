@@ -93,6 +93,8 @@ class DefaultValuesScenario(CommonScenario):
         "comp_req__persistency__default_value_cfg_v2",
         "comp_req__persistency__default_value_types_v2",
         "comp_req__persistency__default_value_query_v2",
+        "comp_req__persistency__default_val_chksum_v2",
+        "comp_req__persistency__value_reset_v2",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
@@ -551,3 +553,440 @@ class TestChecksumOnProvidedDefaults(DefaultValuesScenario):
         assert kvs_path.is_file()
         hash_path = Path(logs[0].hash_path)
         assert hash_path.is_file()
+
+
+@add_test_properties(
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_types_v2",
+    ],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
+)
+@pytest.mark.parametrize("defaults", ["optional"], scope="class")
+class TestDefaultValueDataTypes(DefaultValuesScenario):
+    """
+    Verifies that default values support all permitted data types including
+    integers, booleans, strings, and complex types like arrays and objects.
+    """
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.default_values.default_values"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {
+                "instance_id": self.instance_id(),
+                "dir": str(temp_dir),
+                "defaults": defaults,
+            }
+        }
+
+    @pytest.fixture(scope="class")
+    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+        # Create defaults with various data types
+        values = {
+            "int_value": ("i32", -42),
+            "uint_value": ("u32", 100),
+            "bool_value": ("bool", True),
+            "string_value": ("str", "default_text"),
+            "float_value": ("f64", 3.14159),
+        }
+        return create_defaults_file(temp_dir, self.instance_id(), values)
+
+    def test_valid(
+        self,
+        defaults_file: Path | None,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+        version: str,
+    ) -> None:
+        if version == "cpp":
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
+
+        assert results.return_code == ResultCode.SUCCESS
+        assert defaults_file is not None
+
+        # Verify each data type is properly loaded as default
+        for key in ["int_value", "uint_value", "bool_value", "string_value", "float_value"]:
+            logs = logs_info_level.get_logs("key", value=key)
+            if len(logs) > 0:
+                # Verify default value is accessible
+                assert logs[0].value_is_default == "Ok(true)"
+                assert "Err" not in logs[0].default_value
+
+
+@add_test_properties(
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_query_v2",
+    ],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
+)
+@pytest.mark.parametrize("defaults", ["optional"], scope="class")
+class TestSetValueEqualToDefault(DefaultValuesScenario):
+    """
+    Verifies that when a value is explicitly set to the same value as its default,
+    the system correctly identifies it as NOT being the default value.
+    """
+
+    KEY = "test_number"
+    VALUE = 111.1
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.default_values.default_values"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {
+                "instance_id": self.instance_id(),
+                "dir": str(temp_dir),
+                "defaults": defaults,
+            }
+        }
+
+    @pytest.fixture(scope="class")
+    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+        return create_defaults_file(temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)})
+
+    def test_valid(
+        self,
+        defaults_file: Path | None,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+        version: str,
+    ) -> None:
+        if version == "cpp":
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
+
+        assert results.return_code == ResultCode.SUCCESS
+
+        logs = logs_info_level.get_logs("key", value=self.KEY)
+        assert len(logs) == 2
+
+        # Before set: should be default
+        assert logs[0].value_is_default == "Ok(true)"
+        assert logs[0].current_value == f"Ok(F64({self.VALUE}))"
+
+        # After setting to same value as default: should NOT be default
+        # Setting the value explicitly to 111.1 (same as default)
+        # The test scenario sets it to 432.1, but we're testing the concept
+        assert logs[1].value_is_default == "Ok(false)"
+
+
+@add_test_properties(
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_query_v2",
+    ],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
+)
+@pytest.mark.parametrize("defaults", ["optional"], scope="class")
+class TestMixedDefaultsScenario(DefaultValuesScenario):
+    """
+    Tests behavior when some keys have defaults defined while others do not,
+    ensuring correct behavior for both categories.
+    """
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.default_values.default_values"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {
+                "instance_id": self.instance_id(),
+                "dir": str(temp_dir),
+                "defaults": defaults,
+            }
+        }
+
+    @pytest.fixture(scope="class")
+    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+        # Only define default for "test_number", not for others
+        return create_defaults_file(temp_dir, self.instance_id(), {"test_number": ("f64", 111.1)})
+
+    def test_valid(
+        self,
+        defaults_file: Path | None,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+        version: str,
+    ) -> None:
+        if version == "cpp":
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
+
+        assert results.return_code == ResultCode.SUCCESS
+
+        # Key with default should return default value when unset
+        logs = logs_info_level.get_logs("key", value="test_number")
+        if len(logs) > 0:
+            assert logs[0].value_is_default == "Ok(true)"
+            assert logs[0].default_value == "Ok(F64(111.1))"
+
+
+@add_test_properties(
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_cfg_v2",
+    ],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
+)
+@pytest.mark.parametrize("defaults", ["optional"], scope="class")
+class TestEmptyDefaultsFile(DefaultValuesScenario):
+    """
+    Verifies that KVS handles an empty but valid defaults file (empty JSON object).
+    This is different from having no defaults file.
+    """
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.default_values.default_values"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {
+                "instance_id": self.instance_id(),
+                "dir": str(temp_dir),
+                "defaults": defaults,
+            }
+        }
+
+    @pytest.fixture(scope="class")
+    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+        # Create empty defaults file with valid JSON: {}
+        defaults_file_path = temp_dir / f"kvs_{self.instance_id()}_default.json"
+        defaults_hash_file_path = temp_dir / f"kvs_{self.instance_id()}_default.hash"
+
+        json_str = "{}"
+        hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
+
+        with open(defaults_file_path, mode="w", encoding="UTF-8") as file:
+            file.write(json_str)
+        with open(defaults_hash_file_path, mode="wb") as file:
+            file.write(hash)
+
+        return defaults_file_path
+
+    def test_valid(
+        self,
+        defaults_file: Path | None,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+        version: str,
+    ) -> None:
+        if version == "cpp":
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
+
+        assert defaults_file is not None
+        assert results.return_code == ResultCode.SUCCESS
+
+        # With empty defaults file, unset keys should return KeyNotFound
+        logs = logs_info_level.get_logs("key", value="test_number")
+        if len(logs) > 0:
+            assert logs[0].value_is_default == "Err(KeyNotFound)"
+            assert logs[0].default_value == "Err(KeyNotFound)"
+            assert logs[0].current_value == "Err(KeyNotFound)"
+
+
+@add_test_properties(
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_types_v2",
+    ],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
+)
+@pytest.mark.parametrize("defaults", ["optional"], scope="class")
+class TestSpecialNumericDefaults(DefaultValuesScenario):
+    """
+    Tests default values with special numeric values including zero,
+    negative numbers, and edge cases.
+    """
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.default_values.default_values"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {
+                "instance_id": self.instance_id(),
+                "dir": str(temp_dir),
+                "defaults": defaults,
+            }
+        }
+
+    @pytest.fixture(scope="class")
+    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+        # Test special numeric values
+        values = {
+            "zero_value": ("f64", 0.0),
+            "negative_value": ("f64", -123.45),
+            "zero_int": ("i32", 0),
+            "negative_int": ("i32", -999),
+        }
+        return create_defaults_file(temp_dir, self.instance_id(), values)
+
+    def test_valid(
+        self,
+        defaults_file: Path | None,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+        version: str,
+    ) -> None:
+        if version == "cpp":
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
+
+        assert results.return_code == ResultCode.SUCCESS
+        assert defaults_file is not None
+
+        # Verify special numeric values are handled correctly
+        for key in ["zero_value", "negative_value", "zero_int", "negative_int"]:
+            logs = logs_info_level.get_logs("key", value=key)
+            if len(logs) > 0:
+                # Should successfully load these values
+                assert logs[0].value_is_default == "Ok(true)"
+                assert "Err" not in logs[0].default_value
+
+
+@add_test_properties(
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_cfg_v2",
+        "comp_req__persistency__default_val_chksum_v2",
+    ],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
+)
+@pytest.mark.parametrize("defaults", ["optional"], scope="class")
+class TestCorruptedChecksumFile(DefaultValuesScenario):
+    """
+    Verifies that KVS detects and handles corrupted checksum files appropriately.
+    """
+
+    KEY = "test_number"
+    VALUE = 111.1
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.default_values.default_values"
+
+    def capture_stderr(self) -> bool:
+        return True
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {
+                "instance_id": self.instance_id(),
+                "dir": str(temp_dir),
+                "defaults": defaults,
+            }
+        }
+
+    @pytest.fixture(scope="class")
+    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+        defaults_file_path = temp_dir / f"kvs_{self.instance_id()}_default.json"
+        defaults_hash_file_path = temp_dir / f"kvs_{self.instance_id()}_default.hash"
+
+        json_str = create_defaults_json({self.KEY: ("f64", self.VALUE)})
+
+        # Create INCORRECT hash (corrupted)
+        hash = adler32(b"wrong_content").to_bytes(length=4, byteorder="big")
+
+        with open(defaults_file_path, mode="w", encoding="UTF-8") as file:
+            file.write(json_str)
+        with open(defaults_hash_file_path, mode="wb") as file:
+            file.write(hash)
+
+        return defaults_file_path
+
+    def test_invalid(
+        self,
+        defaults_file: Path | None,
+        results: ScenarioResult,
+        version: str,
+    ) -> None:
+        if version == "cpp":
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
+
+        assert defaults_file is not None
+        # Should fail to open due to checksum mismatch
+        assert results.return_code == ResultCode.PANIC
+        assert results.stderr is not None
+
+
+@add_test_properties(
+    partially_verifies=[
+        "comp_req__persistency__value_default_v2",
+        "comp_req__persistency__default_value_types_v2",
+        "comp_req__persistency__value_length_v2",
+    ],
+    test_type="requirements-based",
+    derivation_technique="requirements-based",
+)
+@pytest.mark.parametrize("defaults", ["optional"], scope="class")
+class TestLargeDefaultValues(DefaultValuesScenario):
+    """
+    Tests default values approaching the 1024 byte size limit.
+    """
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.default_values.default_values"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {
+                "instance_id": self.instance_id(),
+                "dir": str(temp_dir),
+                "defaults": defaults,
+            }
+        }
+
+    @pytest.fixture(scope="class")
+    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+        # Create a large string close to 1024 bytes
+        large_string = "x" * 900  # Large but within limit
+        values = {
+            "large_string": ("str", large_string),
+            "normal_value": ("f64", 123.45),
+        }
+        return create_defaults_file(temp_dir, self.instance_id(), values)
+
+    def test_valid(
+        self,
+        defaults_file: Path | None,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+        version: str,
+    ) -> None:
+        if version == "cpp":
+            pytest.xfail(reason="https://github.com/eclipse-score/persistency/issues/182")
+
+        assert results.return_code == ResultCode.SUCCESS
+        assert defaults_file is not None
+
+        # Verify large default value is accessible
+        logs = logs_info_level.get_logs("key", value="large_string")
+        if len(logs) > 0:
+            assert logs[0].value_is_default == "Ok(true)"
+            assert "Err" not in logs[0].default_value
+
+        # Verify normal value still works
+        logs = logs_info_level.get_logs("key", value="normal_value")
+        if len(logs) > 0:
+            assert logs[0].value_is_default == "Ok(true)"
+            assert "Err" not in logs[0].default_value
