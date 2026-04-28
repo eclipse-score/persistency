@@ -84,7 +84,7 @@ jobs:
 
       - name: Bazel Miri Tests
         run: |
-          bazel test --config=per-x86_64-linux //src/rust/rust_kvs:tests_miri --test_output=all
+          bazel test --lockfile_mode=error --config=per-x86_64-linux //src/rust/rust_kvs:tests_miri --test_output=all
 
   cpp-bazel:
     runs-on: ubuntu-latest
