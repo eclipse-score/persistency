@@ -45,7 +45,7 @@ git_override(
 )
 
 # Shared Rust policies (Clippy config, etc.), overridden locally during development.
-bazel_dep(name = "score_rust_policies", version = "0.0.4", dev_dependency = True)
+bazel_dep(name = "score_rust_policies", version = "0.0.5", dev_dependency = True)
 
 # bazel cc rules
 bazel_dep(name = "rules_cc", version = "0.1.2")
@@ -63,17 +63,17 @@ bazel_dep(name = "google_benchmark", version = "1.9.4", dev_dependency = True)
 bazel_dep(name = "platforms", version = "1.0.0")
 
 ## S-CORE bazel registry
-bazel_dep(name = "score_baselibs", version = "0.2.4")
-bazel_dep(name = "score_baselibs_rust", version = "0.1.0")
-bazel_dep(name = "score_bazel_platforms", version = "0.0.4")
-bazel_dep(name = "score_docs_as_code", version = "3.0.0")
+bazel_dep(name = "score_baselibs", version = "0.2.7")
+bazel_dep(name = "score_baselibs_rust", version = "0.1.2")
+bazel_dep(name = "score_bazel_platforms", version = "0.1.2")
+bazel_dep(name = "score_docs_as_code", version = "4.0.3")
 
-bazel_dep(name = "score_platform", version = "0.5.3", dev_dependency = True)
-bazel_dep(name = "score_process", version = "1.4.3", dev_dependency = True)
+bazel_dep(name = "score_platform", version = "0.5.5", dev_dependency = True)
+bazel_dep(name = "score_process", version = "1.5.4", dev_dependency = True)
 
 bazel_dep(name = "score_python_basics", version = "0.3.4")
-bazel_dep(name = "score_tooling", version = "1.1.0")
-bazel_dep(name = "score_logging", version = "0.1.0")
+bazel_dep(name = "score_tooling", version = "1.2.0")
+bazel_dep(name = "score_logging", version = "0.2.0")
 
 # TODO: remove once inherited properly from `score_logging`.
 bazel_dep(name = "trlc", version = "0.0.0", dev_dependency = True)
@@ -90,12 +90,7 @@ bazel_dep(name = "buildifier_prebuilt", version = "8.2.0.2")
 ## temporary overrides / tools
 # Testing utils dependency.
 # Direct usage of tag in git_override reports false problem in editor, using hash of a tag
-bazel_dep(name = "score_test_scenarios", version = "0.3.0")
-git_override(
-    module_name = "score_test_scenarios",
-    commit = "a2f9cded3deb636f5dc800bf7a47131487119721",  # tag v0.3.0
-    remote = "https://github.com/eclipse-score/testing_tools.git",
-)
+bazel_dep(name = "score_test_scenarios", version = "0.4.1")
 
 bazel_dep(name = "custom_qemu", version = "1.0.0", dev_dependency = True)
 archive_override(
