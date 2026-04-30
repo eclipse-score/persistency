@@ -11,7 +11,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[required-cpp]",
@@ -20,7 +23,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[without-cpp]",
@@ -29,7 +35,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[optional-cpp]",
@@ -38,7 +47,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[required-cpp]",
@@ -47,7 +59,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[without-cpp]",
@@ -56,7 +71,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
@@ -65,7 +83,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
@@ -74,7 +95,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
@@ -83,7 +107,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[optional-cpp]",
@@ -92,7 +119,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[required-cpp]",
@@ -101,7 +131,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetSingleKey__test_valid[optional-cpp]",
@@ -110,7 +143,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetSingleKey__test_valid[required-cpp]",
@@ -119,7 +155,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
@@ -128,7 +167,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
@@ -137,7 +179,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[optional-rust]",
@@ -146,7 +191,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[required-rust]",
@@ -155,7 +203,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[without-rust]",
@@ -164,7 +215,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[optional-rust]",
@@ -173,7 +227,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[required-rust]",
@@ -182,7 +239,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[without-rust]",
@@ -191,7 +251,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
@@ -200,7 +263,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
@@ -209,7 +275,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
@@ -218,7 +287,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[optional-rust]",
@@ -227,7 +299,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[required-rust]",
@@ -236,7 +311,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetSingleKey__test_valid[optional-rust]",
@@ -245,7 +323,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetSingleKey__test_valid[required-rust]",
@@ -254,7 +335,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
@@ -263,7 +347,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
@@ -272,7 +359,10 @@
           "need": "comp_req__persistency__value_default_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -289,7 +379,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[required-cpp]",
@@ -298,7 +391,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[without-cpp]",
@@ -307,7 +403,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[optional-cpp]",
@@ -316,7 +415,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[required-cpp]",
@@ -325,7 +427,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[without-cpp]",
@@ -334,7 +439,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
@@ -343,7 +451,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
@@ -352,7 +463,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
@@ -361,7 +475,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[optional-cpp]",
@@ -370,7 +487,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[required-cpp]",
@@ -379,7 +499,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetSingleKey__test_valid[optional-cpp]",
@@ -388,7 +511,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetSingleKey__test_valid[required-cpp]",
@@ -397,7 +523,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
@@ -406,7 +535,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
@@ -415,7 +547,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[optional-rust]",
@@ -424,7 +559,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[required-rust]",
@@ -433,7 +571,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[without-rust]",
@@ -442,7 +583,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[optional-rust]",
@@ -451,7 +595,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[required-rust]",
@@ -460,7 +607,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[without-rust]",
@@ -469,7 +619,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
@@ -478,7 +631,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
@@ -487,7 +643,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
@@ -496,7 +655,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[optional-rust]",
@@ -505,7 +667,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[required-rust]",
@@ -514,7 +679,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetSingleKey__test_valid[optional-rust]",
@@ -523,7 +691,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetSingleKey__test_valid[required-rust]",
@@ -532,7 +703,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
@@ -541,7 +715,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
@@ -550,7 +727,10 @@
           "need": "comp_req__persistency__default_value_cfg_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -567,7 +747,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[required-cpp]",
@@ -576,7 +759,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[without-cpp]",
@@ -585,7 +771,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[optional-cpp]",
@@ -594,7 +783,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[required-cpp]",
@@ -603,7 +795,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[without-cpp]",
@@ -612,7 +807,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
@@ -621,7 +819,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
@@ -630,7 +831,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
@@ -639,7 +843,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[optional-cpp]",
@@ -648,7 +855,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[required-cpp]",
@@ -657,7 +867,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[optional-rust]",
@@ -666,7 +879,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[required-rust]",
@@ -675,7 +891,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[without-rust]",
@@ -684,7 +903,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[optional-rust]",
@@ -693,7 +915,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[required-rust]",
@@ -702,7 +927,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestRemoveKey__test_valid[without-rust]",
@@ -711,7 +939,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
@@ -720,7 +951,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
@@ -729,7 +963,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
@@ -738,7 +975,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[optional-rust]",
@@ -747,7 +987,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[required-rust]",
@@ -756,7 +999,10 @@
           "need": "comp_req__persistency__default_value_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -773,7 +1019,10 @@
           "need": "comp_req__persistency__default_value_query_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[required-cpp]",
@@ -782,7 +1031,10 @@
           "need": "comp_req__persistency__default_value_query_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[without-cpp]",
@@ -791,7 +1043,10 @@
           "need": "comp_req__persistency__default_value_query_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[optional-rust]",
@@ -800,7 +1055,10 @@
           "need": "comp_req__persistency__default_value_query_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[required-rust]",
@@ -809,7 +1067,10 @@
           "need": "comp_req__persistency__default_value_query_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestDefaultValues__test_valid[without-rust]",
@@ -818,7 +1079,10 @@
           "need": "comp_req__persistency__default_value_query_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -835,7 +1099,10 @@
           "need": "comp_req__persistency__value_reset_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[required-cpp]",
@@ -844,7 +1111,10 @@
           "need": "comp_req__persistency__value_reset_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[optional-rust]",
@@ -853,7 +1123,10 @@
           "need": "comp_req__persistency__value_reset_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestResetAllKeys__test_valid[required-rust]",
@@ -862,7 +1135,10 @@
           "need": "comp_req__persistency__value_reset_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -879,7 +1155,10 @@
           "need": "comp_req__persistency__default_val_chksum_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
@@ -888,7 +1167,10 @@
           "need": "comp_req__persistency__default_val_chksum_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
@@ -897,7 +1179,10 @@
           "need": "comp_req__persistency__default_val_chksum_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
@@ -906,7 +1191,10 @@
           "need": "comp_req__persistency__default_val_chksum_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -923,7 +1211,10 @@
           "need": "comp_req__persistency__multi_instance_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSameInstanceIdSameValue__test_ok[cpp]",
@@ -932,7 +1223,10 @@
           "need": "comp_req__persistency__multi_instance_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSameInstanceIdDifferentValue__test_ok[cpp]",
@@ -941,7 +1235,10 @@
           "need": "comp_req__persistency__multi_instance_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMultipleInstanceIds__test_ok[rust]",
@@ -950,7 +1247,10 @@
           "need": "comp_req__persistency__multi_instance_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSameInstanceIdSameValue__test_ok[rust]",
@@ -959,7 +1259,10 @@
           "need": "comp_req__persistency__multi_instance_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
@@ -968,7 +1271,10 @@
           "need": "comp_req__persistency__multi_instance_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -985,7 +1291,10 @@
           "need": "comp_req__persistency__concurrency_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSameInstanceIdSameValue__test_ok[cpp]",
@@ -994,7 +1303,10 @@
           "need": "comp_req__persistency__concurrency_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSameInstanceIdDifferentValue__test_ok[cpp]",
@@ -1003,7 +1315,10 @@
           "need": "comp_req__persistency__concurrency_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestMultipleInstanceIds__test_ok[rust]",
@@ -1012,7 +1327,10 @@
           "need": "comp_req__persistency__concurrency_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSameInstanceIdSameValue__test_ok[rust]",
@@ -1021,7 +1339,10 @@
           "need": "comp_req__persistency__concurrency_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
@@ -1030,7 +1351,10 @@
           "need": "comp_req__persistency__concurrency_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1047,7 +1371,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFirstFlush__test_ok[1-cpp]",
@@ -1056,7 +1383,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFirstFlush__test_ok[3-cpp]",
@@ -1065,7 +1395,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFirstFlush__test_ok[10-cpp]",
@@ -1074,7 +1407,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFull__test_ok[0-cpp]",
@@ -1083,7 +1419,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFull__test_ok[1-cpp]",
@@ -1092,7 +1431,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFull__test_ok[3-cpp]",
@@ -1101,7 +1443,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFull__test_ok[10-cpp]",
@@ -1110,7 +1455,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[3-cpp]",
@@ -1119,7 +1467,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[10-cpp]",
@@ -1128,7 +1479,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestoreCurrent__test_error[cpp]",
@@ -1137,7 +1491,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestoreNonexistent__test_error[cpp]",
@@ -1146,7 +1503,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotPathsExist__test_ok[cpp]",
@@ -1155,7 +1515,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotPathsNonexistent__test_error[cpp]",
@@ -1164,7 +1527,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFirstFlush__test_ok[0-rust]",
@@ -1173,7 +1539,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFirstFlush__test_ok[1-rust]",
@@ -1182,7 +1551,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFirstFlush__test_ok[3-rust]",
@@ -1191,7 +1563,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFirstFlush__test_ok[10-rust]",
@@ -1200,7 +1575,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFull__test_ok[0-rust]",
@@ -1209,7 +1587,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFull__test_ok[1-rust]",
@@ -1218,7 +1599,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFull__test_ok[3-rust]",
@@ -1227,7 +1611,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotCountFull__test_ok[10-rust]",
@@ -1236,7 +1623,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
@@ -1245,7 +1635,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
@@ -1254,7 +1647,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestoreCurrent__test_error[rust]",
@@ -1263,7 +1659,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
@@ -1272,7 +1671,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotPathsExist__test_ok[rust]",
@@ -1281,7 +1683,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotPathsNonexistent__test_error[rust]",
@@ -1290,7 +1695,10 @@
           "need": "comp_req__persistency__snapshot_creation_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1307,7 +1715,10 @@
           "need": "comp_req__persistency__snapshot_max_num_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotMaxCount__test_ok[1-cpp]",
@@ -1316,7 +1727,10 @@
           "need": "comp_req__persistency__snapshot_max_num_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotMaxCount__test_ok[3-cpp]",
@@ -1325,7 +1739,10 @@
           "need": "comp_req__persistency__snapshot_max_num_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotMaxCount__test_ok[10-cpp]",
@@ -1334,7 +1751,10 @@
           "need": "comp_req__persistency__snapshot_max_num_v2",
           "verify_type": "partially",
           "result": "skipped",
-          "result_text": "https://github.com/eclipse-score/persistency/issues/108"
+          "result_text": "https://github.com/eclipse-score/persistency/issues/108",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotMaxCount__test_ok[0-rust]",
@@ -1343,7 +1763,10 @@
           "need": "comp_req__persistency__snapshot_max_num_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotMaxCount__test_ok[1-rust]",
@@ -1352,7 +1775,10 @@
           "need": "comp_req__persistency__snapshot_max_num_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotMaxCount__test_ok[3-rust]",
@@ -1361,7 +1787,10 @@
           "need": "comp_req__persistency__snapshot_max_num_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotMaxCount__test_ok[10-rust]",
@@ -1370,7 +1799,10 @@
           "need": "comp_req__persistency__snapshot_max_num_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1387,7 +1819,10 @@
           "need": "comp_req__persistency__snapshot_rotate_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[10-cpp]",
@@ -1396,7 +1831,10 @@
           "need": "comp_req__persistency__snapshot_rotate_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
@@ -1405,7 +1843,10 @@
           "need": "comp_req__persistency__snapshot_rotate_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
@@ -1414,7 +1855,10 @@
           "need": "comp_req__persistency__snapshot_rotate_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1431,7 +1875,10 @@
           "need": "comp_req__persistency__snapshot_restore_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[10-cpp]",
@@ -1440,7 +1887,10 @@
           "need": "comp_req__persistency__snapshot_restore_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestoreNonexistent__test_error[cpp]",
@@ -1449,7 +1899,10 @@
           "need": "comp_req__persistency__snapshot_restore_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
@@ -1458,7 +1911,10 @@
           "need": "comp_req__persistency__snapshot_restore_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
@@ -1467,7 +1923,10 @@
           "need": "comp_req__persistency__snapshot_restore_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
@@ -1476,7 +1935,10 @@
           "need": "comp_req__persistency__snapshot_restore_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1493,7 +1955,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_I32__test_ok[cpp]",
@@ -1502,7 +1967,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_U32__test_ok[cpp]",
@@ -1511,7 +1979,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_I64__test_ok[cpp]",
@@ -1520,7 +1991,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_U64__test_ok[cpp]",
@@ -1529,7 +2003,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_F64__test_ok[cpp]",
@@ -1538,7 +2015,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Bool__test_ok[cpp]",
@@ -1547,7 +2027,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_String__test_ok[cpp]",
@@ -1556,7 +2039,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Array__test_ok[cpp]",
@@ -1565,7 +2051,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Object__test_ok[cpp]",
@@ -1574,7 +2063,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesKeys__test_ok[rust]",
@@ -1583,7 +2075,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_I32__test_ok[rust]",
@@ -1592,7 +2087,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_U32__test_ok[rust]",
@@ -1601,7 +2099,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_I64__test_ok[rust]",
@@ -1610,7 +2111,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_U64__test_ok[rust]",
@@ -1619,7 +2123,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_F64__test_ok[rust]",
@@ -1628,7 +2135,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Bool__test_ok[rust]",
@@ -1637,7 +2147,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_String__test_ok[rust]",
@@ -1646,7 +2159,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Array__test_ok[rust]",
@@ -1655,7 +2171,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Object__test_ok[rust]",
@@ -1664,7 +2183,10 @@
           "need": "comp_req__persistency__key_encoding_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1681,7 +2203,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_I32__test_ok[cpp]",
@@ -1690,7 +2215,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_U32__test_ok[cpp]",
@@ -1699,7 +2227,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_I64__test_ok[cpp]",
@@ -1708,7 +2239,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_U64__test_ok[cpp]",
@@ -1717,7 +2251,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_F64__test_ok[cpp]",
@@ -1726,7 +2263,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Bool__test_ok[cpp]",
@@ -1735,7 +2275,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_String__test_ok[cpp]",
@@ -1744,7 +2287,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Array__test_ok[cpp]",
@@ -1753,7 +2299,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Object__test_ok[cpp]",
@@ -1762,7 +2311,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesKeys__test_ok[rust]",
@@ -1771,7 +2323,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_I32__test_ok[rust]",
@@ -1780,7 +2335,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_U32__test_ok[rust]",
@@ -1789,7 +2347,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_I64__test_ok[rust]",
@@ -1798,7 +2359,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_U64__test_ok[rust]",
@@ -1807,7 +2371,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_F64__test_ok[rust]",
@@ -1816,7 +2383,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Bool__test_ok[rust]",
@@ -1825,7 +2395,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_String__test_ok[rust]",
@@ -1834,7 +2407,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Array__test_ok[rust]",
@@ -1843,7 +2419,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         },
         {
           "name": "TestSupportedDatatypesValues_Object__test_ok[rust]",
@@ -1852,7 +2431,10 @@
           "need": "comp_req__persistency__value_data_types_v2",
           "verify_type": "partially",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1869,7 +2451,10 @@
           "need": "comp_req__persistency__persist_data_com_v2",
           "verify_type": "fully",
           "result": "passed",
-          "result_text": ""
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
