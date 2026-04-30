@@ -40,7 +40,7 @@ use_repo(pip, "pip_score_venv_test")
 bazel_dep(name = "rules_rust", version = "0.68.2-score")
 
 # Shared Rust policies (Clippy config, etc.), overridden locally during development.
-bazel_dep(name = "score_rust_policies", version = "0.0.4", dev_dependency = True)
+bazel_dep(name = "score_rust_policies", version = "0.0.5", dev_dependency = True)
 
 # bazel cc rules
 bazel_dep(name = "rules_cc", version = "0.1.2")
