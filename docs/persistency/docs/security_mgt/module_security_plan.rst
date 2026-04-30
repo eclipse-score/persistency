@@ -113,8 +113,8 @@ Security Module Workproducts
           - <WP status (manual)>
 
         * - :need:`wp__module_security_manual`
-          - :need:`gd_temp__security_manual`
-          - :ndf:`copy('status', need_id='gd_temp__security_manual')`
+          - :need:`gd_temp__platform_security_manual`
+          - :ndf:`copy('status', need_id='gd_temp__platform_security_manual')`
           - <Link to issue>
           - <Link to WP>
           - <automated>
