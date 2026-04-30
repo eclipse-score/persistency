@@ -58,17 +58,22 @@ bazel_dep(name = "google_benchmark", version = "1.9.4", dev_dependency = True)
 bazel_dep(name = "platforms", version = "1.0.0")
 
 ## S-CORE bazel registry
-bazel_dep(name = "score_baselibs", version = "0.2.4")
-bazel_dep(name = "score_baselibs_rust", version = "0.1.0")
-bazel_dep(name = "score_bazel_platforms", version = "0.0.4")
-bazel_dep(name = "score_docs_as_code", version = "3.0.0")
+bazel_dep(name = "score_baselibs", version = "0.2.7")
+bazel_dep(name = "score_baselibs_rust", version = "0.1.2")
+bazel_dep(name = "score_bazel_platforms", version = "0.1.2")
+bazel_dep(name = "score_docs_as_code", version = "4.0.3")
 
-bazel_dep(name = "score_platform", version = "0.5.3", dev_dependency = True)
-bazel_dep(name = "score_process", version = "1.4.3", dev_dependency = True)
+bazel_dep(name = "score_platform", version = "0.5.5", dev_dependency = True)
+bazel_dep(name = "score_process", version = "1.5.4", dev_dependency = True)
 
 bazel_dep(name = "score_python_basics", version = "0.3.4")
-bazel_dep(name = "score_tooling", version = "1.1.0")
+bazel_dep(name = "score_tooling", version = "1.2.0")
 bazel_dep(name = "score_logging", version = "0.1.0")
+git_override(
+    module_name = "score_logging",
+    commit = "2dc9290a100d25df3444c8d2afed380dfcce37c6",  # tag v0.3.0
+    remote = "https://github.com/eclipse-score/logging.git",
+)
 
 # TODO: remove once inherited properly from `score_logging`.
 bazel_dep(name = "trlc", version = "0.0.0", dev_dependency = True)
