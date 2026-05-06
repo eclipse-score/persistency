@@ -40,8 +40,8 @@ For the CODEOWNERS the required skills, knowledge and experience is defined in `
 The evidences are not published openly due to personal data confidentiality, but will be checked by the module safety manager.
 
 - `<https://github.com/vinodreddy-g>`_: SW developer and architect at Tier 1 > 10 years for safety related SW. Contribution to process community.
-- `<https://github.com/umaucher>`_
-- `<https://github.com/antonkri>`_
+- `<https://github.com/umaucher>`_ : SW developer and architect at OEM > 10 years for safety related SW. Contribution to feature team.
+- `<https://github.com/antonkri>`_ SW developer and architect at OEM > 10 years for safety related SW. Contribution to feature teams.
 
 
 The S-CORE processes are trained on the job by the Persistency module safety manager to the CODEOWNERS.
