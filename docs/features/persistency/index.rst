@@ -12,42 +12,13 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-Persistency Documentation
-=========================
+.. _features_template:
 
-.. _persistency_module_documentation:
-
-Feature Documents
------------------
+Features
+========
 
 .. toctree::
-   :maxdepth: 1
-
-   features/persistency/index.rst
-
-
-Module Documents
-----------------
-
-.. toctree::
-   :titlesonly:
    :maxdepth: 1
    :glob:
 
-   manual/index.rst
-   release/release_note.rst
-   safety_mgt/index.rst
-   security_mgt/index.rst
-   verification/module_verification_report.rst
-
-
-Component Documents
--------------------
-
-.. toctree::
-   :titlesonly:
-   :maxdepth: 1
-   :glob:
-
-   score/json/docs/index.rst
-   score/kvs/index.rst
+   

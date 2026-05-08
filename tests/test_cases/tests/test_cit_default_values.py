@@ -89,10 +89,10 @@ class DefaultValuesScenario(CommonScenario):
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__value_default_v2",
-        "comp_req__persistency__default_value_cfg_v2",
-        "comp_req__persistency__default_value_types_v2",
-        "comp_req__persistency__default_value_query_v2",
+        "comp_req__persistency__value_default",
+        "comp_req__persistency__default_value_cfg",
+        "comp_req__persistency__default_value_types",
+        "comp_req__persistency__default_value_query",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
@@ -165,9 +165,9 @@ class TestDefaultValues(DefaultValuesScenario):
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__value_default_v2",
-        "comp_req__persistency__default_value_cfg_v2",
-        "comp_req__persistency__default_value_types_v2",
+        "comp_req__persistency__value_default",
+        "comp_req__persistency__default_value_cfg",
+        "comp_req__persistency__default_value_types",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
@@ -248,9 +248,9 @@ class TestRemoveKey(DefaultValuesScenario):
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__value_default_v2",
-        "comp_req__persistency__default_value_cfg_v2",
-        "comp_req__persistency__default_value_types_v2",
+        "comp_req__persistency__value_default",
+        "comp_req__persistency__default_value_cfg",
+        "comp_req__persistency__default_value_types",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
@@ -317,9 +317,9 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__value_default_v2",
-        "comp_req__persistency__default_value_cfg_v2",
-        "comp_req__persistency__default_value_types_v2",
+        "comp_req__persistency__value_default",
+        "comp_req__persistency__default_value_cfg",
+        "comp_req__persistency__default_value_types",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
@@ -353,11 +353,11 @@ class TestMissingDefaultsFile(DefaultValuesScenario):
 
 
 @add_test_properties(
-    fully_verifies=["comp_req__persistency__value_reset_v2"],
+    fully_verifies=["comp_req__persistency__value_reset"],
     partially_verifies=[
-        "comp_req__persistency__value_default_v2",
-        "comp_req__persistency__default_value_cfg_v2",
-        "comp_req__persistency__default_value_types_v2",
+        "comp_req__persistency__value_default",
+        "comp_req__persistency__default_value_cfg",
+        "comp_req__persistency__default_value_types",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
@@ -420,8 +420,8 @@ class TestResetAllKeys(DefaultValuesScenario):
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__value_default_v2",
-        "comp_req__persistency__default_value_cfg_v2",
+        "comp_req__persistency__value_default",
+        "comp_req__persistency__default_value_cfg",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
@@ -498,10 +498,10 @@ class TestResetSingleKey(DefaultValuesScenario):
 
 
 @add_test_properties(
-    fully_verifies=["comp_req__persistency__default_val_chksum_v2"],
+    fully_verifies=["comp_req__persistency__default_val_chksum"],
     partially_verifies=[
-        "comp_req__persistency__value_default_v2",
-        "comp_req__persistency__default_value_cfg_v2",
+        "comp_req__persistency__value_default",
+        "comp_req__persistency__default_value_cfg",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",

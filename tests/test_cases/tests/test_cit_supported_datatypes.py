@@ -24,8 +24,8 @@ pytestmark = pytest.mark.parametrize("version", ["cpp", "rust"], scope="class")
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__key_encoding_v2",
-        "comp_req__persistency__value_data_types_v2",
+        "comp_req__persistency__key_encoding",
+        "comp_req__persistency__value_data_types",
     ],
     test_type="interface-test",
     derivation_technique="requirements-analysis",
@@ -54,8 +54,8 @@ class TestSupportedDatatypesKeys(CommonScenario):
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__key_encoding_v2",
-        "comp_req__persistency__value_data_types_v2",
+        "comp_req__persistency__key_encoding",
+        "comp_req__persistency__value_data_types",
     ],
     test_type="interface-test",
     derivation_technique="requirements-analysis",
