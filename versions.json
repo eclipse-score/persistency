@@ -40,6 +40,10 @@
     "url": "https://eclipse-score.github.io/persistency/pr-260/"
   },
   {
+    "version": "pr-288",
+    "url": "https://eclipse-score.github.io/persistency/pr-288/"
+  },
+  {
     "version": "v0.3.0",
     "url": "https://eclipse-score.github.io/persistency/v0.3.0/"
   },
@@ -50,9 +54,5 @@
   {
     "version": "v0.3.2",
     "url": "https://eclipse-score.github.io/persistency/v0.3.2/"
-  },
-  {
-    "version": "pr-288",
-    "url": "https://eclipse-score.github.io/persistency/pr-288/"
   }
 ]
