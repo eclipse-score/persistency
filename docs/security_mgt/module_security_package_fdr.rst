@@ -16,7 +16,7 @@ Security Package Formal Review Report
 =====================================
 
 .. document:: Persistency Security Package Formal Review
-   :id: doc__persistency_security_package_fdr
+   :id: doc__persistency_sec_pkg_fdr
    :status: valid
    :safety: ASIL_B
    :security: YES

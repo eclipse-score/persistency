@@ -16,7 +16,7 @@ JSON Component Classification
 =============================
 
 .. document:: JSON Component Classification
-   :id: doc__json_component_classification
+   :id: doc__json_comp_class
    :status: valid
    :safety: ASIL_B
    :security: NO
