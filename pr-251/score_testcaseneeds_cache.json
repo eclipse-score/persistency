@@ -44,7 +44,7 @@
   {
     "name": "TestPermissionControl__test_filesystem_permissions[cpp]",
     "file": "tests/test_cases/tests/test_cit_constraints.py",
-    "line": "163",
+    "line": "167",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -58,7 +58,7 @@
   {
     "name": "TestPermissionErrorHandling__test_permission_error_reporting[read_permission_denied-cpp]",
     "file": "tests/test_cases/tests/test_cit_constraints.py",
-    "line": "224",
+    "line": "228",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -72,7 +72,7 @@
   {
     "name": "TestPermissionErrorHandling__test_permission_error_reporting[write_permission_denied-cpp]",
     "file": "tests/test_cases/tests/test_cit_constraints.py",
-    "line": "224",
+    "line": "228",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -955,20 +955,20 @@
     "name": "TestConstraintConfiguration__test_constraint_configuration[compile_time_max_snapshots-rust]",
     "file": "tests/test_cases/tests/test_cit_constraints.py",
     "line": "69",
-    "result": "passed",
+    "result": "skipped",
     "repo_name": "local_repo",
     "hash": "",
     "url": "",
     "TestType": "requirements-based",
     "DerivationTechnique": "interface-test",
-    "result_text": "",
+    "result_text": "Rust doesn't have a compile-time constant like C++ KVS_MAX_SNAPSHOTS",
     "PartiallyVerifies": null,
     "FullyVerifies": "comp_req__persistency__constraints_v2, comp_req__persistency__snapshot_max_num_v2"
   },
   {
     "name": "TestPermissionControl__test_filesystem_permissions[rust]",
     "file": "tests/test_cases/tests/test_cit_constraints.py",
-    "line": "163",
+    "line": "167",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -982,7 +982,7 @@
   {
     "name": "TestPermissionErrorHandling__test_permission_error_reporting[read_permission_denied-rust]",
     "file": "tests/test_cases/tests/test_cit_constraints.py",
-    "line": "224",
+    "line": "228",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -996,7 +996,7 @@
   {
     "name": "TestPermissionErrorHandling__test_permission_error_reporting[write_permission_denied-rust]",
     "file": "tests/test_cases/tests/test_cit_constraints.py",
-    "line": "224",
+    "line": "228",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",

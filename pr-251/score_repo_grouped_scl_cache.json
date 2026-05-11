@@ -62,8 +62,8 @@
               "line": 69,
               "need": "comp_req__persistency__constraints_v2",
               "verify_type": "fully",
-              "result": "passed",
-              "result_text": ""
+              "result": "skipped",
+              "result_text": "Rust doesn't have a compile-time constant like C++ KVS_MAX_SNAPSHOTS"
             }
           ]
         }
@@ -232,8 +232,8 @@
               "line": 69,
               "need": "comp_req__persistency__snapshot_max_num_v2",
               "verify_type": "fully",
-              "result": "passed",
-              "result_text": ""
+              "result": "skipped",
+              "result_text": "Rust doesn't have a compile-time constant like C++ KVS_MAX_SNAPSHOTS"
             },
             {
               "name": "TestSnapshotCountFirstFlush__test_ok[0-rust]",
@@ -354,7 +354,7 @@
             {
               "name": "TestPermissionControl__test_filesystem_permissions[cpp]",
               "file": "tests/test_cases/tests/test_cit_constraints.py",
-              "line": 163,
+              "line": 167,
               "need": "comp_req__persistency__permission_control_v2",
               "verify_type": "fully",
               "result": "passed",
@@ -363,7 +363,7 @@
             {
               "name": "TestPermissionControl__test_filesystem_permissions[rust]",
               "file": "tests/test_cases/tests/test_cit_constraints.py",
-              "line": 163,
+              "line": 167,
               "need": "comp_req__persistency__permission_control_v2",
               "verify_type": "fully",
               "result": "passed",
@@ -380,7 +380,7 @@
             {
               "name": "TestPermissionControl__test_filesystem_permissions[cpp]",
               "file": "tests/test_cases/tests/test_cit_constraints.py",
-              "line": 163,
+              "line": 167,
               "need": "comp_req__persistency__permission_err_hndl_v2",
               "verify_type": "fully",
               "result": "passed",
@@ -389,7 +389,7 @@
             {
               "name": "TestPermissionErrorHandling__test_permission_error_reporting[read_permission_denied-cpp]",
               "file": "tests/test_cases/tests/test_cit_constraints.py",
-              "line": 224,
+              "line": 228,
               "need": "comp_req__persistency__permission_err_hndl_v2",
               "verify_type": "fully",
               "result": "passed",
@@ -398,7 +398,7 @@
             {
               "name": "TestPermissionErrorHandling__test_permission_error_reporting[write_permission_denied-cpp]",
               "file": "tests/test_cases/tests/test_cit_constraints.py",
-              "line": 224,
+              "line": 228,
               "need": "comp_req__persistency__permission_err_hndl_v2",
               "verify_type": "fully",
               "result": "passed",
@@ -407,7 +407,7 @@
             {
               "name": "TestPermissionControl__test_filesystem_permissions[rust]",
               "file": "tests/test_cases/tests/test_cit_constraints.py",
-              "line": 163,
+              "line": 167,
               "need": "comp_req__persistency__permission_err_hndl_v2",
               "verify_type": "fully",
               "result": "passed",
@@ -416,7 +416,7 @@
             {
               "name": "TestPermissionErrorHandling__test_permission_error_reporting[read_permission_denied-rust]",
               "file": "tests/test_cases/tests/test_cit_constraints.py",
-              "line": 224,
+              "line": 228,
               "need": "comp_req__persistency__permission_err_hndl_v2",
               "verify_type": "fully",
               "result": "passed",
@@ -425,7 +425,7 @@
             {
               "name": "TestPermissionErrorHandling__test_permission_error_reporting[write_permission_denied-rust]",
               "file": "tests/test_cases/tests/test_cit_constraints.py",
-              "line": 224,
+              "line": 228,
               "need": "comp_req__persistency__permission_err_hndl_v2",
               "verify_type": "fully",
               "result": "passed",
