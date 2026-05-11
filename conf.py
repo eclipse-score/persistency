@@ -44,6 +44,12 @@ extensions = [
 
 myst_enable_extensions = ["colon_fence"]
 
+include_patterns = [
+    "index.rst",
+    "docs/**",
+    "score/**",
+]
+
 exclude_patterns = [
     # The following entries are not required when building the documentation via 'bazel
     # build //:docs', as that command runs in a sandboxed environment. However, when

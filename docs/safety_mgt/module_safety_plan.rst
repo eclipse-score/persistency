@@ -133,12 +133,12 @@ Component KVS Workproducts List
         * - :need:`wp__requirements_comp`
           - :need:`gd_temp__req_comp_req`
           - :ndf:`copy('status', need_id='gd_temp__req_comp_req')`
-          - :need:`doc__persistency_kvs_requirements`
+          - :need:`doc__kvs_requirements`
 
         * - :need:`wp__requirements_comp_aou`
           - :need:`gd_temp__req_aou_req`
           - :ndf:`copy('status', need_id='gd_temp__req_aou_req')`
-          - :need:`doc__persistency_kvs_requirements`
+          - :need:`doc__kvs_requirements`
 
         * - :need:`wp__requirements_inspect`
           - :need:`gd_chklst__req_inspection`
@@ -148,7 +148,7 @@ Component KVS Workproducts List
         * - :need:`wp__component_arch`
           - :need:`gd_temp__arch_comp`
           - :ndf:`copy('status', need_id='gd_temp__arch_comp')`
-          - :need:`doc__persistency_kvs_architecture`
+          - :need:`doc__kvs_architecture`
 
         * - :need:`wp__sw_arch_verification`
           - :need:`gd_chklst__arch_inspection_checklist`
@@ -158,12 +158,12 @@ Component KVS Workproducts List
         * - :need:`wp__sw_component_fmea`
           - :need:`wp__sw_component_fmea`
           - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
-          - :need:`doc__persistency_kvs_fmea`
+          - :need:`doc__kvs_fmea`
 
         * - :need:`wp__sw_component_dfa`
           - :need:`wp__sw_component_dfa`
           - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
-          - :need:`doc__persistency_kvs_dfa`
+          - :need:`doc__kvs_dfa`
 
         * - :need:`wp__sw_implementation`
           - :need:`gd_guidl__implementation`
@@ -188,7 +188,7 @@ Component KVS Workproducts List
         * - :need:`wp__sw_component_class`
           - :need:`gd_guidl__component_classification`
           - :ndf:`copy('status', need_id='gd_guidl__component_classification')`
-          - :need:`doc__persistency_component_classification`
+          - :need:`doc__json_component_classification`
 
 
 OSS (sub-)component qualification plan
