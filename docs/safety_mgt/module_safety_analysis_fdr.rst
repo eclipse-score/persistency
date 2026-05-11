@@ -17,7 +17,7 @@ Safety Analysis Checklist
 =========================
 
 .. document:: Persistency Safety Analysis Checklist
-   :id: doc__kvs_safety_analysis_fdr
+   :id: doc__module_safety_analysis_fdr
    :status: draft
    :safety: ASIL_B
    :security: YES
