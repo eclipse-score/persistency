@@ -12,10 +12,8 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-.. _module_documentation:
-
-Module Documents Persistency
-############################
+Module Documents
+################
 
 .. toctree::
    :maxdepth: 1
@@ -26,4 +24,3 @@ Module Documents Persistency
    security_mgt/index.rst
    verification/module_verification_report.rst
    release/release_note.rst
-
