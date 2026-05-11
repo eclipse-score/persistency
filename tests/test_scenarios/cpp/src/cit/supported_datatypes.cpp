@@ -28,6 +28,35 @@ namespace
 {
 const std::string kTargetName{"cpp_test_scenarios::supported_datatypes"};
 
+template <typename T>
+T get_field(const Object& obj, const std::string& field)
+{
+    auto it{obj.find(field)};
+    if (it == obj.end())
+    {
+        throw std::runtime_error("Missing field: " + field);
+    }
+    return it->second.As<T>().value();
+}
+
+Object get_object(const std::string& data)
+{
+    JsonParser parser;
+    auto from_buffer_result{parser.FromBuffer(data)};
+    if (!from_buffer_result)
+    {
+        throw std::runtime_error{"Failed to parse JSON"};
+    }
+
+    auto as_object_result{from_buffer_result.value().As<Object>()};
+    if (!as_object_result)
+    {
+        throw std::runtime_error{"Failed to cast JSON to object"};
+    }
+
+    return std::move(as_object_result.value().get());
+}
+
 void info_log(const std::string& keyname)
 {
     TRACING_INFO(kTargetName, std::make_pair(std::string("key"), keyname));
@@ -300,9 +329,71 @@ class SupportedDatatypesValues : public Scenario
     }
 };
 
+class ValueLength : public Scenario
+{
+  public:
+    ~ValueLength() final = default;
+
+    std::string name() const final
+    {
+        return "ValueLength";
+    }
+
+    void run(const std::string& input) const final
+    {
+        // Create KVS instance with provided params
+        auto obj{get_object(input)};
+        auto byte_size{get_field<size_t>(obj, "byte_size")};
+        auto params{KvsParameters::from_json(input)};
+        Kvs kvs = kvs_instance(params);
+
+        // Create a string of specified byte size
+        std::string test_value(byte_size, 'x');
+        size_t actual_size = test_value.size();
+
+        TRACING_INFO(kTargetName,
+                     std::make_pair(std::string("byte_size"), std::to_string(byte_size)),
+                     std::make_pair(std::string("actual_size"), std::to_string(actual_size)));
+
+        // Attempt to store the value
+        auto store_result = kvs.set_value("test_key", KvsValue(test_value));
+        bool store_success = store_result.has_value();
+        TRACING_INFO(kTargetName, std::make_pair(std::string("store_result"), store_success ? 1 : 0));
+
+        if (store_success)
+        {
+            // If store succeeded, try to retrieve and verify
+            auto retrieved = kvs.get_value("test_key");
+            if (retrieved.has_value())
+            {
+                if (retrieved.value().getType() == KvsValue::Type::String)
+                {
+                    std::string retrieved_str = std::get<std::string>(retrieved.value().getValue());
+                    size_t value_size = retrieved_str.size();
+                    TRACING_INFO(kTargetName,
+                                 std::make_pair(std::string("retrieve_success"), 1),
+                                 std::make_pair(std::string("value_size"), std::to_string(value_size)));
+                }
+                else
+                {
+                    TRACING_INFO(kTargetName, std::make_pair(std::string("retrieve_success"), 0));
+                }
+            }
+            else
+            {
+                TRACING_INFO(kTargetName, std::make_pair(std::string("retrieve_success"), 0));
+            }
+        }
+        else
+        {
+            TRACING_INFO(kTargetName, std::make_pair(std::string("retrieve_success"), 0));
+        }
+    }
+};
+
 ScenarioGroup::Ptr supported_datatypes_group()
 {
-    std::vector<Scenario::Ptr> keys = {std::make_shared<SupportedDatatypesKeys>()};
+    std::vector<Scenario::Ptr> keys = {std::make_shared<SupportedDatatypesKeys>(), std::make_shared<ValueLength>()};
     std::vector<ScenarioGroup::Ptr> groups = {SupportedDatatypesValues::value_types_group()};
     return std::make_shared<ScenarioGroupImpl>("supported_datatypes", keys, groups);
 }
