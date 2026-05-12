@@ -23,8 +23,8 @@ pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__multi_instance",
-        "comp_req__persistency__concurrency",
+        "comp_req__kvs__multi_instance",
+        "comp_req__kvs__concurrency",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
@@ -60,8 +60,8 @@ class TestMultipleInstanceIds(CommonScenario):
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__multi_instance",
-        "comp_req__persistency__concurrency",
+        "comp_req__kvs__multi_instance",
+        "comp_req__kvs__concurrency",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
@@ -96,8 +96,8 @@ class TestSameInstanceIdSameValue(CommonScenario):
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__persistency__multi_instance",
-        "comp_req__persistency__concurrency",
+        "comp_req__kvs__multi_instance",
+        "comp_req__kvs__concurrency",
     ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
