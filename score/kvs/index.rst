@@ -111,7 +111,7 @@ We use an iterative development process and apply results from the next steps
 back to the feature request. For TinyJSON we will perform a software component
 classification.
 
-:need:`doc__json_component_classification`
+:need:`doc__json_comp_class`
 
 To ensure the freedom of interference the feature key-value storage should not
 be used within different processes.

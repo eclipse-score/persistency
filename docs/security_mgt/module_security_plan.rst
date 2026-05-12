@@ -95,8 +95,8 @@ Security Module Workproducts
           - :need:`gd_chklst__security_package`
           - :ndf:`copy('status', need_id='gd_chklst__security_package')`
           - <Link to issue>
-          - :need:`doc__persistency_security_package_fdr`
-          - :ndf:`copy('status', need_id='doc__persistency_security_package_fdr')`
+          - :need:`doc__persistency_sec_pkg_fdr`
+          - :ndf:`copy('status', need_id='doc__persistency_sec_pkg_fdr')`
 
         * - :need:`wp__fdr_reports` (module's Security Analyses)
           - :need:`gd_guidl__security_analysis`

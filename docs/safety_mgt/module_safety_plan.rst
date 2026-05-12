@@ -188,7 +188,7 @@ Component KVS Workproducts List
         * - :need:`wp__sw_component_class`
           - :need:`gd_guidl__component_classification`
           - :ndf:`copy('status', need_id='gd_guidl__component_classification')`
-          - :need:`doc__json_component_classification`
+          - :need:`doc__json_comp_class`
 
 
 OSS (sub-)component qualification plan

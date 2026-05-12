@@ -118,10 +118,7 @@ bazel test <TARGET_NAME>
 
 ## Clippy
 
-- Clippy runs by default via `.bazelrc` when building Rust targets (rules_lint aspect).
-- Use `bazel build //src/rust/...` (or any Rust target pattern) while developing.
-- Use `bazel build --config=lint //src/rust/...` to enable lint config, including `--@aspect_rules_lint//lint:fail_on_violation=true`.
-- The Clippy config comes from `@score_rust_policies//clippy/strict:clippy.toml`.
+- Clippy is currently disabled in `.bazelrc` because the upstream lint toolchain resolves an APE-hosted binary URL that returns HTTP 403 and breaks unrelated Bazel commands.
 
 ## Cargo-based operations
 

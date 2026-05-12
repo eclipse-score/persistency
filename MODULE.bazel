@@ -39,9 +39,6 @@ use_repo(pip, "pip_score_venv_test")
 # rust
 bazel_dep(name = "rules_rust", version = "0.68.2-score")
 
-# Shared Rust policies (Clippy config, etc.), overridden locally during development.
-bazel_dep(name = "score_rust_policies", version = "0.0.5", dev_dependency = True)
-
 # bazel cc rules
 bazel_dep(name = "rules_cc", version = "0.2.17")
 
@@ -85,8 +82,6 @@ git_override(
     remote = "https://github.com/bmw-software-engineering/trlc.git",
 )
 
-# ToDo: implicit dependencies for score_tooling, but needed directly here??
-bazel_dep(name = "aspect_rules_lint", version = "2.0.0")
 bazel_dep(name = "buildifier_prebuilt", version = "8.2.0.2")
 
 ## temporary overrides / tools
