@@ -40,7 +40,10 @@ class MaxSnapshotsScenario(CommonScenario):
 
 
 @add_test_properties(
-    partially_verifies=["comp_req__kvs__snapshot_creation"],
+    partially_verifies=[
+        "comp_req__kvs__snapshot_creation",
+        "comp_req__kvs__snapshot_explicit_creation",
+    ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
 )
@@ -71,9 +74,9 @@ class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
         snapshot_max_count: int,
         version: str,
     ):
-        if version == "cpp" and snapshot_max_count in [0, 1, 3, 10]:
+        if version == "cpp" and snapshot_max_count == 0:
             pytest.xfail(
-                reason="https://github.com/eclipse-score/persistency/issues/108",
+                reason="C++ snapshot_max_count is hardcoded to 3 and cannot be configured to 0",
             )
         assert results.return_code == ResultCode.SUCCESS
 
@@ -88,7 +91,10 @@ class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
 
 
 @add_test_properties(
-    partially_verifies=["comp_req__kvs__snapshot_creation"],
+    partially_verifies=[
+        "comp_req__kvs__snapshot_creation",
+        "comp_req__kvs__snapshot_explicit_creation",
+    ],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
 )
@@ -105,7 +111,19 @@ class TestSnapshotCountFull(TestSnapshotCountFirstFlush):
             },
             "count": snapshot_max_count + 1,
         }
-
+    def test_ok(
+        self,
+        test_config: dict[str, Any],
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+        snapshot_max_count: int,
+        version: str,
+    ):
+        if version == "cpp" and snapshot_max_count != 3:
+            pytest.xfail(
+                reason="C++ snapshot_max_count is hardcoded to 3 and cannot be configured otherwise",
+            )
+        super().test_ok(test_config, results, logs_info_level, snapshot_max_count, version)
 
 @add_test_properties(
     partially_verifies=["comp_req__kvs__snapshot_max_num"],
@@ -137,9 +155,9 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
         snapshot_max_count: int,
         version: str,
     ):
-        if version == "cpp":
+        if version == "cpp" and snapshot_max_count != 3:
             pytest.xfail(
-                reason="https://github.com/eclipse-score/persistency/issues/108",
+                reason="C++ snapshot_max_count is hardcoded to 3 and cannot be configured otherwise",
             )
         assert results.return_code == ResultCode.SUCCESS
         assert logs_info_level.find_log("max_count", value=snapshot_max_count) is not None
@@ -149,7 +167,7 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
     fully_verifies=["comp_req__kvs__snapshot_restore"],
     partially_verifies=[
         "comp_req__kvs__snapshot_creation",
-        "comp_req__kvs__snapshot_rotate",
+        "comp_req__kvs__snapshot_explicit_creation",
     ],
     test_type="control-flow-analysis",
     derivation_technique="requirements-analysis",
@@ -178,7 +196,13 @@ class TestSnapshotRestorePrevious(MaxSnapshotsScenario):
         self,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        snapshot_max_count: int,
+        version: str,
     ):
+        if version == "cpp" and snapshot_max_count != 3:
+            pytest.xfail(
+                reason="C++ snapshot_max_count is hardcoded to 3 and cannot be configured otherwise",
+            )
         assert results.return_code == ResultCode.SUCCESS
 
         result_log = logs_info_level.find_log("result")
@@ -218,6 +242,11 @@ class TestSnapshotRestoreCurrent(CommonScenario):
     ):
         assert results.return_code == ResultCode.SUCCESS
 
+        if version == "cpp":
+            pytest.xfail(
+                reason="In C++ new API snapshot_id=0 refers to the oldest snapshot (valid), not the current state",
+            )
+
         if version == "rust":
             assert "Restoring current KVS snapshot is not allowed" in results.stdout
 
@@ -229,6 +258,7 @@ class TestSnapshotRestoreCurrent(CommonScenario):
 @add_test_properties(
     partially_verifies=[
         "comp_req__kvs__snapshot_creation",
+        "comp_req__kvs__snapshot_explicit_creation",
         "comp_req__kvs__snapshot_restore",
     ],
     test_type="fault-injection",
@@ -261,7 +291,10 @@ class TestSnapshotRestoreNonexistent(CommonScenario):
 
 
 @add_test_properties(
-    partially_verifies=["comp_req__kvs__snapshot_creation"],
+    partially_verifies=[
+        "comp_req__kvs__snapshot_creation",
+        "comp_req__kvs__snapshot_explicit_creation",
+    ],
     test_type="interface-test",
     derivation_technique="requirements-analysis",
 )
@@ -297,7 +330,10 @@ class TestSnapshotPathsExist(CommonScenario):
 
 
 @add_test_properties(
-    partially_verifies=["comp_req__kvs__snapshot_creation"],
+    partially_verifies=[
+        "comp_req__kvs__snapshot_creation",
+        "comp_req__kvs__snapshot_explicit_creation",
+    ],
     test_type="fault-injection",
     derivation_technique="requirements-analysis",
 )
@@ -330,3 +366,163 @@ class TestSnapshotPathsNonexistent(CommonScenario):
         assert not Path(paths_log.kvs_path).exists()
         assert paths_log.hash_path == f"{temp_dir}/kvs_1_2.hash"
         assert not Path(paths_log.hash_path).exists()
+
+
+@add_test_properties(
+    fully_verifies=["comp_req__kvs__snapshot_explicit_creation"],
+    test_type="requirements-based",
+    derivation_technique="requirements-analysis",
+)
+@pytest.mark.parametrize("version", ["cpp"], scope="class")
+class TestSnapshotCreateExplicit(CommonScenario):
+    """Verifies that in C++ flush alone does not create a snapshot; only snapshot_create does."""
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.snapshots.create"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {"instance_id": 1, "dir": str(temp_dir)},
+        }
+
+    def test_ok(
+        self,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+    ):
+        assert results.return_code == ResultCode.SUCCESS
+
+        # After flush only: no snapshot must exist yet.
+        flush_log = logs_info_level.find_log("snapshot_count_after_flush")
+        assert flush_log is not None
+        assert flush_log.snapshot_count_after_flush == 0
+
+        # snapshot_create must succeed.
+        result_log = logs_info_level.find_log("result")
+        assert result_log is not None
+        assert result_log.result == "Ok(())"
+
+        # After snapshot_create: exactly one snapshot must exist.
+        create_log = logs_info_level.find_log("snapshot_count_after_create")
+        assert create_log is not None
+        assert create_log.snapshot_count_after_create == 1
+
+
+@add_test_properties(
+    fully_verifies=["comp_req__kvs__snapshot_delete"],
+    test_type="requirements-based",
+    derivation_technique="requirements-analysis",
+)
+@pytest.mark.parametrize("version", ["cpp"], scope="class")
+class TestSnapshotDeleteExisting(CommonScenario):
+    """Verifies that an existing snapshot can be deleted and the snapshot count decreases."""
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.snapshots.delete"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {"instance_id": 1, "dir": str(temp_dir)},
+            "snapshot_id": 1,
+            "count": 2,
+        }
+
+    def test_ok(
+        self,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+    ):
+        assert results.return_code == ResultCode.SUCCESS
+
+        result_log = logs_info_level.find_log("result")
+        assert result_log is not None
+        assert result_log.result == "Ok(())"
+
+        count_log = logs_info_level.find_log("snapshot_count")
+        assert count_log is not None
+        assert count_log.snapshot_count == 1
+
+
+@add_test_properties(
+    partially_verifies=["comp_req__kvs__snapshot_delete"],
+    test_type="fault-injection",
+    derivation_technique="requirements-analysis",
+)
+@pytest.mark.parametrize("version", ["cpp"], scope="class")
+class TestSnapshotDeleteNonexistent(CommonScenario):
+    """Checks that deleting a non-existing snapshot fails with InvalidSnapshotId error."""
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.snapshots.delete"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {"instance_id": 1, "dir": str(temp_dir)},
+            "snapshot_id": 2,
+            "count": 1,
+        }
+
+    def test_error(
+        self,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+    ):
+        assert results.return_code == ResultCode.SUCCESS
+
+        result_log = logs_info_level.find_log("result")
+        assert result_log is not None
+        assert result_log.result == "Err(InvalidSnapshotId)"
+
+
+@add_test_properties(
+    fully_verifies=["comp_req__kvs__snapshot_rotate"],
+    test_type="requirements-based",
+    derivation_technique="requirements-analysis",
+)
+@pytest.mark.parametrize("version", ["rust"], scope="class")
+@pytest.mark.parametrize("snapshot_max_count", [2, 3], scope="class")
+class TestSnapshotRotate(MaxSnapshotsScenario):
+    """Verifies that the oldest snapshot is rotated out when max count is reached on flush."""
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.snapshots.rotate"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path, snapshot_max_count: int) -> dict[str, Any]:
+        return {
+            "kvs_parameters": {
+                "instance_id": 1,
+                "dir": str(temp_dir),
+                "snapshot_max_count": snapshot_max_count,
+            },
+            "count": snapshot_max_count + 1,
+        }
+
+    def test_ok(
+        self,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+        snapshot_max_count: int,
+    ):
+        assert results.return_code == ResultCode.SUCCESS
+
+        # After max_count+1 flushes, snapshot_count must equal max_count (oldest rotated out).
+        count_log = logs_info_level.find_log("snapshot_count")
+        assert count_log is not None
+        assert count_log.snapshot_count == snapshot_max_count
+
+        # Oldest surviving snapshot must be counter=1 (counter=0 was rotated out).
+        result_log = logs_info_level.find_log("result")
+        assert result_log is not None
+        assert result_log.result == "Ok(())"
+
+        value_log = logs_info_level.find_log("value")
+        assert value_log is not None
+        assert value_log.value == 1

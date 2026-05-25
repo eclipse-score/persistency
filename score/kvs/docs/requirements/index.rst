@@ -302,6 +302,17 @@ Component Requirements
 
    The component shall create a snapshot each time data is stored.
 
+.. comp_req:: Snapshot Explicit Creation
+   :id: comp_req__kvs__snapshot_explicit_creation
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :satisfies: feat_req__persistency__snapshot_create
+   :status: valid
+   :belongs_to: comp__persistency_kvs
+
+   The component shall create a snapshot in the first available slot when the snapshot_create function is explicitly called.
+
 .. comp_req:: Snapshot Maximum Number
    :id: comp_req__kvs__snapshot_max_num
    :reqtype: Functional

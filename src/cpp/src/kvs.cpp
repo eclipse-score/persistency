@@ -722,7 +722,7 @@ score::ResultBlank Kvs::snapshot_restore(const SnapshotId& snapshot_id)
         }
         else
         {
-            if (snapshot_count_res.value() == 0 || snapshot_id.id > KVS_MAX_SNAPSHOTS)
+            if (snapshot_count_res.value() == 0 || snapshot_id.id >= snapshot_count_res.value())
             {
                 result = score::MakeUnexpected(ErrorCode::InvalidSnapshotId);
             }
