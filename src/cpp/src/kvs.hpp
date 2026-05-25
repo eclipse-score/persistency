@@ -300,7 +300,7 @@ class Kvs final
      *         - On success: The total count of snapshots as a size_t value.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::Result<size_t> snapshot_count() const;
+    score::Result<std::size_t> snapshot_count() const;
 
     /**
      * @brief Retrieves the maximum number of snapshots that can be stored.
@@ -308,9 +308,36 @@ class Kvs final
      * This function returns the upper limit on the number of snapshots
      * that the key-value store can maintain at any given time.
      *
-     * @return The maximum count of snapshots as a size_t value.
+     * @return The maximum count of snapshots as a std::size_t value.
      */
-    size_t snapshot_max_count() const;
+    std::size_t snapshot_max_count() const;
+
+    /**
+     * @brief Creates a new snapshot of the current state of the key-value store.
+     *
+     * This function captures the current state of the key-value store and saves it
+     * as a snapshot. The snapshot can later be used to restore the key-value store
+     * to this exact state using the snapshot_restore function.
+     *
+     * @return score::ResultBlank<std::size_t>
+     *         - On success: The identifier of the created snapshot as a std::size_t value.
+     *         - On failure: An error code describing the reason for the failure.
+     */
+    score::Result<std::size_t> snapshot_create();
+
+    /**
+     * @brief Deletes a specified snapshot from the key-value store.
+     *
+     * This function removes the snapshot identified by the given snapshot ID
+     * from the key-value store. Once deleted, the snapshot can no longer be
+     * used for restoration purposes. This operation is irreversible.
+     *
+     * @param snapshot_id The identifier of the snapshot to be deleted.
+     * @return score::ResultBlank
+     *         - On success: An empty score::Result indicating the snapshot was deleted successfully.
+     *         - On failure: An error code describing the reason for the failure.
+     */
+    score::ResultBlank snapshot_delete(const SnapshotId& snapshot_id);
 
     /**
      * @brief Restores the state of the key-value store from a specified snapshot.
@@ -377,7 +404,7 @@ class Kvs final
     std::unique_ptr<score::mw::log::Logger> logger;
 
     /* Private Methods */
-    score::ResultBlank snapshot_rotate();
+    score::Result<std::size_t> first_free_slot() const;   // <-- aggiungere
     score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
     score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix,
                                                                        OpenJsonNeedFile need_file);

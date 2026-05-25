@@ -593,19 +593,11 @@ score::ResultBlank Kvs::flush()
             result = score::MakeUnexpected(ErrorCode::JsonGeneratorError);
         }
         else
-        {
-            /* Rotate Snapshots */
-            auto rotate_result = snapshot_rotate();
-            if (!rotate_result)
-            {
-                result = rotate_result;
-            }
-            else
-            {
-                /* Write JSON Data */
-                std::string buf = std::move(buf_res.value());
-                result = write_json_data(buf);
-            }
+        {          
+            /* Write JSON Data */
+            std::string buf = std::move(buf_res.value());
+            result = write_json_data(buf);
+        
         }
     }
 
@@ -613,12 +605,12 @@ score::ResultBlank Kvs::flush()
 }
 
 /* Retrieve the snapshot count*/
-score::Result<size_t> Kvs::snapshot_count() const
+score::Result<std::size_t> Kvs::snapshot_count() const
 {
     score::Result<size_t> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     size_t count = 0;
     bool error = false;
-    for (size_t idx = 0; idx < KVS_MAX_SNAPSHOTS; ++idx)
+    for (size_t idx = 1; idx <= KVS_MAX_SNAPSHOTS; ++idx)
     {
         const score::filesystem::Path fname = filename_prefix.Native() + "_" + to_string(idx) + ".json";
         const auto fname_exists_res = filesystem->standard->Exists(fname);
@@ -629,12 +621,11 @@ score::Result<size_t> Kvs::snapshot_count() const
                 break;
             }
         }
-        else
-        {
+        else {
             error = true;
             break;
         }
-        count = idx + 1;
+        count = count + 1;
     }
     if (error)
     {
@@ -648,63 +639,59 @@ score::Result<size_t> Kvs::snapshot_count() const
     return result;
 }
 
-/* Retrieve the max snapshot count*/
-size_t Kvs::snapshot_max_count() const
+score::Result<std::size_t> Kvs::snapshot_create()
 {
-    return KVS_MAX_SNAPSHOTS;
-}
-
-/* Rotate Snapshots */
-score::ResultBlank Kvs::snapshot_rotate()
-{
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<std::size_t> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock())
     {
-        bool error = false;
-        for (size_t idx = KVS_MAX_SNAPSHOTS; idx > 0; --idx)
+        auto snapshot_count_res = snapshot_count();
+        if (!snapshot_count_res)
         {
-            score::filesystem::Path hash_old = filename_prefix.Native() + "_" + to_string(idx - 1) + ".hash";
-            score::filesystem::Path hash_new = filename_prefix.Native() + "_" + to_string(idx) + ".hash";
-            score::filesystem::Path snap_old = filename_prefix.Native() + "_" + to_string(idx - 1) + ".json";
-            score::filesystem::Path snap_new = filename_prefix.Native() + "_" + to_string(idx) + ".json";
-
-            logger->LogInfo() << "rotating: " << snap_old << " -> " << snap_new;
-            /* Rename hash */
-            int32_t hash_rename = std::rename(hash_old.CStr(), hash_new.CStr());
-            if (0 != hash_rename)
+            result = score::MakeUnexpected(static_cast<ErrorCode>(*snapshot_count_res.error()));
+        }
+        else
+        {
+            if (snapshot_count_res.value() >= snapshot_max_count())
             {
-                if (errno != ENOENT)
-                {
-                    error = true;
-                    logger->LogError() << "error: could not rename hash file " << snap_old << ". Rename Errorcode "
-                                       << errno;
-                    result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
-                }
+                result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
             }
-            if (!error)
+            else
             {
-                /* Rename snapshot */
-                int32_t snap_rename = std::rename(snap_old.CStr(), snap_new.CStr());
-                if (0 != snap_rename)
+                auto first_free_slot_res = first_free_slot();
+                if (!first_free_slot_res)
                 {
-                    if (errno != ENOENT)
+                    result = score::MakeUnexpected(static_cast<ErrorCode>(*first_free_slot_res.error()));
+                }
+                else
+                {
+                    const size_t new_snapshot_id = first_free_slot_res.value();
+                    const score::filesystem::Path src_json{filename_prefix.Native() + "_0.json"};
+                    const score::filesystem::Path src_hash{filename_prefix.Native() + "_0.hash"};
+                    const score::filesystem::Path dst_json{filename_prefix.Native() + "_" + to_string(new_snapshot_id) + ".json"};
+                    const score::filesystem::Path dst_hash{filename_prefix.Native() + "_" + to_string(new_snapshot_id) + ".hash"};
+
+                    const auto copy_json_res = filesystem->standard->CopyFile(src_json, dst_json);
+                    if (!copy_json_res)
                     {
-                        error = true;
-                        logger->LogError()
-                            << "error: could not rename snapshot file " << snap_old << ". Rename Errorcode " << errno;
+                        logger->LogError() << "Failed to copy snapshot JSON file to '" << dst_json << "'";
                         result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+                    }
+                    else
+                    {
+                        const auto copy_hash_res = filesystem->standard->CopyFile(src_hash, dst_hash);
+                        if (!copy_hash_res)
+                        {
+                            logger->LogError() << "Failed to copy snapshot hash file to '" << dst_hash << "'";
+                            result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+                        }
+                        else
+                        {
+                            result = new_snapshot_id;
+                        }
                     }
                 }
             }
-            if (error)
-            {
-                break;
-            }
-        }
-        if (!error)
-        {
-            result = score::ResultBlank{};
         }
     }
     else
@@ -713,6 +700,12 @@ score::ResultBlank Kvs::snapshot_rotate()
     }
 
     return result;
+}
+
+/* Retrieve the max snapshot count*/
+std::size_t Kvs::snapshot_max_count() const
+{
+    return KVS_MAX_SNAPSHOTS;
 }
 
 /* Restore the key-value store from a snapshot*/
@@ -729,18 +722,13 @@ score::ResultBlank Kvs::snapshot_restore(const SnapshotId& snapshot_id)
         }
         else
         {
-            /* Fail if the snapshot ID is the current KVS */
-            if (0 == snapshot_id.id)
-            {
-                result = score::MakeUnexpected(ErrorCode::InvalidSnapshotId);
-            }
-            else if (snapshot_count_res.value() < snapshot_id.id)
+            if (snapshot_count_res.value() == 0 || snapshot_id.id > KVS_MAX_SNAPSHOTS)
             {
                 result = score::MakeUnexpected(ErrorCode::InvalidSnapshotId);
             }
             else
             {
-                score::filesystem::Path restore_path = filename_prefix.Native() + "_" + to_string(snapshot_id.id);
+                score::filesystem::Path restore_path = filename_prefix.Native() + "_" + to_string(snapshot_id.id + 1);
                 auto data_res = open_json(restore_path, OpenJsonNeedFile::Required);
                 if (!data_res)
                 {
@@ -760,6 +748,94 @@ score::ResultBlank Kvs::snapshot_restore(const SnapshotId& snapshot_id)
     }
 
     return result;
+}
+
+/* Delete a snapshot*/
+score::ResultBlank Kvs::snapshot_delete(const SnapshotId& snapshot_id)
+{
+    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
+    if (lock.owns_lock())
+    {   
+        auto snapshot_count_res = snapshot_count();
+        if (!snapshot_count_res)
+        {
+            return score::MakeUnexpected(static_cast<ErrorCode>(*snapshot_count_res.error()));
+        }
+
+        const std::size_t count = snapshot_count_res.value();
+        if (count == 0 || snapshot_id.id >= snapshot_max_count())
+        {
+            result = score::MakeUnexpected(ErrorCode::InvalidSnapshotId);
+        }
+        else
+        {
+            /* Delete the target snapshot files (snapshot files are 1-indexed: _1.json, _2.json, ...) */
+            const score::filesystem::Path json_path{filename_prefix.Native() + "_" + to_string(snapshot_id.id + 1) + ".json"};
+            const score::filesystem::Path hash_path{filename_prefix.Native() + "_" + to_string(snapshot_id.id + 1) + ".hash"};
+
+            const auto json_exists_res = filesystem->standard->Exists(json_path);
+            if (!json_exists_res)
+            {
+                logger->LogError() << "Failed to check existence of snapshot JSON file '" << json_path << "'";
+                result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+            }
+            else if (!json_exists_res.value())
+            {
+                logger->LogError() << "Snapshot JSON file does not exist: '" << json_path << "'";
+                result = score::MakeUnexpected(ErrorCode::InvalidSnapshotId);
+            }
+            else
+            {
+                const auto remove_json_res = filesystem->standard->Remove(json_path);
+                if (!remove_json_res)
+                {
+                    logger->LogError() << "Failed to delete snapshot JSON file '" << json_path << "'";
+                    result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+                }
+                else
+                {
+                    const auto remove_hash_res = filesystem->standard->Remove(hash_path);
+                    if (!remove_hash_res)
+                    {
+                        logger->LogError() << "Failed to delete snapshot hash file '" << hash_path << "'";
+                        result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+                    }
+                    else
+                    {
+                        result = score::ResultBlank{};
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        result = score::MakeUnexpected(ErrorCode::MutexLockFailed);
+    }
+
+    return result;
+}
+
+/* Returns the index (1-based) of the first snapshot slot that is free.
+   Checks _1, _2, _3 (up to KVS_MAX_SNAPSHOTS) and returns the first index
+   whose .json file does not exist. Returns OutOfStorageSpace if all slots are occupied. */
+score::Result<std::size_t> Kvs::first_free_slot() const
+{
+    for (size_t idx = 1U; idx <= KVS_MAX_SNAPSHOTS; ++idx)
+    {
+        const score::filesystem::Path fname = filename_prefix.Native() + "_" + to_string(idx) + ".json";
+        const auto exists_res = filesystem->standard->Exists(fname);
+        if (!exists_res)
+        {
+            return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+        }
+        if (!exists_res.value())
+        {
+            return idx;  /* First free slot found */
+        }
+    }
+    return score::MakeUnexpected(ErrorCode::OutOfStorageSpace);
 }
 
 /* Get the filename for a snapshot*/
