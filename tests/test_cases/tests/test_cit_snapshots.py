@@ -373,7 +373,6 @@ class TestSnapshotPathsNonexistent(CommonScenario):
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
 )
-@pytest.mark.parametrize("version", ["cpp"], scope="class")
 class TestSnapshotCreateExplicit(CommonScenario):
     """Verifies that in C++ flush alone does not create a snapshot; only snapshot_create does."""
 
@@ -391,7 +390,12 @@ class TestSnapshotCreateExplicit(CommonScenario):
         self,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ):
+        if version != "cpp":
+            pytest.xfail(
+                reason="snapshot_create is a C++ explicit API; Rust creates snapshots automatically on flush",
+            )
         assert results.return_code == ResultCode.SUCCESS
 
         # After flush only: no snapshot must exist yet.
@@ -415,7 +419,6 @@ class TestSnapshotCreateExplicit(CommonScenario):
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
 )
-@pytest.mark.parametrize("version", ["cpp"], scope="class")
 class TestSnapshotDeleteExisting(CommonScenario):
     """Verifies that an existing snapshot can be deleted and the snapshot count decreases."""
 
@@ -435,7 +438,12 @@ class TestSnapshotDeleteExisting(CommonScenario):
         self,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ):
+        if version != "cpp":
+            pytest.xfail(
+                reason="snapshot_delete is a C++ explicit API; Rust does not support snapshot deletion",
+            )
         assert results.return_code == ResultCode.SUCCESS
 
         result_log = logs_info_level.find_log("result")
@@ -452,7 +460,6 @@ class TestSnapshotDeleteExisting(CommonScenario):
     test_type="fault-injection",
     derivation_technique="requirements-analysis",
 )
-@pytest.mark.parametrize("version", ["cpp"], scope="class")
 class TestSnapshotDeleteNonexistent(CommonScenario):
     """Checks that deleting a non-existing snapshot fails with InvalidSnapshotId error."""
 
@@ -472,7 +479,12 @@ class TestSnapshotDeleteNonexistent(CommonScenario):
         self,
         results: ScenarioResult,
         logs_info_level: LogContainer,
+        version: str,
     ):
+        if version != "cpp":
+            pytest.xfail(
+                reason="snapshot_delete is a C++ explicit API; Rust does not support snapshot deletion",
+            )
         assert results.return_code == ResultCode.SUCCESS
 
         result_log = logs_info_level.find_log("result")
@@ -485,7 +497,6 @@ class TestSnapshotDeleteNonexistent(CommonScenario):
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
 )
-@pytest.mark.parametrize("version", ["rust"], scope="class")
 @pytest.mark.parametrize("snapshot_max_count", [2, 3], scope="class")
 class TestSnapshotRotate(MaxSnapshotsScenario):
     """Verifies that the oldest snapshot is rotated out when max count is reached on flush."""
@@ -510,7 +521,12 @@ class TestSnapshotRotate(MaxSnapshotsScenario):
         results: ScenarioResult,
         logs_info_level: LogContainer,
         snapshot_max_count: int,
+        version: str,
     ):
+        if version == "cpp":
+            pytest.xfail(
+                reason="snapshot rotation test is only applicable to the Rust implementation",
+            )
         assert results.return_code == ResultCode.SUCCESS
 
         # After max_count+1 flushes, snapshot_count must equal max_count (oldest rotated out).

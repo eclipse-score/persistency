@@ -404,7 +404,7 @@ class Kvs final
     std::unique_ptr<score::mw::log::Logger> logger;
 
     /* Private Methods */
-    score::Result<std::size_t> first_free_slot() const;   // <-- aggiungere
+    score::Result<std::size_t> first_free_slot() const;
     score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
     score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix,
                                                                        OpenJsonNeedFile need_file);

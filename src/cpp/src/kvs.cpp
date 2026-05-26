@@ -625,7 +625,7 @@ score::Result<std::size_t> Kvs::snapshot_count() const
             error = true;
             break;
         }
-        count = count + 1;
+        count++;
     }
     if (error)
     {
@@ -654,7 +654,7 @@ score::Result<std::size_t> Kvs::snapshot_create()
         {
             if (snapshot_count_res.value() >= snapshot_max_count())
             {
-                result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+                result = score::MakeUnexpected(ErrorCode::QuotaExceeded);
             }
             else
             {
@@ -722,7 +722,7 @@ score::ResultBlank Kvs::snapshot_restore(const SnapshotId& snapshot_id)
         }
         else
         {
-            if (snapshot_count_res.value() == 0 || snapshot_id.id >= snapshot_count_res.value())
+            if (snapshot_count_res.value() == 0 || snapshot_id.id >= snapshot_max_count())
             {
                 result = score::MakeUnexpected(ErrorCode::InvalidSnapshotId);
             }

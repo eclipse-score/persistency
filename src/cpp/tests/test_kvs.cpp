@@ -906,7 +906,7 @@ TEST(kvs_snapshot_create, snapshot_create_failure_snapshot_count)
     cleanup_environment();
 }
 
-TEST(kvs_snapshot_create, snapshot_create_failure_storage_full)
+TEST(kvs_snapshot_create, snapshot_create_quota_exceeded)
 {
     prepare_environment();
 
@@ -922,7 +922,7 @@ TEST(kvs_snapshot_create, snapshot_create_failure_storage_full)
     /* snapshot_count == KVS_MAX_SNAPSHOTS  >=  snapshot_max_count() */
     auto result = kvs.value().snapshot_create();
     EXPECT_FALSE(result);
-    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::PhysicalStorageFailure);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::QuotaExceeded);
 
     cleanup_environment();
 }
@@ -1293,7 +1293,7 @@ TEST(kvs_snapshot_delete, snapshot_delete_failure_remove_json)
         .WillOnce(::testing::Return(score::Result<bool>(true)));
     EXPECT_CALL(*standard_mock, Remove(::testing::_))
         .WillOnce(::testing::Return(
-            score::ResultBlank(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRemoveFile))));
+            score::ResultBlank(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRemoveFileOrDirectory))));
     kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     auto result = kvs.value().snapshot_delete(0);
@@ -1325,7 +1325,7 @@ TEST(kvs_snapshot_delete, snapshot_delete_failure_remove_hash)
     EXPECT_CALL(*standard_mock, Remove(::testing::_))
         .WillOnce(::testing::Return(score::ResultBlank{}))
         .WillOnce(::testing::Return(
-            score::ResultBlank(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRemoveFile))));
+            score::ResultBlank(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRemoveFileOrDirectory))));
     kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     auto result = kvs.value().snapshot_delete(0);
