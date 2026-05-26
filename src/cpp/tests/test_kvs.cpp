@@ -810,14 +810,25 @@ TEST(kvs_snapshot_count, snapshot_count_success)
         EXPECT_EQ(count.value(), 0U);
     }
 
-    /* Create snapshot files one by one and verify count increases correctly (1-based: _1.json, _2.json, ...) */
-    for (std::size_t i = 1; i <= KVS_MAX_SNAPSHOTS; i++)
-    {
-        std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
-        auto count = result.value().snapshot_count();
-        EXPECT_TRUE(count);
-        EXPECT_EQ(count.value(), i);
-    }
+
+    /* Crea snapshot non contigui e verifica che il conteggio sia corretto */
+    // Solo _2.json
+    std::ofstream(filename_prefix + "_2.json") << "{}";
+    auto count = result.value().snapshot_count();
+    EXPECT_TRUE(count);
+    EXPECT_EQ(count.value(), 1U);
+
+    // _2.json e _3.json
+    std::ofstream(filename_prefix + "_3.json") << "{}";
+    count = result.value().snapshot_count();
+    EXPECT_TRUE(count);
+    EXPECT_EQ(count.value(), 2U);
+
+    // _1.json, _2.json, _3.json
+    std::ofstream(filename_prefix + "_1.json") << "{}";
+    count = result.value().snapshot_count();
+    EXPECT_TRUE(count);
+    EXPECT_EQ(count.value(), 3U);
 
     cleanup_environment();
 }
@@ -829,14 +840,11 @@ TEST(kvs_snapshot_count, snapshot_count_non_contiguous)
     auto result = Kvs::open(instance_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
     ASSERT_TRUE(result);
 
-    /* Create _1.json and _3.json but leave _2.json missing */
     std::ofstream(filename_prefix + "_1.json") << "{}";
     std::ofstream(filename_prefix + "_3.json") << "{}";
-
-    /* snapshot_count stops at the first gap (_2.json missing): only _1.json is counted */
     auto count = result.value().snapshot_count();
     EXPECT_TRUE(count);
-    EXPECT_EQ(count.value(), 1U);
+    EXPECT_EQ(count.value(), 2U);
 
     cleanup_environment();
 }
@@ -961,15 +969,14 @@ TEST(kvs_snapshot_create, snapshot_create_failure_copy_json)
     ASSERT_TRUE(kvs);
 
     /* Mock Filesystem:
-     *   - snapshot_count():  first call false (gap) -> count = 0, stops immediately
-     *   - first_free_slot(): first call false -> slot 1 is free
+     *   - snapshot_count(): all slots are missing -> count = 0
+     *   - first_free_slot(): first slot is free
      *   - CopyFile (JSON):   fails */
     score::filesystem::Filesystem mock_filesystem = score::filesystem::CreateMockFileSystem();
     auto standard_mock = std::dynamic_pointer_cast<score::filesystem::StandardFilesystemMock>(mock_filesystem.standard);
     ASSERT_NE(standard_mock, nullptr);
     EXPECT_CALL(*standard_mock, Exists(::testing::_))
-        .WillOnce(::testing::Return(score::Result<bool>(false)))
-        .WillOnce(::testing::Return(score::Result<bool>(false)));
+        .WillRepeatedly(::testing::Return(score::Result<bool>(false)));
     EXPECT_CALL(*standard_mock, CopyFile(::testing::_, ::testing::_))
         .WillOnce(::testing::Return(
             score::ResultBlank(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotCreateFile))));
@@ -990,16 +997,15 @@ TEST(kvs_snapshot_create, snapshot_create_failure_copy_hash)
     ASSERT_TRUE(kvs);
 
     /* Mock Filesystem:
-     *   - snapshot_count():  first call false (gap) -> count = 0, stops immediately
-     *   - first_free_slot(): first call false -> slot 1 is free
+     *   - snapshot_count(): all slots are missing -> count = 0
+     *   - first_free_slot(): first slot is free
      *   - CopyFile (JSON):   succeeds
      *   - CopyFile (hash):   fails */
     score::filesystem::Filesystem mock_filesystem = score::filesystem::CreateMockFileSystem();
     auto standard_mock = std::dynamic_pointer_cast<score::filesystem::StandardFilesystemMock>(mock_filesystem.standard);
     ASSERT_NE(standard_mock, nullptr);
     EXPECT_CALL(*standard_mock, Exists(::testing::_))
-        .WillOnce(::testing::Return(score::Result<bool>(false)))
-        .WillOnce(::testing::Return(score::Result<bool>(false)));
+        .WillRepeatedly(::testing::Return(score::Result<bool>(false)));
     EXPECT_CALL(*standard_mock, CopyFile(::testing::_, ::testing::_))
         .WillOnce(::testing::Return(score::ResultBlank{}))
         .WillOnce(::testing::Return(
@@ -1255,15 +1261,24 @@ TEST(kvs_snapshot_delete, snapshot_delete_failure_not_found)
     ASSERT_TRUE(kvs);
 
     /* Mock Filesystem:
-     *   - snapshot_count(): _1.json exists (true) -> count=1; _2.json missing (false) -> stop
+     *   - snapshot_count(): exactly one slot exists (first call true, remaining count calls false)
      *   - Exists(json_path for id=0 -> _1.json): returns false -> file not found */
     score::filesystem::Filesystem mock_filesystem = score::filesystem::CreateMockFileSystem();
     auto standard_mock = std::dynamic_pointer_cast<score::filesystem::StandardFilesystemMock>(mock_filesystem.standard);
     ASSERT_NE(standard_mock, nullptr);
-    EXPECT_CALL(*standard_mock, Exists(::testing::_))
-        .WillOnce(::testing::Return(score::Result<bool>(true)))
-        .WillOnce(::testing::Return(score::Result<bool>(false)))
-        .WillOnce(::testing::Return(score::Result<bool>(false)));
+    std::size_t exists_call = 0U;
+    EXPECT_CALL(*standard_mock, Exists(::testing::_)).WillRepeatedly([&exists_call](const auto&) -> score::Result<bool> {
+        ++exists_call;
+        if (exists_call == 1U)
+        {
+            return score::Result<bool>(true);
+        }
+        if (exists_call <= KVS_MAX_SNAPSHOTS)
+        {
+            return score::Result<bool>(false);
+        }
+        return score::Result<bool>(false);
+    });
     kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     auto result = kvs.value().snapshot_delete(0);
@@ -1281,16 +1296,25 @@ TEST(kvs_snapshot_delete, snapshot_delete_failure_remove_json)
     ASSERT_TRUE(kvs);
 
     /* Mock Filesystem:
-     *   - snapshot_count(): _1 exists, _2 missing -> count=1
+     *   - snapshot_count(): exactly one slot exists (first call true, remaining count calls false)
      *   - Exists(json_path): true
      *   - Remove(json_path): fails */
     score::filesystem::Filesystem mock_filesystem = score::filesystem::CreateMockFileSystem();
     auto standard_mock = std::dynamic_pointer_cast<score::filesystem::StandardFilesystemMock>(mock_filesystem.standard);
     ASSERT_NE(standard_mock, nullptr);
-    EXPECT_CALL(*standard_mock, Exists(::testing::_))
-        .WillOnce(::testing::Return(score::Result<bool>(true)))
-        .WillOnce(::testing::Return(score::Result<bool>(false)))
-        .WillOnce(::testing::Return(score::Result<bool>(true)));
+    std::size_t exists_call = 0U;
+    EXPECT_CALL(*standard_mock, Exists(::testing::_)).WillRepeatedly([&exists_call](const auto&) -> score::Result<bool> {
+        ++exists_call;
+        if (exists_call == 1U)
+        {
+            return score::Result<bool>(true);
+        }
+        if (exists_call <= KVS_MAX_SNAPSHOTS)
+        {
+            return score::Result<bool>(false);
+        }
+        return score::Result<bool>(true);
+    });
     EXPECT_CALL(*standard_mock, Remove(::testing::_))
         .WillOnce(::testing::Return(
             score::ResultBlank(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRemoveFileOrDirectory))));
@@ -1311,17 +1335,26 @@ TEST(kvs_snapshot_delete, snapshot_delete_failure_remove_hash)
     ASSERT_TRUE(kvs);
 
     /* Mock Filesystem:
-     *   - snapshot_count(): _1 exists, _2 missing -> count=1
+     *   - snapshot_count(): exactly one slot exists (first call true, remaining count calls false)
      *   - Exists(json_path): true
      *   - Remove(json_path): succeeds
      *   - Remove(hash_path): fails */
     score::filesystem::Filesystem mock_filesystem = score::filesystem::CreateMockFileSystem();
     auto standard_mock = std::dynamic_pointer_cast<score::filesystem::StandardFilesystemMock>(mock_filesystem.standard);
     ASSERT_NE(standard_mock, nullptr);
-    EXPECT_CALL(*standard_mock, Exists(::testing::_))
-        .WillOnce(::testing::Return(score::Result<bool>(true)))
-        .WillOnce(::testing::Return(score::Result<bool>(false)))
-        .WillOnce(::testing::Return(score::Result<bool>(true)));
+    std::size_t exists_call = 0U;
+    EXPECT_CALL(*standard_mock, Exists(::testing::_)).WillRepeatedly([&exists_call](const auto&) -> score::Result<bool> {
+        ++exists_call;
+        if (exists_call == 1U)
+        {
+            return score::Result<bool>(true);
+        }
+        if (exists_call <= KVS_MAX_SNAPSHOTS)
+        {
+            return score::Result<bool>(false);
+        }
+        return score::Result<bool>(true);
+    });
     EXPECT_CALL(*standard_mock, Remove(::testing::_))
         .WillOnce(::testing::Return(score::ResultBlank{}))
         .WillOnce(::testing::Return(

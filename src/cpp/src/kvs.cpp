@@ -607,36 +607,23 @@ score::ResultBlank Kvs::flush()
 /* Retrieve the snapshot count*/
 score::Result<std::size_t> Kvs::snapshot_count() const
 {
-    score::Result<size_t> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     size_t count = 0;
-    bool error = false;
     for (size_t idx = 1; idx <= KVS_MAX_SNAPSHOTS; ++idx)
     {
         const score::filesystem::Path fname = filename_prefix.Native() + "_" + to_string(idx) + ".json";
         const auto fname_exists_res = filesystem->standard->Exists(fname);
-        if (fname_exists_res)
+        if (!fname_exists_res)
         {
-            if (false == fname_exists_res.value())
-            {
-                break;
-            }
+            /* Filesystem error: cannot determine whether the slot exists */
+            return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
         }
-        else {
-            error = true;
-            break;
+        if (fname_exists_res.value())
+        {
+            count++;
         }
-        count++;
+        /* Slot is empty: do nothing and continue to the next slot */
     }
-    if (error)
-    {
-        result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
-    }
-    else
-    {
-        result = count;
-    }
-
-    return result;
+    return count;
 }
 
 score::Result<std::size_t> Kvs::snapshot_create()
