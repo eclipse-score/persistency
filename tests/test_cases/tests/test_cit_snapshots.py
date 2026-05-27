@@ -167,7 +167,7 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
     fully_verifies=["comp_req__kvs__snapshot_restore"],
     partially_verifies=[
         "comp_req__kvs__snapshot_creation",
-         "comp_req__kvs__snapshot_rotate",
+        "comp_req__kvs__snapshot_rotate",
         "comp_req__kvs__snapshot_explicit_creation",
     ],
     test_type="control-flow-analysis",
