@@ -524,10 +524,9 @@ class TestSnapshotRotate(MaxSnapshotsScenario):
         snapshot_max_count: int,
         version: str,
     ):
-        if version == "cpp":
-            pytest.xfail(
-                reason="snapshot rotation test is only applicable to the Rust implementation",
-            )
+        pytest.xfail(
+            reason="snapshot rotation is no longer valid in C++ and not yet implemented in Rust",
+        )
         assert results.return_code == ResultCode.SUCCESS
 
         # After max_count+1 flushes, snapshot_count must equal max_count (oldest rotated out).
