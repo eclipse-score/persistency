@@ -111,6 +111,7 @@ class TestSnapshotCountFull(TestSnapshotCountFirstFlush):
             },
             "count": snapshot_max_count + 1,
         }
+
     def test_ok(
         self,
         test_config: dict[str, Any],
@@ -124,6 +125,7 @@ class TestSnapshotCountFull(TestSnapshotCountFirstFlush):
                 reason="C++ snapshot_max_count is hardcoded to 3 and cannot be configured otherwise",
             )
         super().test_ok(test_config, results, logs_info_level, snapshot_max_count, version)
+
 
 @add_test_properties(
     partially_verifies=["comp_req__kvs__snapshot_max_num"],
