@@ -335,17 +335,6 @@ Component Requirements
 
    The component shall assign the ID 1 to the newest snapshot and shall increment the IDs of older snapshots accordingly.
 
-.. comp_req:: Snapshot Rotation
-   :id: comp_req__kvs__snapshot_rotate
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_remove, feat_req__persistency__snapshot_restore
-   :status: valid
-   :belongs_to: comp__persistency_kvs
-
-   The component shall rotate and delete the oldest snapshot when the maximum number is reached.
-
 .. comp_req:: Snapshot Restore
    :id: comp_req__kvs__snapshot_restore
    :reqtype: Functional

@@ -169,7 +169,6 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
     fully_verifies=["comp_req__kvs__snapshot_restore"],
     partially_verifies=[
         "comp_req__kvs__snapshot_creation",
-        "comp_req__kvs__snapshot_rotate",
         "comp_req__kvs__snapshot_explicit_creation",
     ],
     test_type="control-flow-analysis",
@@ -493,54 +492,3 @@ class TestSnapshotDeleteNonexistent(CommonScenario):
         result_log = logs_info_level.find_log("result")
         assert result_log is not None
         assert result_log.result == "Err(InvalidSnapshotId)"
-
-
-@add_test_properties(
-    fully_verifies=["comp_req__kvs__snapshot_rotate"],
-    test_type="requirements-based",
-    derivation_technique="requirements-analysis",
-)
-@pytest.mark.parametrize("snapshot_max_count", [2, 3], scope="class")
-class TestSnapshotRotate(MaxSnapshotsScenario):
-    """Verifies that the oldest snapshot is rotated out when max count is reached on flush."""
-
-    @pytest.fixture(scope="class")
-    def scenario_name(self) -> str:
-        return "cit.snapshots.rotate"
-
-    @pytest.fixture(scope="class")
-    def test_config(self, temp_dir: Path, snapshot_max_count: int) -> dict[str, Any]:
-        return {
-            "kvs_parameters": {
-                "instance_id": 1,
-                "dir": str(temp_dir),
-                "snapshot_max_count": snapshot_max_count,
-            },
-            "count": snapshot_max_count + 1,
-        }
-
-    def test_ok(
-        self,
-        results: ScenarioResult,
-        logs_info_level: LogContainer,
-        snapshot_max_count: int,
-        version: str,
-    ):
-        pytest.xfail(
-            reason="snapshot rotation is no longer valid in C++ and not yet implemented in Rust",
-        )
-        assert results.return_code == ResultCode.SUCCESS
-
-        # After max_count+1 flushes, snapshot_count must equal max_count (oldest rotated out).
-        count_log = logs_info_level.find_log("snapshot_count")
-        assert count_log is not None
-        assert count_log.snapshot_count == snapshot_max_count
-
-        # Oldest surviving snapshot must be counter=1 (counter=0 was rotated out).
-        result_log = logs_info_level.find_log("result")
-        assert result_log is not None
-        assert result_log.result == "Ok(())"
-
-        value_log = logs_info_level.find_log("value")
-        assert value_log is not None
-        assert value_log.value == 1
