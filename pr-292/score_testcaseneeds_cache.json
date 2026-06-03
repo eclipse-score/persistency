@@ -422,7 +422,7 @@
   {
     "name": "TestSnapshotRestorePrevious__test_ok[3-cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "198",
+    "line": "197",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -430,13 +430,13 @@
     "TestType": "control-flow-analysis",
     "DerivationTechnique": "requirements-analysis",
     "result_text": "",
-    "PartiallyVerifies": "comp_req__kvs__snapshot_creation, comp_req__kvs__snapshot_rotate, comp_req__kvs__snapshot_explicit_creation",
+    "PartiallyVerifies": "comp_req__kvs__snapshot_creation, comp_req__kvs__snapshot_explicit_creation",
     "FullyVerifies": "comp_req__kvs__snapshot_restore"
   },
   {
     "name": "TestSnapshotRestorePrevious__test_ok[10-cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "198",
+    "line": "197",
     "result": "skipped",
     "repo_name": "local_repo",
     "hash": "",
@@ -444,13 +444,13 @@
     "TestType": "control-flow-analysis",
     "DerivationTechnique": "requirements-analysis",
     "result_text": "C++ snapshot_max_count is hardcoded to 3 and cannot be configured otherwise",
-    "PartiallyVerifies": "comp_req__kvs__snapshot_creation, comp_req__kvs__snapshot_rotate, comp_req__kvs__snapshot_explicit_creation",
+    "PartiallyVerifies": "comp_req__kvs__snapshot_creation, comp_req__kvs__snapshot_explicit_creation",
     "FullyVerifies": "comp_req__kvs__snapshot_restore"
   },
   {
     "name": "TestSnapshotRestoreCurrent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "240",
+    "line": "239",
     "result": "skipped",
     "repo_name": "local_repo",
     "hash": "",
@@ -464,7 +464,7 @@
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "285",
+    "line": "284",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -478,7 +478,7 @@
   {
     "name": "TestSnapshotPathsExist__test_ok[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "319",
+    "line": "318",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -492,7 +492,7 @@
   {
     "name": "TestSnapshotPathsNonexistent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "358",
+    "line": "357",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -506,7 +506,7 @@
   {
     "name": "TestSnapshotCreateExplicit__test_ok[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "392",
+    "line": "391",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -520,7 +520,7 @@
   {
     "name": "TestSnapshotDeleteExisting__test_ok[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "440",
+    "line": "439",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -534,7 +534,7 @@
   {
     "name": "TestSnapshotDeleteNonexistent__test_error[cpp]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "481",
+    "line": "480",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -544,34 +544,6 @@
     "result_text": "",
     "PartiallyVerifies": "comp_req__kvs__snapshot_delete",
     "FullyVerifies": null
-  },
-  {
-    "name": "TestSnapshotRotate__test_ok[2-cpp]",
-    "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "522",
-    "result": "skipped",
-    "repo_name": "local_repo",
-    "hash": "",
-    "url": "",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-analysis",
-    "result_text": "snapshot rotation is no longer valid in C++ and not yet implemented in Rust",
-    "PartiallyVerifies": null,
-    "FullyVerifies": "comp_req__kvs__snapshot_rotate"
-  },
-  {
-    "name": "TestSnapshotRotate__test_ok[3-cpp]",
-    "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "522",
-    "result": "skipped",
-    "repo_name": "local_repo",
-    "hash": "",
-    "url": "",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-analysis",
-    "result_text": "snapshot rotation is no longer valid in C++ and not yet implemented in Rust",
-    "PartiallyVerifies": null,
-    "FullyVerifies": "comp_req__kvs__snapshot_rotate"
   },
   {
     "name": "TestSupportedDatatypesKeys__test_ok[cpp]",
@@ -1150,7 +1122,7 @@
   {
     "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "198",
+    "line": "197",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1158,13 +1130,13 @@
     "TestType": "control-flow-analysis",
     "DerivationTechnique": "requirements-analysis",
     "result_text": "",
-    "PartiallyVerifies": "comp_req__kvs__snapshot_creation, comp_req__kvs__snapshot_rotate, comp_req__kvs__snapshot_explicit_creation",
+    "PartiallyVerifies": "comp_req__kvs__snapshot_creation, comp_req__kvs__snapshot_explicit_creation",
     "FullyVerifies": "comp_req__kvs__snapshot_restore"
   },
   {
     "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "198",
+    "line": "197",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1172,13 +1144,13 @@
     "TestType": "control-flow-analysis",
     "DerivationTechnique": "requirements-analysis",
     "result_text": "",
-    "PartiallyVerifies": "comp_req__kvs__snapshot_creation, comp_req__kvs__snapshot_rotate, comp_req__kvs__snapshot_explicit_creation",
+    "PartiallyVerifies": "comp_req__kvs__snapshot_creation, comp_req__kvs__snapshot_explicit_creation",
     "FullyVerifies": "comp_req__kvs__snapshot_restore"
   },
   {
     "name": "TestSnapshotRestoreCurrent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "240",
+    "line": "239",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1192,7 +1164,7 @@
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "285",
+    "line": "284",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1206,7 +1178,7 @@
   {
     "name": "TestSnapshotPathsExist__test_ok[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "319",
+    "line": "318",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1220,7 +1192,7 @@
   {
     "name": "TestSnapshotPathsNonexistent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "358",
+    "line": "357",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1234,7 +1206,7 @@
   {
     "name": "TestSnapshotCreateExplicit__test_ok[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "392",
+    "line": "391",
     "result": "skipped",
     "repo_name": "local_repo",
     "hash": "",
@@ -1248,7 +1220,7 @@
   {
     "name": "TestSnapshotDeleteExisting__test_ok[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "440",
+    "line": "439",
     "result": "skipped",
     "repo_name": "local_repo",
     "hash": "",
@@ -1262,7 +1234,7 @@
   {
     "name": "TestSnapshotDeleteNonexistent__test_error[rust]",
     "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "481",
+    "line": "480",
     "result": "skipped",
     "repo_name": "local_repo",
     "hash": "",
@@ -1272,34 +1244,6 @@
     "result_text": "snapshot_delete is a C++ explicit API; Rust does not support snapshot deletion",
     "PartiallyVerifies": "comp_req__kvs__snapshot_delete",
     "FullyVerifies": null
-  },
-  {
-    "name": "TestSnapshotRotate__test_ok[2-rust]",
-    "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "522",
-    "result": "skipped",
-    "repo_name": "local_repo",
-    "hash": "",
-    "url": "",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-analysis",
-    "result_text": "snapshot rotation is no longer valid in C++ and not yet implemented in Rust",
-    "PartiallyVerifies": null,
-    "FullyVerifies": "comp_req__kvs__snapshot_rotate"
-  },
-  {
-    "name": "TestSnapshotRotate__test_ok[3-rust]",
-    "file": "tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "522",
-    "result": "skipped",
-    "repo_name": "local_repo",
-    "hash": "",
-    "url": "",
-    "TestType": "requirements-based",
-    "DerivationTechnique": "requirements-analysis",
-    "result_text": "snapshot rotation is no longer valid in C++ and not yet implemented in Rust",
-    "PartiallyVerifies": null,
-    "FullyVerifies": "comp_req__kvs__snapshot_rotate"
   },
   {
     "name": "TestSupportedDatatypesKeys__test_ok[rust]",
