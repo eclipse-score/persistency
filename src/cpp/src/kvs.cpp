@@ -48,7 +48,8 @@ Kvs::Kvs(Kvs&& other) noexcept
                                          object would also be okay*/
       ,
       writer(std::move(other.writer)),
-      logger(std::move(other.logger))
+      logger(std::move(other.logger)),
+      max_storage_bytes(other.max_storage_bytes)
 {
     {
         std::lock_guard<std::mutex> lock(other.kvs_mutex);
@@ -82,6 +83,7 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
         parser = std::move(other.parser);
         writer = std::move(other.writer);
         logger = std::move(other.logger);
+        max_storage_bytes = other.max_storage_bytes;
     }
     return *this;
 }
@@ -219,7 +221,8 @@ score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const score::
 score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
                              OpenNeedDefaults need_defaults,
                              OpenNeedKvs need_kvs,
-                             const std::string&& dir)
+                             const std::string&& dir,
+                             std::optional<size_t> max_storage_bytes)
 {
     score::Result<Kvs> result =
         score::MakeUnexpected(ErrorCode::UnmappedError); /* Redundant initialization needed, since Resul<KVS> would call
@@ -231,6 +234,7 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
     const score::filesystem::Path filename_kvs = filename_prefix.Native() + "_0";
 
     Kvs kvs; /* Create KVS instance */
+    kvs.max_storage_bytes = max_storage_bytes; /* Store maximum storage limit */
     auto default_res = kvs.open_json(
         filename_default,
         need_defaults == OpenNeedDefaults::Required ? OpenJsonNeedFile::Required : OpenJsonNeedFile::Optional);
@@ -507,10 +511,8 @@ score::Result<size_t> Kvs::get_current_storage_size() {
         total_size += size_result.value();
     }
 
-    // Add the size of historical snapshots (1 to N).
-    // The loop starts at 1 to intentionally exclude the current working snapshot (index 0),
-    // allowing the caller to add its size manually for a final check.
-    for (size_t snapshot_index = 1; snapshot_index <= KVS_MAX_SNAPSHOTS; ++snapshot_index) {
+    // Add the size of current and historical snapshots that will be kept after rotation (0 to N-1).
+    for (size_t snapshot_index = 0; snapshot_index < KVS_MAX_SNAPSHOTS; ++snapshot_index) {
         const std::string snapshot_suffix = "_" + to_string(snapshot_index);
 
         for (const char* extension : file_extensions) {
@@ -639,9 +641,9 @@ score::Result<std::string> Kvs::serialize_and_check() {
     const size_t total_size = current_size_res.value() + buf.size() + HASH_FILE_SIZE;
 
     // 4. Check against the limit
-    if (total_size > KVS_MAX_STORAGE_BYTES) {
+    if (this->max_storage_bytes.has_value() && total_size > this->max_storage_bytes.value()) {
         logger->LogError() << "error: KVS storage limit would be exceeded. total_size:" << total_size
-                           << " KVS_MAX_STORAGE_BYTES:" << KVS_MAX_STORAGE_BYTES;
+                           << " max_storage_bytes:" << this->max_storage_bytes.value();
         return score::MakeUnexpected(ErrorCode::OutOfStorageSpace);
     }
 

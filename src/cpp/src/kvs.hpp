@@ -27,9 +27,9 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <optional>
 
 #define KVS_MAX_SNAPSHOTS 3
-#define KVS_MAX_STORAGE_BYTES (10000) /* Max total storage size for all snapshots including hash files in bytes */
 static constexpr size_t HASH_FILE_SIZE = 4;
 
 namespace score::mw::per::kvs
@@ -174,7 +174,8 @@ class Kvs final
     static score::Result<Kvs> open(const InstanceId& instance_id,
                                    OpenNeedDefaults need_defaults,
                                    OpenNeedKvs need_kvs,
-                                   const std::string&& dir);
+                                   const std::string&& dir,
+                                   std::optional<size_t> max_storage_bytes);
 
     /**
      * @brief Resets a key-value-storage to its initial state
@@ -360,7 +361,7 @@ class Kvs final
      *
      * This function serializes the current key-value data to a temporary buffer
      * and calculates the potential total storage size. It checks this size against
-     * the compile-time `KVS_MAX_STORAGE_BYTES` limit.
+     * the configured `max_storage_bytes` limit.
      *
      * @return A score::Result object containing either:
      *         - On success: The estimated total size (size_t) that the KVS would occupy after a flush.
@@ -392,6 +393,9 @@ class Kvs final
 
         /* Logging */
         std::unique_ptr<score::mw::log::Logger> logger;
+
+        /* Maximum storage limit in bytes */
+        std::optional<size_t> max_storage_bytes;
     /* Private Methods */
     score::ResultBlank snapshot_rotate();
     score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
@@ -399,9 +403,12 @@ class Kvs final
                                                                        OpenJsonNeedFile need_file);
     score::ResultBlank write_json_data(const std::string& buf);
     score::ResultBlank write_and_sync(const std::string& path, const void* data, std::size_t size);
+
     score::Result<std::string> serialize_and_check();
     score::Result<size_t> get_file_size(const score::filesystem::Path& file_path);
     score::Result<size_t> get_current_storage_size();
-};/* namespace score::mw::per::kvs */
+};
+
+} /* namespace score::mw::per::kvs */
 
 #endif /* SCORE_LIB_KVS_KVS_HPP */
