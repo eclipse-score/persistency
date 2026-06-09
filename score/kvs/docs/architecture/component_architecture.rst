@@ -74,18 +74,20 @@ Component Interface
 The rendered component-interface example is maintained here so the module template
 repository owns the live ``real_arc_int`` example.
 
-.. real_arc_int:: Component Interface 1
-   :id: real_arc_int__mod_temp_component_name__if_1
-   :status: valid
-   :safety: ASIL_B
-   :security: NO
-   :language: cpp
+.. code-block:: rst
 
-   .. needarch::
-      :scale: 50
-      :align: center
+    .. real_arc_int:: Component Interface 1
+        :id: real_arc_int__mod_temp_component_name__if_1
+        :status: valid
+        :safety: ASIL_B
+        :security: NO
+        :language: cpp
 
-      {{ draw_interface(need(), needs)}}
+        .. needarch::
+            :scale: 50
+            :align: center
+
+            {{ draw_interface(need(), needs)}}
 
 Internal Components
 -------------------
