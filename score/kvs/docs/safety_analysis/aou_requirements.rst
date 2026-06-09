@@ -13,7 +13,7 @@
    # *******************************************************************************
 
 AoU Component Requirements KVS
-=============================
+==============================
 
 This page contains Assumption of Use requirement snippets that belong to the
 template repository.
