@@ -25,8 +25,8 @@ Detailed Design
    :tags: template
 
 
-Detailed Design for Component: <Component Name>
-===============================================
+Detailed Design for Component: KVS
+==================================
 
 Description
 -----------
