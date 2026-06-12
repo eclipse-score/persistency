@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Architecture &#8212; Score Persistency  documentation</title>
+    <title>AoU Component Requirements KVS &#8212; Score Persistency  documentation</title>
   
   
   
@@ -62,7 +62,7 @@
     <script src="../../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
     <script src="../../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
     <script src="../../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'score/kvs/docs/architecture/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'score/kvs/docs/safety_analysis/aou_requirements';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://eclipse-score.github.io/persistency/versions.json';
@@ -73,8 +73,8 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="Detailed Design" href="../detailed_design/index.html" />
-    <link rel="prev" title="Component Architecture KVS" href="component_architecture.html" />
+    <link rel="next" title="Safety Analysis: FMEA" href="fmea.html" />
+    <link rel="prev" title="Component Requirements Statistics" href="../requirements/statistics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.1.0" />
@@ -457,18 +457,18 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="chklst_arc_inspection.html">Architecture Inspection Checklist</a></li>
-<li class="toctree-l1"><a class="reference internal" href="component_architecture.html">Component Architecture KVS</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/chklst_arc_inspection.html">Architecture Inspection Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/component_architecture.html">Component Architecture KVS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../detailed_design/index.html">Detailed Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../detailed_design/chklst_impl_inspection.html">Implementation Inspection Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../kvs.html">Key-Value-Storage (rust_kvs) Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../requirements/index.html">Requirements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../requirements/chklst_req_inspection.html">Requirement Inspection Checklist</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../requirements/statistics.html">Component Requirements Statistics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../safety_analysis/aou_requirements.html">AoU Component Requirements KVS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../safety_analysis/fmea.html">Safety Analysis: FMEA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../safety_analysis/dfa.html">Dependent Failure Analysis</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">AoU Component Requirements KVS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fmea.html">Safety Analysis: FMEA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dfa.html">Dependent Failure Analysis</a></li>
 </ul>
 </div>
 </nav></div>
@@ -512,7 +512,7 @@
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">KVS (Key Value Store)</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Architecture</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">AoU Component Requirements KVS</span></li>
   </ul>
 </nav>
 </div>
@@ -529,244 +529,31 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="architecture">
-<span id="component-architecture-persistencykvs"></span><h1>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-10b8a0dd">
-<div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__kvs_architecture">
-<tbody>
-<tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
-<div class="line"><span><span class="needs_title"><span class="needs_data">KVS Module Architecture</span></span></span></div>
-</div>
-</td>
-<td class="head_center" colspan="2"><div class="needs_head line-block">
-<div class="line"><span><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">valid</span></span></span></div>
-<div class="line"><span><span class="needs_security"><span class="needs_label">security: </span><span class="needs_data">NO</span></span></span></div>
-<div class="line"><span><span class="needs_safety"><span class="needs_label">safety: </span><span class="needs_data">ASIL_B</span></span></span></div>
-</div>
-</td>
-<td class="head_right" colspan="2"><div class="needs_head_right line-block">
-<div class="line"><span><span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span></span></div>
-</div>
-</td>
-</tr>
-<tr class="meta row-even"><td class="meta" colspan="3"><div class="needs_meta_left line-block">
-<div class="line"><span><span></span></span></div>
-<div class="line"><span><div class="line">realizes: <span class="realizes"><span><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/architecture_design/architecture_workproducts.html#wp__component_arch">wp__component_arch</a></span></span></div>
-</span></div>
-</div>
-</td>
-<td class="meta" colspan="3"></td>
-</tr>
-<tr class="content row-odd"><td class="content" colspan="6"></td>
-</tr>
-<tr class="footer row-even"><td class="footer_left" colspan="2"><div class="needs_footer_left line-block">
-<div class="line"><span><span class="needs-id"><a class="reference internal" href="#doc__kvs_architecture" title="doc__kvs_architecture">doc__kvs_architecture</a></span></span></div>
-</div>
-</td>
-<td class="footer" colspan="2"><div class="needs_footer line-block">
-<div class="line"><span><span class="needs_type_name"><span class="needs_data">Generic Document</span></span></span></div>
-</div>
-</td>
-<td class="footer_right" colspan="2"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>Brief summary</p>
-</section>
-<section id="requirements-linked-to-component-architecture">
-<h2>Requirements Linked to Component Architecture<a class="headerlink" href="#requirements-linked-to-component-architecture" title="Link to this heading">#</a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>.. needtable:: Overview of Component Requirements
-   :style: table
-   :columns: title;id
-   :filter: search(&quot;comp_arch_sta__archdes$&quot;, &quot;fulfils_back&quot;)
-   :colwidths: 70,30
+  <section id="aou-component-requirements-kvs">
+<h1>AoU Component Requirements KVS<a class="headerlink" href="#aou-component-requirements-kvs" title="Link to this heading">#</a></h1>
+<p>This page contains Assumption of Use requirement snippets that belong to the
+template repository.</p>
+<section id="component-aou">
+<h2>Component AoU<a class="headerlink" href="#component-aou" title="Link to this heading">#</a></h2>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">aou_req</span><span class="p">::</span> Next Title
+   <span class="nc">:id:</span> aou_req__mod_temp_component_name__next_title
+   <span class="nc">:reqtype:</span> Process
+   <span class="nc">:security:</span> YES
+   <span class="nc">:safety:</span> ASIL_B
+   <span class="nc">:status:</span> invalid
+
+   The Component User shall do xyz to use the component safely/securely
+
+<span class="p">..</span> <span class="ow">aou_req</span><span class="p">::</span> Another Title
+   <span class="nc">:id:</span> aou_req__mod_temp_component_name__another
+   <span class="nc">:reqtype:</span> Process
+   <span class="nc">:security:</span> YES
+   <span class="nc">:safety:</span> ASIL_B
+   <span class="nc">:status:</span> invalid
+   <span class="nc">:tags:</span> environment
+
+   The Component shall only be used in a xyz environment to ensure its proper functioning.
 </pre></div>
-</div>
-</section>
-<section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Link to this heading">#</a></h2>
-<p>&lt;General Description&gt;</p>
-<p>&lt;Design Decisions - For the documentation of the decision the <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/change_management/guidance/change_management_decision_record_template.html#gd_temp__change_decision_record">gd_temp__change_decision_record</a> can be used.&gt;</p>
-<p>&lt;Design Constraints&gt;</p>
-<section id="rationale-behind-architecture-decomposition">
-<h3>Rationale Behind Architecture Decomposition<a class="headerlink" href="#rationale-behind-architecture-decomposition" title="Link to this heading">#</a></h3>
-<p>mandatory: a motivation for the decomposition or reason for not further splitting it into sub components.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Common decisions across components / cross cutting concepts is at the higher level.</p>
-</div>
-</section>
-</section>
-<section id="static-architecture">
-<h2>Static Architecture<a class="headerlink" href="#static-architecture" title="Link to this heading">#</a></h2>
-<p>The components are designed to cover the expectations from the feature architecture
-(i.e. if already exists a definition it should be taken over and enriched).</p>
-<p>A component can optional also consist of subcomponents to further structure the architecture. The component and its static views can also optionally use interfaces provided by other components.</p>
-<p>The live component architecture template is maintained in the
-<a class="reference external" href="https://eclipse-score.github.io/module_template/component_architecture_template.html">module template documentation</a>.</p>
-<div class="need_container docutils container" id="SNCB-2c8af9ef">
-<div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_comp_arc_sta table" id="comp_arc_sta__kvs__static_view">
-<tbody>
-<tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
-<div class="line"><span><span class="needs_title"><span class="needs_data">Component Name (Static View)</span></span></span></div>
-</div>
-</td>
-<td class="head_center" colspan="2"><div class="needs_head line-block">
-<div class="line"><span><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">invalid</span></span></span></div>
-<div class="line"><span><span class="needs_security"><span class="needs_label">security: </span><span class="needs_data">YES</span></span></span></div>
-<div class="line"><span><span class="needs_safety"><span class="needs_label">safety: </span><span class="needs_data">ASIL_B</span></span></span></div>
-</div>
-</td>
-<td class="head_right" colspan="2"><div class="needs_head_right line-block">
-<div class="line"><span><span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span></span></div>
-</div>
-</td>
-</tr>
-<tr class="meta row-even"><td class="meta" colspan="3"><div class="needs_meta_left line-block">
-<div class="line"><span><span></span></span></div>
-<div class="line"><span><div class="line">belongs to: <span class="belongs_to"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/architecture/index.html#comp__persistency_kvs">comp__persistency_kvs</a></span></span></div>
-<div class="line">fulfils: <span class="fulfils"><span><a class="reference internal" href="../requirements/index.html#comp_req__kvs__key_naming" title="comp_arc_sta__kvs__static_view">comp_req__kvs__key_naming</a></span></span></div>
-</span></div>
-</div>
-</td>
-<td class="meta" colspan="3"></td>
-</tr>
-<tr class="content row-odd"><td class="content" colspan="6"><p class="plantuml" id="needarch-score/kvs/docs/architecture/index-0">
-<object data="../../../../_images/plantuml-ad1c0832b3e701fa4dfa0522443d060c9b0dc101.svg" type="image/svg+xml" style="width:169px;height:176px;background:#FFFFFF;"></object></p>
-</td>
-</tr>
-<tr class="footer row-even"><td class="footer_left" colspan="2"><div class="needs_footer_left line-block">
-<div class="line"><span><span class="needs-id"><a class="reference internal" href="#comp_arc_sta__kvs__static_view" title="comp_arc_sta__kvs__static_view">comp_arc_sta__kvs__static_view</a></span></span></div>
-</div>
-</td>
-<td class="footer" colspan="2"><div class="needs_footer line-block">
-<div class="line"><span><span class="needs_type_name"><span class="needs_data">Component Package Diagram</span></span></span></div>
-</div>
-</td>
-<td class="footer_right" colspan="2"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section id="dynamic-architecture">
-<h2>Dynamic Architecture<a class="headerlink" href="#dynamic-architecture" title="Link to this heading">#</a></h2>
-<div class="need_container docutils container" id="SNCB-382051f9">
-<div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_comp_arc_dyn table" id="comp_arc_dyn__kvs__dynamic_view">
-<tbody>
-<tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
-<div class="line"><span><span class="needs_title"><span class="needs_data">Dynamic View</span></span></span></div>
-</div>
-</td>
-<td class="head_center" colspan="2"><div class="needs_head line-block">
-<div class="line"><span><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">invalid</span></span></span></div>
-<div class="line"><span><span class="needs_security"><span class="needs_label">security: </span><span class="needs_data">YES</span></span></span></div>
-<div class="line"><span><span class="needs_safety"><span class="needs_label">safety: </span><span class="needs_data">ASIL_B</span></span></span></div>
-</div>
-</td>
-<td class="head_right" colspan="2"><div class="needs_head_right line-block">
-<div class="line"><span><span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span></span></div>
-</div>
-</td>
-</tr>
-<tr class="meta row-even"><td class="meta" colspan="3"><div class="needs_meta_left line-block">
-<div class="line"><span><span></span></span></div>
-<div class="line"><span><div class="line">belongs to: <span class="belongs_to"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/architecture/index.html#comp__persistency_kvs">comp__persistency_kvs</a></span></span></div>
-<div class="line">fulfils: <span class="fulfils"><span><a class="reference internal" href="../requirements/index.html#comp_req__kvs__key_naming" title="comp_arc_dyn__kvs__dynamic_view">comp_req__kvs__key_naming</a></span></span></div>
-</span></div>
-</div>
-</td>
-<td class="meta" colspan="3"></td>
-</tr>
-<tr class="content row-odd"><td class="content" colspan="6"><p>put here a sequence diagram</p></td>
-</tr>
-<tr class="footer row-even"><td class="footer_left" colspan="2"><div class="needs_footer_left line-block">
-<div class="line"><span><span class="needs-id"><a class="reference internal" href="#comp_arc_dyn__kvs__dynamic_view" title="comp_arc_dyn__kvs__dynamic_view">comp_arc_dyn__kvs__dynamic_view</a></span></span></div>
-</div>
-</td>
-<td class="footer" colspan="2"><div class="needs_footer line-block">
-<div class="line"><span><span class="needs_type_name"><span class="needs_data">Component Sequence Diagram</span></span></span></div>
-</div>
-</td>
-<td class="footer_right" colspan="2"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section id="interfaces">
-<h2>Interfaces<a class="headerlink" href="#interfaces" title="Link to this heading">#</a></h2>
-<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">real_arc_int</span><span class="p">::</span> <span class="nt">&lt;Title&gt;</span>
-   <span class="nc">:id:</span> real_arc_int__&lt;component&gt;__&lt;Title&gt;
-   <span class="nc">:security:</span> <span class="nt">&lt;YES|NO&gt;</span>
-   <span class="nc">:safety:</span> <span class="nt">&lt;QM|ASIL_B|ASIL_B&gt;</span>
-   <span class="nc">:fulfils:</span> <span class="nt">&lt;link to component requirement id&gt;</span>
-   <span class="nc">:language:</span> cpp
-</pre></div>
-</div>
-</section>
-<section id="internal-components">
-<h2>Internal Components<a class="headerlink" href="#internal-components" title="Link to this heading">#</a></h2>
-<div class="need_container docutils container" id="SNCB-32f629e1">
-<div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_comp_arc_sta table" id="comp_arc_sta__kvs__2">
-<tbody>
-<tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
-<div class="line"><span><span class="needs_title"><span class="needs_data">Component Name 2</span></span></span></div>
-</div>
-</td>
-<td class="head_center" colspan="2"><div class="needs_head line-block">
-<div class="line"><span><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">invalid</span></span></span></div>
-<div class="line"><span><span class="needs_security"><span class="needs_label">security: </span><span class="needs_data">YES</span></span></span></div>
-<div class="line"><span><span class="needs_safety"><span class="needs_label">safety: </span><span class="needs_data">ASIL_B</span></span></span></div>
-</div>
-</td>
-<td class="head_right" colspan="2"><div class="needs_head_right line-block">
-<div class="line"><span><span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span></span></div>
-</div>
-</td>
-</tr>
-<tr class="meta row-even"><td class="meta" colspan="3"><div class="needs_meta_left line-block">
-<div class="line"><span><span></span></span></div>
-<div class="line"><span><div class="line">belongs to: <span class="belongs_to"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/architecture/index.html#comp__persistency_kvs">comp__persistency_kvs</a></span></span></div>
-<div class="line">fulfils: <span class="fulfils"><span><a class="reference internal" href="../requirements/index.html#comp_req__kvs__key_naming" title="comp_arc_sta__kvs__2">comp_req__kvs__key_naming</a></span></span></div>
-</span></div>
-</div>
-</td>
-<td class="meta" colspan="3"></td>
-</tr>
-<tr class="content row-odd"><td class="content" colspan="6"><p>no architecture but detailed design</p></td>
-</tr>
-<tr class="footer row-even"><td class="footer_left" colspan="2"><div class="needs_footer_left line-block">
-<div class="line"><span><span class="needs-id"><a class="reference internal" href="#comp_arc_sta__kvs__2" title="comp_arc_sta__kvs__2">comp_arc_sta__kvs__2</a></span></span></div>
-</div>
-</td>
-<td class="footer" colspan="2"><div class="needs_footer line-block">
-<div class="line"><span><span class="needs_type_name"><span class="needs_data">Component Package Diagram</span></span></span></div>
-</div>
-</td>
-<td class="footer_right" colspan="2"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Architecture can be split into multiple files. At component level the public interfaces to be used by the user and tester to be shown.</p>
-</div>
-<div class="admonition attention">
-<p class="admonition-title">Attention</p>
-<p>The above directives must be updated according to your component architecture.</p>
-<ul class="simple">
-<li><p>Replace the example content by the real content (according to <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/architecture_design/guidance/architecture_guideline.html#gd_guidl__arch_design">gd_guidl__arch_design</a>)</p></li>
-<li><p>Set the status to valid and start the review/merge process</p></li>
-</ul>
 </div>
 </section>
 </section>
@@ -782,20 +569,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="component_architecture.html"
+       href="../requirements/statistics.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Component Architecture KVS</p>
+        <p class="prev-next-title">Component Requirements Statistics</p>
       </div>
     </a>
     <a class="right-next"
-       href="../detailed_design/index.html"
+       href="fmea.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Detailed Design</p>
+        <p class="prev-next-title">Safety Analysis: FMEA</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -818,16 +605,7 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements-linked-to-component-architecture">Requirements Linked to Component Architecture</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#description">Description</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rationale-behind-architecture-decomposition">Rationale Behind Architecture Decomposition</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-architecture">Static Architecture</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-architecture">Dynamic Architecture</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interfaces">Interfaces</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-components">Internal Components</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#component-aou">Component AoU</a></li>
 </ul>
   </nav></div>
 
@@ -835,7 +613,7 @@
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/eclipse-score/persistency/edit/main/./score/kvs/docs/architecture/index.rst">
+    <a href="https://github.com/eclipse-score/persistency/edit/main/./score/kvs/docs/safety_analysis/aou_requirements.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -850,7 +628,7 @@
   <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="../../../../_sources/score/kvs/docs/architecture/index.rst.txt">
+    <a href="../../../../_sources/score/kvs/docs/safety_analysis/aou_requirements.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>

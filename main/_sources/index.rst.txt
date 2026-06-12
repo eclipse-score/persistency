@@ -94,11 +94,11 @@ Module / Feature Documentation
    :maxdepth: 1
 
    docs/features/persistency/index
-   docs/manual/index
+   docs/manuals/index
    docs/release/release_note
    docs/safety_mgt/index
    docs/security_mgt/index
-   docs/verification/module_verification_report
+   docs/verification_report/module_verification_report
 
 Component documentation
 -------------------------------
