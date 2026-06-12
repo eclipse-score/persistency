@@ -12,148 +12,150 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-Key-Value-Storage (rust_kvs) Documentation
-==========================================
+.. _persistency_module_documentation:
 
-This documentation describes the `rust_kvs` crate, which provides a key-value storage implementation with JSON-like persistence using Rust.
+Persistency Documentation
+=========================
+
+This documentation describes the structure, usage and configuration of the Bazel-based C++/Rust module template according to the `SCORE module folder structure <https://eclipse-score.github.io/score/main/contribute/general/folder.html#module-folder-structure>`_ and the `SCORE building blocks concept <https://eclipse-score.github.io/process_description/main/general_concepts/score_building_blocks_concept.html>`_.
 
 .. contents:: Table of Contents
    :depth: 2
    :local:
 
-Summary
--------
+Overview
+--------
 
-**Crate:** `rust_kvs`
+This repository provides a standardized setup for projects using **C++** or **Rust** and **Bazel** as a build system.
+It integrates best practices for build, test, CI/CD and documentation.
 
-**Purpose:** Key-Value-Storage API and Implementation
+Module Layout
+-------------
 
-**Description:**  
-This crate provides a Key-Value-Store using TinyJSON to persist the data. It uses the Adler32 crate to validate stored data and depends only on the Rust standard library.
+The module template includes the following top-level structure:
 
-Introduction
-------------
+.. code-block:: text
 
-The key-value store is initialized with `Kvs::open` and can be flushed with `Kvs::flush`.
+    <module_name>/                      # Root folder of the module, subfolder only if more than one module exists in the repository
+    ├── .github/
+    │   └── workflows/                  # CI/CD pipelines
+    ├── docs/                           # Global documentation of the module
+    │   ├── features/                   # Feature documentation and architecture
+    │   │   └── <feature_name>/         # Feature folder parts for each feature which should be in module documentation
+    │   │       ├── architecture/       # Feature architecture [wp__feature_arch] and of architecture review [wp__sw_arch_verification]
+    │   │       ├── safety_analysis/    # Feature safety analysis artifacts ([wp__feature_fmea], [wp__feature_dfa], [wp__requirements_feat_aou])
+    │   │       ├── safety_planning/    # Feature safety planning artifacts
+    │   │       ├── security_analysis/  # Feature security analysis artifacts [wp__feature_security_analysis]
+    │   │       └── security_planning/  # Feature security planning artifacts
+    │   ├── manuals/                    # Module manual, integration manual, table of assumptions of use,
+    │   │                               #   safety manual [wp__module_safety_manual],
+    │   │                               #   needs table of [wp__requirements_feat_aou]
+    │   │                               #   security manual [wp__module_security_manual]
+    │   ├── release/                    # Module release note [wp__module_sw_release_note]
+    │   ├── safety_mgt/                 # Module safety plan [wp__module_safety_plan],
+    │   │                               #   module safety package [wp__module_safety_package],
+    │   │                               #   formal document and safety analysis reviews [wp__fdr_reports]
+    │   ├── security_mgt/               # Module security plan [wp__module_security_plan],
+    │   │                               #   module security package [wp__module_security_package],
+    │   │                               #   formal document reviews [wp__fdr_reports_security],
+    │   │                               #   module SW bill of material [wp__sw_module_sbom]
+    │   └── verification_report/        # Module verification report,
+    │                                   #   module verifications [wp__verification_module_ver_report],
+    ├── examples/                       # Usage examples for the module / features
+    ├── score/                          # Components of the module
+    │   ├── tests/                      # Module-level tests (e.g., feature integration tests, system tests) [wp__verification_comp_int_test]
+    │   └── <component_name>/           # Component folder for each component of the module
+    │       ├── docs/                   # Documentation of the component
+    │       │   ├── architecture/       # Component architecture [wp__component_arch]
+    │       │   │                       #   (only if lower level components exist)
+    |       |   |                       #   architecture review [wp__sw_arch_verification],
+    │       │   ├── detailed_design/    # Detailed design [wp__sw_implementation]
+    │       │   │                       #   code inspection [wp__sw_implementation_inspection]
+    │       │   ├── requirements/       # Component requirements [wp__requirements_comp],[wp__requirements_inspect]
+    │       │   ├── safety_analysis/    # Safety analysis [wp__sw_component_fmea], [wp__sw_component_dfa], [wp__requirements_comp_aou]
+    |       |   |                       # Component classification [wp__sw_component_class] for pre-existing software
+    │       │   │                       #   (only if component architecture exists)
+    │       │   ├── security_analysis/  # Security analysis [wp__sw_component_security_analysis]
+    │       │   │                       #   (only if component architecture exists)
+    │       │   └── manuals/            # User documentation (of a single component, e.g., user manual of a library component, optional)
+    │       └── src/                    # Source files, include files, unit tests [wp__verification_sw_unit_test],
+    │           ├── <lower_level_comp>/ # Lower level component (follows <component_name> structure)
+    │           └── tests/              # Component-level tests (e.g., unit tests) [wp__verification_sw_unit_test]
+    ├── MODULE.bazel                    # Bazel module definition
+    ├── BUILD                           # Root build rules
+    ├── project_config.bzl              # Project metadata used by Bazel macros
+    └── README.md                       # Entry point of the repository
 
-All TinyJSON-supported datatypes are available:
 
-- `Number`: `f64`
-- `Boolean`: `bool`
-- `String`: `String`
-- `Null`: `()`
-- `Array`: `Vec<KvsValue>`
-- `Object`: `HashMap<String, KvsValue>`
+Module / Feature Documentation
+------------------------------
 
-JSON arrays can hold mixed types.
+.. toctree::
+   :maxdepth: 1
 
-Usage Notes:
+   docs/features/persistency/index
+   docs/manuals/index
+   docs/release/release_note
+   docs/safety_mgt/index
+   docs/security_mgt/index
+   docs/verification_report/module_verification_report
 
-- Use `Kvs::set_value(key, value)` to write.
-- Use `Kvs::get_value::<T>(key)` to read.
-- If a key is missing, the store checks for a default and returns it.
-- Defaults are not flushed unless explicitly written.
+Component documentation
+-------------------------------
 
-To check for defaults:
+.. toctree::
+   :maxdepth: 1
 
-- `Kvs::get_default_value`
-- `Kvs::is_value_default`
+   score/json/docs/index
+   score/kvs/index
 
-Example
--------
 
-.. code-block:: rust
+Examples
+--------
 
-   use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, KvsValue};
-   use std::collections::HashMap;
+No examples yet.
 
-   fn main() -> Result<(), ErrorCode> {
-       let kvs = Kvs::open(
-           InstanceId::new(0),
-           OpenNeedDefaults::Optional,
-           OpenNeedKvs::Optional)?;
 
-       kvs.set_value("number", 123.0)?;
-       kvs.set_value("bool", true)?;
-       kvs.set_value("string", "First".to_string())?;
-       kvs.set_value("null", ())?;
-       kvs.set_value(
-           "array",
-           vec![
-               KvsValue::from(456.0),
-               false.into(),
-               "Second".to_string().into(),
-           ],
-       )?;
-       kvs.set_value(
-           "object",
-           HashMap::from([
-               ("sub-number".into(), KvsValue::from(789.0)),
-               ("sub-bool".into(), true.into()),
-               ("sub-string".into(), "Third".to_string().into()),
-               ("sub-null".into(), ().into()),
-               (
-                   "sub-array".into(),
-                   KvsValue::from(vec![
-                       KvsValue::from(1246.0),
-                       false.into(),
-                       "Fourth".to_string().into(),
-                   ]),
-               ),
-           ]),
-       )?;
 
-       Ok(())
-   }
+Quick Start
+-----------
 
-Related Requirements
-====================
+To build the module:
 
-This crate addresses or is influenced by the following specification requirements from the system architecture.
+.. code-block:: bash
 
-General Capabilities
+   bazel build //src/...
+
+To run all tests:
+
+.. code-block:: bash
+
+   bazel test //...
+
+To run Unit Tests:
+
+.. code-block:: bash
+
+   bazel test //src/...
+
+To run Component / Feature Integration Tests:
+
+.. code-block:: bash
+
+   bazel test //tests/...
+
+Module Configuration
 --------------------
 
-- :need:`feat_req__persistency__cpp_rust_interop`
-- :need:`feat_req__persistency__multiple_kvs`
-- :need:`feat_req__persistency__tooling`
-- :need:`feat_req__persistency__variant_management`
-- :need:`feat_req__persistency__eng_mode`
-- :need:`feat_req__persistency__async_api`
-- :need:`feat_req__persistency__access_control`
-- :need:`feat_req__persistency__events`
-- :need:`feat_req__persistency__fast_access`
-- :need:`feat_req__persistency__intra_process_comm`
+The `project_config.bzl` file defines metadata used by Bazel macros.
 
-Data Storage and Persistency
-----------------------------
+Example:
 
-- :need:`feat_req__persistency__default_values`
-- :need:`feat_req__persistency__default_value_get`
-- :need:`feat_req__persistency__default_value_reset`
-- :need:`feat_req__persistency__persistency`
-- :need:`feat_req__persistency__integrity_check`
-- :need:`feat_req__persistency__versioning`
-- :need:`feat_req__persistency__update_mechanism`
-- :need:`feat_req__persistency__snapshots`
-- :need:`feat_req__persistency__persist_data`
+.. code-block:: python
 
-Datatypes and Interfaces
-------------------------
+   PROJECT_CONFIG = {
+       "asil_level": "QM",
+       "source_code": ["cpp", "rust"]
+   }
 
-- :need:`feat_req__persistency__support_datatype_keys`
-- :need:`feat_req__persistency__support_datatype_value`
-
-Configuration Support
----------------------
-
-- :need:`feat_req__persistency__default_value_file`
-- :need:`feat_req__persistency__config_file`
-
-Limitations and Future Work
----------------------------
-
-- :need:`feat_req__persistency__maximum_size` *(currently unsupported)*
-
-
-
+This enables conditional behavior (e.g., choosing `clang-tidy` for C++ or `clippy` for Rust).
