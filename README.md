@@ -116,6 +116,10 @@ Run selected test target:
 bazel test <TARGET_NAME>
 ```
 
+## Clippy
+
+- Clippy is currently disabled in `.bazelrc` because the upstream lint toolchain resolves an APE-hosted binary URL that returns HTTP 403 and breaks unrelated Bazel commands.
+
 ## Cargo-based operations
 
 Please use Bazel whenever possible.

@@ -12,10 +12,11 @@
  ********************************************************************************/
 #include "error.hpp"
 
-namespace score::mw::per::kvs {
+namespace score::mw::per::kvs
+{
 
 /*********************** Error Implementation *********************/
-std::string_view MyErrorDomain::MessageFor(score::result::ErrorCode const& code) const noexcept
+std::string_view MyErrorDomain::MessageFor(const score::result::ErrorCode& code) const noexcept
 {
     std::string_view msg;
     switch (static_cast<ErrorCode>(code))

@@ -1,4 +1,5 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -8,7 +9,7 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
-
+// *******************************************************************************
 use crate::error_code::ErrorCode;
 use crate::kvs_value::{KvsMap, KvsValue};
 
@@ -353,17 +354,17 @@ mod deserialize_tests {
     fn test_i8_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = i8::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
     fn test_i8_out_of_range() {
         let kvs_value = KvsValue::I32(i32::MAX);
         let result = i8::from_kvs(&kvs_value);
-        assert!(result
-            .is_err_and(|e| e
-                == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string())));
+        assert!(
+            result.is_err_and(|e| e == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string()))
+        );
     }
 
     #[test]
@@ -377,17 +378,17 @@ mod deserialize_tests {
     fn test_i16_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = i16::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
     fn test_i16_out_of_range() {
         let kvs_value = KvsValue::I32(i32::MAX);
         let result = i16::from_kvs(&kvs_value);
-        assert!(result
-            .is_err_and(|e| e
-                == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string())));
+        assert!(
+            result.is_err_and(|e| e == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string()))
+        );
     }
 
     #[test]
@@ -401,8 +402,8 @@ mod deserialize_tests {
     fn test_i32_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = i32::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -416,8 +417,8 @@ mod deserialize_tests {
     fn test_i64_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = i64::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -431,8 +432,8 @@ mod deserialize_tests {
     fn test_isize_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = isize::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -446,17 +447,17 @@ mod deserialize_tests {
     fn test_u8_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = u8::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
     fn test_u8_out_of_range() {
         let kvs_value = KvsValue::U32(u32::MAX);
         let result = u8::from_kvs(&kvs_value);
-        assert!(result
-            .is_err_and(|e| e
-                == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string())));
+        assert!(
+            result.is_err_and(|e| e == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string()))
+        );
     }
 
     #[test]
@@ -470,17 +471,17 @@ mod deserialize_tests {
     fn test_u16_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = u16::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
     fn test_u16_out_of_range() {
         let kvs_value = KvsValue::U32(u32::MAX);
         let result = u16::from_kvs(&kvs_value);
-        assert!(result
-            .is_err_and(|e| e
-                == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string())));
+        assert!(
+            result.is_err_and(|e| e == ErrorCode::DeserializationFailed("KvsValue to value cast failed".to_string()))
+        );
     }
 
     #[test]
@@ -494,8 +495,8 @@ mod deserialize_tests {
     fn test_u32_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = u32::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -509,8 +510,8 @@ mod deserialize_tests {
     fn test_u64_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = u64::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -524,8 +525,8 @@ mod deserialize_tests {
     fn test_usize_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = usize::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -539,8 +540,8 @@ mod deserialize_tests {
     fn test_bool_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = bool::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -554,8 +555,8 @@ mod deserialize_tests {
     fn test_string_invalid_variant() {
         let kvs_value = KvsValue::Boolean(true);
         let result = String::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -573,8 +574,8 @@ mod deserialize_tests {
     fn test_array_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = Vec::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -592,8 +593,8 @@ mod deserialize_tests {
     fn test_object_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = KvsMap::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 
     #[test]
@@ -607,7 +608,7 @@ mod deserialize_tests {
     fn test_unit_invalid_variant() {
         let kvs_value = KvsValue::String("invalid string".to_string());
         let result = <()>::from_kvs(&kvs_value);
-        assert!(result.is_err_and(|e| e
-            == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
+        assert!(result
+            .is_err_and(|e| e == ErrorCode::DeserializationFailed("Invalid KvsValue variant provided".to_string())));
     }
 }

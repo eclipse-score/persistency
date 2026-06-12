@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 //! Example for default values.
 //! - Creating KVS instance using `KvsBuilder` with `defaults` modes.
 //! - Default-specific APIs: `get_default_value`, `is_value_default`.
@@ -10,9 +22,10 @@ use tinyjson::JsonValue;
 
 /// Utility function for creating file containing default values.
 fn create_defaults_file(dir_path: PathBuf, instance_id: InstanceId) -> Result<(), ErrorCode> {
-    // Path to expected defaults file.
-    // E.g., `/tmp/xyz/kvs_0_default.json`.
+    // Path to expected defaults files.
+    // E.g., `/tmp/xyz/kvs_0_default.json`, `/tmp/xyz/kvs_0_default.hash`.
     let defaults_file_path = dir_path.join(format!("kvs_{instance_id}_default.json"));
+    let defaults_hash_file_path = dir_path.join(format!("kvs_{instance_id}_default.hash"));
 
     // Create defaults.
     // `KvsValue` is converted to `JsonValue` to ensure types are tagged.
@@ -27,13 +40,17 @@ fn create_defaults_file(dir_path: PathBuf, instance_id: InstanceId) -> Result<()
     let json_str = json_value.stringify()?;
     std::fs::write(&defaults_file_path, &json_str)?;
 
+    // Generate hash and save to hash file.
+    let hash = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
+    std::fs::write(defaults_hash_file_path, hash.to_be_bytes())?;
+
     Ok(())
 }
 
 fn main() -> Result<(), ErrorCode> {
     // Temporary directory.
     let dir = tempdir()?;
-    let dir_string = dir.path().to_string_lossy().to_string();
+    let dir_path = dir.path().to_path_buf();
 
     // Instance ID for KVS object instances.
     let instance_id = InstanceId(0);
@@ -44,7 +61,7 @@ fn main() -> Result<(), ErrorCode> {
     // Build KVS instance for given instance ID and temporary directory.
     // `defaults` is set to `KvsDefaults::Required` - defaults are required.
     let builder = KvsBuilder::new(instance_id)
-        .dir(dir_string)
+        .backend(Box::new(JsonBackendBuilder::new().working_dir(dir_path).build()))
         .defaults(KvsDefaults::Required);
     let kvs = builder.build()?;
 

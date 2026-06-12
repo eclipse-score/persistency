@@ -1,3 +1,15 @@
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the
+// terms of the Apache License Version 2.0 which is available at
+// <https://www.apache.org/licenses/LICENSE-2.0>
+//
+// SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 //! Example for basic operations.
 //! - Creating KVS instance using `KvsBuilder` with `kvs_load` modes.
 //! - Basic key-value operations: `get_value`, `get_value_as`, `set_value`, `get_all_keys`.
@@ -10,18 +22,16 @@ use tempfile::tempdir;
 fn main() -> Result<(), ErrorCode> {
     // Temporary directory.
     let dir = tempdir()?;
-    let dir_string = dir.path().to_string_lossy().to_string();
+    let dir_path = dir.path().to_path_buf();
 
     // Instance ID for KVS object instances.
     let instance_id = InstanceId(0);
 
     {
         // Build KVS instance for given instance ID and temporary directory.
-        // `kvs_load` is explicitly set to `KvsLoad::Optional`, but this is the default value.
-        // KVS files are not required.
-        let builder = KvsBuilder::new(instance_id)
-            .dir(dir_string.clone())
-            .kvs_load(KvsLoad::Optional);
+        let builder = KvsBuilder::new(instance_id).backend(Box::new(
+            JsonBackendBuilder::new().working_dir(dir_path.clone()).build(),
+        ));
         let kvs = builder.build()?;
 
         println!("-> `set_value` usage");
@@ -31,11 +41,7 @@ fn main() -> Result<(), ErrorCode> {
         kvs.set_value("null", ())?;
         kvs.set_value(
             "array",
-            vec![
-                KvsValue::from(456.0),
-                false.into(),
-                "Second".to_string().into(),
-            ],
+            vec![KvsValue::from(456.0), false.into(), "Second".to_string().into()],
         )?;
         kvs.set_value(
             "object",
@@ -46,11 +52,7 @@ fn main() -> Result<(), ErrorCode> {
                 ("sub-null".into(), ().into()),
                 (
                     "sub-array".into(),
-                    KvsValue::from(vec![
-                        KvsValue::from(1246.0),
-                        false.into(),
-                        "Fourth".to_string().into(),
-                    ]),
+                    KvsValue::from(vec![KvsValue::from(1246.0), false.into(), "Fourth".to_string().into()]),
                 ),
             ]),
         )?;
@@ -63,10 +65,8 @@ fn main() -> Result<(), ErrorCode> {
 
     {
         // Build KVS instance for given instance ID and temporary directory.
-        // `kvs_load` is set to `KvsLoad::Required` - KVS files must already exist from previous KVS instance.
-        let builder = KvsBuilder::new(instance_id)
-            .dir(dir_string)
-            .kvs_load(KvsLoad::Required);
+        let builder =
+            KvsBuilder::new(instance_id).backend(Box::new(JsonBackendBuilder::new().working_dir(dir_path).build()));
         let kvs = builder.build()?;
 
         // `get_value` usage - print all existing keys with their values.

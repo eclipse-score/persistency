@@ -1,0 +1,99 @@
+@startuml Persistency class diagram
+
+package "kvs_builder" {
+    ~class KvsInner {
+        ~parameters : KvsParameters
+        ~data : KvsData
+    }
+
+    +class KvsBuilder {
+        {static} -KVS_POOL : list<KvsInner>
+        -instance_id : InstanceId
+        -defaults : option<KvsDefaults>
+        -kvs_load : option<KvsLoad>
+        -backend : option<KvsBackend>
+
+        +new(instance_id: InstanceId) : KvsBuilder
+        {static} +max_instances() : usize
+        +defaults(mode: KvsDefaults) : KvsBuilder
+        +kvs_load(mode: KvsLoad) : KvsBuilder
+        +backend(backend: KvsBackend) : KvsBuilder
+        +build() : Kvs
+    }
+
+    KvsInner <-- KvsBuilder
+}
+
+package "kvs_api" {
+    +interface KvsApi {
+        +reset()
+        +reset_key(key : string)
+        +get_all_keys() : list<string>
+        +key_exists(key : string) : bool
+        +get_value(key : string) : KvsValue
+        +get_value_as<T>(key : string) : T
+        +get_default_value(key : string) : KvsValue
+        +is_value_default(key : string) : bool
+        +set_value<T>(key : string, value : T)
+        +remove_key(key : string)
+        +flush()
+        +snapshot_count() : usize
+        +snapshot_max_count() : usize
+        +snapshot_restore(snapshot_id : SnapshotId)
+    }
+}
+
+package "kvs" {
+    +class Kvs {
+        -data : KvsData
+        -parameters : KvsParameters
+
+        ~new(data : KvsData, parameters : KvsParameters) : Kvs
+        +parameters() : KvsParameters
+
+        +reset()
+        +reset_key(key : string)
+        +get_all_keys() : list<string>
+        +key_exists(key : string) : bool
+        +get_value(key : string) : KvsValue
+        +get_value_as<T>(key : string) : T
+        +get_default_value(key : string) : KvsValue
+        +is_value_default(key : string) : bool
+        +set_value<T>(key : string, value : T)
+        +remove_key(key : string)
+        +flush()
+        +snapshot_count() : usize
+        +snapshot_max_count() : usize
+        +snapshot_restore(snapshot_id : SnapshotId)
+    }
+}
+
+KvsApi <|.. Kvs
+KvsBuilder -- Kvs
+
+package "kvs_backend" {
+    +interface KvsBackend {
+        +load_kvs(instance_id : InstanceId, snapshot_id : SnapshotId) : KvsMap
+        +load_defaults(instance_id : InstanceId) : KvsMap
+        +flush(instance_id : InstanceId, kvs_map : KvsMap)
+        +snapshot_count(instance_id : InstanceId) : usize
+        +snapshot_max_count() : usize
+        +snapshot_restore(instance_id : InstanceId, snapshot_id : SnapshotId) : KvsMap
+    }
+}
+
+package "json_backend" {
+    ~class JsonBackend {
+        +load_kvs(instance_id : InstanceId, snapshot_id : SnapshotId) : KvsMap
+        +load_defaults(instance_id : InstanceId) : KvsMap
+        +flush(instance_id : InstanceId, kvs_map : KvsMap)
+        +snapshot_count(instance_id : InstanceId) : usize
+        +snapshot_max_count() : usize
+        +snapshot_restore(instance_id : InstanceId, snapshot_id : SnapshotId) : KvsMap
+    }
+}
+
+KvsBackend <-- Kvs
+KvsBackend <|.. JsonBackend
+
+@enduml

@@ -1,4 +1,5 @@
-// Copyright (c) 2025 Contributors to the Eclipse Foundation
+// *******************************************************************************
+// Copyright (c) 2026 Contributors to the Eclipse Foundation
 //
 // See the NOTICE file(s) distributed with this work for additional
 // information regarding copyright ownership.
@@ -8,15 +9,17 @@
 // <https://www.apache.org/licenses/LICENSE-2.0>
 //
 // SPDX-License-Identifier: Apache-2.0
+// *******************************************************************************
 
-// TryFrom<&KvsValue> for all supported types
-use std::convert::TryFrom;
+use crate::log::ScoreDebug;
+use core::convert::TryFrom;
+use std::collections::HashMap;
 
 /// Key-value storage map type
-pub type KvsMap = std::collections::HashMap<String, KvsValue>;
+pub type KvsMap = HashMap<String, KvsValue>;
 
 /// Key-value-storage value
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, ScoreDebug)]
 pub enum KvsValue {
     /// 32-bit signed integer
     I32(i32),
@@ -87,7 +90,7 @@ impl From<()> for KvsValue {
 // Macro to implement TryFrom<&KvsValue> for T for each supported type/variant.
 macro_rules! impl_tryfrom_kvs_value_to_t {
     ($to:ty, $variant:ident) => {
-        impl std::convert::TryFrom<&KvsValue> for $to {
+        impl TryFrom<&KvsValue> for $to {
             type Error = String;
             fn try_from(value: &KvsValue) -> Result<Self, Self::Error> {
                 if let KvsValue::$variant(ref n) = value {
@@ -108,7 +111,7 @@ impl_tryfrom_kvs_value_to_t!(f64, F64);
 impl_tryfrom_kvs_value_to_t!(bool, Boolean);
 impl_tryfrom_kvs_value_to_t!(String, String);
 impl_tryfrom_kvs_value_to_t!(Vec<KvsValue>, Array);
-impl_tryfrom_kvs_value_to_t!(std::collections::HashMap<String, KvsValue>, Object);
+impl_tryfrom_kvs_value_to_t!(HashMap<String, KvsValue>, Object);
 
 impl TryFrom<&KvsValue> for () {
     type Error = &'static str;
@@ -151,7 +154,7 @@ impl_kvs_get_inner_value!(u64, U64);
 impl_kvs_get_inner_value!(bool, Boolean);
 impl_kvs_get_inner_value!(String, String);
 impl_kvs_get_inner_value!(Vec<KvsValue>, Array);
-impl_kvs_get_inner_value!(std::collections::HashMap<String, KvsValue>, Object);
+impl_kvs_get_inner_value!(HashMap<String, KvsValue>, Object);
 
 impl KvsValueGet for () {
     fn get_inner_value(v: &KvsValue) -> Option<&()> {
@@ -478,10 +481,7 @@ mod kvs_value_tests {
     fn test_kvsmap_tryfrom_invalid_type() {
         let v = KvsValue::from("");
         let err = KvsMap::try_from(&v).unwrap_err();
-        assert_eq!(
-            err,
-            "KvsValue is not a std::collections::HashMap<String, KvsValue>"
-        );
+        assert_eq!(err, "KvsValue is not a HashMap<String, KvsValue>");
     }
 
     #[test]

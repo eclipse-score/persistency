@@ -1,0 +1,137 @@
+@startuml ScorePersistencyKvsDesign
+
+skinparam class {
+    BackgroundColor<<interface>> LightYellow
+    BorderColor<<interface>> DarkGoldenRod
+    BackgroundColor<<implementation>> LightBlue
+    BorderColor<<implementation>> DodgerBlue
+    BackgroundColor<<mock>> LightPink
+    BorderColor<<mock>> IndianRed
+}
+
+class KvsBuilder <<implementation>> {
+    - instance_id : InstanceId
+    - defaults : optional<KvsDefaults>
+    - kvs_load : optional<KvsLoad>
+    - backend : optional<IKvsBackend>
+    - {static} kvs_pool : map<InstanceId, ptr<Kvs>>
+    __
+    + KvsBuilder(instance_id : InstanceId)
+    + Defaults(defaults : KvsDefaults) : KvsBuilder&
+    + KvsLoad(kvs_load : KvsLoad) : KvsBuilder&
+    + Backend(backend : IKvsBackend) : KvsBuilder&
+    + Build() : ptr<Kvs>
+}
+
+interface IKvsBackend <<interface>> {
+    + LoadKvs(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
+    + LoadDefaults(instance_id : InstanceId) : Result<KvsMap>
+    + Flush(instance_id : InstanceId, kvs : KvsMap) : ResultBlank
+    + SnapshotCount(instance_id : InstanceId) : Result<size_t>
+    + SnapshotRestore(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
+    + SnapshotMaxCount() : size_t
+}
+
+interface IKvs <<interface>> {
+    + Reset() : ResultBlank
+    + ResetKey(key : string) : ResultBlank
+    + GetAllKeys() : Result<vector<string>>
+    + KeyExists(key : string) : Result<bool>
+    + GetValue(key : string) : Result<KvsValue>
+    + GetDefaultValue(key : string) : Result<KvsValue>
+    + IsValueDefault(key : string) : Result<bool>
+    + SetValue(key : string, value : KvsValue) : ResultBlank
+    + RemoveKey(key : string) : ResultBlank
+    + Flush() : ResultBlank
+    + SnapshotCount() : Result<size_t>
+    + SnapshotMaxCount() : size_t
+    + SnapshotRestore(snapshot_id : SnapshotId) : ResultBlank
+}
+
+IKvsBackend -[hidden]right- IKvs
+MockBackend -[hidden]right- JsonBackend
+JsonBackend -[hidden]right- KvsMock
+KvsMock  -[hidden]right- Kvs
+
+class MockBackend <<mock>> {
+    + LoadKvs(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
+    + LoadDefaults(instance_id : InstanceId) : Result<KvsMap>
+    + Flush(instance_id : InstanceId, kvs : KvsMap) : ResultBlank
+    + SnapshotCount(instance_id : InstanceId) : Result<size_t>
+    + SnapshotRestore(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
+    + SnapshotMaxCount() : size_t
+}
+
+class JsonBackend <<implementation>> {
+    - instance_id : InstanceId
+    - filename_prefix : path
+    - filesystem : score::filesystem
+    - parser : ptr<IJsonParser>
+    - writer : ptr<IJsonWriter>
+    - directory : string
+    - max_snapshot_count : size_t
+    __
+    + JsonBackend(instance_id : InstanceId, filename_prefix : path, filesystem : score::filesystem, directory : string, max_snapshot_count : size_t)
+    + LoadKvs(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
+    + LoadDefaults(instance_id : InstanceId) : Result<KvsMap>
+    + Flush(instance_id : InstanceId, kvs : KvsMap) : ResultBlank
+    + SnapshotCount(instance_id : InstanceId) : Result<size_t>
+    + SnapshotRestore(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
+    + SnapshotMaxCount() : size_t
+    + KvsFileName(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<string>
+    + KvsFilePath(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<path>
+    + HashFileName(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<string>
+    + HashFilePath(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<path>
+    + DefaultsFileName(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<string>
+    + DefaultsFilePath(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<path>
+}
+
+class KvsMock  <<mock>> {
+    + Reset() : ResultBlank
+    + ResetKey(key : string) : ResultBlank
+    + GetAllKeys() : Result<vector<string>>
+    + KeyExists(key : string) : Result<bool>
+    + GetValue(key : string) : Result<KvsValue>
+    + GetDefaultValue(key : string) : Result<KvsValue>
+    + IsValueDefault(key : string) : Result<bool>
+    + SetValue(key : string, value : KvsValue) : ResultBlank
+    + RemoveKey(key : string) : ResultBlank
+    + Flush() : ResultBlank
+    + SnapshotCount() : Result<size_t>
+    + SnapshotMaxCount() : size_t
+    + SnapshotRestore(snapshot_id : SnapshotId) : ResultBlank
+}
+
+class Kvs <<implementation>> {
+    - kvs : KvsMap
+    - default_kvs : KvsMap
+    - logger : ptr<mw::log::Logger>
+    - backend : IKvsBackend
+    __
+    + Reset() : ResultBlank
+    + ResetKey(key : string) : ResultBlank
+    + GetAllKeys() : Result<vector<string>>
+    + KeyExists(key : string) : Result<bool>
+    + GetValue(key : string) : Result<KvsValue>
+    + GetDefaultValue(key : string) : Result<KvsValue>
+    + IsValueDefault(key : string) : Result<bool>
+    + SetValue(key : string, value : KvsValue) : ResultBlank
+    + RemoveKey(key : string) : ResultBlank
+    + Flush() : ResultBlank
+    + SnapshotCount() : Result<size_t>
+    + SnapshotMaxCount() : size_t
+    + SnapshotRestore(snapshot_id : SnapshotId) : ResultBlank
+}
+
+' Relationships
+MockBackend -up-|> IKvsBackend : implements
+JsonBackend -up-|> IKvsBackend : implements
+KvsMock  -up-|> IKvs : implements
+Kvs -up-|> IKvs : implements
+
+' Dependencies
+KvsBuilder ..> IKvsBackend : uses
+KvsBuilder ..> IKvs : uses
+IKvsBackend *-- IKvs : Composes
+
+@enduml

@@ -30,6 +30,7 @@ cc_test(
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/filesystem:mock",
         "@score_baselibs//score/json:mock",
+        "@score_baselibs//score/mw/log:backend_stub_testutil",
         "@score_baselibs//score/result",
     ],
 )
@@ -47,6 +48,7 @@ cc_test(
         "@google_benchmark//:benchmark",
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/json",
+        "@score_baselibs//score/mw/log:backend_stub_testutil",
         "@score_baselibs//score/result",
     ],
 )
