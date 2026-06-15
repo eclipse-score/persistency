@@ -26,6 +26,8 @@ Persistency (v0.5 beta)
    :tags: feature_request, persistency
 
 .. toctree::
+   architecture/index.rst
+   architecture/chklst_arc_inspection.rst
    safety_analysis/fmea.rst
    safety_analysis/dfa.rst
    safety_analysis/safety_analysis_fdr.rst
