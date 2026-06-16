@@ -33,7 +33,7 @@ Conduct
 
 As described in the concept :need:`doc_concept__wp_inspections` the following "inspection roles" are expected to be filled:
 
-- content responsible (author): `<https://github.com/a-zw>`_
+- content responsible (author): `<https://github.com/sbachmann-qorix>`_
 - reviewer: `<https://github.com/aschemmel-tech>`_, `<https://github.com/umaucher>`_
 - moderator: `<https://github.com/PandaeDo>`_
 - test expert: <one of the reviewers explicitly named here, to cover REQ_08_01 as described>
@@ -69,13 +69,13 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
         - In :need:`comp_req__kvs__default_value_types` it is unclear what is the meaning of "only permitted"
         - In :need:`comp_req__kvs__pers_data_schema` it is not clear what downgrade means (it is also not required from the feature req). And it seems that really the application/user is responsible for thee versioning?
         - In :need:`comp_req__kvs__field_mode` - access to what?
-      - issue link TBD
+      - https://github.com/eclipse-score/persistency/issues/297
     * - REQ_02_02
       - Is the requirement description *unambiguous* ?
       - Especially search for "weak words" like "about", "etc.", "relevant" and others (see the internet documentation on this). This check shall be supported by tooling.
       - NO
       - :need:`comp_req__kvs__field_mode` uses hard to verify term "as much as possible"
-      - issue link TBD
+      - https://github.com/eclipse-score/persistency/issues/297
     * - REQ_02_03
       - Is the requirement description *atomic* ?
       - A good way to think about this is to consider if the requirement may be tested by one (positive) test case or needs more of these. The requirement formulation template should also avoid being non-atomic already. Note that there are cases where also non-atomic requirements are the better ones, for example if those are better understandable.
@@ -102,14 +102,14 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
         - :need:`comp_req__kvs__default_value_cfg` does not implement a part of its linked :need:`feat_req__persistency__reset_to_default` and :need:`feat_req__persistency__default_value_get`
         - :need:`comp_req__kvs__default_val_chksum` should only link to :need:`feat_req__persistency__default_value_file`
         - stopped the inspection at this point - too many findings. Request rework of complete requirement set.
-      - issue link TBD
+      - https://github.com/eclipse-score/persistency/issues/297
     * - REQ_04_01
       - Is the requirement *internally and externally consistent*?
       - Does the requirement contradict other requirements within the same or higher levels? One may restrict the search to the feature for component requirements, for features to other features using same components. Is the description of the requirement consistent with all its attributes (if not already part of another check, e.g. does the title fit?).
       - NO
       - - Requirement :need:`comp_req__kvs__value_serialize` speaks about serialization/deserialization of JSON, it is expected that this is a requirement for a "JSON" component and not for KVS
         - All requirement IDs are using "persistency" as a component name, it should be "persistency_kvs" according to :need:`comp__persistency_kvs`
-      - issue link TBD
+      - https://github.com/eclipse-score/persistency/issues/297
     * - REQ_05_01
       - Do the software requirements consider *timing constraints*?
       - This checkpoint encourages to think about timing constraints even if those are not explicitly mentioned in the parent requirement. If the reviewer of a requirement already knows or suspects that the code execution will be consuming a lot of time, one should think of the expectation of a "user".
@@ -121,7 +121,7 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
       - The SW platform's external interfaces (to the user) are defined in the Feature Architecture, so the Feature and Component Requirements should determine the input data use and setting of output data for these interfaces. Are all output values defined?
       - NO
       - It is not completely defined how the operations in logic_arc_int__persistency__interface are used, for example "open" and "flush".
-      - issue link TBD
+      - https://github.com/eclipse-score/persistency/issues/297
     * - REQ_07_01
       - Is the *safety* attribute set correctly?
       - Derived requirements are checked automatically, see :need:`gd_req__req_linkage_safety`. But for the top level requirements (and also all AoU) this needs to be checked manually for correctness.
@@ -149,7 +149,7 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
       - In very rare cases a requirement may not be verifiable by test cases, for example a specific non-functional requirement. In this case a requirement analysis verifies the requirement by design/code review. If such a requirement is in scope of this inspection, please check this here and link to the respective review record. A test expert is invited to the inspection to confirm their opinion that the requirement is not testable.
       - NO
       - Requirements mentioned in REQ_08_01 were not confirmed by design/code review to date.
-      - issue link TBD
+      - https://github.com/eclipse-score/persistency/issues/297
     * - REQ_09_01
       - Do the requirements that define a safety mechanism specify the error reaction leading to a safe state?
       - Alternatively to the safe state there could also be "repair" mechanisms. Also do not forget to consider REQ_05_01 for these.
@@ -157,7 +157,7 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
       - - :need:`comp_req__kvs__default_val_chksum` - defines safety mechanism, no error reaction defined
         - :need:`comp_req__kvs__pers_data_csum` - defines part of safety mechanism, error reaction not needed
         - :need:`comp_req__kvs__pers_data_csum_vrfy` defines part of safety mechanism, no error reaction defined
-      - issue link TBD
+      - https://github.com/eclipse-score/persistency/issues/297
 
 The following requirements in "valid" state and with "inspected" tag set are in the scope of this inspection:
 
