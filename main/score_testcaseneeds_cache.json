@@ -2,7 +2,7 @@
   {
     "name": "TestDefaultValues__test_valid[optional-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "133",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -16,7 +16,7 @@
   {
     "name": "TestDefaultValues__test_valid[required-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "133",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -30,7 +30,7 @@
   {
     "name": "TestDefaultValues__test_valid[without-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "133",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -44,7 +44,7 @@
   {
     "name": "TestRemoveKey__test_valid[optional-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "208",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -58,7 +58,7 @@
   {
     "name": "TestRemoveKey__test_valid[required-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "208",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -72,7 +72,7 @@
   {
     "name": "TestRemoveKey__test_valid[without-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "208",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -86,7 +86,7 @@
   {
     "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "306",
+    "line": "312",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -100,7 +100,7 @@
   {
     "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "306",
+    "line": "312",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -114,7 +114,7 @@
   {
     "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "348",
+    "line": "354",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -128,7 +128,7 @@
   {
     "name": "TestResetAllKeys__test_valid[optional-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "395",
+    "line": "403",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -142,7 +142,7 @@
   {
     "name": "TestResetAllKeys__test_valid[required-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "395",
+    "line": "403",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -156,7 +156,7 @@
   {
     "name": "TestResetSingleKey__test_valid[optional-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "460",
+    "line": "470",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -170,7 +170,7 @@
   {
     "name": "TestResetSingleKey__test_valid[required-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "460",
+    "line": "470",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -184,7 +184,7 @@
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "538",
+    "line": "550",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -198,7 +198,7 @@
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "538",
+    "line": "550",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -660,7 +660,7 @@
   {
     "name": "TestDefaultValues__test_valid[optional-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "133",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -674,7 +674,7 @@
   {
     "name": "TestDefaultValues__test_valid[required-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "133",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -688,7 +688,7 @@
   {
     "name": "TestDefaultValues__test_valid[without-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "133",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -702,7 +702,7 @@
   {
     "name": "TestRemoveKey__test_valid[optional-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "208",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -716,7 +716,7 @@
   {
     "name": "TestRemoveKey__test_valid[required-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "208",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -730,7 +730,7 @@
   {
     "name": "TestRemoveKey__test_valid[without-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "208",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -744,7 +744,7 @@
   {
     "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "306",
+    "line": "312",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -758,7 +758,7 @@
   {
     "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "306",
+    "line": "312",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -772,7 +772,7 @@
   {
     "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "348",
+    "line": "354",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -786,7 +786,7 @@
   {
     "name": "TestResetAllKeys__test_valid[optional-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "395",
+    "line": "403",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -800,7 +800,7 @@
   {
     "name": "TestResetAllKeys__test_valid[required-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "395",
+    "line": "403",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -814,7 +814,7 @@
   {
     "name": "TestResetSingleKey__test_valid[optional-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "460",
+    "line": "470",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -828,7 +828,7 @@
   {
     "name": "TestResetSingleKey__test_valid[required-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "460",
+    "line": "470",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -842,7 +842,7 @@
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "538",
+    "line": "550",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -856,7 +856,7 @@
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
-    "line": "538",
+    "line": "550",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",

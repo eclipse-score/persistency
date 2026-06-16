@@ -7,7 +7,7 @@
         {
           "name": "TestDefaultValues__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -19,7 +19,7 @@
         {
           "name": "TestDefaultValues__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -31,7 +31,7 @@
         {
           "name": "TestDefaultValues__test_valid[without-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -43,7 +43,7 @@
         {
           "name": "TestRemoveKey__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -55,7 +55,7 @@
         {
           "name": "TestRemoveKey__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -67,7 +67,7 @@
         {
           "name": "TestRemoveKey__test_valid[without-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -79,7 +79,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -91,7 +91,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -103,7 +103,7 @@
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 348,
+          "line": 354,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -115,7 +115,7 @@
         {
           "name": "TestResetAllKeys__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -127,7 +127,7 @@
         {
           "name": "TestResetAllKeys__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -139,7 +139,7 @@
         {
           "name": "TestResetSingleKey__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 460,
+          "line": 470,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -151,7 +151,7 @@
         {
           "name": "TestResetSingleKey__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 460,
+          "line": 470,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -163,7 +163,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -175,7 +175,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -187,7 +187,7 @@
         {
           "name": "TestDefaultValues__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -199,7 +199,7 @@
         {
           "name": "TestDefaultValues__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -211,7 +211,7 @@
         {
           "name": "TestDefaultValues__test_valid[without-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -223,7 +223,7 @@
         {
           "name": "TestRemoveKey__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -235,7 +235,7 @@
         {
           "name": "TestRemoveKey__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -247,7 +247,7 @@
         {
           "name": "TestRemoveKey__test_valid[without-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -259,7 +259,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -271,7 +271,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -283,7 +283,7 @@
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 348,
+          "line": 354,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -295,7 +295,7 @@
         {
           "name": "TestResetAllKeys__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -307,7 +307,7 @@
         {
           "name": "TestResetAllKeys__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -319,7 +319,7 @@
         {
           "name": "TestResetSingleKey__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 460,
+          "line": 470,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -331,7 +331,7 @@
         {
           "name": "TestResetSingleKey__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 460,
+          "line": 470,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -343,7 +343,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -355,7 +355,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__value_default",
           "verify_type": "partially",
           "result": "passed",
@@ -375,7 +375,7 @@
         {
           "name": "TestDefaultValues__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -387,7 +387,7 @@
         {
           "name": "TestDefaultValues__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -399,7 +399,7 @@
         {
           "name": "TestDefaultValues__test_valid[without-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -411,7 +411,7 @@
         {
           "name": "TestRemoveKey__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -423,7 +423,7 @@
         {
           "name": "TestRemoveKey__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -435,7 +435,7 @@
         {
           "name": "TestRemoveKey__test_valid[without-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -447,7 +447,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -459,7 +459,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -471,7 +471,7 @@
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 348,
+          "line": 354,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -483,7 +483,7 @@
         {
           "name": "TestResetAllKeys__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -495,7 +495,7 @@
         {
           "name": "TestResetAllKeys__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -507,7 +507,7 @@
         {
           "name": "TestResetSingleKey__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 460,
+          "line": 470,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -519,7 +519,7 @@
         {
           "name": "TestResetSingleKey__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 460,
+          "line": 470,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -531,7 +531,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -543,7 +543,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -555,7 +555,7 @@
         {
           "name": "TestDefaultValues__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -567,7 +567,7 @@
         {
           "name": "TestDefaultValues__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -579,7 +579,7 @@
         {
           "name": "TestDefaultValues__test_valid[without-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -591,7 +591,7 @@
         {
           "name": "TestRemoveKey__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -603,7 +603,7 @@
         {
           "name": "TestRemoveKey__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -615,7 +615,7 @@
         {
           "name": "TestRemoveKey__test_valid[without-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -627,7 +627,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -639,7 +639,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -651,7 +651,7 @@
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 348,
+          "line": 354,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -663,7 +663,7 @@
         {
           "name": "TestResetAllKeys__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -675,7 +675,7 @@
         {
           "name": "TestResetAllKeys__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -687,7 +687,7 @@
         {
           "name": "TestResetSingleKey__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 460,
+          "line": 470,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -699,7 +699,7 @@
         {
           "name": "TestResetSingleKey__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 460,
+          "line": 470,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -711,7 +711,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -723,7 +723,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
@@ -743,7 +743,7 @@
         {
           "name": "TestDefaultValues__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -755,7 +755,7 @@
         {
           "name": "TestDefaultValues__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -767,7 +767,7 @@
         {
           "name": "TestDefaultValues__test_valid[without-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -779,7 +779,7 @@
         {
           "name": "TestRemoveKey__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -791,7 +791,7 @@
         {
           "name": "TestRemoveKey__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -803,7 +803,7 @@
         {
           "name": "TestRemoveKey__test_valid[without-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -815,7 +815,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -827,7 +827,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -839,7 +839,7 @@
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 348,
+          "line": 354,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -851,7 +851,7 @@
         {
           "name": "TestResetAllKeys__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -863,7 +863,7 @@
         {
           "name": "TestResetAllKeys__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -875,7 +875,7 @@
         {
           "name": "TestDefaultValues__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -887,7 +887,7 @@
         {
           "name": "TestDefaultValues__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -899,7 +899,7 @@
         {
           "name": "TestDefaultValues__test_valid[without-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -911,7 +911,7 @@
         {
           "name": "TestRemoveKey__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -923,7 +923,7 @@
         {
           "name": "TestRemoveKey__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -935,7 +935,7 @@
         {
           "name": "TestRemoveKey__test_valid[without-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 208,
+          "line": 212,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -947,7 +947,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -959,7 +959,7 @@
         {
           "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 306,
+          "line": 312,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -971,7 +971,7 @@
         {
           "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 348,
+          "line": 354,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -983,7 +983,7 @@
         {
           "name": "TestResetAllKeys__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -995,7 +995,7 @@
         {
           "name": "TestResetAllKeys__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
@@ -1015,7 +1015,7 @@
         {
           "name": "TestDefaultValues__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_query",
           "verify_type": "partially",
           "result": "passed",
@@ -1027,7 +1027,7 @@
         {
           "name": "TestDefaultValues__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_query",
           "verify_type": "partially",
           "result": "passed",
@@ -1039,7 +1039,7 @@
         {
           "name": "TestDefaultValues__test_valid[without-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_query",
           "verify_type": "partially",
           "result": "passed",
@@ -1051,7 +1051,7 @@
         {
           "name": "TestDefaultValues__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_query",
           "verify_type": "partially",
           "result": "passed",
@@ -1063,7 +1063,7 @@
         {
           "name": "TestDefaultValues__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_query",
           "verify_type": "partially",
           "result": "passed",
@@ -1075,7 +1075,7 @@
         {
           "name": "TestDefaultValues__test_valid[without-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 133,
+          "line": 135,
           "need": "comp_req__kvs__default_value_query",
           "verify_type": "partially",
           "result": "passed",
@@ -1095,7 +1095,7 @@
         {
           "name": "TestResetAllKeys__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__value_reset",
           "verify_type": "fully",
           "result": "passed",
@@ -1107,7 +1107,7 @@
         {
           "name": "TestResetAllKeys__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__value_reset",
           "verify_type": "fully",
           "result": "passed",
@@ -1119,7 +1119,7 @@
         {
           "name": "TestResetAllKeys__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__value_reset",
           "verify_type": "fully",
           "result": "passed",
@@ -1131,7 +1131,7 @@
         {
           "name": "TestResetAllKeys__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 395,
+          "line": 403,
           "need": "comp_req__kvs__value_reset",
           "verify_type": "fully",
           "result": "passed",
@@ -1151,7 +1151,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__default_val_chksum",
           "verify_type": "fully",
           "result": "passed",
@@ -1163,7 +1163,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__default_val_chksum",
           "verify_type": "fully",
           "result": "passed",
@@ -1175,7 +1175,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__default_val_chksum",
           "verify_type": "fully",
           "result": "passed",
@@ -1187,7 +1187,7 @@
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 538,
+          "line": 550,
           "need": "comp_req__kvs__default_val_chksum",
           "verify_type": "fully",
           "result": "passed",
