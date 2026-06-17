@@ -159,6 +159,7 @@ Footnotes
    :hidden:
 
    docs/architecture/chklst_arc_inspection.rst
+   docs/architecture/component_architecture.rst
    docs/architecture/index.rst
    docs/detailed_design/index.rst
    docs/detailed_design/chklst_impl_inspection.rst
@@ -166,5 +167,6 @@ Footnotes
    docs/requirements/index.rst
    docs/requirements/chklst_req_inspection.rst
    docs/requirements/statistics.rst
+   docs/safety_analysis/aou_requirements.rst
    docs/safety_analysis/fmea.rst
    docs/safety_analysis/dfa.rst
