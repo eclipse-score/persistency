@@ -44,6 +44,10 @@
     "url": "https://eclipse-score.github.io/persistency/pr-292/"
   },
   {
+    "version": "pr-303",
+    "url": "https://eclipse-score.github.io/persistency/pr-303/"
+  },
+  {
     "version": "v0.3.0",
     "url": "https://eclipse-score.github.io/persistency/v0.3.0/"
   },
@@ -54,13 +58,5 @@
   {
     "version": "v0.3.2",
     "url": "https://eclipse-score.github.io/persistency/v0.3.2/"
-  },
-  {
-    "version": "pr-302",
-    "url": "https://eclipse-score.github.io/persistency/pr-302/"
-  },
-  {
-    "version": "pr-303",
-    "url": "https://eclipse-score.github.io/persistency/pr-303/"
   }
 ]
