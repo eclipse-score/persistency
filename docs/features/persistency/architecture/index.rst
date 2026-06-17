@@ -18,7 +18,7 @@ Architecture
 ============
 
 .. document:: Persistency KVS Feature Architecture
-   :id: doc__persistency_architecture
+   :id: doc__persistency_kvs_architecture
    :status: valid
    :safety: ASIL_B
    :security: NO
@@ -77,6 +77,7 @@ Static Architecture
 
    .. uml:: _assets/kvs_static_view.puml
 
+
 Dynamic Architecture
 --------------------
 .. feat_arc_dyn:: Check if key contains default value
@@ -89,6 +90,7 @@ Dynamic Architecture
 
    .. uml:: _assets/kvs_dyn_check_value_default.puml
 
+
 .. feat_arc_dyn:: Delete key from KVS instance
    :id: feat_arc_dyn__persistency__delete_key
    :security: YES
@@ -98,6 +100,7 @@ Dynamic Architecture
    :belongs_to: feat__persistency
 
    .. uml:: _assets/kvs_dyn_delete_data_key.puml
+
 
 .. feat_arc_dyn:: Flush to permanent storage
    :id: feat_arc_dyn__persistency__flush
@@ -109,6 +112,7 @@ Dynamic Architecture
 
    .. uml:: _assets/kvs_dyn_flush_local_repr_to_file.puml
 
+
 .. feat_arc_dyn:: Read key value
    :id: feat_arc_dyn__persistency__read_key
    :security: YES
@@ -118,6 +122,7 @@ Dynamic Architecture
    :belongs_to: feat__persistency
 
    .. uml:: _assets/kvs_dyn_read_data_key.puml
+
 
 .. feat_arc_dyn:: Read data from permanent storage
    :id: feat_arc_dyn__persistency__read_from_storage
@@ -129,6 +134,7 @@ Dynamic Architecture
 
    .. uml:: _assets/kvs_dyn_read_file_into_local_repr.puml
 
+
 .. feat_arc_dyn:: Write value to key
    :id: feat_arc_dyn__persistency__write_key
    :security: YES
@@ -138,6 +144,7 @@ Dynamic Architecture
    :belongs_to: feat__persistency
 
    .. uml:: _assets/kvs_dyn_write_data_key.puml
+
 
 .. feat_arc_dyn:: Restore snapshot
    :id: feat_arc_dyn__persistency__snapshot_restore
