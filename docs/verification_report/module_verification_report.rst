@@ -53,7 +53,17 @@ Verification Report contains:
        - The lists may also contain other verification methods like "Analysis" - process tbd
 
 **2. DFA Report**
-       - List of the performed component DFA, pass/fail with open mitigations
+       - :need:`doc__kvs_dfa` documents that dfa is performed on feature level :need:`doc__persistency_dfa`
+       - :need:`doc__persistency_safety_analysis_fdr` performed
+
+       .. needtable:: RASIC Overview for Requirements Engineering
+       :tags: requirements_engineering
+       :filter: "persistency" in id and type == "feat_saf_dfa" and is_external == False
+       :style: table
+       :sort: status
+       :columns: id as "ID";sufficient as "Sufficient";status as "Status"
+       :colwidths: 30,30,30
+
 
 **3. Safety Analysis Report**
        - List of the performed component Safety Analysis, pass/fail with open mitigations
