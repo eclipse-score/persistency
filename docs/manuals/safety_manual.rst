@@ -49,6 +49,30 @@ Assumed Platform Safety Requirements
 Assumptions of Use
 ------------------
 
+
+AoU Requirements
+################
+
+.. aou_req:: Persistency Error handling
+   :id: aou_req__persistency__error_handling
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :tags: environment
+
+   The application shall handle if the feature persistency is not available.
+
+.. aou_req:: Application execution
+   :id: aou_req__persistency__appl_exec
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :tags: environment
+
+   The execution of persistency shall not be blocked by the application.
+
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 | Generally the assumption of the S-CORE platform SEooC is that it is integrated in a safe system, i.e. the POSIX OS it runs on is qualified and also the HW related failures are taken into account by the system integrator, if not otherwise stated in the module's safety concept.
