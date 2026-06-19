@@ -32,9 +32,9 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/score.css?v=6e51530f" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/score_needs.css?v=1f5dae2a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/score_design.css?v=d9fd870c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/score.css?v=bb63a8e1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/score_needs.css?v=82a1844f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/score_design.css?v=8048e6ee" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
@@ -159,7 +159,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../features/persistency/index.html">
-    Features
+    Persistency (v0.5 beta)
   </a>
 </li>
 
@@ -333,7 +333,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../features/persistency/index.html">
-    Features
+    Persistency (v0.5 beta)
   </a>
 </li>
 
@@ -521,7 +521,7 @@
                   
   <section id="security-manual">
 <h1>Security Manual<a class="headerlink" href="#security-manual" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-a0e6a856">
+<div class="need_container docutils container" id="SNCB-e4e45bd6">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_security_manual">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -541,6 +541,7 @@
 </tr>
 <tr class="meta row-even"><td class="meta" colspan="3"><div class="needs_meta_left line-block">
 <div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">template</span></span></span></div>
+<div class="line"><span class="needs_version"><span class="needs_label">version: </span>0</span></div>
 </span></span></div>
 <div class="line"><span><div class="line">realizes: <span class="realizes"><span><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/security_management/security_management_workproducts.html#wp__module_security_manual">wp__module_security_manual</a></span></span></div>
 </span></div>
@@ -602,35 +603,31 @@ Also the HW related failures are taken into account by the system integrator, if
 </tr>
 </thead>
 <tbody>
-<tr class="need row-even"><td class="needs_title"><p>Application deadlock</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#aou_req__persistency__appl_design">aou_req__persistency__appl_design</a></p></td>
+<tr class="need row-even"><td class="needs_title"><p>Application execution</p></td>
+<td class="needs_id"><p><a class="reference internal" href="safety_manual.html#aou_req__persistency__appl_exec">aou_req__persistency__appl_exec</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>Application execution</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#aou_req__persistency__appl_exec">aou_req__persistency__appl_exec</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>External Health Management</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>External Health Management</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__external_health_management">aou_req__platform__external_health_management</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>OS safety functions</p></td>
+<tr class="need row-even"><td class="needs_title"><p>OS safety functions</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__os_safety_functions">aou_req__platform__os_safety_functions</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Persistency Error handling</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#aou_req__persistency__error_handling">aou_req__persistency__error_handling</a></p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Persistency Error handling</p></td>
+<td class="needs_id"><p><a class="reference internal" href="safety_manual.html#aou_req__persistency__error_handling">aou_req__persistency__error_handling</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>POSIX Operating System</p></td>
+<tr class="need row-even"><td class="needs_title"><p>POSIX Operating System</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__posix_operating_system">aou_req__platform__posix_operating_system</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Process Isolation</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Process Isolation</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__process_isolation">aou_req__platform__process_isolation</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>Safe HW platform</p></td>
+<tr class="need row-even"><td class="needs_title"><p>Safe HW platform</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__hardware_safety">aou_req__platform__hardware_safety</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
@@ -662,28 +659,20 @@ Also the HW related failures are taken into account by the system integrator, if
 </tr>
 </thead>
 <tbody>
-<tr class="need row-even"><td class="needs_title"><p>Access control</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/json/docs/requirements/index.html#aou_req__json__access_control">aou_req__json__access_control</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>aragen not safe</p></td>
+<tr class="need row-even"><td class="needs_title"><p>aragen not safe</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__27">aou_req__communication__27</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Avoidance of Exceptions</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Avoidance of Exceptions</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__no_exceptions">aou_req__platform__no_exceptions</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>Avoidance of heap allocations after initialization</p></td>
+<tr class="need row-even"><td class="needs_title"><p>Avoidance of heap allocations after initialization</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__no_heap_alloc_after_init">aou_req__platform__no_heap_alloc_after_init</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Bazel tooling</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Bazel tooling</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__bazel_tooling">aou_req__platform__bazel_tooling</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Bitmask Enum Value Constraints</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/bitmanipulation/docs/requirements/index.html#aou_req__bitmanipulation__enum_constraints">aou_req__bitmanipulation__enum_constraints</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>Bug fixing</p></td>
@@ -698,72 +687,40 @@ Also the HW related failures are taken into account by the system integrator, if
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/os/docs/requirements/aou_req.html#aou_req__os__cxx_preference">aou_req__os__cxx_preference</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>Check Capacity</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/containers/docs/requirements/index.html#aou_req__containers__capacity_management">aou_req__containers__capacity_management</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>Check for nullptr on Allocate()</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Check for nullptr on Allocate()</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__14">aou_req__communication__14</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>Checking for possible message overflow</p></td>
+<tr class="need row-even"><td class="needs_title"><p>Checking for possible message overflow</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__8">aou_req__communication__8</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Config on a safe filesystem</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Config on a safe filesystem</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__10">aou_req__communication__10</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>Container State Verification</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/containers/docs/requirements/index.html#aou_req__containers__state_verification">aou_req__containers__state_verification</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>Cooperative Cancellation Handling</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/concurrency/docs/requirements/index.html#aou_req__concurrency__coop_cancellation">aou_req__concurrency__coop_cancellation</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Correctly configured ASIL Level</p></td>
+<tr class="need row-even"><td class="needs_title"><p>Correctly configured ASIL Level</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__4">aou_req__communication__4</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Correctly configured events/fields per service type</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Correctly configured events/fields per service type</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__34">aou_req__communication__34</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>Correctly configured maximum number of maximum elements per subscriber</p></td>
+<tr class="need row-even"><td class="needs_title"><p>Correctly configured maximum number of maximum elements per subscriber</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__3">aou_req__communication__3</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Correctly Configured Maximum Number of Subscribers</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Correctly Configured Maximum Number of Subscribers</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__2">aou_req__communication__2</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>Different user for ASIL and QM processes</p></td>
+<tr class="need row-even"><td class="needs_title"><p>Different user for ASIL and QM processes</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__9">aou_req__communication__9</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Element Lifetime and Ownership</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/containers/docs/requirements/index.html#aou_req__containers__element_lifetime">aou_req__containers__element_lifetime</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Element Type Requirements</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/containers/docs/requirements/index.html#aou_req__containers__ele_type_requirements">aou_req__containers__ele_type_requirements</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>Error Domain Implementation</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/result/docs/requirements/index.html#aou_req__result__error_domain_implementation">aou_req__result__error_domain_implementation</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Error Handling</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/filesystem/docs/requirements/index.html#aou_req__filesystem__error_handling">aou_req__filesystem__error_handling</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>Error Reaction</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Error Reaction</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__error_reaction">aou_req__platform__error_reaction</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Error Reaction and Safe State</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/result/docs/requirements/index.html#aou_req__result__error_reaction">aou_req__result__error_reaction</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>Event or Field reception via GenericProxy needs specific care</p></td>
@@ -774,84 +731,36 @@ Also the HW related failures are taken into account by the system integrator, if
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__19">aou_req__communication__19</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>External Synchronization Required for Concurrent Access</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/bitmanipulation/docs/requirements/index.html#aou_req__bitmanipulation__concurrent_access">aou_req__bitmanipulation__concurrent_access</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>FEO something</p></td>
+<tr class="need row-even"><td class="needs_title"><p>FEO something</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/feo/feo/docs/requirements/aou_req.html#aou_req__component_feo__anything">aou_req__component_feo__anything</a></p></td>
 <td class="needs_status"><p>invalid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>FEO something</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>FEO something</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/frameworks/feo/requirements/aou_req.html#aou_req__feature_feo__something">aou_req__feature_feo__something</a></p></td>
 <td class="needs_status"><p>invalid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>FlatBuffers access control</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/flatbuffers/docs/requirements/index.html#aou_req__flatbuffers__access_control">aou_req__flatbuffers__access_control</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>FlatBuffers buffer verification before access</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/flatbuffers/docs/requirements/index.html#aou_req__flatbuffers__verify_structure">aou_req__flatbuffers__verify_structure</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>FlatBuffers buffer version check before access</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/flatbuffers/docs/requirements/index.html#aou_req__flatbuffers__verify_version">aou_req__flatbuffers__verify_version</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>FlatBuffers data integrity</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/flatbuffers/docs/requirements/index.html#aou_req__flatbuffers__data_integrity">aou_req__flatbuffers__data_integrity</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Index Bounds Checking</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/containers/docs/requirements/index.html#aou_req__containers__bounds_checking">aou_req__containers__bounds_checking</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>Integral Type Constraints</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/bitmanipulation/docs/requirements/index.html#aou_req__bitmanipulation__type_constraints">aou_req__bitmanipulation__type_constraints</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Integration assistance</p></td>
+<tr class="need row-even"><td class="needs_title"><p>Integration assistance</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__integration_assistance">aou_req__platform__integration_assistance</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Integration levels</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Integration levels</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__levels">aou_req__platform__levels</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>Integration manual</p></td>
+<tr class="need row-even"><td class="needs_title"><p>Integration manual</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__os_integration_manual">aou_req__platform__os_integration_manual</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Integrator safety anomaly reporting</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>Integrator safety anomaly reporting</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__integration_safety_anomaly">aou_req__platform__integration_safety_anomaly</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>Iterator Validity</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/containers/docs/requirements/index.html#aou_req__containers__iterator_validity">aou_req__containers__iterator_validity</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>JSON data integrity</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/json/docs/requirements/index.html#aou_req__json__data_integrity">aou_req__json__data_integrity</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>LoLa Memory only accessed through LoLa</p></td>
+<tr class="need row-even"><td class="needs_title"><p>LoLa Memory only accessed through LoLa</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__24">aou_req__communication__24</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>LoLa specific QNX Messaging End-Points only accessed through LoLa</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>LoLa specific QNX Messaging End-Points only accessed through LoLa</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__26">aou_req__communication__26</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Low-Level Use Only</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/filesystem/docs/requirements/index.html#aou_req__filesystem__low_level_use_only">aou_req__filesystem__low_level_use_only</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>Memory Management on Task Submission Failure</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/concurrency/docs/requirements/index.html#aou_req__concurrency__memory_management">aou_req__concurrency__memory_management</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Memory Resource Management</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/containers/docs/requirements/index.html#aou_req__containers__memory_management">aou_req__containers__memory_management</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>Minimal Process Privileges</p></td>
@@ -926,28 +835,12 @@ Also the HW related failures are taken into account by the system integrator, if
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/os/docs/requirements/aou_req.html#aou_req__os__public_api">aou_req__os__public_api</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Path Validation</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/filesystem/docs/requirements/index.html#aou_req__filesystem__path_validation">aou_req__filesystem__path_validation</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Performance</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/filesystem/docs/requirements/index.html#aou_req__filesystem__performance">aou_req__filesystem__performance</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
 <tr class="need row-even"><td class="needs_title"><p>Program Flow Monitoring</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__flow_monitoring">aou_req__platform__flow_monitoring</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-odd"><td class="needs_title"><p>Quality of data is dependent on producer</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__22">aou_req__communication__22</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>Resource Lifetime</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/result/docs/requirements/index.html#aou_req__result__resource_lifetime">aou_req__result__resource_lifetime</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Result Value Handling</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/result/docs/requirements/index.html#aou_req__result__value_handling">aou_req__result__value_handling</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>RST-0001</p></td>
@@ -998,40 +891,16 @@ Also the HW related failures are taken into account by the system integrator, if
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/communication/docs/requirements/aou_req.html#aou_req__communication__18">aou_req__communication__18</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>Supported Path Formats</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/filesystem/docs/requirements/index.html#aou_req__filesystem__supported_path_formats">aou_req__filesystem__supported_path_formats</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>SW-platform integration bug reporting</p></td>
+<tr class="need row-even"><td class="needs_title"><p>SW-platform integration bug reporting</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__bug_report">aou_req__platform__bug_report</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-even"><td class="needs_title"><p>SW-platform test completion</p></td>
+<tr class="need row-odd"><td class="needs_title"><p>SW-platform test completion</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__test_completion">aou_req__platform__test_completion</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
-<tr class="need row-odd"><td class="needs_title"><p>SW-platform testing</p></td>
+<tr class="need row-even"><td class="needs_title"><p>SW-platform testing</p></td>
 <td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/requirements/platform_assumptions/index.html#aou_req__platform__testing">aou_req__platform__testing</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>Thread Pool Sizing</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/concurrency/docs/requirements/index.html#aou_req__concurrency__thread_pool_sizing">aou_req__concurrency__thread_pool_sizing</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Thread Safety</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/concurrency/docs/requirements/index.html#aou_req__concurrency__thread_safety">aou_req__concurrency__thread_safety</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>Thread Safety</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/containers/docs/requirements/index.html#aou_req__containers__thread_safety">aou_req__containers__thread_safety</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-odd"><td class="needs_title"><p>Thread Safety</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/filesystem/docs/requirements/index.html#aou_req__filesystem__thread_safety">aou_req__filesystem__thread_safety</a></p></td>
-<td class="needs_status"><p>valid</p></td>
-</tr>
-<tr class="need row-even"><td class="needs_title"><p>Thread Safety</p></td>
-<td class="needs_id external_link"><p><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/modules/baselibs/result/docs/requirements/index.html#aou_req__result__thread_safety">aou_req__result__thread_safety</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-odd"><td class="needs_title"><p>unsupported data-types</p></td>
