@@ -18,10 +18,11 @@ Safety Manual
 .. document:: Persistency Safety Manual
    :id: doc__persistency_safety_manual
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
    :tags: persistency
-   :realizes: wp__module_safety_manual
+   :realizes: wp__module_safety_manual[version==1]
 
 Introduction/Scope
 ------------------
@@ -59,6 +60,7 @@ AoU Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
+   :version: 1
    :tags: environment
 
    The application shall handle if the feature persistency is not available.
@@ -69,6 +71,7 @@ AoU Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
+   :version: 1
    :tags: environment
 
    The execution of persistency shall not be blocked by the application.

@@ -20,9 +20,10 @@ Architecture
 .. document:: Persistency KVS Feature Architecture
    :id: doc__persistency_kvs_architecture
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__feature_arch
+   :realizes: wp__feature_arch[version==1]
    :tags: persistency
 
 
@@ -31,8 +32,9 @@ Architecture
    :security: YES
    :safety: ASIL_B
    :status: valid
-   :implements: logic_arc_int__persistency__interface
-   :belongs_to: feat__persistency
+   :version: 1
+   :implements: logic_arc_int__persistency__interface[version==1]
+   :belongs_to: feat__persistency[version==1]
 
 
 --------
@@ -71,9 +73,10 @@ Static Architecture
    :security: YES
    :safety: ASIL_B
    :includes: logic_arc_int__persistency__interface
-   :fulfils: feat_req__persistency__default_value_get,feat_req__persistency__default_values,feat_req__persistency__async_completion,feat_req__persistency__integrity_check,feat_req__persistency__store_data,feat_req__persistency__load_data,feat_req__persistency__snapshot_create,feat_req__persistency__support_datatype_keys,feat_req__persistency__support_datatype_value,feat_req__persistency__variant_management,feat_req__persistency__default_value_file,feat_req__persistency__cfg,feat_req__persistency__async_api,feat_req__persistency__access_control,feat_req__persistency__concurrency
+   :fulfils: feat_req__persistency__default_value_get[version==1],feat_req__persistency__default_values[version==1],feat_req__persistency__async_completion[version==1],feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1],feat_req__persistency__load_data[version==1],feat_req__persistency__snapshot_create[version==1],feat_req__persistency__support_datatype_keys[version==1],feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__variant_management[version==1],feat_req__persistency__default_value_file[version==1],feat_req__persistency__cfg[version==1],feat_req__persistency__async_api[version==1],feat_req__persistency__access_control[version==1],feat_req__persistency__concurrency[version==1]
    :status: valid
-   :belongs_to: feat__persistency
+   :version: 1
+   :belongs_to: feat__persistency[version==1]
 
    .. uml:: _assets/kvs_static_view.puml
 
@@ -84,9 +87,10 @@ Dynamic Architecture
    :id: feat_arc_dyn__persistency__check_key_default
    :security: YES
    :safety: ASIL_B
-   :fulfils: feat_req__persistency__default_values,feat_req__persistency__default_value_get
+   :fulfils: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1]
    :status: valid
-   :belongs_to: feat__persistency
+   :version: 1
+   :belongs_to: feat__persistency[version==1]
 
    .. uml:: _assets/kvs_dyn_check_value_default.puml
 
@@ -95,9 +99,10 @@ Dynamic Architecture
    :id: feat_arc_dyn__persistency__delete_key
    :security: YES
    :safety: ASIL_B
-   :fulfils: feat_req__persistency__support_datatype_keys,feat_req__persistency__support_datatype_value
+   :fulfils: feat_req__persistency__support_datatype_keys[version==1],feat_req__persistency__support_datatype_value[version==1]
    :status: valid
-   :belongs_to: feat__persistency
+   :version: 1
+   :belongs_to: feat__persistency[version==1]
 
    .. uml:: _assets/kvs_dyn_delete_data_key.puml
 
@@ -106,9 +111,10 @@ Dynamic Architecture
    :id: feat_arc_dyn__persistency__flush
    :security: YES
    :safety: ASIL_B
-   :fulfils: feat_req__persistency__store_data,feat_req__persistency__snapshot_create,feat_req__persistency__integrity_check,feat_req__persistency__snapshot_restore
+   :fulfils: feat_req__persistency__store_data[version==1],feat_req__persistency__snapshot_create[version==1],feat_req__persistency__integrity_check[version==1],feat_req__persistency__snapshot_restore[version==1]
    :status: valid
-   :belongs_to: feat__persistency
+   :version: 1
+   :belongs_to: feat__persistency[version==1]
 
    .. uml:: _assets/kvs_dyn_flush_local_repr_to_file.puml
 
@@ -117,9 +123,10 @@ Dynamic Architecture
    :id: feat_arc_dyn__persistency__read_key
    :security: YES
    :safety: ASIL_B
-   :fulfils: feat_req__persistency__support_datatype_keys,feat_req__persistency__support_datatype_value,feat_req__persistency__default_values,feat_req__persistency__default_value_get
+   :fulfils: feat_req__persistency__support_datatype_keys[version==1],feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1]
    :status: valid
-   :belongs_to: feat__persistency
+   :version: 1
+   :belongs_to: feat__persistency[version==1]
 
    .. uml:: _assets/kvs_dyn_read_data_key.puml
 
@@ -128,9 +135,10 @@ Dynamic Architecture
    :id: feat_arc_dyn__persistency__read_from_storage
    :security: YES
    :safety: ASIL_B
-   :fulfils: feat_req__persistency__load_data,feat_req__persistency__integrity_check,feat_req__persistency__snapshot_restore
+   :fulfils: feat_req__persistency__load_data[version==1],feat_req__persistency__integrity_check[version==1],feat_req__persistency__snapshot_restore[version==1]
    :status: valid
-   :belongs_to: feat__persistency
+   :version: 1
+   :belongs_to: feat__persistency[version==1]
 
    .. uml:: _assets/kvs_dyn_read_file_into_local_repr.puml
 
@@ -139,9 +147,10 @@ Dynamic Architecture
    :id: feat_arc_dyn__persistency__write_key
    :security: YES
    :safety: ASIL_B
-   :fulfils: feat_req__persistency__support_datatype_keys,feat_req__persistency__support_datatype_value
+   :fulfils: feat_req__persistency__support_datatype_keys[version==1],feat_req__persistency__support_datatype_value[version==1]
    :status: valid
-   :belongs_to: feat__persistency
+   :version: 1
+   :belongs_to: feat__persistency[version==1]
 
    .. uml:: _assets/kvs_dyn_write_data_key.puml
 
@@ -150,9 +159,10 @@ Dynamic Architecture
    :id: feat_arc_dyn__persistency__snapshot_restore
    :security: YES
    :safety: ASIL_B
-   :fulfils: feat_req__persistency__snapshot_restore,feat_req__persistency__store_data
+   :fulfils: feat_req__persistency__snapshot_restore[version==1],feat_req__persistency__store_data[version==1]
    :status: valid
-   :belongs_to: feat__persistency
+   :version: 1
+   :belongs_to: feat__persistency[version==1]
 
    .. uml:: _assets/kvs_dyn_restore_snapshot.puml
 

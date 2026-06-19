@@ -18,9 +18,10 @@ Persistency STRIDE
 .. document:: STRIDE
    :id: doc__persistency_stride
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: YES
-   :realizes: wp__feature_security_analysis
+   :realizes: wp__feature_security_analysis[version==1]
    :tags: persistency
 
 STRIDE analysis procedure is required to be defined and applied. This section is created as placeholder and will be updated in future.

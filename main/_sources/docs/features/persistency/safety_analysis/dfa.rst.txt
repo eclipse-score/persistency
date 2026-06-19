@@ -18,9 +18,10 @@ DFA (Dependent Failure Analysis)
 .. document:: Persistency DFA
    :id: doc__persistency_dfa
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__feature_dfa
+   :realizes: wp__feature_dfa[version==1]
    :tags: persistency
 
 
@@ -188,5 +189,6 @@ For all identified applicable failure initiators, the DFA is performed in the fo
    :mitigation_issue:
    :sufficient: yes
    :status: valid
+   :version: 1
 
    Execution blocking will make persistency not available.

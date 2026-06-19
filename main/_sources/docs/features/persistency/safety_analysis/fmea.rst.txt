@@ -18,9 +18,10 @@ FMEA (Failure Modes and Effects Analysis)
 .. document:: Persistency FMEA
    :id: doc__persistency_fmea
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__feature_fmea
+   :realizes: wp__feature_fmea[version==1]
    :tags: persistency
 
 
@@ -112,6 +113,7 @@ For all identified applicable failure initiators, the FMEA is performed in the f
     :mitigated_by: aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
+    :version: 1
 
     User is not able to use the feature. Middleware cant be used. User is not able to use the feature. Middleware cant be used. Loss of execution can only be caused by the application, not by the persistency feature itself.
     Failure handling is addressed to the application by the aou_req__persistency__error_handling.
@@ -124,6 +126,7 @@ For all identified applicable failure initiators, the FMEA is performed in the f
     :mitigated_by: aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
+    :version: 1
 
     Subset of MF_01_01 if the delay is to long.
 
@@ -135,6 +138,7 @@ For all identified applicable failure initiators, the FMEA is performed in the f
     :mitigated_by: aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
+    :version: 1
 
     Covered by MF_01_01
 
@@ -146,6 +150,7 @@ For all identified applicable failure initiators, the FMEA is performed in the f
     :mitigated_by: aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
+    :version: 1
 
     Covered by MF_01_01 because the violation cause is the same.
 
@@ -157,6 +162,7 @@ For all identified applicable failure initiators, the FMEA is performed in the f
     :mitigated_by: aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
+    :version: 1
 
     User is not able to use the feature. Middleware cant be used. Loss of execution can only be caused by the application, not by the persistency feature itself.
     Failure handling is addressed to the application by the aou_req__persistency__error_handling.

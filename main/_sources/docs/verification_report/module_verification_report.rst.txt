@@ -18,9 +18,10 @@ Verification Report
 .. document:: Persistency Verification Report
    :id: doc__persistency_verification_report
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__verification_module_ver_report
+   :realizes: wp__verification_module_ver_report[version==1]
    :tags: persistency
 
 
@@ -54,6 +55,7 @@ Verification Report contains:
 
 **2. DFA Report**
        - List of the performed component DFA, pass/fail with open mitigations
+
 
 **3. Safety Analysis Report**
        - List of the performed component Safety Analysis, pass/fail with open mitigations

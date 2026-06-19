@@ -20,9 +20,10 @@ Feature Security Planning
 .. document:: Persistency KVS Security WPs
    :id: doc__persistency_security_wp
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: YES
-   :realizes: wp__platform_security_plan
+   :realizes: wp__platform_security_plan[version==1]
    :tags: persistency
 
 

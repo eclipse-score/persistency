@@ -545,18 +545,18 @@ the module template.</p>
    <span class="nc">:security:</span> YES
    <span class="nc">:safety:</span> ASIL_B
    <span class="nc">:status:</span> invalid
-   <span class="nc">:implements:</span> logic_arc_int__feature_name__interface_name1
-   <span class="nc">:consists_of:</span> comp__component_name_internal_1, comp__component_name_internal_2, comp__component_name_internal_3
-   <span class="nc">:belongs_to:</span> feat__feature_name
+   <span class="nc">:implements:</span> logic_arc_int__feature_name__interface_name1[version==1]
+   <span class="nc">:consists_of:</span> comp__component_name_internal_1[version==1],comp__component_name_internal_2[version==1],comp__component_name_internal_3[version==1]
+   <span class="nc">:belongs_to:</span> feat__feature_name[version==1]
 
 <span class="p">..</span> <span class="ow">comp_arc_sta</span><span class="p">::</span> Component Name (Static View)
    <span class="nc">:id:</span> comp_arc_sta__mod_temp_component_name__sv
    <span class="nc">:security:</span> YES
    <span class="nc">:safety:</span> ASIL_B
    <span class="nc">:status:</span> invalid
-   <span class="nc">:belongs_to:</span> comp__mod_temp_component_name_template
-   <span class="nc">:uses:</span> logic_arc_int__feature_name__interface_name1
-   <span class="nc">:fulfils:</span> comp_req__mod_temp_component_name__some_title
+   <span class="nc">:belongs_to:</span> comp__mod_temp_component_name_template[version==1]
+   <span class="nc">:uses:</span> logic_arc_int__feature_name__interface_name1[version==1]
+   <span class="nc">:fulfils:</span> comp_req__mod_temp_component_name__some_title[version==1]
 
 <span class="p">   ..</span> <span class="ow">needarch</span><span class="p">::</span>
       <span class="nc">:scale:</span> 50
@@ -573,8 +573,8 @@ the module template.</p>
    <span class="nc">:security:</span> YES
    <span class="nc">:safety:</span> ASIL_B
    <span class="nc">:status:</span> invalid
-   <span class="nc">:belongs_to:</span> comp__mod_temp_component_name_template
-   <span class="nc">:fulfils:</span> comp_req__mod_temp_component_name__some_title
+   <span class="nc">:belongs_to:</span> comp__mod_temp_component_name_template[version==1]
+   <span class="nc">:fulfils:</span> comp_req__mod_temp_component_name__some_title[version==1]
 
    Put here a sequence diagram
 </pre></div>
@@ -587,6 +587,7 @@ repository owns the live <code class="docutils literal notranslate"><span class=
 <div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">real_arc_int</span><span class="p">::</span> Component Interface 1
     <span class="nc">:id:</span> real_arc_int__mod_temp_component_name__if_1
     <span class="nc">:status:</span> valid
+    <span class="nc">:version:</span> 1
     <span class="nc">:safety:</span> ASIL_B
     <span class="nc">:security:</span> NO
     <span class="nc">:language:</span> cpp
@@ -606,8 +607,8 @@ repository owns the live <code class="docutils literal notranslate"><span class=
    <span class="nc">:status:</span> invalid
    <span class="nc">:safety:</span> ASIL_B
    <span class="nc">:security:</span> YES
-   <span class="nc">:fulfils:</span> comp_req__mod_temp_component_name__some_title
-   <span class="nc">:belongs_to:</span> comp__mod_temp_component_name_template
+   <span class="nc">:fulfils:</span> comp_req__mod_temp_component_name__some_title[version==1]
+   <span class="nc">:belongs_to:</span> comp__mod_temp_component_name_template[version==1]
 
    No architecture but detailed design
 
@@ -616,21 +617,21 @@ repository owns the live <code class="docutils literal notranslate"><span class=
    <span class="nc">:status:</span> invalid
    <span class="nc">:safety:</span> ASIL_B
    <span class="nc">:security:</span> YES
-   <span class="nc">:belongs_to:</span> feat__feature_name
+   <span class="nc">:belongs_to:</span> feat__feature_name[version==1]
 
 <span class="p">..</span> <span class="ow">comp</span><span class="p">::</span> Internal Component 2
    <span class="nc">:id:</span> comp__component_name_internal_2
    <span class="nc">:status:</span> invalid
    <span class="nc">:safety:</span> ASIL_B
    <span class="nc">:security:</span> YES
-   <span class="nc">:belongs_to:</span> feat__feature_name
+   <span class="nc">:belongs_to:</span> feat__feature_name[version==1]
 
 <span class="p">..</span> <span class="ow">comp</span><span class="p">::</span> Internal Component 3
    <span class="nc">:id:</span> comp__component_name_internal_3
    <span class="nc">:status:</span> invalid
    <span class="nc">:safety:</span> ASIL_B
    <span class="nc">:security:</span> YES
-   <span class="nc">:belongs_to:</span> feat__feature_name
+   <span class="nc">:belongs_to:</span> feat__feature_name[version==1]
 </pre></div>
 </div>
 </section>
