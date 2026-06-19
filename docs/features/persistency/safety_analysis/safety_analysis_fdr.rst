@@ -19,9 +19,10 @@ Safety Analysis Checklist
 .. document:: Persistency Safety Analysis Checklist
    :id: doc__persistency_safety_analysis_fdr
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: YES
-   :realizes: wp__fdr_reports
+   :realizes: wp__fdr_reports[version==1]
    :tags: persistency
 
 **Purpose**

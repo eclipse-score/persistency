@@ -34,18 +34,18 @@ Static Architecture
       :security: YES
       :safety: ASIL_B
       :status: invalid
-      :implements: logic_arc_int__feature_name__interface_name1
-      :consists_of: comp__component_name_internal_1, comp__component_name_internal_2, comp__component_name_internal_3
-      :belongs_to: feat__feature_name
+      :implements: logic_arc_int__feature_name__interface_name1[version==1]
+      :consists_of: comp__component_name_internal_1[version==1],comp__component_name_internal_2[version==1],comp__component_name_internal_3[version==1]
+      :belongs_to: feat__feature_name[version==1]
 
    .. comp_arc_sta:: Component Name (Static View)
       :id: comp_arc_sta__mod_temp_component_name__sv
       :security: YES
       :safety: ASIL_B
       :status: invalid
-      :belongs_to: comp__mod_temp_component_name_template
-      :uses: logic_arc_int__feature_name__interface_name1
-      :fulfils: comp_req__mod_temp_component_name__some_title
+      :belongs_to: comp__mod_temp_component_name_template[version==1]
+      :uses: logic_arc_int__feature_name__interface_name1[version==1]
+      :fulfils: comp_req__mod_temp_component_name__some_title[version==1]
 
       .. needarch::
          :scale: 50
@@ -63,8 +63,8 @@ Dynamic Architecture
       :security: YES
       :safety: ASIL_B
       :status: invalid
-      :belongs_to: comp__mod_temp_component_name_template
-      :fulfils: comp_req__mod_temp_component_name__some_title
+      :belongs_to: comp__mod_temp_component_name_template[version==1]
+      :fulfils: comp_req__mod_temp_component_name__some_title[version==1]
 
       Put here a sequence diagram
 
@@ -79,6 +79,7 @@ repository owns the live ``real_arc_int`` example.
     .. real_arc_int:: Component Interface 1
         :id: real_arc_int__mod_temp_component_name__if_1
         :status: valid
+        :version: 1
         :safety: ASIL_B
         :security: NO
         :language: cpp
@@ -99,8 +100,8 @@ Internal Components
       :status: invalid
       :safety: ASIL_B
       :security: YES
-      :fulfils: comp_req__mod_temp_component_name__some_title
-      :belongs_to: comp__mod_temp_component_name_template
+      :fulfils: comp_req__mod_temp_component_name__some_title[version==1]
+      :belongs_to: comp__mod_temp_component_name_template[version==1]
 
       No architecture but detailed design
 
@@ -109,18 +110,18 @@ Internal Components
       :status: invalid
       :safety: ASIL_B
       :security: YES
-      :belongs_to: feat__feature_name
+      :belongs_to: feat__feature_name[version==1]
 
    .. comp:: Internal Component 2
       :id: comp__component_name_internal_2
       :status: invalid
       :safety: ASIL_B
       :security: YES
-      :belongs_to: feat__feature_name
+      :belongs_to: feat__feature_name[version==1]
 
    .. comp:: Internal Component 3
       :id: comp__component_name_internal_3
       :status: invalid
       :safety: ASIL_B
       :security: YES
-      :belongs_to: feat__feature_name
+      :belongs_to: feat__feature_name[version==1]
