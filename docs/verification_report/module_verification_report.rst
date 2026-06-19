@@ -54,21 +54,32 @@ Verification Report contains:
        - The lists may also contain other verification methods like "Analysis" - process tbd
 
 **2. DFA Report**
-       - :need:`doc__kvs_dfa` documents that dfa is performed on feature level :need:`doc__persistency_dfa`
+       - :need:`doc__kvs_dfa` documents that DFA is performed on feature level :need:`doc__persistency_dfa`
        - :need:`doc__persistency_safety_analysis_fdr` performed
 
-       .. needtable:: RASIC Overview for Requirements Engineering
-       :tags: requirements_engineering
-       :filter: "persistency" in id and type == "feat_saf_dfa" and is_external == False
-       :style: table
-       :sort: status
-       :columns: id as "ID";sufficient as "Sufficient";status as "Status"
-       :colwidths: 30,30,30
+       .. needtable:: List of performed feature DFA analyses
+              :filter: "persistency" in id and type == "feat_saf_dfa" and is_external == False
+              :style: table
+              :sort: status
+              :columns: id as "ID";mitigated_by as "Mitigation";sufficient as "Sufficient";status as "Status"
+              :colwidths: 40,30,15,15
 
-
+       DFA is performed. All mitigations are sufficient to reduce the risk to an acceptable level. The AoU is documented 
+       in the safety manual.
 
 **3. Safety Analysis Report**
-       - List of the performed component Safety Analysis, pass/fail with open mitigations
+       - :need:`doc__kvs_fmea` documents that FMEA is performed on feature level :need:`doc__persistency_fmea`
+       - :need:`doc__persistency_safety_analysis_fdr` performed
+
+       .. needtable:: List of performed feature FMEA analyses
+              :filter: "persistency" in id and type == "feat_saf_fmea" and is_external == False
+              :style: table
+              :sort: status
+              :columns: id as "ID";mitigated_by as "Mitigation";sufficient as "Sufficient";status as "Status"
+              :colwidths: 40,30,15,15
+
+       FMEA is performed. All mitigations are sufficient to reduce the risk to an acceptable level. The AoU's are documented 
+       in the safety manual.
 
 **4. Unit Verification Coverage**
 
