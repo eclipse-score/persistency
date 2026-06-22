@@ -33,6 +33,9 @@
 namespace score::mw::per::kvs
 {
 
+/* FEAT_REQ__KVS__maximum_size: Maximum allowed key length in bytes. */
+constexpr std::size_t KVS_MAX_KEY_LENGTH_BYTES = 32U;
+
 struct InstanceId
 {
     size_t id;
@@ -262,13 +265,18 @@ class Kvs final
     /**
      * @brief Stores a key-value pair in the key-value store.
      *
+     * Features:
+     *   - FEAT_REQ__KVS__maximum_size: The key length is limited to
+     *     KVS_MAX_KEY_LENGTH_BYTES (32) bytes.
+     *
      * @param key The key associated with the value to be stored.
      *            It is represented as a string view to avoid unnecessary copying.
      * @param value The value to be stored, represented as a KvsValue object.
      *
      * @return A score::Result object that indicates the success or failure of the operation.
      *         - On success: Returns a blank score::Result.
-     *         - On failure: Returns an ErrorCode describing the error.
+     *         - On failure: Returns ErrorCode::KeyTooLong if the key exceeds
+     *           KVS_MAX_KEY_LENGTH_BYTES, or another ErrorCode describing the error.
      */
     score::ResultBlank set_value(const std::string_view key, const KvsValue& value);
 
@@ -377,6 +385,11 @@ class Kvs final
     std::unique_ptr<score::mw::log::Logger> logger;
 
     /* Private Methods */
+    /* FEAT_REQ__KVS__maximum_size: returns true if the key is within the allowed
+       length (KVS_MAX_KEY_LENGTH_BYTES). Single source of truth for the key-length
+       rule, shared by all paths that ingest keys (set_value, parse_json_data). */
+    static bool is_key_length_valid(std::string_view key);
+
     score::ResultBlank snapshot_rotate();
     score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
     score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix,
