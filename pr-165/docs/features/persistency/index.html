@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Features &#8212; Score Persistency  documentation</title>
+    <title>Persistency (v0.5 beta) &#8212; Score Persistency  documentation</title>
   
   
   
@@ -32,17 +32,17 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/score.css?v=6e51530f" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/score_needs.css?v=1f5dae2a" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/score_design.css?v=d9fd870c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/score.css?v=bb63a8e1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/score_needs.css?v=82a1844f" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/score_design.css?v=8048e6ee" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
   
   <!-- So that users can add custom icons -->
@@ -73,7 +73,7 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Manuals" href="../../manual/index.html" />
+    <link rel="next" title="Architecture" href="architecture/index.html" />
     <link rel="prev" title="Persistency Documentation" href="../../../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -159,13 +159,13 @@
     
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Features
+    Persistency (v0.5 beta)
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../manual/index.html">
+  <a class="nav-link nav-internal" href="../../manuals/index.html">
     Manuals
   </a>
 </li>
@@ -200,7 +200,7 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../../verification/module_verification_report.html">
+  <a class="nav-link dropdown-item nav-internal" href="../../verification_report/module_verification_report.html">
     Verification Report
   </a>
 </li>
@@ -333,13 +333,13 @@
     
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Features
+    Persistency (v0.5 beta)
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../manual/index.html">
+  <a class="nav-link nav-internal" href="../../manuals/index.html">
     Manuals
   </a>
 </li>
@@ -367,7 +367,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../verification/module_verification_report.html">
+  <a class="nav-link nav-internal" href="../../verification_report/module_verification_report.html">
     Verification Report
   </a>
 </li>
@@ -456,7 +456,17 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"></div>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture/index.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture/chklst_arc_inspection.html">Architecture Inspection Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="safety_analysis/fmea.html">FMEA (Failure Modes and Effects Analysis)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="safety_analysis/dfa.html">DFA (Dependent Failure Analysis)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="safety_analysis/safety_analysis_fdr.html">Safety Analysis Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="safety_planning/index.html">Feature Safety Work Products List</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security_planning/index.html">Feature Security Planning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security_analysis/stride.html">Persistency STRIDE</a></li>
+</ul>
+</div>
 </nav></div>
     </div>
   
@@ -495,7 +505,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Features</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Persistency (v0.5 beta)</span></li>
   </ul>
 </nav>
 </div>
@@ -512,9 +522,58 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="features">
-<span id="features-persistency"></span><h1>Features<a class="headerlink" href="#features" title="Link to this heading">#</a></h1>
+  <section id="persistency-v0-5-beta">
+<h1>Persistency (v0.5 beta)<a class="headerlink" href="#persistency-v0-5-beta" title="Link to this heading">#</a></h1>
+<p>Feature request can be found here: <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/index.html#doc__persistency">doc__persistency</a></p>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="architecture/index.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture/index.html#description">Description</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture/index.html#rationale-behind-architecture-decomposition">Rationale Behind Architecture Decomposition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="architecture/index.html#glossary">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture/index.html#static-architecture">Static Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture/index.html#dynamic-architecture">Dynamic Architecture</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture/chklst_arc_inspection.html">Architecture Inspection Checklist</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture/chklst_arc_inspection.html#purpose">Purpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture/chklst_arc_inspection.html#checklist">Checklist</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="safety_analysis/fmea.html">FMEA (Failure Modes and Effects Analysis)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="safety_analysis/fmea.html#failure-mode-list">Failure Mode List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety_analysis/fmea.html#fmea">FMEA</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="safety_analysis/dfa.html">DFA (Dependent Failure Analysis)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="safety_analysis/dfa.html#dependent-failure-initiators">Dependent Failure Initiators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="safety_analysis/dfa.html#shared-resources">Shared resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="safety_analysis/dfa.html#communication-between-the-two-elements">Communication between the two elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="safety_analysis/dfa.html#shared-information-inputs">Shared information inputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="safety_analysis/dfa.html#unintended-impact">Unintended impact</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="safety_analysis/dfa.html#dfa">DFA</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="safety_analysis/safety_analysis_fdr.html">Safety Analysis Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="safety_planning/index.html">Feature Safety Work Products List</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="safety_planning/index.html#tailoring">Tailoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety_planning/index.html#safety-work-products-list">Safety Work products List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="safety_planning/index.html#feature-safety-package">Feature Safety Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="safety_planning/index.html#feature-documents-status">Feature Documents Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="safety_planning/index.html#feature-requirements-status">Feature Requirements Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="safety_planning/index.html#feature-aou-status">Feature AoU Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="safety_planning/index.html#feature-architecture-status">Feature Architecture Status</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="security_planning/index.html">Feature Security Planning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security_analysis/stride.html">Persistency STRIDE</a></li>
+</ul>
 </div>
 </section>
 
@@ -538,11 +597,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="../../manual/index.html"
+       href="architecture/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Manuals</p>
+        <p class="prev-next-title">Architecture</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

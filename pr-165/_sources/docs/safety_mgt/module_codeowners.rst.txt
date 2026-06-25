@@ -18,9 +18,10 @@ Module Persistency Skill Check
 .. document:: Persistency Codeowners
    :id: doc__persistency_codeowners
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: YES
-   :realizes: wp__module_safety_plan
+   :realizes: wp__module_safety_plan[version==1]
 
 Assigned Committer(s)
 =====================

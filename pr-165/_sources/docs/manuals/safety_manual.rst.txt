@@ -18,10 +18,11 @@ Safety Manual
 .. document:: Persistency Safety Manual
    :id: doc__persistency_safety_manual
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
    :tags: persistency
-   :realizes: wp__module_safety_manual
+   :realizes: wp__module_safety_manual[version==1]
 
 Introduction/Scope
 ------------------
@@ -48,6 +49,32 @@ Assumed Platform Safety Requirements
 
 Assumptions of Use
 ------------------
+
+
+AoU Requirements
+################
+
+.. aou_req:: Persistency Error handling
+   :id: aou_req__persistency__error_handling
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :tags: environment
+
+   The application shall handle if the feature persistency is not available.
+
+.. aou_req:: Application execution
+   :id: aou_req__persistency__appl_exec
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :tags: environment
+
+   The execution of persistency shall not be blocked by the application.
 
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
