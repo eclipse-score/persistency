@@ -19,9 +19,10 @@ Safety Analysis Checklist
 .. document:: Persistency Safety Analysis Checklist
    :id: doc__module_safety_analysis_fdr
    :status: draft
+   :version: 1
    :safety: ASIL_B
    :security: YES
-   :realizes: wp__fdr_reports
+   :realizes: wp__fdr_reports[version==1]
 
 
 **Purpose**
@@ -85,7 +86,7 @@ Please note that the "passed" column must contain "yes" or "no" for each checkli
         - <Rationale for result>
 
       * - 7
-        - Are the templates for DFA and/or FMEA used? See :need:`doc__component_name_dfa` / :need:`doc__component_name_fmea`
+        - Are the templates for DFA and/or FMEA used? 
         - [YES | NO ]
         - :need:`[[title]] <std_req__iso26262__analysis_748>`, :need:`[[title]] <std_req__iso26262__analysis_849>`, :need:`[[title]] <std_req__iso26262__analysis_8410>`
         - <Rationale for result>

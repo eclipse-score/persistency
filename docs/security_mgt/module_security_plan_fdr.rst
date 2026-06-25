@@ -18,9 +18,10 @@ Security Plan Formal Review Report
 .. document:: Persistency Security Plan Formal Review
    :id: doc__persistency_security_plan_fdr
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: YES
-   :realizes: wp__fdr_reports
+   :realizes: wp__fdr_reports[version==1]
    :tags: persistency
 
 **1. Purpose**

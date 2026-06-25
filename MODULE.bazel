@@ -57,10 +57,26 @@ bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "score_baselibs", version = "0.2.7")
 bazel_dep(name = "score_baselibs_rust", version = "0.1.2")
 bazel_dep(name = "score_bazel_platforms", version = "0.1.2")
-bazel_dep(name = "score_docs_as_code", version = "4.0.3")
+bazel_dep(name = "score_docs_as_code", version = "4.3.0")
+git_override(
+    module_name = "score_docs_as_code",
+    commit = "c4ae42e204246b6d9a63e47d03367a29a11ea8d3",
+    remote = "https://github.com/eclipse-score/docs-as-code",
+)
 
 bazel_dep(name = "score_platform", version = "0.5.5", dev_dependency = True)
 bazel_dep(name = "score_process", version = "1.5.4", dev_dependency = True)
+git_override(
+    module_name = "score_process",
+    commit = "27ddcacc981e9d559550d133fa4d34ef64352186",
+    remote = "https://github.com/eclipse-score/process_description",
+)
+
+git_override(
+    module_name = "score_platform",
+    commit = "91bdea9e067073993d1e1799f830192e9413cf4f",
+    remote = "https://github.com/eclipse-score/score",
+)
 
 bazel_dep(name = "score_python_basics", version = "0.3.4")
 bazel_dep(name = "score_tooling", version = "1.2.0")
