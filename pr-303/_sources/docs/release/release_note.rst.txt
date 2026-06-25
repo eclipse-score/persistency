@@ -18,9 +18,10 @@ Release Note
 .. document:: Persistency Release Note
    :id: doc__persistency_release_note
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__module_sw_release_note
+   :realizes: wp__module_sw_release_note[version==1]
    :tags: persistency
 
 

@@ -18,9 +18,10 @@ Module Safety Plan
 .. document:: Persistency Safety Plan
    :id: doc__persistency_safety_plan
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__module_safety_plan
+   :realizes: wp__module_safety_plan[version==1]
    :tags: persistency
 
 Functional Safety Management Context

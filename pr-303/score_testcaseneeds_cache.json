@@ -1,5 +1,33 @@
 [
   {
+    "name": "TestBasic__test_returncode_ok[rust]",
+    "file": "tests/test_cases/tests/test_basic.py",
+    "line": "34",
+    "result": "passed",
+    "repo_name": null,
+    "hash": null,
+    "url": null,
+    "TestType": null,
+    "DerivationTechnique": null,
+    "result_text": "",
+    "PartiallyVerifies": null,
+    "FullyVerifies": null
+  },
+  {
+    "name": "TestBasic__test_trace_ok[rust]",
+    "file": "tests/test_cases/tests/test_basic.py",
+    "line": "37",
+    "result": "passed",
+    "repo_name": null,
+    "hash": null,
+    "url": null,
+    "TestType": null,
+    "DerivationTechnique": null,
+    "result_text": "",
+    "PartiallyVerifies": null,
+    "FullyVerifies": null
+  },
+  {
     "name": "TestDefaultValues__test_valid[optional-rust]",
     "file": "tests/test_cases/tests/test_cit_default_values.py",
     "line": "135",
@@ -655,6 +683,34 @@
     "DerivationTechnique": "requirements-analysis",
     "result_text": "",
     "PartiallyVerifies": "comp_req__kvs__key_encoding, comp_req__kvs__value_data_types",
+    "FullyVerifies": null
+  },
+  {
+    "name": "TestBasic__test_returncode_ok[cpp]",
+    "file": "tests/test_cases/tests/test_basic.py",
+    "line": "34",
+    "result": "passed",
+    "repo_name": null,
+    "hash": null,
+    "url": null,
+    "TestType": null,
+    "DerivationTechnique": null,
+    "result_text": "",
+    "PartiallyVerifies": null,
+    "FullyVerifies": null
+  },
+  {
+    "name": "TestBasic__test_trace_ok[cpp]",
+    "file": "tests/test_cases/tests/test_basic.py",
+    "line": "37",
+    "result": "passed",
+    "repo_name": null,
+    "hash": null,
+    "url": null,
+    "TestType": null,
+    "DerivationTechnique": null,
+    "result_text": "",
+    "PartiallyVerifies": null,
     "FullyVerifies": null
   },
   {

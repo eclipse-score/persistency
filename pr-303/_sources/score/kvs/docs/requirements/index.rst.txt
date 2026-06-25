@@ -18,9 +18,10 @@ Requirements
 .. document:: KVS Requirements
    :id: doc__kvs_requirements
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__requirements_comp
+   :realizes: wp__requirements_comp[version==1]
 
 Component Requirements
 ----------------------
@@ -30,9 +31,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_keys
+   :satisfies: feat_req__persistency__support_datatype_keys[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall accept keys that consist solely of alphanumeric characters, underscores, or dashes.
 
@@ -41,10 +44,12 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_keys
+   :satisfies: feat_req__persistency__support_datatype_keys[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
-   
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
+
    The component shall encode each key as valid UTF-8.
 
 .. comp_req:: Key Uniqueness
@@ -52,9 +57,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_keys
+   :satisfies: feat_req__persistency__support_datatype_keys[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall guarantee that each key is unique.
 
@@ -63,9 +70,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_keys
+   :satisfies: feat_req__persistency__support_datatype_keys[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall limit the maximum length of a key to 32 bytes.
 
@@ -74,10 +83,12 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_value
+   :satisfies: feat_req__persistency__support_datatype_value[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
-   
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
+
    The component shall accept only values of the following data types: Number,
    String, Null, Array[Value], or Dictionary{Key:Value}.
 
@@ -86,9 +97,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_value
+   :satisfies: feat_req__persistency__support_datatype_value[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall serialize and deserialize all values to and from JSON.
 
@@ -97,9 +110,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_value
+   :satisfies: feat_req__persistency__support_datatype_value[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall limit the maximum length of a value to 1024 bytes.
 
@@ -108,9 +123,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_value,feat_req__persistency__default_values
+   :satisfies: feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__default_values[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall support unset values and shall provide a default value
    when a value is unset.
@@ -120,9 +137,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_value,feat_req__persistency__default_values
+   :satisfies: feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__default_values[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall allow resetting a value to its default if a default is
    defined.
@@ -132,9 +151,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__default_values,feat_req__persistency__default_value_get,feat_req__persistency__reset_to_default,feat_req__persistency__default_value_file
+   :satisfies: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall accept default values of only permitted value data
    types.
@@ -144,9 +165,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__default_values,feat_req__persistency__default_value_get,feat_req__persistency__reset_to_default,feat_req__persistency__default_value_file
+   :satisfies: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall provide an API to retrieve default values.
 
@@ -155,9 +178,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__default_values,feat_req__persistency__default_value_get,feat_req__persistency__reset_to_default,feat_req__persistency__default_value_file
+   :satisfies: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall allow configuration of default values in code or in a
    separate configuration file.
@@ -167,9 +192,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__default_values,feat_req__persistency__default_value_get,feat_req__persistency__reset_to_default,feat_req__persistency__default_value_file
+   :satisfies: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall secure the configuration file for default values with an
    associated checksum file when default values are stored in a file.
@@ -179,9 +206,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__cfg
+   :satisfies: feat_req__persistency__cfg[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall allow configuration of KVS constraints at compile-time
    using source code constants or at runtime using a configuration file.
@@ -191,9 +220,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__concurrency
+   :satisfies: feat_req__persistency__concurrency[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall implement thread-safe mechanisms to enable concurrent
    access to data without data races.
@@ -203,9 +234,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__multiple_kvs
+   :satisfies: feat_req__persistency__multiple_kvs[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall manage all runtime variables within an instance to
    enable creation and use of multiple KVS instances concurrently within a
@@ -216,9 +249,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__integrity_check,feat_req__persistency__store_data
+   :satisfies: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall use the file API and the JSON data format to persist data.
 
@@ -227,9 +262,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__integrity_check,feat_req__persistency__store_data
+   :satisfies: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall generate a checksum for each data file and shall store
    it alongside the data.
@@ -239,9 +276,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__integrity_check,feat_req__persistency__load_data
+   :satisfies: feat_req__persistency__integrity_check[version==1],feat_req__persistency__load_data[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall verify the checksum when loading data.
 
@@ -250,9 +289,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__integrity_check,feat_req__persistency__store_data
+   :satisfies: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall use the file API to persist data.
 
@@ -261,9 +302,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__integrity_check,feat_req__persistency__store_data
+   :satisfies: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall use the JSON data format to persist data.
 
@@ -272,9 +315,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__versioning,feat_req__persistency__update_mechanism
+   :satisfies: feat_req__persistency__versioning[version==1],feat_req__persistency__update_mechanism[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall not provide built-in versioning.
 
@@ -283,9 +328,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__versioning,feat_req__persistency__update_mechanism
+   :satisfies: feat_req__persistency__versioning[version==1],feat_req__persistency__update_mechanism[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall use a JSON file storage format that enables the
    application to implement versioning, including upgrade and downgrade paths,
@@ -296,9 +343,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_create
+   :satisfies: feat_req__persistency__snapshot_create[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall create a snapshot each time data is stored.
 
@@ -307,9 +356,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__cfg
+   :satisfies: feat_req__persistency__cfg[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall maintain a configurable maximum number of snapshots.
 
@@ -318,9 +369,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_create
+   :satisfies: feat_req__persistency__snapshot_create[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall assign the ID 1 to the newest snapshot and shall increment the IDs of older snapshots accordingly.
 
@@ -329,9 +382,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_remove, feat_req__persistency__snapshot_restore
+   :satisfies: feat_req__persistency__snapshot_remove[version==1],feat_req__persistency__snapshot_restore[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall rotate and delete the oldest snapshot when the maximum number is reached.
 
@@ -340,9 +395,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_restore
+   :satisfies: feat_req__persistency__snapshot_restore[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall allow restoration of a snapshot by its ID.
 
@@ -351,9 +408,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_remove
+   :satisfies: feat_req__persistency__snapshot_remove[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall allow deletion of individual snapshots.
 
@@ -362,9 +421,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__dev_mode
+   :satisfies: feat_req__persistency__dev_mode[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall provide an engineering mode that can be enabled during
    build time to display debugging and internal information.
@@ -374,9 +435,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__prod_mode
+   :satisfies: feat_req__persistency__prod_mode[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall provide a field mode that can be enabled during build
    time to restrict access as much as possible.
@@ -386,9 +449,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__async_api
+   :satisfies: feat_req__persistency__async_api[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall provide an asynchronous API in addition to the standard API.
 
@@ -397,9 +462,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__access_control
+   :satisfies: feat_req__persistency__access_control[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall rely on the underlying filesystem for access and
    permission management and shall not implement its own access or permission
@@ -410,9 +477,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__access_control
+   :satisfies: feat_req__persistency__access_control[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall report any access or permission errors encountered at
    the filesystem level to the application.
@@ -422,9 +491,11 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__async_api, feat_req__persistency__async_completion
+   :satisfies: feat_req__persistency__async_api[version==1],feat_req__persistency__async_completion[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall provide an API for registering callbacks that are triggered by data change events.
 
@@ -432,44 +503,13 @@ Component Requirements
 Assumption of Use Requirements
 ------------------------------
 
-.. code-block:: rst
-
-   .. aou_req:: Next Title
-      :id: aou_req__kvs__next_title
-      :reqtype: Process
-      :security: YES
-      :safety: ASIL_B
-      :status: invalid
-
-      The Component User shall do xyz to use the component safely/securely
+none
 
 Environmental Requirements
 --------------------------
 
-.. code-block:: rst
-
-   .. aou_req:: Another Title
-      :id: aou_req__kvs__another_title
-      :reqtype: Process
-      :security: YES
-      :safety: ASIL_B
-      :status: invalid
-      :tags: environment
-
-      The Component shall only be used in a xyz environment to ensure its proper functioning.
-
-Hints
------
-
-.. attention::
-    The above directives must be updated according to your feature requirements.
-
-    - Replace the example content by the real content for your first requirement (according to :need:`gd_guidl__req_engineering`)
-    - Set ``safety`` and ``security`` to the right value (ASIL B/QM; YES/NO)
-    - Set ``reqtype`` with a link to the right value (<Functional|Interface|Process|Non-Functional>)
-    - Add other needed requirements for your feature
-    - Set ``status`` to ``valid`` and start the review/merge process
+none
 
 
-.. needextend:: docname is not None and "persistency/kvs/docs/requirements" in docname
+.. needextend:: docname is not None and "persistency/kvs/requirements" in docname
    :+tags: kvs

@@ -20,9 +20,10 @@ KVS (Key Value Store)
 .. document:: KVS
    :id: doc__kvs
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__cmpt_request
+   :realizes: wp__cmpt_request[version==1]
    :tags: Persistency KVS
 
 Abstract
