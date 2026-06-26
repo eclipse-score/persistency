@@ -13,8 +13,8 @@
    # *******************************************************************************
 
   
-Persistency (v0.5 beta)
-########################
+Persistency
+###########
 
 Feature request can be found here: :need:`doc__persistency`
 
@@ -23,7 +23,6 @@ Feature request can be found here: :need:`doc__persistency`
    architecture/chklst_arc_inspection.rst
    safety_analysis/fmea.rst
    safety_analysis/dfa.rst
-   safety_analysis/safety_analysis_fdr.rst
    safety_planning/index.rst
    security_planning/index.rst
    security_analysis/stride.rst
