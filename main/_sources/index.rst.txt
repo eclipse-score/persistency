@@ -100,6 +100,19 @@ Module / Feature Documentation
    docs/security_mgt/index
    docs/verification_report/module_verification_report
 
+
+Module / Feature documentation overview
++++++++++++++++++++++++++++++++++++++++
+
+.. needtable::
+   :filter: docname is not None and ("features" in docname or "manuals" in docname or "release" in docname or "safety_mgt" in docname or "security_mgt" in docname or "verification_report" in docname)
+   :style: table
+   :types: document
+   :columns: title;id;safety;security;status
+   :colwidths: 25,35,15,15,15
+   :sort: title
+
+
 Component documentation
 -------------------------------
 
@@ -109,6 +122,16 @@ Component documentation
    score/json/docs/index
    score/kvs/index
 
+Component documentation overview
+++++++++++++++++++++++++++++++++
+
+.. needtable::
+   :filter: docname is not None and "score" in docname
+   :style: table
+   :types: document
+   :columns: title;id;safety;security;status
+   :colwidths: 25,35,15,15,15
+   :sort: title
 
 Examples
 --------
