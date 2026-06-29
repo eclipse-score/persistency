@@ -31,7 +31,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_keys[version==1]
+   :derived_from: feat_req__persistency__support_datatype_keys[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -44,7 +44,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_keys[version==1]
+   :derived_from: feat_req__persistency__support_datatype_keys[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -57,7 +57,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_keys[version==1]
+   :derived_from: feat_req__persistency__support_datatype_keys[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -70,7 +70,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_keys[version==1]
+   :derived_from: feat_req__persistency__support_datatype_keys[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -83,7 +83,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_value[version==1]
+   :derived_from: feat_req__persistency__support_datatype_value[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -97,7 +97,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_value[version==1]
+   :derived_from: feat_req__persistency__support_datatype_value[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -110,7 +110,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_value[version==1]
+   :derived_from: feat_req__persistency__support_datatype_value[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -123,7 +123,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__default_values[version==1]
+   :derived_from: feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__default_values[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -137,7 +137,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__default_values[version==1]
+   :derived_from: feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__default_values[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -151,7 +151,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
+   :derived_from: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -165,7 +165,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
+   :derived_from: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -178,7 +178,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
+   :derived_from: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -192,7 +192,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
+   :derived_from: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1],feat_req__persistency__reset_to_default[version==1],feat_req__persistency__default_value_file[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -206,7 +206,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__cfg[version==1]
+   :derived_from: feat_req__persistency__cfg[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -220,7 +220,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__concurrency[version==1]
+   :derived_from: feat_req__persistency__concurrency[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -234,7 +234,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__multiple_kvs[version==1]
+   :derived_from: feat_req__persistency__multiple_kvs[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -249,7 +249,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
+   :derived_from: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -262,7 +262,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
+   :derived_from: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -276,7 +276,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__integrity_check[version==1],feat_req__persistency__load_data[version==1]
+   :derived_from: feat_req__persistency__integrity_check[version==1],feat_req__persistency__load_data[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -289,7 +289,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
+   :derived_from: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -302,7 +302,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
+   :derived_from: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -315,7 +315,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__versioning[version==1],feat_req__persistency__update_mechanism[version==1]
+   :derived_from: feat_req__persistency__versioning[version==1],feat_req__persistency__update_mechanism[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -328,7 +328,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__versioning[version==1],feat_req__persistency__update_mechanism[version==1]
+   :derived_from: feat_req__persistency__versioning[version==1],feat_req__persistency__update_mechanism[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -343,7 +343,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_create[version==1]
+   :derived_from: feat_req__persistency__snapshot_create[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -356,7 +356,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__cfg[version==1]
+   :derived_from: feat_req__persistency__cfg[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -369,7 +369,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_create[version==1]
+   :derived_from: feat_req__persistency__snapshot_create[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -382,7 +382,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_remove[version==1],feat_req__persistency__snapshot_restore[version==1]
+   :derived_from: feat_req__persistency__snapshot_remove[version==1],feat_req__persistency__snapshot_restore[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -395,7 +395,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_restore[version==1]
+   :derived_from: feat_req__persistency__snapshot_restore[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -408,7 +408,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_remove[version==1]
+   :derived_from: feat_req__persistency__snapshot_remove[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -421,7 +421,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__dev_mode[version==1]
+   :derived_from: feat_req__persistency__dev_mode[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -435,7 +435,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__prod_mode[version==1]
+   :derived_from: feat_req__persistency__prod_mode[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -449,7 +449,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__async_api[version==1]
+   :derived_from: feat_req__persistency__async_api[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -462,7 +462,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__access_control[version==1]
+   :derived_from: feat_req__persistency__access_control[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -477,7 +477,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__access_control[version==1]
+   :derived_from: feat_req__persistency__access_control[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
@@ -491,7 +491,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__async_api[version==1],feat_req__persistency__async_completion[version==1]
+   :derived_from: feat_req__persistency__async_api[version==1],feat_req__persistency__async_completion[version==1]
    :status: valid
    :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
