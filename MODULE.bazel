@@ -151,4 +151,4 @@ use_repo(
 )
 
 # S-CORE crates
-bazel_dep(name = "score_crates", version = "0.0.9")
+bazel_dep(name = "score_crates", version = "0.0.10")
