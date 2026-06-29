@@ -120,12 +120,12 @@ List of AoUs on the user of the platform features or the module of this safety m
 Safety concept of the SEooC
 ---------------------------
 | Persistency is full determistic developed. Detected errors will be reportet and Application has to handle them. Also if there are
-| errors which might have inpact on Persistency, but can not be detected by Persistency, the application has to handle the case that 
+| errors which might have inpact on Persistency, but can not be detected by Persistency, the application has to handle the case that
 | persistency is not available. The execution of persistency shall not be blocked by the application.
 
 Safety Anomalies
 ----------------
-| No known safety anomalies related to the module persistency exist. 
+| No known safety anomalies related to the module persistency exist.
 
 References
 ----------
