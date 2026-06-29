@@ -54,7 +54,7 @@ bazel_dep(name = "google_benchmark", version = "1.9.5", dev_dependency = True)
 bazel_dep(name = "platforms", version = "1.0.0")
 
 ## S-CORE bazel registry
-bazel_dep(name = "score_baselibs", version = "0.2.7")
+bazel_dep(name = "score_baselibs", version = "0.2.8")
 bazel_dep(name = "score_baselibs_rust", version = "0.1.2")
 bazel_dep(name = "score_bazel_platforms", version = "0.1.2")
 bazel_dep(name = "score_docs_as_code", version = "4.6.0")
