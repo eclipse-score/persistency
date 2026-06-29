@@ -53,6 +53,7 @@ build:per-x86_64-linux --platforms=@score_bazel_platforms//:x86_64-linux-gcc_12.
 build:per-x86_64-linux --extra_toolchains=@score_gcc_x86_64_toolchain//:x86_64-linux-gcc_12.2.0-posix
 build:per-x86_64-linux --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_unknown_linux_gnu
 build:per-x86_64-linux --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_unknown_linux_gnu_miri
+
 # -------------------------------------------------------------------------------
 # Config dedicated to target platform CPU:x86_64 and OS:QNX
 # -------------------------------------------------------------------------------
@@ -84,13 +85,12 @@ build:ferrocene-coverage --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cde
 test:ferrocene-coverage --run_under=@score_tooling//coverage:llvm_profile_wrapper
 
 
-# -------------------------------------------------------------------------------
-# Import local user workspace file, if exists
-# -------------------------------------------------------------------------------
-try-import %workspace%/user.bazelrc
-
-
 # Coverage configuration for C++
 coverage --features=coverage
 coverage --combined_report=lcov
 coverage --cache_test_results=no
+
+# -------------------------------------------------------------------------------
+# Import local user workspace file, if exists
+# -------------------------------------------------------------------------------
+try-import %workspace%/user.bazelrc
