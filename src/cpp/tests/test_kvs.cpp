@@ -738,8 +738,6 @@ TEST(kvs_flush, flush_success_data)
     /* Check if files were created correctly */
     EXPECT_TRUE(std::filesystem::exists(kvs_prefix + ".json"));
     EXPECT_TRUE(std::filesystem::exists(kvs_prefix + ".hash"));
-    EXPECT_FALSE(std::filesystem::exists(filename_prefix + "_1.json"));
-    EXPECT_FALSE(std::filesystem::exists(filename_prefix + "_1.hash"));
 
     cleanup_environment();
 }
@@ -811,8 +809,7 @@ TEST(kvs_snapshot_count, snapshot_count_success)
     }
 
 
-    /* Crea snapshot non contigui e verifica che il conteggio sia corretto */
-    // Solo _2.json
+    /* Create non-contiguous snapshots and verify that the count is correct */
     std::ofstream(filename_prefix + "_2.json") << "{}";
     auto count = result.value().snapshot_count();
     EXPECT_TRUE(count);

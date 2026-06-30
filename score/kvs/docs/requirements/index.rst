@@ -312,6 +312,8 @@ Component Requirements
    :belongs_to: comp__persistency_kvs
 
    The component shall create a snapshot in the first available slot when the snapshot_create function is explicitly called.
+   In the C++ implementation, slot 0 always holds the latest current the KVS (written on flush),
+   while slots 1 through 3 are available for explicitly created snapshots.
 
 .. comp_req:: Snapshot Maximum Number
    :id: comp_req__kvs__snapshot_max_num
