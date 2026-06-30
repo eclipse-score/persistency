@@ -18,10 +18,11 @@ Safety Manual
 .. document:: Persistency Safety Manual
    :id: doc__persistency_safety_manual
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
    :tags: persistency
-   :realizes: wp__module_safety_manual
+   :realizes: wp__module_safety_manual[version==1]
 
 Introduction/Scope
 ------------------
@@ -48,6 +49,32 @@ Assumed Platform Safety Requirements
 
 Assumptions of Use
 ------------------
+
+
+AoU Requirements
+################
+
+.. aou_req:: Persistency Error handling
+   :id: aou_req__persistency__error_handling
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :tags: environment
+
+   The application shall handle if the feature persistency is not available.
+
+.. aou_req:: Application execution
+   :id: aou_req__persistency__appl_exec
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :tags: environment
+
+   The execution of persistency shall not be blocked by the application.
 
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -92,11 +119,13 @@ List of AoUs on the user of the platform features or the module of this safety m
 
 Safety concept of the SEooC
 ---------------------------
-| <Describe here the safety concept incl. which faults are taken care of, reactions of the implemented functions under anomalous operating conditions ... if this is not already documented sufficiently in the feature documentation "safety impact" section of all the features the module is used in.>
+| Persistency is full determistic developed. Detected errors will be reportet and Application has to handle them. Also if there are
+| errors which might have inpact on Persistency, but can not be detected by Persistency, the application has to handle the case that
+| persistency is not available. The execution of persistency shall not be blocked by the application.
 
 Safety Anomalies
 ----------------
-| Anomalies (bugs in ASIL SW, detected by testing or by users, which could not be fixed) known before release are documented in the platform/module release notes <add link to release note>.
+| No known safety anomalies related to the module persistency exist.
 
 References
 ----------

@@ -12,17 +12,34 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
+.. _documents_docs_features_persistency:
 
-Safety Analysis Checklist
+Feature Security Planning
 =========================
 
-.. document:: Persistency Safety Analysis Checklist
-   :id: doc__module_safety_analysis_fdr
+.. document:: Persistency KVS Security WPs
+   :id: doc__persistency_security_wp
    :status: valid
    :version: 1
    :safety: ASIL_B
    :security: YES
-   :realizes: wp__fdr_reports[version==1]
+   :realizes: wp__platform_security_plan[version==1]
+   :tags: persistency
 
 
-Safety Analysis were only performed on feature level, see :need:`doc__persistency_safety_analysis_fdr` for details.
+.. list-table:: Feature persistency Workproducts
+    :header-rows: 1
+
+    * - Workproduct Id
+      - Link to process
+      - Process status
+      - Link to issue
+      - Link to WP
+      - WP status
+
+    * - :need:`wp__feature_security_analysis`
+      - :need:`gd_guidl__security_analysis`
+      - :ndf:`copy('status', need_id='gd_guidl__security_analysis')`
+      - TBD
+      - :need:`doc__persistency_stride`
+      - valid

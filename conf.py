@@ -71,3 +71,5 @@ templates_path = ["templates"]
 # Enable numref
 numfig = True
 # needs_builder_filter = ""
+
+required_in_id = ["persistency", "kvs"]

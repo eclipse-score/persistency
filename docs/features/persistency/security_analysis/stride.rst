@@ -1,6 +1,6 @@
 ..
    # *******************************************************************************
-   # Copyright (c) 2025 Contributors to the Eclipse Foundation
+   # Copyright (c) 2024 Contributors to the Eclipse Foundation
    #
    # See the NOTICE file(s) distributed with this work for additional
    # information regarding copyright ownership.
@@ -12,19 +12,16 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-  
-Persistency
-###########
+Persistency STRIDE
+##################
 
-Feature request can be found here: :need:`doc__persistency`
+.. document:: STRIDE
+   :id: doc__persistency_stride
+   :status: valid
+   :version: 1
+   :safety: ASIL_B
+   :security: YES
+   :realizes: wp__feature_security_analysis[version==1]
+   :tags: persistency
 
-.. toctree::
-   architecture/index.rst
-   architecture/chklst_arc_inspection.rst
-   safety_analysis/fmea.rst
-   safety_analysis/dfa.rst
-   safety_planning/index.rst
-   security_planning/index.rst
-   security_analysis/stride.rst
-
-
+STRIDE analysis procedure is required to be defined and applied. This section is created as placeholder and will be updated in future.
