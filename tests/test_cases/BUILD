@@ -55,6 +55,7 @@ score_py_pytest(
         "RUST_BACKTRACE": "1",
     },
     pytest_config = "//:pyproject.toml",
+    target_compatible_with = ["@platforms//os:linux"],
     deps = all_requirements,
 )
 
@@ -75,6 +76,7 @@ score_py_pytest(
         "RUST_BACKTRACE": "1",
     },
     pytest_config = "//:pyproject.toml",
+    target_compatible_with = ["@platforms//os:linux"],
     deps = all_requirements,
 )
 
