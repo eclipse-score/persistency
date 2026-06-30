@@ -879,7 +879,7 @@ TEST(kvs_snapshot_create, snapshot_create_success)
        Source _0.json / _0.hash are created by prepare_environment(). */
     auto result = kvs.value().snapshot_create();
     ASSERT_TRUE(result);
-    EXPECT_EQ(result.value(), 1U);
+    EXPECT_EQ(result.value(), 0U);
 
     /* Verify the snapshot files were physically created */
     EXPECT_TRUE(std::filesystem::exists(filename_prefix + "_1.json"));

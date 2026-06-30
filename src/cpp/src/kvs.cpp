@@ -687,7 +687,7 @@ std::size_t Kvs::snapshot_max_count() const
 score::ResultBlank Kvs::snapshot_restore(const SnapshotId& snapshot_id)
 {
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
-    if (lock.owns_lock())
+    if (!lock.owns_lock())
     {
         return score::MakeUnexpected(ErrorCode::MutexLockFailed);
     }

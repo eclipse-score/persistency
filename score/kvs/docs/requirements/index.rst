@@ -356,9 +356,10 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_create
+   :derived_from: feat_req__persistency__snapshot_create[version==1]
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
 
    The component shall create a snapshot in the first available slot when the snapshot_create function is explicitly called.
    In the C++ implementation, slot 0 always holds the latest current the KVS (written on flush),
