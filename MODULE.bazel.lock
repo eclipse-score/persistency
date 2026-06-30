@@ -979,8 +979,8 @@
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_starpls_lsp/0.1.0/MODULE.bazel": "b2f8c4c8d8e851706255ff9002b448bff6e040b8f0c6adedbde2a09375aa16cc",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_test_scenarios/0.4.1/MODULE.bazel": "69478ff7f59d1a4f0d96e8e303a17ce904848fea7ffd1fc3030406aa68dcfeae",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_test_scenarios/0.4.1/source.json": "9e0591cb24f7ec25f6f5987883b368eac439c41b6b52b65eed1121750335b0f5",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_qnx/0.0.5/MODULE.bazel": "868382fb16c73e0cdfb151f8ea06698fa9be77d1b5236f4018db70931523d470",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_qnx/0.0.5/source.json": "c16c0ef2ae176228450dc24df9ec2e5bb89a7c15f303bbfd595f99e55f24e5de",
+    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_qnx/0.0.7/MODULE.bazel": "2ae1df18803227f4edce7dfa1529ace724f60d9f6d048e20cd3aea1ae1429ba9",
+    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_qnx/0.0.7/source.json": "31864e9f2009cab9ebb50c1afe66f65c74a905e955defe76eb1f4a5ccf12f3bd",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_rust/0.9.1/MODULE.bazel": "40cab3f733d11fa7ebfa00667148c8da7c4c4168f0010cc8fff90d577f4f28f9",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_rust/0.9.1/source.json": "af8b25d7a21b2f60678f31fef4ad767c6e0ad8935386d51e0e3180bf5989e8d9",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_tooling/1.0.2/MODULE.bazel": "e70f396375b9d612b4f41ebceff7f18f68ab423b14625c138a354cc01bc62a10",
@@ -1200,7 +1200,7 @@
     },
     "@@aspect_rules_js+//npm:extensions.bzl%pnpm": {
       "general": {
-        "bzlTransitiveDigest": "KQhZ/+4A40kPyUUan4voQhnfwhugiJ1D4teRElMuUS0=",
+        "bzlTransitiveDigest": "BzhbpFCrfjNorQtcPjfg5ZuxS+yPqm0002T9BksWil8=",
         "usagesDigest": "kbjSw2REjlSC0HtTZDf2p+l/dmiMt3NHLoiWEXYAoQI=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -9722,7 +9722,7 @@
     },
     "@@score_toolchains_qnx+//:extensions.bzl%toolchains_qnx": {
       "general": {
-        "bzlTransitiveDigest": "duPft7C0FC890IpvU8LCRJkAa3ZF8Gv8qgVZqHw8U64=",
+        "bzlTransitiveDigest": "csl3ThlMgq6dRfQQOFzE6GAEV2Pxw93Cy/dlkjsUCA0=",
         "usagesDigest": "lHDzx1CuB8Ev+6aBH6zfzip4qBPy0d2ZOHMtCKtKfMs=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -9745,7 +9745,7 @@
               "sdp_repo": "toolchains_qnx_sdp",
               "qcc_version": "12.2.0",
               "sdp_version": "8.0.0",
-              "qnx_version_constraint": "@@score_toolchains_qnx+//platforms:qnx8_0",
+              "qnx_version_constraint": "@@score_bazel_platforms+//:qnx8_0",
               "default_license_server": ""
             }
           },
@@ -9753,7 +9753,7 @@
             "repoRuleId": "@@score_toolchains_qnx+//toolchains:rules.bzl%ifs_toolchain",
             "attributes": {
               "sdp_repo": "toolchains_qnx_sdp",
-              "qnx_version_constraint": "@@score_toolchains_qnx+//platforms:qnx8_0",
+              "qnx_version_constraint": "@@score_bazel_platforms+//:qnx8_0",
               "default_license_server": ""
             }
           }
