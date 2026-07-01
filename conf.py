@@ -11,38 +11,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
-
-
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-
-project = "Score Persistency"
+project = "S-CORE Persistency"
 project_url = "https://eclipse-score.github.io/persistency/"
-project_prefix = "PER_"
-author = "S-CORE"
-version = "0.1.0"
-
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
 
 extensions = [
-    "sphinx_design",
-    "sphinx_needs",
-    "myst_parser",
-    "sphinxcontrib.plantuml",
-    "score_plantuml",
-    "score_metamodel",
-    "score_draw_uml_funcs",
-    "score_source_code_linker",
-    "score_layout",
+    "score_sphinx_bundle",
 ]
-
-myst_enable_extensions = ["colon_fence"]
 
 include_patterns = [
     "index.rst",
@@ -57,19 +31,7 @@ exclude_patterns = [
     # entries are required to prevent the build from failing.
     "bazel-*",
     ".venv*",
+    "_build",
 ]
-
-# Enable markdown rendering
-source_suffix = {
-    ".rst": "restructuredtext",
-    ".md": "markdown",
-}
-
-templates_path = ["templates"]
-
-
-# Enable numref
-numfig = True
-# needs_builder_filter = ""
 
 required_in_id = ["persistency", "kvs"]
