@@ -108,6 +108,17 @@ score::Result<std::unordered_map<std::string, KvsValue>> Kvs::parse_json_data(co
                 auto sv = element.first.GetAsStringView();
                 std::string key(sv.data(), sv.size());
 
+                /* FEAT_REQ__KVS__maximum_size: keys read from persistent storage are not
+                   guaranteed to satisfy the limit (e.g. externally edited or corrupted
+                   files). Skip over-length keys so they never enter the store. */
+                if (!is_key_length_valid(key))
+                {
+                    logger->LogWarn() << "Skipping key with length " << key.length()
+                                      << " exceeding maximum allowed " << KVS_MAX_KEY_LENGTH_BYTES
+                                      << " bytes while loading";
+                    continue;
+                }
+
                 auto conv = any_to_kvsvalue(element.second);
                 if (!conv)
                 {
@@ -429,9 +440,24 @@ score::Result<bool> Kvs::is_value_default(const std::string_view key) const
     }
 }
 
+/* FEAT_REQ__KVS__maximum_size: single check for the key-length rule.
+   std::string_view::length() counts bytes, matching the byte-based requirement. */
+bool Kvs::is_key_length_valid(std::string_view key)
+{
+    return key.length() <= KVS_MAX_KEY_LENGTH_BYTES;
+}
+
 /* Set the value for a key*/
 score::ResultBlank Kvs::set_value(const std::string_view key, const KvsValue& value)
 {
+    /* FEAT_REQ__KVS__maximum_size: reject keys that exceed the maximum length. */
+    if (!is_key_length_valid(key))
+    {
+        logger->LogError() << "Key length " << key.length() << " exceeds maximum allowed "
+                           << KVS_MAX_KEY_LENGTH_BYTES << " bytes";
+        return score::MakeUnexpected(ErrorCode::KeyTooLong);
+    }
+
     score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock())
