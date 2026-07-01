@@ -351,6 +351,20 @@ Component Requirements
 
    The component shall create a snapshot each time data is stored.
 
+.. comp_req:: Snapshot Explicit Creation
+   :id: comp_req__kvs__snapshot_explicit_creation
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :derived_from: feat_req__persistency__snapshot_create[version==1]
+   :status: valid
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+
+   The component shall create a snapshot in the first available slot when the snapshot_create function is explicitly called.
+   In the C++ implementation, slot 0 always holds the latest current the KVS (written on flush),
+   while slots 1 through 3 are available for explicitly created snapshots.
+
 .. comp_req:: Snapshot Maximum Number
    :id: comp_req__kvs__snapshot_max_num
    :reqtype: Functional
@@ -376,19 +390,6 @@ Component Requirements
    :tags: inspected
 
    The component shall assign the ID 1 to the newest snapshot and shall increment the IDs of older snapshots accordingly.
-
-.. comp_req:: Snapshot Rotation
-   :id: comp_req__kvs__snapshot_rotate
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :derived_from: feat_req__persistency__snapshot_remove[version==1],feat_req__persistency__snapshot_restore[version==1]
-   :status: valid
-   :version: 1
-   :belongs_to: comp__persistency_kvs[version==1]
-   :tags: inspected
-
-   The component shall rotate and delete the oldest snapshot when the maximum number is reached.
 
 .. comp_req:: Snapshot Restore
    :id: comp_req__kvs__snapshot_restore
