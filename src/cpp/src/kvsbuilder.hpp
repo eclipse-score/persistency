@@ -15,9 +15,12 @@
 
 #include "kvs.hpp"
 #include <string>
+#include <optional>
 
 namespace score::mw::per::kvs
 {
+
+constexpr size_t KVS_DEFAULT_MAX_SIZE_BYTES = 1000;
 
 /**
  * @class KvsBuilder
@@ -90,6 +93,13 @@ class KvsBuilder final
     KvsBuilder& dir(std::string&& dir_path);
 
     /**
+     * @brief Configure the maximum storage size for the KVS in bytes.
+     * @param max_bytes The maximum allowed total storage size in bytes.
+     * @return Reference to this builder (for chaining).
+     */
+    KvsBuilder& max_size(std::optional<size_t> max_bytes);
+
+    /**
      * @brief Builds and opens the Kvs instance with the configured options.
      *
      * Internally calls Kvs::open() with the selected flags and directory.
@@ -103,8 +113,10 @@ class KvsBuilder final
     bool need_defaults;      ///< Whether default values are required
     bool need_kvs;           ///< Whether an existing KVS is required
     std::string directory;   ///< Directory where to store the KVS Files
+    std::optional<size_t> maximum_size;     ///< Maximum total storage size for the KVS in bytes
 };
 
 } /* namespace score::mw::per::kvs */
 
 #endif /* SCORE_LIB_KVS_KVSBUILDER_HPP */
+
