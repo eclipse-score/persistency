@@ -34,6 +34,7 @@ compile_pip_requirements(
 score_virtualenv(
     name = "python_tc_venv",
     reqs = all_requirements,
+    tags = ["manual"],
     venv_name = ".python_tc_venv",
 )
 

@@ -100,6 +100,7 @@ qnx_ifs(
         ":is_qnx_aarch64": ["install"],  # relative to the .build file’s dir
         "//conditions:default": [],
     }),
+    tags = ["manual"],
     target_compatible_with = ["@platforms//os:qnx"],
 )
 
@@ -119,5 +120,6 @@ sh_binary(
         "@score_qcc_aarch64_toolchain_pkg//:host_all",
         "@score_qcc_aarch64_toolchain_pkg//:host_dir",
     ],
+    tags = ["manual"],
     target_compatible_with = ["@platforms//os:qnx"],
 )
