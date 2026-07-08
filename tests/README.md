@@ -75,6 +75,13 @@ Run all Component Integration Tests:
 bazel test //:cit_tests
 ```
 
+If external baselibs warnings/errors should not block local persistency CIT debugging,
+run the local debug configuration and local-only suite:
+
+```bash
+bazel test --config=cit-local-debug //:cit_tests_local
+```
+
 When the dependencies in [requirements.txt](test_cases/requirements.txt) file are manually modified, the user should invoke command and commit changes:
 
 ```bash

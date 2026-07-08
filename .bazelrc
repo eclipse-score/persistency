@@ -39,6 +39,16 @@ build:lint --config=per-x86_64-linux
 test --test_output=errors
 
 # -------------------------------------------------------------------------------
+# Local config for CIT debugging in presence of upstream deprecation warnings
+# -------------------------------------------------------------------------------
+# This keeps strict settings by default, but allows local debugging to proceed
+# when external dependencies emit deprecated-declaration warnings under -Werror.
+build:cit-local-debug --copt=-Wno-error=deprecated-declarations
+build:cit-local-debug --cxxopt=-Wno-error=deprecated-declarations
+test:cit-local-debug --copt=-Wno-error=deprecated-declarations
+test:cit-local-debug --cxxopt=-Wno-error=deprecated-declarations
+
+# -------------------------------------------------------------------------------
 # Shared configuration for simple test execution
 # -------------------------------------------------------------------------------
 build:per_shared --incompatible_strict_action_env
