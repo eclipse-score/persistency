@@ -15,9 +15,11 @@ name: Release
 on:
   # Trigger manually to do a dry-run or to create the actual release.
   # dry_run=true  → runs the full build/test/coverage pipeline but skips
-  #                 the MODULE.bazel version bump, git tag and GitHub release.
-  # dry_run=false → bumps MODULE.bazel, creates the tag, creates the release,
-  #                 then attaches coverage artifacts to it.
+  #                 the git tag and GitHub release.
+  # dry_run=false → verifies MODULE.bazel already matches the release version,
+  #                 creates the tag, creates the release, attaches coverage
+  #                 artifacts. MODULE.bazel must be bumped via a normal PR
+  #                 first (direct pushes to main require PR + approval).
   workflow_dispatch:
     inputs:
       version:
@@ -38,7 +40,12 @@ on:
 jobs:
   # ---------------------------------------------------------------------------
   # Job 1 (workflow_dispatch + dry_run=false only):
-  #   bump MODULE.bazel, commit, tag and create GitHub release.
+  #   verify MODULE.bazel is already at the release version, tag and create
+  #   GitHub release.
+  #
+  #   NOTE: Direct pushes to main are blocked by branch protection (requires PR
+  #   + 1 approval). MODULE.bazel must be bumped to the release version via a
+  #   normal PR *before* triggering this workflow with dry_run=false.
   # ---------------------------------------------------------------------------
   prepare-release:
     if: github.event_name == 'workflow_dispatch' && !inputs.dry_run
@@ -58,17 +65,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Bump MODULE.bazel version
+      - name: Verify MODULE.bazel version matches release version
         run: |
           set -euo pipefail
           CURRENT=$(grep -oP '(?<=version = ")[^"]+' MODULE.bazel | head -1)
-          echo "MODULE.bazel: ${CURRENT} → ${{ inputs.version }}"
-          sed -i "s/version = \"${CURRENT}\"/version = \"${{ inputs.version }}\"/" MODULE.bazel
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add MODULE.bazel
-          git commit -m "chore: release v${{ inputs.version }}"
-          git push origin main
+          echo "MODULE.bazel version: ${CURRENT}"
+          echo "Requested release:    ${{ inputs.version }}"
+          if [[ "${CURRENT}" != "${{ inputs.version }}" ]]; then
+            echo "ERROR: MODULE.bazel version (${CURRENT}) does not match release version (${{ inputs.version }})."
+            echo "Bump MODULE.bazel to ${{ inputs.version }} via a PR and merge it before releasing."
+            exit 1
+          fi
 
       - name: Create and push tag
         id: create-tag
