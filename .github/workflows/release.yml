@@ -195,8 +195,8 @@ jobs:
       - name: Upload artifacts (workflow artifact — always, including dry runs)
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ github.event.repository.name }}_coverage_report.zip
-          path: ${{ github.event.repository.name }}_coverage_report.zip
+          name: ${{ github.event.repository.name }}_coverage_report
+          path: artifacts/
 
       - name: Attach ZIP to GitHub Release (skipped on dry run)
         if: |
