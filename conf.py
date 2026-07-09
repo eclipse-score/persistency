@@ -32,6 +32,10 @@ exclude_patterns = [
     "bazel-*",
     ".venv*",
     "_build",
+    "**/CONTRIBUTION.md",
+    "**/README.md",
+    "**/.github/**",
+    "**/improvement.md"
 ]
 
 required_in_id = ["persistency", "kvs"]
