@@ -286,7 +286,7 @@ jobs:
               echo "### Next step"
               echo "Update the Bazel registry in \`eclipse-score/score\` with the new module version."
             fi
-          } >> "$GITHUB_STEP_SUMMARY"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
 
           # Annotation for quick visibility in the Annotations box
           if [[ $(( FAIL + ERROR )) -gt 0 ]]; then
