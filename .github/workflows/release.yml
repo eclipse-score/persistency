@@ -54,7 +54,7 @@ jobs:
           (echo "ERROR: Invalid version '${{ inputs.version }}'. Use X.Y.Z format." && exit 1)
 
       - name: Checkout Repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.0
         with:
           fetch-depth: 0
 
@@ -113,7 +113,7 @@ jobs:
           (echo "ERROR: Invalid version '${{ inputs.version }}'. Use X.Y.Z format." && exit 1)
 
       - name: Checkout Repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.0
         with:
           # dry_run: check out main (tag doesn't exist yet / won't be created)
           # real release via dispatch: check out the newly created tag
@@ -131,7 +131,7 @@ jobs:
           sudo apt-get install -y lcov
 
       - name: Setup Bazel with shared caching
-        uses: bazel-contrib/setup-bazel@0.18.0
+        uses: bazel-contrib/setup-bazel@0.19.0
         with:
           disk-cache: true
           repository-cache: true
