@@ -172,12 +172,15 @@ jobs:
             --experimental_generate_llvm_lcov \
             --nocache_test_results \
             --nostamp
-          genhtml "$(bazel info output_path)/_coverage/_coverage_report.dat" \
+          GENHTML_OUT=$(genhtml "$(bazel info output_path)/_coverage/_coverage_report.dat" \
             -o=rust_coverage \
             --show-details \
             --legend \
             --function-coverage \
-            --branch-coverage
+            --branch-coverage)
+          echo "${GENHTML_OUT}"
+          RUST_LINE_COV=$(echo "${GENHTML_OUT}" | grep -oP 'lines\.*: \K[0-9.]+(?=%)')
+          echo "RUST_LINE_COV=${RUST_LINE_COV}" >> "$GITHUB_ENV"
 
       - name: Run Unit Test with Coverage for C++
         run: |
@@ -188,12 +191,15 @@ jobs:
             --experimental_generate_llvm_lcov \
             --nocache_test_results \
             --nostamp
-          genhtml "$(bazel info output_path)/_coverage/_coverage_report.dat" \
+          GENHTML_OUT=$(genhtml "$(bazel info output_path)/_coverage/_coverage_report.dat" \
             -o=cpp_coverage \
             --show-details \
             --legend \
             --function-coverage \
-            --branch-coverage
+            --branch-coverage)
+          echo "${GENHTML_OUT}"
+          CPP_LINE_COV=$(echo "${GENHTML_OUT}" | grep -oP 'lines\.*: \K[0-9.]+(?=%)')
+          echo "CPP_LINE_COV=${CPP_LINE_COV}" >> "$GITHUB_ENV"
 
       - name: Create archive of test report
         shell: bash
@@ -271,24 +277,8 @@ jobs:
             echo "| Build (x86_64-linux) | ✅ |"
             echo "| Unit tests | ${TEST_RESULT} |"
 
-            # Rust coverage line rate
-            RUST_COV="n/a"
-            RUST_HTML="artifacts/rust_coverage/index.html"
-            if [[ -f "${RUST_HTML}" ]]; then
-              RATE=$(grep -oP '(?<=<td class="headerCovTableEntry">)[0-9.]+(?= %)' "${RUST_HTML}" | head -1 || true)
-              [[ -n "${RATE}" ]] && RUST_COV="${RATE} %"
-            fi
-
-            # C++ coverage line rate
-            CPP_COV="n/a"
-            CPP_HTML="artifacts/cpp_coverage/index.html"
-            if [[ -f "${CPP_HTML}" ]]; then
-              RATE=$(grep -oP '(?<=<td class="headerCovTableEntry">)[0-9.]+(?= %)' "${CPP_HTML}" | head -1 || true)
-              [[ -n "${RATE}" ]] && CPP_COV="${RATE} %"
-            fi
-
-            echo "| Rust coverage | ${RUST_COV} |"
-            echo "| C++ coverage  | ${CPP_COV} |"
+            echo "| Rust coverage | ${{ env.RUST_LINE_COV != '' && format('{0} %', env.RUST_LINE_COV) || 'n/a' }} |"
+            echo "| C++ coverage  | ${{ env.CPP_LINE_COV != '' && format('{0} %', env.CPP_LINE_COV) || 'n/a' }} |"
 
             echo ""
             echo "### Artifacts"
