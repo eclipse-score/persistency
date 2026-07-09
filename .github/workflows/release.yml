@@ -166,21 +166,18 @@ jobs:
       - name: Run Unit Test with Coverage for Rust
         run: |
           set -euo pipefail
-          bazel coverage --lockfile_mode=error --config=per-x86_64-linux //:unit_tests \
-            --collect_code_coverage \
-            --combined_report=lcov \
-            --experimental_generate_llvm_lcov \
+          # Use ferrocene-coverage config so coverage is collected for Rust source files (.rs),
+          # not just the C++ wrapper layer that plain `bazel coverage` would instrument.
+          bazel test --lockfile_mode=error --config=per-x86_64-linux --config=ferrocene-coverage \
             --nocache_test_results \
-            --nostamp
-          GENHTML_OUT=$(genhtml "$(bazel info output_path)/_coverage/_coverage_report.dat" \
-            -o=rust_coverage \
-            --show-details \
-            --legend \
-            --function-coverage \
-            --branch-coverage)
-          echo "${GENHTML_OUT}"
-          RUST_LINE_COV=$(echo "${GENHTML_OUT}" | grep -oP 'lines\.*: \K[0-9.]+(?=%)')
+            //src/rust/...
+          # Generate the HTML report via the dedicated repo target (same as rust_coverage.yml).
+          RUST_RUN_OUT=$(bazel run --lockfile_mode=error //:rust_coverage 2>&1)
+          echo "${RUST_RUN_OUT}"
+          RUST_LINE_COV=$(echo "${RUST_RUN_OUT}" | grep -oP 'lines\.*: \K[0-9.]+(?=%)' | head -1 || true)
           echo "RUST_LINE_COV=${RUST_LINE_COV}" >> "$GITHUB_ENV"
+          # Copy coverage HTML to a fixed path for archiving
+          cp -r "$(bazel info bazel-bin)/coverage/rust-tests" rust_coverage
 
       - name: Run Unit Test with Coverage for C++
         run: |
