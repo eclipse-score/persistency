@@ -132,6 +132,11 @@ jobs:
           else
             echo "RELEASE_VERSION=${{ github.event.release.tag_name }}" >> "$GITHUB_ENV"
           fi
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.dry_run }}" == "true" ]]; then
+            echo "ARTIFACT_SUFFIX=_dry-run" >> "$GITHUB_ENV"
+          else
+            echo "ARTIFACT_SUFFIX=" >> "$GITHUB_ENV"
+          fi
 
       - name: Install lcov
         run: |
@@ -198,12 +203,12 @@ jobs:
           find bazel-testlogs/src/ -name 'test.xml' -print0 | xargs -0 -I{} cp --parents {} artifacts/
           cp -r cpp_coverage artifacts/
           cp -r rust_coverage artifacts/
-          zip -r ${{ github.event.repository.name }}_coverage_report_${RELEASE_VERSION}.zip artifacts/
+          zip -r ${{ github.event.repository.name }}_coverage_report_${RELEASE_VERSION}${ARTIFACT_SUFFIX}.zip artifacts/
 
       - name: Upload artifacts (workflow artifact — always, including dry runs)
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ github.event.repository.name }}_coverage_report_${{ env.RELEASE_VERSION }}
+          name: ${{ github.event.repository.name }}_coverage_report_${{ env.RELEASE_VERSION }}${{ env.ARTIFACT_SUFFIX }}
           path: artifacts/
 
       - name: Attach ZIP to GitHub Release (skipped on dry run)
@@ -218,7 +223,7 @@ jobs:
               needs.prepare-release.outputs.tag ||
               github.event.release.tag_name
             }}
-          files: ${{ github.event.repository.name }}_coverage_report_${{ env.RELEASE_VERSION }}.zip
+          files: ${{ github.event.repository.name }}_coverage_report_${{ env.RELEASE_VERSION }}${{ env.ARTIFACT_SUFFIX }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -226,7 +231,7 @@ jobs:
         if: always()
         shell: bash
         run: |
-          VERSION="${{ github.event_name == 'workflow_dispatch' && inputs.version || github.event.release.tag_name }}"
+          VERSION="${RELEASE_VERSION}"
           DRY_RUN="${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}"
 
           {
@@ -287,7 +292,7 @@ jobs:
 
             echo ""
             echo "### Artifacts"
-            echo "Coverage report uploaded as workflow artifact \`${{ github.event.repository.name }}_coverage_report_${VERSION}\`."
+            echo "Coverage report uploaded as workflow artifact \`${{ github.event.repository.name }}_coverage_report_${VERSION}${ARTIFACT_SUFFIX}\`."
 
             if [[ "${DRY_RUN}" != "true" ]]; then
               echo ""
