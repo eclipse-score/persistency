@@ -32,7 +32,7 @@ Verification Report
        :includes: comp__persistency_kvs[version==1]
 
 .. mod_insp:: KVS Requirements Inspection Record
-       :id: mod_insp__kvs_req
+       :id: mod_insp__kvs__req
        :safety: ASIL_B
        :security: NO
        :status: valid
@@ -49,7 +49,7 @@ Verification Report
        :evidence: doc__kvs_req_inspection
 
 .. mod_insp:: Persistency Architecture Inspection Record
-       :id: mod_insp__persistency_arch
+       :id: mod_insp__persistency__arch
        :safety: ASIL_B
        :security: NO
        :status: valid
@@ -62,11 +62,11 @@ Verification Report
        :findings_open: 0
        :inspection_date: 2026-07-07
        :belongs_to: mod__persistency
-       :inspects: feat_arc_sta__persistency__static[version==1], comp_arc_sta__kvs__static_view
-       :evidence: doc__persistency_arc_inspection, doc__kvs_arc_inspection
+       :inspects: feat_arc_sta__persistency__static[version==1], feat_arc_dyn__persistency__read_key[version==1]
+       :evidence: doc__persistency_kvs_architecture[version==1]
 
 .. mod_insp:: KVS Implementation Inspection Record
-       :id: mod_insp__kvs_impl
+       :id: mod_insp__kvs__impl
        :safety: ASIL_B
        :security: NO
        :status: valid
@@ -79,11 +79,11 @@ Verification Report
        :findings_open: 0
        :inspection_date: 2026-07-07
        :belongs_to: mod__persistency
-       :inspects: doc__kvs_detailed_design, comp_arc_dyn__kvs__dynamic_view
-       :evidence: doc__kvs_impl_inspection
+       :inspects: feat_arc_dyn__persistency__write_key[version==1], feat_arc_dyn__persistency__flush[version==1]
+       :evidence: doc__persistency_kvs_architecture[version==1]
 
 .. mod_ver_report:: Persistency Module Verification Summary
-       :id: mod_vrep__persistency_report
+       :id: mod_vrep__persistency__report
        :safety: ASIL_B
        :security: NO
        :status: valid
@@ -95,8 +95,8 @@ Verification Report
        :report_version: 1
        :release_baseline: main
        :belongs_to: mod__persistency
-       :contains: mod_insp__kvs_req, mod_insp__persistency_arch, mod_insp__kvs_impl
-       :covers: comp_req__kvs__key_naming[version==1], feat_arc_sta__persistency__static[version==1], doc__kvs_detailed_design, feat_saf_dfa__persistency__execution_blocking[version==1], feat_saf_fmea__persistency__err_handl[version==1]
+       :contains: mod_insp__kvs__req, mod_insp__persistency__arch, mod_insp__kvs__impl
+       :covers: comp_req__kvs__key_naming[version==1], comp_req__kvs__value_default[version==1], feat_arc_sta__persistency__static[version==1], feat_saf_dfa__persistency__execution_blocking[version==1], feat_saf_fmea__persistency__err_handl[version==1]
        :evidence: doc__persistency_verification_report, doc__persistency_safety_analysis_fdr
        :realizes: wp__verification_module_ver_report[version==1]
 
