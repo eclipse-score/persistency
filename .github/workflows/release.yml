@@ -125,6 +125,14 @@ jobs:
               github.ref
             }}
 
+      - name: Resolve release version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "RELEASE_VERSION=v${{ inputs.version }}" >> "$GITHUB_ENV"
+          else
+            echo "RELEASE_VERSION=${{ github.event.release.tag_name }}" >> "$GITHUB_ENV"
+          fi
+
       - name: Install lcov
         run: |
           sudo apt-get update
@@ -190,12 +198,12 @@ jobs:
           find bazel-testlogs/src/ -name 'test.xml' -print0 | xargs -0 -I{} cp --parents {} artifacts/
           cp -r cpp_coverage artifacts/
           cp -r rust_coverage artifacts/
-          zip -r ${{ github.event.repository.name }}_coverage_report.zip artifacts/
+          zip -r ${{ github.event.repository.name }}_coverage_report_${RELEASE_VERSION}.zip artifacts/
 
       - name: Upload artifacts (workflow artifact — always, including dry runs)
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ github.event.repository.name }}_coverage_report
+          name: ${{ github.event.repository.name }}_coverage_report_${{ env.RELEASE_VERSION }}
           path: artifacts/
 
       - name: Attach ZIP to GitHub Release (skipped on dry run)
@@ -210,7 +218,7 @@ jobs:
               needs.prepare-release.outputs.tag ||
               github.event.release.tag_name
             }}
-          files: ${{ github.event.repository.name }}_coverage_report.zip
+          files: ${{ github.event.repository.name }}_coverage_report_${{ env.RELEASE_VERSION }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -279,7 +287,7 @@ jobs:
 
             echo ""
             echo "### Artifacts"
-            echo "Coverage report uploaded as workflow artifact \`${{ github.event.repository.name }}_coverage_report\`."
+            echo "Coverage report uploaded as workflow artifact \`${{ github.event.repository.name }}_coverage_report_${VERSION}\`."
 
             if [[ "${DRY_RUN}" != "true" ]]; then
               echo ""
