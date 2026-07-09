@@ -174,7 +174,7 @@ jobs:
           # Generate the HTML report via the dedicated repo target (same as rust_coverage.yml).
           RUST_RUN_OUT=$(bazel run --lockfile_mode=error //:rust_coverage 2>&1)
           echo "${RUST_RUN_OUT}"
-          RUST_LINE_COV=$(echo "${RUST_RUN_OUT}" | grep -oP 'lines\.*: \K[0-9.]+(?=%)' | head -1 || true)
+          RUST_LINE_COV=$(echo "${RUST_RUN_OUT}" | grep -oP 'Overall line coverage: \K[0-9.]+(?=%)'| head -1 || true)
           echo "RUST_LINE_COV=${RUST_LINE_COV}" >> "$GITHUB_ENV"
           # Copy coverage HTML to a fixed path for archiving
           cp -r "$(bazel info bazel-bin)/coverage/rust-tests" rust_coverage
