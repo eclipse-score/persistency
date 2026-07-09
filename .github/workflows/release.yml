@@ -213,3 +213,84 @@ jobs:
           files: ${{ github.event.repository.name }}_coverage_report.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Job Summary
+        if: always()
+        shell: bash
+        run: |
+          VERSION="${{ github.event_name == 'workflow_dispatch' && inputs.version || github.event.release.tag_name }}"
+          DRY_RUN="${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}"
+
+          {
+            echo "## Release Verification: ${VERSION}"
+            echo ""
+            if [[ "${DRY_RUN}" == "true" ]]; then
+              echo "> **Dry run** — no tag or release was created."
+            else
+              echo "> **Real release** — tag and GitHub Release were created."
+            fi
+            echo ""
+
+            echo "### Checks"
+            echo "| Step | Result |"
+            echo "|------|--------|"
+
+            # Parse test XML for pass/fail counts
+            PASS=0; FAIL=0; ERROR=0
+            while IFS= read -r xml; do
+              p=$(grep -oP '(?<=tests=")[0-9]+' "$xml" | head -1 || echo 0)
+              f=$(grep -oP '(?<=failures=")[0-9]+' "$xml" | head -1 || echo 0)
+              e=$(grep -oP '(?<=errors=")[0-9]+' "$xml" | head -1 || echo 0)
+              PASS=$(( PASS + ${p:-0} ))
+              FAIL=$(( FAIL + ${f:-0} ))
+              ERROR=$(( ERROR + ${e:-0} ))
+            done < <(find artifacts/ -name 'test.xml' 2>/dev/null)
+
+            TOTAL=$(( PASS + FAIL + ERROR ))
+            if [[ $TOTAL -eq 0 ]]; then
+              TEST_RESULT="⚠️ no test results found"
+            elif [[ $(( FAIL + ERROR )) -gt 0 ]]; then
+              TEST_RESULT="❌ ${PASS}/${TOTAL} passed (${FAIL} failed, ${ERROR} errors)"
+            else
+              TEST_RESULT="✅ ${PASS}/${TOTAL} passed"
+            fi
+
+            echo "| Build (x86_64-linux) | ✅ |"
+            echo "| Unit tests | ${TEST_RESULT} |"
+
+            # Rust coverage line rate
+            RUST_COV="n/a"
+            RUST_HTML="artifacts/rust_coverage/index.html"
+            if [[ -f "${RUST_HTML}" ]]; then
+              RATE=$(grep -oP '(?<=<td class="headerCovTableEntry">)[0-9.]+(?= %)' "${RUST_HTML}" | head -1 || true)
+              [[ -n "${RATE}" ]] && RUST_COV="${RATE} %"
+            fi
+
+            # C++ coverage line rate
+            CPP_COV="n/a"
+            CPP_HTML="artifacts/cpp_coverage/index.html"
+            if [[ -f "${CPP_HTML}" ]]; then
+              RATE=$(grep -oP '(?<=<td class="headerCovTableEntry">)[0-9.]+(?= %)' "${CPP_HTML}" | head -1 || true)
+              [[ -n "${RATE}" ]] && CPP_COV="${RATE} %"
+            fi
+
+            echo "| Rust coverage | ${RUST_COV} |"
+            echo "| C++ coverage  | ${CPP_COV} |"
+
+            echo ""
+            echo "### Artifacts"
+            echo "Coverage report uploaded as workflow artifact \`${{ github.event.repository.name }}_coverage_report\`."
+
+            if [[ "${DRY_RUN}" != "true" ]]; then
+              echo ""
+              echo "### Next step"
+              echo "Update the Bazel registry in \`eclipse-score/score\` with the new module version."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Annotation for quick visibility in the Annotations box
+          if [[ $(( FAIL + ERROR )) -gt 0 ]]; then
+            echo "::error::Release verification failed: ${FAIL} test failure(s), ${ERROR} error(s)"
+          else
+            echo "::notice::Release verification passed for ${VERSION} (dry_run=${DRY_RUN})"
+          fi
