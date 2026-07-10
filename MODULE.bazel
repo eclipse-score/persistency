@@ -10,10 +10,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-module(
-    name = "score_persistency",
-    version = "0.3.3",
-)
+module(name = "score_persistency")
 
 ## Toolchains (dependencies and config)
 # python

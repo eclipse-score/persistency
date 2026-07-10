@@ -16,10 +16,8 @@ on:
   # Trigger manually to do a dry-run or to create the actual release.
   # dry_run=true  → runs the full build/test/coverage pipeline but skips
   #                 the git tag and GitHub release.
-  # dry_run=false → verifies MODULE.bazel already matches the release version,
-  #                 creates the tag, creates the release, attaches coverage
-  #                 artifacts. MODULE.bazel must be bumped via a normal PR
-  #                 first (direct pushes to main require PR + approval).
+  # dry_run=false → creates the tag, creates the release, and attaches
+  #                 coverage artifacts.
   workflow_dispatch:
     inputs:
       version:
@@ -40,12 +38,7 @@ on:
 jobs:
   # ---------------------------------------------------------------------------
   # Job 1 (workflow_dispatch + dry_run=false only):
-  #   verify MODULE.bazel is already at the release version, tag and create
-  #   GitHub release.
-  #
-  #   NOTE: Direct pushes to main are blocked by branch protection (requires PR
-  #   + 1 approval). MODULE.bazel must be bumped to the release version via a
-  #   normal PR *before* triggering this workflow with dry_run=false.
+  #   create release tag and GitHub release.
   # ---------------------------------------------------------------------------
   prepare-release:
     if: github.event_name == 'workflow_dispatch' && !inputs.dry_run
@@ -64,18 +57,6 @@ jobs:
         uses: actions/checkout@v7.0.0
         with:
           fetch-depth: 0
-
-      - name: Verify MODULE.bazel version matches release version
-        run: |
-          set -euo pipefail
-          CURRENT=$(grep -oP '(?<=version = ")[^"]+' MODULE.bazel | head -1)
-          echo "MODULE.bazel version: ${CURRENT}"
-          echo "Requested release:    ${{ inputs.version }}"
-          if [[ "${CURRENT}" != "${{ inputs.version }}" ]]; then
-            echo "ERROR: MODULE.bazel version (${CURRENT}) does not match release version (${{ inputs.version }})."
-            echo "Bump MODULE.bazel to ${{ inputs.version }} via a PR and merge it before releasing."
-            exit 1
-          fi
 
       - name: Create and push tag
         id: create-tag
@@ -291,7 +272,7 @@ jobs:
             if [[ "${DRY_RUN}" != "true" ]]; then
               echo ""
               echo "### Next step"
-              echo "Update the Bazel registry in \`eclipse-score/score\` with the new module version."
+              echo "Update the Bazel registry in \`eclipse-score/score\` for release tag ${VERSION}."
             fi
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
