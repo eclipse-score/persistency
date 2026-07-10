@@ -61,6 +61,8 @@ jobs:
       - name: Create and push tag
         id: create-tag
         run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           TAG="v${{ inputs.version }}"
           git tag -a "$TAG" -m "Release $TAG"
           git push origin "$TAG"
@@ -85,10 +87,8 @@ jobs:
   release-verification:
     needs: [prepare-release]
     if: |
-      always() && (
-        github.event_name == 'release' ||
-        github.event_name == 'workflow_dispatch'
-      )
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_dispatch' && (inputs.dry_run || needs.prepare-release.result != 'failure'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
