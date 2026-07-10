@@ -12,7 +12,7 @@
 # *******************************************************************************
 module(
     name = "score_persistency",
-    version = "0.0.0",
+    version = "0.3.3",
 )
 
 ## Toolchains (dependencies and config)
