@@ -291,18 +291,7 @@ Component Requirements
    application to implement versioning, including upgrade and downgrade paths,
    as needed.
 
-.. comp_req:: Snapshot Creation
-   :id: comp_req__kvs__snapshot_creation
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_create
-   :status: valid
-   :belongs_to: comp__persistency_kvs
-
-   The component shall create a snapshot each time data is stored.
-
-.. comp_req:: Snapshot Maximum Number
+.. comp_req:: Snapshot maximum number
    :id: comp_req__kvs__snapshot_max_num
    :reqtype: Functional
    :security: NO
@@ -311,9 +300,47 @@ Component Requirements
    :status: valid
    :belongs_to: comp__persistency_kvs
 
-   The component shall maintain a configurable maximum number of snapshots.
+   The component shall maintain a configurable maximum number of snapshots. The maximum number shall be in the range <0..3>.
+   A value of zero means that snapshot operations are disabled, while a non-zero value specifies the maximum number of snapshots.
 
-.. comp_req:: Snapshot IDs
+.. comp_req:: Snapshot lifecycle APIs
+   :id: comp_req__kvs__snapshot_lifecycle_apis
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :satisfies: feat_req__persistency__snapshot_create, feat_req__persistency__snapshot_restore, feat_req__persistency__snapshot_remove
+   :belongs_to: comp__persistency_snapshot
+
+   The component shall provide APIs to create, restore, and delete snapshots.
+
+   .. note::
+
+      A snapshot is a point-in-time, frozen view of all values in a key-value storage.
+
+.. comp_req:: Explicit snapshot operations
+   :id: comp_req__kvs__explicit_snapshot_operations
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :satisfies: feat_req__persistency__snapshot_create, feat_req__persistency__snapshot_restore, feat_req__persistency__snapshot_remove
+   :belongs_to: comp__persistency_snapshot
+
+   The component shall perform snapshot creation, restoration, and deletion only when explicitly triggered by the user through the corresponding snapshot API.
+
+.. comp_req:: Snapshot slot selection
+   :id: comp_req__kvs__snapshot_slot_selection
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :satisfies: feat_req__persistency__snapshot_create, feat_req__persistency__cfg
+   :belongs_to: comp__persistency_snapshot
+
+   The component shall provide the snapshot lifecycle APIs with an argument that selects a dedicated snapshot slot by snapshot index.
+
+.. comp_req:: Snapshot slot indexing
    :id: comp_req__kvs__snapshot_id
    :reqtype: Functional
    :security: NO
@@ -322,40 +349,40 @@ Component Requirements
    :status: valid
    :belongs_to: comp__persistency_kvs
 
-   The component shall assign the ID 1 to the newest snapshot and shall increment the IDs of older snapshots accordingly.
+   The component shall identify snapshot slots by a zero-based index, where the first slot has index 0, the second slot has index 1, and so on.
 
-.. comp_req:: Snapshot Rotation
-   :id: comp_req__kvs__snapshot_rotate
+.. comp_req:: Snapshot create or overwrite
+   :id: comp_req__kvs__snapshot_create_or_overwrite
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_remove, feat_req__persistency__snapshot_restore
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :satisfies: feat_req__persistency__snapshot_create
+   :belongs_to: comp__persistency_snapshot
 
-   The component shall rotate and delete the oldest snapshot when the maximum number is reached.
+   The component shall create a new snapshot in the selected snapshot slot when the slot is empty, or overwrite the existing snapshot when the slot is occupied.
 
-.. comp_req:: Snapshot Restore
-   :id: comp_req__kvs__snapshot_restore
+.. comp_req:: Snapshot data source
+   :id: comp_req__kvs__snapshot_source
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_restore
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :satisfies: feat_req__persistency__snapshot_create
+   :belongs_to: comp__persistency_snapshot
 
-   The component shall allow restoration of a snapshot by its ID.
+   The component shall use the live values that were set by the user, regardless of whether the values were flushed to disk.
 
-.. comp_req:: Snapshot Deletion
-   :id: comp_req__kvs__snapshot_delete
+.. comp_req:: Snapshot slot occupancy query
+   :id: comp_req__kvs__snapshot_slot_occupancy_query
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :satisfies: feat_req__persistency__snapshot_remove
    :status: valid
-   :belongs_to: comp__persistency_kvs
+   :satisfies: feat_req__persistency__snapshot_create, feat_req__persistency__snapshot_remove, feat_req__persistency__cfg
+   :belongs_to: comp__persistency_snapshot
 
-   The component shall allow deletion of individual snapshots.
+   The component shall provide an API to check whether a slot identified by a snapshot index is occupied.
 
 .. comp_req:: Engineering Mode
    :id: comp_req__kvs__eng_mode
