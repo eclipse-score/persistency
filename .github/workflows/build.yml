@@ -15,6 +15,9 @@ name: QNX8 Build
 on:
   pull_request_target:
     types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
 jobs:
   qnx-build:
     uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@93aac16ada7d247bbb6ae926509ddea74cf5213a #v0.0.2
@@ -26,7 +29,7 @@ jobs:
         config: ['per-x86_64-qnx', 'per-arm64-qnx']
     with:
       bazel-target: >-
-        //:kvs_cpp \ //src/rust/rust_kvs:rust_kvs \ //src/rust/rust_kvs_tool:kvs_tool
+        //:kvs_cpp //src/rust/rust_kvs:rust_kvs //src/rust/rust_kvs_tool:kvs_tool
       bazel-config: ${{ matrix.config }}
       extra-bazel-flags: '--lockfile_mode=error'
       credential-helper: 'tools/qnx_credential_helper.py'
