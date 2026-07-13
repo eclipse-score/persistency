@@ -16,6 +16,14 @@
 # -------------------------------------------------------------------------------
 common --registry=https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/
 common --registry=https://bcr.bazel.build
+common --credential_helper=*.qnx.com=%workspace%/tools/qnx_credential_helper.py
+common --credential_helper_timeout="60s"
+# Overcome stability issues when downloading external dependencies on GH Runners
+common --experimental_repository_downloader_retries=10
+common --experimental_scale_timeouts=2.0
+common --http_connector_attempts=10
+common --http_connector_retry_max_timeout=1s
+common --http_timeout_scaling=2.0
 
 common --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_unknown_linux_gnu
 

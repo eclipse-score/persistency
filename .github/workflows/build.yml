@@ -10,40 +10,28 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-name: QNX Rust Build Test
 
-on: workflow_dispatch
-
+name: QNX8 Build
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
 jobs:
-  qnx-rust-build:
-    runs-on: ubuntu-latest
-    environment: workflow-approval
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.2.2
-
-      - name: Setup Bazel
-        uses: bazel-contrib/setup-bazel@0.14.0
-
-      - name: Setup QNX License
-        env:
-          SCORE_QNX_LICENSE: ${{ secrets.SCORE_QNX_LICENSE }}
-        run: |
-          mkdir -p /opt/score_qnx/license
-          echo "${SCORE_QNX_LICENSE}" | base64 --decode > /opt/score_qnx/license/licenses
-
-      - name: Build Rust targets for QNX aarch64
-        env:
-          SCORE_QNX_USER: ${{ secrets.SCORE_QNX_USER }}
-          SCORE_QNX_PASSWORD: ${{ secrets.SCORE_QNX_PASSWORD }}
-        run: |
-          bazel build --lockfile_mode=error \
-            --config=per-arm64-qnx \
-            //src/rust/rust_kvs:rust_kvs \
-            //src/rust/rust_kvs_tool:kvs_tool \
-            --features=-dependency_file \
-            --credential_helper=*.qnx.com=${{ github.workspace }}/tools/qnx_credential_helper.py
-
-      - name: Cleanup QNX License
-        if: always()
-        run: rm -rf /opt/score_qnx
+  qnx-build:
+    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@93aac16ada7d247bbb6ae926509ddea74cf5213a #v0.0.2
+    permissions:
+      contents: read
+      pull-requests: read
+    strategy:
+      matrix:
+        config: ['per-x86_64-qnx', 'per-arm64-qnx']
+    with:
+      bazel-target: >-
+        //:kvs_cpp \ //src/rust/rust_kvs:rust_kvs \ //src/rust/rust_kvs_tool:kvs_tool
+      bazel-config: ${{ matrix.config }}
+      extra-bazel-flags: '--lockfile_mode=error'
+      credential-helper: 'tools/qnx_credential_helper.py'
+      environment-name: 'workflow-approval'
+    secrets:
+      score-qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
+      score-qnx-user: ${{ secrets.SCORE_QNX_USER }}
+      score-qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}
