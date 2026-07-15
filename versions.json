@@ -34,13 +34,5 @@
   {
     "version": "v0.3.2",
     "url": "https://eclipse-score.github.io/persistency/v0.3.2/"
-  },
-  {
-    "version": "pr-343",
-    "url": "https://eclipse-score.github.io/persistency/pr-343/"
-  },
-  {
-    "version": "pr-344",
-    "url": "https://eclipse-score.github.io/persistency/pr-344/"
   }
 ]
