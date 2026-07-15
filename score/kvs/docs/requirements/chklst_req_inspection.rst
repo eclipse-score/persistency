@@ -34,7 +34,7 @@ Conduct
 
 As described in the concept :need:`doc_concept__wp_inspections` the following "inspection roles" are expected to be filled:
 
-- content responsible (author): `<https://github.com/sbachmann-qorix>`_
+- content responsible (author): 
 - reviewer: `<https://github.com/aschemmel-tech>`_, `<https://github.com/umaucher>`_
 - moderator: `<https://github.com/PandaeDo>`_
 - test expert: <one of the reviewers explicitly named here, to cover REQ_08_01 as described>
@@ -159,6 +159,13 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
         - :need:`comp_req__kvs__pers_data_csum` - defines part of safety mechanism, error reaction not needed
         - :need:`comp_req__kvs__pers_data_csum_vrfy` defines part of safety mechanism, no error reaction defined
       - https://github.com/eclipse-score/persistency/issues/297
+    * - REQ_10_01
+      - Is the requirement description *complete* ?
+      - For every requirement in the inspection, follow to its parent (feature) requirement(s) and then check if this/these are fulfilled completely by its/their linked children (component requirements, including those which are not in scope of the inspection).
+      -
+      -
+      -
+
 
 The following requirements in "valid" state and with "inspected" tag set are in the scope of this inspection:
 
