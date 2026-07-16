@@ -15,8 +15,8 @@
 
 .. document:: KVS Requirements Inspection Checklist
    :id: doc__kvs_req_inspection
-   :status: valid
-   :version: 1
+   :status: draft
+   :version: 2
    :safety: ASIL_B
    :security: YES
    :realizes: wp__requirements_inspect[version==1]
