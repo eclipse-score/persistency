@@ -5,186 +5,6 @@
       "CodeLinks": [],
       "TestLinks": [
         {
-          "name": "TestDefaultValues__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 135,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestDefaultValues__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 135,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestDefaultValues__test_valid[without-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 135,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestRemoveKey__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 212,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestRemoveKey__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 212,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestRemoveKey__test_valid[without-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 212,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 312,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 312,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 354,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestResetAllKeys__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 403,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestResetAllKeys__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 403,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestResetSingleKey__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 470,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestResetSingleKey__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 470,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 550,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 550,
-          "need": "comp_req__kvs__value_default",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
           "name": "TestDefaultValues__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 135,
@@ -354,6 +174,186 @@
         },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 550,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 135,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 135,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[without-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 135,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 212,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 212,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[without-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 212,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 312,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 312,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 354,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 403,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 403,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 470,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 470,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 550,
+          "need": "comp_req__kvs__value_default",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 550,
           "need": "comp_req__kvs__value_default",
@@ -373,186 +373,6 @@
       "CodeLinks": [],
       "TestLinks": [
         {
-          "name": "TestDefaultValues__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 135,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestDefaultValues__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 135,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestDefaultValues__test_valid[without-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 135,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestRemoveKey__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 212,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestRemoveKey__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 212,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestRemoveKey__test_valid[without-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 212,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 312,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 312,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 354,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestResetAllKeys__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 403,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestResetAllKeys__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 403,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestResetSingleKey__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 470,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestResetSingleKey__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 470,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 550,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 550,
-          "need": "comp_req__kvs__default_value_cfg",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
           "name": "TestDefaultValues__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 135,
@@ -731,20 +551,12 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
-        }
-      ]
-    }
-  },
-  {
-    "need": "comp_req__kvs__default_value_types",
-    "links": {
-      "CodeLinks": [],
-      "TestLinks": [
+        },
         {
           "name": "TestDefaultValues__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 135,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -756,7 +568,7 @@
           "name": "TestDefaultValues__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 135,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -768,7 +580,7 @@
           "name": "TestDefaultValues__test_valid[without-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 135,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -780,7 +592,7 @@
           "name": "TestRemoveKey__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 212,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -792,7 +604,7 @@
           "name": "TestRemoveKey__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 212,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -804,7 +616,7 @@
           "name": "TestRemoveKey__test_valid[without-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 212,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -816,7 +628,7 @@
           "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 312,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -828,7 +640,7 @@
           "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 312,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -840,7 +652,7 @@
           "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 354,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -852,7 +664,7 @@
           "name": "TestResetAllKeys__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 403,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -864,7 +676,7 @@
           "name": "TestResetAllKeys__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 403,
-          "need": "comp_req__kvs__default_value_types",
+          "need": "comp_req__kvs__default_value_cfg",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -872,6 +684,62 @@
           "hash": "",
           "url": ""
         },
+        {
+          "name": "TestResetSingleKey__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 470,
+          "need": "comp_req__kvs__default_value_cfg",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestResetSingleKey__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 470,
+          "need": "comp_req__kvs__default_value_cfg",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 550,
+          "need": "comp_req__kvs__default_value_cfg",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 550,
+          "need": "comp_req__kvs__default_value_cfg",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__kvs__default_value_types",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
         {
           "name": "TestDefaultValues__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
@@ -1003,20 +871,12 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
-        }
-      ]
-    }
-  },
-  {
-    "need": "comp_req__kvs__default_value_query",
-    "links": {
-      "CodeLinks": [],
-      "TestLinks": [
+        },
         {
           "name": "TestDefaultValues__test_valid[optional-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 135,
-          "need": "comp_req__kvs__default_value_query",
+          "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -1028,7 +888,7 @@
           "name": "TestDefaultValues__test_valid[required-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 135,
-          "need": "comp_req__kvs__default_value_query",
+          "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -1040,7 +900,7 @@
           "name": "TestDefaultValues__test_valid[without-rust]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
           "line": 135,
-          "need": "comp_req__kvs__default_value_query",
+          "need": "comp_req__kvs__default_value_types",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
@@ -1048,6 +908,110 @@
           "hash": "",
           "url": ""
         },
+        {
+          "name": "TestRemoveKey__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 212,
+          "need": "comp_req__kvs__default_value_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 212,
+          "need": "comp_req__kvs__default_value_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestRemoveKey__test_valid[without-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 212,
+          "need": "comp_req__kvs__default_value_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 312,
+          "need": "comp_req__kvs__default_value_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 312,
+          "need": "comp_req__kvs__default_value_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 354,
+          "need": "comp_req__kvs__default_value_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 403,
+          "need": "comp_req__kvs__default_value_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 403,
+          "need": "comp_req__kvs__default_value_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__kvs__default_value_query",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
         {
           "name": "TestDefaultValues__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
@@ -1083,6 +1047,42 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 135,
+          "need": "comp_req__kvs__default_value_query",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 135,
+          "need": "comp_req__kvs__default_value_query",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestDefaultValues__test_valid[without-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 135,
+          "need": "comp_req__kvs__default_value_query",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1092,30 +1092,6 @@
     "links": {
       "CodeLinks": [],
       "TestLinks": [
-        {
-          "name": "TestResetAllKeys__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 403,
-          "need": "comp_req__kvs__value_reset",
-          "verify_type": "fully",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestResetAllKeys__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 403,
-          "need": "comp_req__kvs__value_reset",
-          "verify_type": "fully",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
         {
           "name": "TestResetAllKeys__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
@@ -1139,6 +1115,30 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 403,
+          "need": "comp_req__kvs__value_reset",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestResetAllKeys__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 403,
+          "need": "comp_req__kvs__value_reset",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1148,30 +1148,6 @@
     "links": {
       "CodeLinks": [],
       "TestLinks": [
-        {
-          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 550,
-          "need": "comp_req__kvs__default_val_chksum",
-          "verify_type": "fully",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
-          "file": "tests/test_cases/tests/test_cit_default_values.py",
-          "line": 550,
-          "need": "comp_req__kvs__default_val_chksum",
-          "verify_type": "fully",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
         {
           "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
           "file": "tests/test_cases/tests/test_cit_default_values.py",
@@ -1195,6 +1171,30 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 550,
+          "need": "comp_req__kvs__default_val_chksum",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
+          "file": "tests/test_cases/tests/test_cit_default_values.py",
+          "line": 550,
+          "need": "comp_req__kvs__default_val_chksum",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1204,42 +1204,6 @@
     "links": {
       "CodeLinks": [],
       "TestLinks": [
-        {
-          "name": "TestMultipleInstanceIds__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
-          "line": 46,
-          "need": "comp_req__kvs__multi_instance",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSameInstanceIdSameValue__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
-          "line": 80,
-          "need": "comp_req__kvs__multi_instance",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
-          "line": 116,
-          "need": "comp_req__kvs__multi_instance",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
         {
           "name": "TestMultipleInstanceIds__test_ok[cpp]",
           "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
@@ -1266,6 +1230,42 @@
         },
         {
           "name": "TestSameInstanceIdDifferentValue__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
+          "line": 116,
+          "need": "comp_req__kvs__multi_instance",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestMultipleInstanceIds__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
+          "line": 46,
+          "need": "comp_req__kvs__multi_instance",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSameInstanceIdSameValue__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
+          "line": 80,
+          "need": "comp_req__kvs__multi_instance",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
           "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
           "line": 116,
           "need": "comp_req__kvs__multi_instance",
@@ -1285,42 +1285,6 @@
       "CodeLinks": [],
       "TestLinks": [
         {
-          "name": "TestMultipleInstanceIds__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
-          "line": 46,
-          "need": "comp_req__kvs__concurrency",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSameInstanceIdSameValue__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
-          "line": 80,
-          "need": "comp_req__kvs__concurrency",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
-          "line": 116,
-          "need": "comp_req__kvs__concurrency",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
           "name": "TestMultipleInstanceIds__test_ok[cpp]",
           "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
           "line": 46,
@@ -1355,21 +1319,37 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
-        }
-      ]
-    }
-  },
-  {
-    "need": "comp_req__kvs__persist_data_com",
-    "links": {
-      "CodeLinks": [],
-      "TestLinks": [
+        },
         {
-          "name": "TestExplicitFlush__test_data_stored[rust]",
-          "file": "tests/test_cases/tests/test_cit_persistency.py",
-          "line": 47,
-          "need": "comp_req__kvs__persist_data_com",
-          "verify_type": "fully",
+          "name": "TestMultipleInstanceIds__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
+          "line": 46,
+          "need": "comp_req__kvs__concurrency",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSameInstanceIdSameValue__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
+          "line": 80,
+          "need": "comp_req__kvs__concurrency",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_multiple_kvs.py",
+          "line": 116,
+          "need": "comp_req__kvs__concurrency",
+          "verify_type": "partially",
           "result": "passed",
           "result_text": "",
           "repo_name": "local_repo",
@@ -1384,174 +1364,6 @@
     "links": {
       "CodeLinks": [],
       "TestLinks": [
-        {
-          "name": "TestSnapshotCountFirstFlush__test_ok[0-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 66,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotCountFirstFlush__test_ok[1-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 66,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotCountFirstFlush__test_ok[3-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 66,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotCountFirstFlush__test_ok[10-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 66,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotCountFull__test_ok[0-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 66,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotCountFull__test_ok[1-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 66,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotCountFull__test_ok[3-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 66,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotCountFull__test_ok[10-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 66,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 177,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 177,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotRestoreCurrent__test_error[rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 213,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 252,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotPathsExist__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 283,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotPathsNonexistent__test_error[rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 319,
-          "need": "comp_req__kvs__snapshot_creation",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
         {
           "name": "TestSnapshotCountFirstFlush__test_ok[0-cpp]",
           "file": "tests/test_cases/tests/test_cit_snapshots.py",
@@ -1719,6 +1531,174 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[0-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[1-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[3-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotCountFirstFlush__test_ok[10-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[0-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[1-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[3-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotCountFull__test_ok[10-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 66,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotRestoreCurrent__test_error[rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 213,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 252,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotPathsExist__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 283,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotPathsNonexistent__test_error[rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 319,
+          "need": "comp_req__kvs__snapshot_creation",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1728,54 +1708,6 @@
     "links": {
       "CodeLinks": [],
       "TestLinks": [
-        {
-          "name": "TestSnapshotMaxCount__test_ok[0-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 133,
-          "need": "comp_req__kvs__snapshot_max_num",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotMaxCount__test_ok[1-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 133,
-          "need": "comp_req__kvs__snapshot_max_num",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotMaxCount__test_ok[3-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 133,
-          "need": "comp_req__kvs__snapshot_max_num",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotMaxCount__test_ok[10-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 133,
-          "need": "comp_req__kvs__snapshot_max_num",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
         {
           "name": "TestSnapshotMaxCount__test_ok[0-cpp]",
           "file": "tests/test_cases/tests/test_cit_snapshots.py",
@@ -1823,6 +1755,54 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[0-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__kvs__snapshot_max_num",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[1-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__kvs__snapshot_max_num",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[3-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__kvs__snapshot_max_num",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotMaxCount__test_ok[10-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 133,
+          "need": "comp_req__kvs__snapshot_max_num",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1832,30 +1812,6 @@
     "links": {
       "CodeLinks": [],
       "TestLinks": [
-        {
-          "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 177,
-          "need": "comp_req__kvs__snapshot_rotate",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 177,
-          "need": "comp_req__kvs__snapshot_rotate",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[3-cpp]",
           "file": "tests/test_cases/tests/test_cit_snapshots.py",
@@ -1879,21 +1835,13 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
-        }
-      ]
-    }
-  },
-  {
-    "need": "comp_req__kvs__snapshot_restore",
-    "links": {
-      "CodeLinks": [],
-      "TestLinks": [
+        },
         {
           "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
           "file": "tests/test_cases/tests/test_cit_snapshots.py",
           "line": 177,
-          "need": "comp_req__kvs__snapshot_restore",
-          "verify_type": "fully",
+          "need": "comp_req__kvs__snapshot_rotate",
+          "verify_type": "partially",
           "result": "passed",
           "result_text": "",
           "repo_name": "local_repo",
@@ -1904,26 +1852,22 @@
           "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
           "file": "tests/test_cases/tests/test_cit_snapshots.py",
           "line": 177,
-          "need": "comp_req__kvs__snapshot_restore",
-          "verify_type": "fully",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
-          "file": "tests/test_cases/tests/test_cit_snapshots.py",
-          "line": 252,
-          "need": "comp_req__kvs__snapshot_restore",
+          "need": "comp_req__kvs__snapshot_rotate",
           "verify_type": "partially",
           "result": "passed",
           "result_text": "",
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
-        },
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__kvs__snapshot_restore",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
         {
           "name": "TestSnapshotRestorePrevious__test_ok[3-cpp]",
           "file": "tests/test_cases/tests/test_cit_snapshots.py",
@@ -1959,6 +1903,42 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__kvs__snapshot_restore",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotRestorePrevious__test_ok[10-rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 177,
+          "need": "comp_req__kvs__snapshot_restore",
+          "verify_type": "fully",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
+          "file": "tests/test_cases/tests/test_cit_snapshots.py",
+          "line": 252,
+          "need": "comp_req__kvs__snapshot_restore",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
         }
       ]
     }
@@ -1968,126 +1948,6 @@
     "links": {
       "CodeLinks": [],
       "TestLinks": [
-        {
-          "name": "TestSupportedDatatypesKeys__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 44,
-          "need": "comp_req__kvs__key_encoding",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_I32__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__key_encoding",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_U32__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__key_encoding",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_I64__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__key_encoding",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_U64__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__key_encoding",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_F64__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__key_encoding",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_Bool__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__key_encoding",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_String__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__key_encoding",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_Array__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__key_encoding",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_Object__test_ok[rust]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__key_encoding",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
         {
           "name": "TestSupportedDatatypesKeys__test_ok[cpp]",
           "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
@@ -2198,6 +2058,126 @@
         },
         {
           "name": "TestSupportedDatatypesValues_Object__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__key_encoding",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesKeys__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 44,
+          "need": "comp_req__kvs__key_encoding",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I32__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__key_encoding",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U32__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__key_encoding",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I64__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__key_encoding",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U64__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__key_encoding",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_F64__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__key_encoding",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Bool__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__key_encoding",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_String__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__key_encoding",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Array__test_ok[rust]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__key_encoding",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Object__test_ok[rust]",
           "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
           "line": 85,
           "need": "comp_req__kvs__key_encoding",
@@ -2217,6 +2197,126 @@
       "CodeLinks": [],
       "TestLinks": [
         {
+          "name": "TestSupportedDatatypesKeys__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 44,
+          "need": "comp_req__kvs__value_data_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I32__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__value_data_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U32__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__value_data_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_I64__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__value_data_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_U64__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__value_data_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_F64__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__value_data_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Bool__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__value_data_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_String__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__value_data_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Array__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__value_data_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
+          "name": "TestSupportedDatatypesValues_Object__test_ok[cpp]",
+          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
+          "line": 85,
+          "need": "comp_req__kvs__value_data_types",
+          "verify_type": "partially",
+          "result": "passed",
+          "result_text": "",
+          "repo_name": "local_repo",
+          "hash": "",
+          "url": ""
+        },
+        {
           "name": "TestSupportedDatatypesKeys__test_ok[rust]",
           "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
           "line": 44,
@@ -2335,121 +2435,21 @@
           "repo_name": "local_repo",
           "hash": "",
           "url": ""
-        },
+        }
+      ]
+    }
+  },
+  {
+    "need": "comp_req__kvs__persist_data_com",
+    "links": {
+      "CodeLinks": [],
+      "TestLinks": [
         {
-          "name": "TestSupportedDatatypesKeys__test_ok[cpp]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 44,
-          "need": "comp_req__kvs__value_data_types",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_I32__test_ok[cpp]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__value_data_types",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_U32__test_ok[cpp]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__value_data_types",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_I64__test_ok[cpp]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__value_data_types",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_U64__test_ok[cpp]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__value_data_types",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_F64__test_ok[cpp]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__value_data_types",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_Bool__test_ok[cpp]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__value_data_types",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_String__test_ok[cpp]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__value_data_types",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_Array__test_ok[cpp]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__value_data_types",
-          "verify_type": "partially",
-          "result": "passed",
-          "result_text": "",
-          "repo_name": "local_repo",
-          "hash": "",
-          "url": ""
-        },
-        {
-          "name": "TestSupportedDatatypesValues_Object__test_ok[cpp]",
-          "file": "tests/test_cases/tests/test_cit_supported_datatypes.py",
-          "line": 85,
-          "need": "comp_req__kvs__value_data_types",
-          "verify_type": "partially",
+          "name": "TestExplicitFlush__test_data_stored[rust]",
+          "file": "tests/test_cases/tests/test_cit_persistency.py",
+          "line": 47,
+          "need": "comp_req__kvs__persist_data_com",
+          "verify_type": "fully",
           "result": "passed",
           "result_text": "",
           "repo_name": "local_repo",
