@@ -345,7 +345,9 @@ Component Requirements
    :safety: ASIL_B
    :derived_from: feat_req__persistency__cfg[version==1]
    :status: valid
+   :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall maintain a configurable maximum number of snapshots. The maximum number shall be in the range <0..3>.
    A value of zero means that snapshot operations are disabled, while a non-zero value specifies the maximum number of snapshots.
@@ -356,14 +358,16 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
+   :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1], feat_req__persistency__snapshot_restore[version==1], feat_req__persistency__snapshot_remove[version==1]
    :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall provide APIs to create, restore, and delete snapshots.
 
    .. note::
 
-      A snapshot is a point-in-time, frozen view of all values in a key-value storage.
+      A snapshot is a point-in-time, frozen view on all values in a key-value storage.
 
 .. comp_req:: Explicit snapshot operations
    :id: comp_req__kvs__explicit_snapshot_operations
@@ -371,8 +375,10 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
+   :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1], feat_req__persistency__snapshot_restore[version==1], feat_req__persistency__snapshot_remove[version==1]
    :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall perform snapshot creation, restoration, and deletion only when explicitly triggered by the user through the corresponding snapshot API.
 
@@ -382,8 +388,10 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
+   :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1], feat_req__persistency__cfg[version==1]
    :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall provide the snapshot lifecycle APIs with an argument that selects a dedicated snapshot slot by snapshot index.
 
@@ -394,7 +402,9 @@ Component Requirements
    :safety: ASIL_B
    :derived_from: feat_req__persistency__snapshot_create[version==1]
    :status: valid
+   :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall identify snapshot slots by a zero-based index, where the first slot has index 0, the second slot has index 1, and so on.
 
@@ -404,8 +414,10 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
+   :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1]
    :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall create a new snapshot in the selected snapshot slot when the slot is empty.
 
@@ -415,12 +427,12 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
+   :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1]
    :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall overwrite the selected snapshot slot when the slot is occupied.
-
-
 
 .. comp_req:: Snapshot data source
    :id: comp_req__kvs__snapshot_source
@@ -428,8 +440,10 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
+   :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1]
    :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall use the live values that were set by the user, regardless of whether the values were flushed to disk.
 
@@ -439,8 +453,10 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
+   :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1], feat_req__persistency__snapshot_remove[version==1], feat_req__persistency__cfg[version==1]
    :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
 
    The component shall provide an API to check whether a slot identified by a snapshot index is occupied.
 
