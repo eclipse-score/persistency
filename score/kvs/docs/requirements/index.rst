@@ -310,7 +310,7 @@ Component Requirements
    :safety: ASIL_B
    :status: valid
    :satisfies: feat_req__persistency__snapshot_create, feat_req__persistency__snapshot_restore, feat_req__persistency__snapshot_remove
-   :belongs_to: comp__persistency_snapshot
+   :belongs_to: comp__persistency_kvs
 
    The component shall provide APIs to create, restore, and delete snapshots.
 
@@ -325,7 +325,7 @@ Component Requirements
    :safety: ASIL_B
    :status: valid
    :satisfies: feat_req__persistency__snapshot_create, feat_req__persistency__snapshot_restore, feat_req__persistency__snapshot_remove
-   :belongs_to: comp__persistency_snapshot
+   :belongs_to: comp__persistency_kvs
 
    The component shall perform snapshot creation, restoration, and deletion only when explicitly triggered by the user through the corresponding snapshot API.
 
@@ -336,7 +336,7 @@ Component Requirements
    :safety: ASIL_B
    :status: valid
    :satisfies: feat_req__persistency__snapshot_create, feat_req__persistency__cfg
-   :belongs_to: comp__persistency_snapshot
+   :belongs_to: comp__persistency_kvs
 
    The component shall provide the snapshot lifecycle APIs with an argument that selects a dedicated snapshot slot by snapshot index.
 
@@ -351,16 +351,29 @@ Component Requirements
 
    The component shall identify snapshot slots by a zero-based index, where the first slot has index 0, the second slot has index 1, and so on.
 
-.. comp_req:: Snapshot create or overwrite
-   :id: comp_req__kvs__snapshot_create_or_overwrite
+.. comp_req:: Snapshot create
+   :id: comp_req__kvs__snapshot_create
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
    :status: valid
    :satisfies: feat_req__persistency__snapshot_create
-   :belongs_to: comp__persistency_snapshot
+   :belongs_to: comp__persistency_kvs
 
-   The component shall create a new snapshot in the selected snapshot slot when the slot is empty, or overwrite the existing snapshot when the slot is occupied.
+   The component shall create a new snapshot in the selected snapshot slot when the slot is empty.
+
+.. comp_req:: Snapshot overwrite
+   :id: comp_req__kvs__snapshot_overwrite
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :satisfies: feat_req__persistency__snapshot_create
+   :belongs_to: comp__persistency_kvs
+
+   The component shall overwrite the selected snapshot slot when the slot is occupied.
+
+
 
 .. comp_req:: Snapshot data source
    :id: comp_req__kvs__snapshot_source
@@ -369,7 +382,7 @@ Component Requirements
    :safety: ASIL_B
    :status: valid
    :satisfies: feat_req__persistency__snapshot_create
-   :belongs_to: comp__persistency_snapshot
+   :belongs_to: comp__persistency_kvs
 
    The component shall use the live values that were set by the user, regardless of whether the values were flushed to disk.
 
@@ -380,7 +393,7 @@ Component Requirements
    :safety: ASIL_B
    :status: valid
    :satisfies: feat_req__persistency__snapshot_create, feat_req__persistency__snapshot_remove, feat_req__persistency__cfg
-   :belongs_to: comp__persistency_snapshot
+   :belongs_to: comp__persistency_kvs
 
    The component shall provide an API to check whether a slot identified by a snapshot index is occupied.
 
