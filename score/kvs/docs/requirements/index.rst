@@ -460,8 +460,8 @@ Component Requirements
 
    The component shall use the live values that were set by the user, regardless of whether the values were flushed to disk.
 
-.. comp_req:: Snapshot slot occupancy query API
-   :id: comp_req__kvs__snapshot_slot_occupancy_query_api
+.. comp_req:: Snapshot slot free query API
+   :id: comp_req__kvs__snapshot_slot_free_api
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
@@ -471,7 +471,7 @@ Component Requirements
    :belongs_to: comp__persistency_kvs[version==1]
    :tags: inspected
 
-   The component shall provide an API to check whether a slot identified by a snapshot index is occupied.
+   The component shall provide an API to check whether a slot identified by a snapshot index is free or occupied.
 
 .. comp_req:: Engineering Mode
    :id: comp_req__kvs__eng_mode
