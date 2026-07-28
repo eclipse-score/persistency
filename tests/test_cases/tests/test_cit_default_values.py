@@ -109,7 +109,9 @@ class TestDefaultValues(DefaultValuesScenario):
         return "cit.default_values.default_values"
 
     @pytest.fixture(scope="class")
-    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+    def test_config(self, temp_dir: Path, defaults: str, defaults_file: Path | None) -> dict[str, Any]:
+        # defaults_file is unused here, but declaring it forces that fixture to run first,
+        # creating the defaults file before the binary is executed via the results fixture.
         # Use 'optional' for no defaults file to allow init.
         if defaults == "without":
             defaults = "optional"
@@ -184,7 +186,9 @@ class TestRemoveKey(DefaultValuesScenario):
         return "cit.default_values.remove_key"
 
     @pytest.fixture(scope="class")
-    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+    def test_config(self, temp_dir: Path, defaults: str, defaults_file: Path | None) -> dict[str, Any]:
+        # defaults_file is unused here, but declaring it forces that fixture to run first,
+        # creating the defaults file before the binary is executed via the results fixture.
         # Use 'optional' for no defaults file to allow init.
         if defaults == "without":
             defaults = "optional"
@@ -267,7 +271,9 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         return True
 
     @pytest.fixture(scope="class")
-    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+    def test_config(self, temp_dir: Path, defaults: str, defaults_file: Path | None) -> dict[str, Any]:
+        # defaults_file is unused here, but declaring it forces that fixture to run first,
+        # creating the defaults file before the binary is executed via the results fixture.
         return {
             "kvs_parameters": {
                 "instance_id": self.instance_id(),
@@ -373,7 +379,9 @@ class TestResetAllKeys(DefaultValuesScenario):
         return "cit.default_values.reset_all_keys"
 
     @pytest.fixture(scope="class")
-    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+    def test_config(self, temp_dir: Path, defaults: str, defaults_file: Path | None) -> dict[str, Any]:
+        # defaults_file is unused here, but declaring it forces that fixture to run first,
+        # creating the defaults file before the binary is executed via the results fixture.
         return {
             "kvs_parameters": {
                 "instance_id": self.instance_id(),
@@ -438,7 +446,9 @@ class TestResetSingleKey(DefaultValuesScenario):
         return "cit.default_values.reset_single_key"
 
     @pytest.fixture(scope="class")
-    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+    def test_config(self, temp_dir: Path, defaults: str, defaults_file: Path | None) -> dict[str, Any]:
+        # defaults_file is unused here, but declaring it forces that fixture to run first,
+        # creating the defaults file before the binary is executed via the results fixture.
         return {
             "kvs_parameters": {
                 "instance_id": self.instance_id(),
@@ -518,7 +528,9 @@ class TestChecksumOnProvidedDefaults(DefaultValuesScenario):
         return "cit.default_values.checksum"
 
     @pytest.fixture(scope="class")
-    def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
+    def test_config(self, temp_dir: Path, defaults: str, defaults_file: Path | None) -> dict[str, Any]:
+        # defaults_file is unused here, but declaring it forces that fixture to run first,
+        # creating the defaults file before the binary is executed via the results fixture.
         return {
             "kvs_parameters": {
                 "instance_id": self.instance_id(),

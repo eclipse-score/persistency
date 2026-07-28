@@ -240,7 +240,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any)
                                 result = score::MakeUnexpected(ErrorCode::InvalidValueType);
                                 break;
                             }
-                            map.emplace(key.GetAsStringView().to_string(),
+                            map.emplace(std::string(key.GetAsStringView()),
                                         std::make_shared<KvsValue>(std::move(conv.value())));
                         }
                         if (!error)

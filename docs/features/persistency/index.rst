@@ -12,13 +12,19 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-.. _features_persistency:
+  
+Persistency
+###########
 
-Features
-========
+Feature request can be found here: :need:`doc__persistency`
 
 .. toctree::
-   :maxdepth: 1
-   :glob:
+   architecture/index.rst
+   architecture/chklst_arc_inspection.rst
+   safety_analysis/fmea.rst
+   safety_analysis/dfa.rst
+   safety_planning/index.rst
+   security_planning/index.rst
+   security_analysis/stride.rst
 
-   
+

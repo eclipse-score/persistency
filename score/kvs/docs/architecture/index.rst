@@ -20,9 +20,10 @@ Architecture
 .. document:: KVS Module Architecture
    :id: doc__kvs_architecture
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__component_arch
+   :realizes: wp__component_arch[version==1]
 
 Overview
 --------
@@ -70,9 +71,9 @@ The live component architecture template is maintained in the
    :security: YES
    :safety: ASIL_B
    :status: invalid
-   :belongs_to: comp__persistency_kvs
+   :belongs_to: comp__persistency_kvs[version==1]
    :implements:
-   :fulfils: comp_req__kvs__key_naming
+   :fulfils: comp_req__kvs__key_naming[version==1]
 
    .. needarch::
       :scale: 50
@@ -88,8 +89,8 @@ Dynamic Architecture
    :security: YES
    :safety: ASIL_B
    :status: invalid
-   :belongs_to: comp__persistency_kvs   
-   :fulfils: comp_req__kvs__key_naming
+   :belongs_to: comp__persistency_kvs[version==1]
+   :fulfils: comp_req__kvs__key_naming[version==1]
 
    put here a sequence diagram
 
@@ -115,8 +116,8 @@ Internal Components
    :safety: ASIL_B
    :security: YES
    :implements:
-   :belongs_to: comp__persistency_kvs
-   :fulfils: comp_req__kvs__key_naming
+   :belongs_to: comp__persistency_kvs[version==1]
+   :fulfils: comp_req__kvs__key_naming[version==1]
 
    no architecture but detailed design
 

@@ -19,14 +19,15 @@ Detailed Design
 .. document:: KVS Detailed Design
    :id: doc__kvs_detailed_design
    :status: draft
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__sw_implementation
+   :realizes: wp__sw_implementation[version==1]
    :tags: template
 
 
-Detailed Design for Component: <Component Name>
-===============================================
+Detailed Design for Component: KVS
+==================================
 
 Description
 -----------
@@ -107,7 +108,7 @@ In your rst file:
    .. sw_unit_int:: <here InterfaceDemo - change it>
       :id: sw_unit_int__<Component>__<title>
       :belongs_to: <link to sw_unit id>
-      :implements: <real_arc_int, real_arc_int_op>
+      :implements: <real_arc_int,real_arc_int_op>
 
       This implements the ....
 

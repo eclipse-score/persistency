@@ -18,9 +18,10 @@ Security Package Formal Review Report
 .. document:: Persistency Security Package Formal Review
    :id: doc__persistency_sec_pkg_fdr
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: YES
-   :realizes: wp__fdr_reports
+   :realizes: wp__fdr_reports[version==1]
    :tags: persistency
 
 **1. Purpose**

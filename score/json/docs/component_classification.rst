@@ -18,9 +18,10 @@ JSON Component Classification
 .. document:: JSON Component Classification
    :id: doc__json_comp_class
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__sw_component_class
+   :realizes: wp__sw_component_class[version==1]
    :tags: feature_persistency
 
 | Classification of Tiny JSON

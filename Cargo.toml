@@ -15,10 +15,10 @@ edition = "2021"
 [workspace.dependencies]
 rust_kvs = { path = "src/rust/rust_kvs" }
 rust_kvs_tool = { path = "src/rust/rust_kvs_tool" }
-score_log = { git = "https://github.com/eclipse-score/baselibs_rust.git", tag = "v0.1.0", features = [
+score_log = { git = "https://github.com/eclipse-score/baselibs.git", rev = "2603afd58043810118b21ce7fca37a33894e5aef", features = [
     "qm",
 ] }
-stdout_logger = { git = "https://github.com/eclipse-score/baselibs_rust.git", tag = "v0.1.0" }
+stdout_logger = { git = "https://github.com/eclipse-score/baselibs.git", rev = "2603afd58043810118b21ce7fca37a33894e5aef" }
 
 adler32 = "1.2.0"
 tinyjson = "2.5.1"

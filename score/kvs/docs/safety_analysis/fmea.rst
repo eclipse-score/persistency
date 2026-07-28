@@ -19,9 +19,10 @@ Safety Analysis: FMEA
 .. document:: KVS FMEA
    :id: doc__kvs_fmea
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__sw_component_fmea
+   :realizes: wp__sw_component_fmea[version==1]
    :tags: Persistency KVS
 
 Because there is no sub-components in KVS, the results of the FMEA are the same as on feature level :need:`doc__persistency_fmea`.

@@ -16,6 +16,16 @@
 # -------------------------------------------------------------------------------
 common --registry=https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/
 common --registry=https://bcr.bazel.build
+common --credential_helper=*.qnx.com=%workspace%/tools/qnx_credential_helper.py
+common --credential_helper_timeout="60s"
+# Overcome stability issues when downloading external dependencies on GH Runners
+common --experimental_repository_downloader_retries=10
+common --experimental_scale_timeouts=2.0
+common --http_connector_attempts=10
+common --http_connector_retry_max_timeout=1s
+common --http_timeout_scaling=2.0
+
+common --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_unknown_linux_gnu
 
 # -------------------------------------------------------------------------------
 # Default build flags (all configurations)
@@ -25,7 +35,7 @@ build --tool_java_language_version=17
 build --java_runtime_version=remotejdk_17
 build --tool_java_runtime_version=remotejdk_17
 
-build --@score_baselibs_rust//src/log:safety_level=qm
+build --@score_baselibs//src/log:safety_level=qm
 build --@score_baselibs//score/json:base_library=nlohmann
 build --@score_logging//score/mw/log/flags:KRemote_Logging=False
 
@@ -33,7 +43,6 @@ build --@score_logging//score/mw/log/flags:KRemote_Logging=False
 # the upstream lint toolchain currently resolves an APE-hosted binary URL that
 # returns 403 during module fetches, which breaks unrelated commands such as
 # `bazel run //:docs`.
-build:lint --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_unknown_linux_gnu
 build:lint --config=per-x86_64-linux
 
 test --test_output=errors
@@ -44,21 +53,22 @@ test --test_output=errors
 build:per_shared --incompatible_strict_action_env
 build:per_shared --sandbox_writable_path=/var/tmp
 build:per_shared --host_platform=@score_bazel_platforms//:x86_64-linux
+build:per_shared --extra_toolchains=@score_gcc_x86_64_toolchain//:x86_64-linux-gcc_12.2.0
 
 # -------------------------------------------------------------------------------
 # Config dedicated to host platform CPU:x86_64 and OS:Linux
 # -------------------------------------------------------------------------------
 build:per-x86_64-linux --config=per_shared
 build:per-x86_64-linux --platforms=@score_bazel_platforms//:x86_64-linux-gcc_12.2.0-posix
-build:per-x86_64-linux --extra_toolchains=@score_gcc_x86_64_toolchain//:x86_64-linux-gcc_12.2.0-posix
-build:per-x86_64-linux --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_unknown_linux_gnu
 build:per-x86_64-linux --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_unknown_linux_gnu_miri
+
 # -------------------------------------------------------------------------------
 # Config dedicated to target platform CPU:x86_64 and OS:QNX
 # -------------------------------------------------------------------------------
 build:per-x86_64-qnx --config=per_shared
 build:per-x86_64-qnx --platforms=@score_bazel_platforms//:x86_64-qnx-sdp_8.0.0-posix
-build:per-x86_64-qnx --extra_toolchains=@score_qcc_x86_64_toolchain//:x86_64-qnx-sdp_8.0.0-posix
+build:per-x86_64-qnx --extra_toolchains=@score_qcc_x86_64_toolchain//:x86_64-qnx-sdp_8.0.0
+build:per-x86_64-qnx --extra_toolchains=@score_qnx_x86_64_ifs_toolchain//:ifs-x86_64-qnx-sdp_8.0.0
 build:per-x86_64-qnx --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_pc_nto_qnx800
 
 # -------------------------------------------------------------------------------
@@ -66,7 +76,8 @@ build:per-x86_64-qnx --extra_toolchains=@score_toolchains_rust//toolchains/ferro
 # -------------------------------------------------------------------------------
 build:per-arm64-qnx --config=per_shared
 build:per-arm64-qnx --platforms=@score_bazel_platforms//:aarch64-qnx-sdp_8.0.0-posix
-build:per-arm64-qnx --extra_toolchains=@score_qcc_aarch64_toolchain//:aarch64-qnx-sdp_8.0.0-posix
+build:per-arm64-qnx --extra_toolchains=@score_qcc_aarch64_toolchain//:aarch64-qnx-sdp_8.0.0
+build:per-arm64-qnx --extra_toolchains=@score_qnx_aarch64_ifs_toolchain//:ifs-aarch64-qnx-sdp_8.0.0
 build:per-arm64-qnx --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_aarch64_unknown_nto_qnx800
 
 
@@ -84,13 +95,12 @@ build:ferrocene-coverage --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cde
 test:ferrocene-coverage --run_under=@score_tooling//coverage:llvm_profile_wrapper
 
 
-# -------------------------------------------------------------------------------
-# Import local user workspace file, if exists
-# -------------------------------------------------------------------------------
-try-import %workspace%/user.bazelrc
-
-
 # Coverage configuration for C++
 coverage --features=coverage
 coverage --combined_report=lcov
 coverage --cache_test_results=no
+
+# -------------------------------------------------------------------------------
+# Import local user workspace file, if exists
+# -------------------------------------------------------------------------------
+try-import %workspace%/user.bazelrc

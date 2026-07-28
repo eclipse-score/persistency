@@ -20,9 +20,10 @@ KVS (Key Value Store)
 .. document:: KVS
    :id: doc__kvs
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__cmpt_request
+   :realizes: wp__cmpt_request[version==1]
    :tags: Persistency KVS
 
 Abstract
@@ -159,6 +160,7 @@ Footnotes
    :hidden:
 
    docs/architecture/chklst_arc_inspection.rst
+   docs/architecture/component_architecture.rst
    docs/architecture/index.rst
    docs/detailed_design/index.rst
    docs/detailed_design/chklst_impl_inspection.rst
@@ -166,5 +168,6 @@ Footnotes
    docs/requirements/index.rst
    docs/requirements/chklst_req_inspection.rst
    docs/requirements/statistics.rst
+   docs/safety_analysis/aou_requirements.rst
    docs/safety_analysis/fmea.rst
    docs/safety_analysis/dfa.rst

@@ -34,6 +34,7 @@ compile_pip_requirements(
 score_virtualenv(
     name = "python_tc_venv",
     reqs = all_requirements,
+    tags = ["manual"],
     venv_name = ".python_tc_venv",
 )
 
@@ -55,6 +56,7 @@ score_py_pytest(
         "RUST_BACKTRACE": "1",
     },
     pytest_config = "//:pyproject.toml",
+    target_compatible_with = ["@platforms//os:linux"],
     deps = all_requirements,
 )
 
@@ -75,6 +77,7 @@ score_py_pytest(
         "RUST_BACKTRACE": "1",
     },
     pytest_config = "//:pyproject.toml",
+    target_compatible_with = ["@platforms//os:linux"],
     deps = all_requirements,
 )
 

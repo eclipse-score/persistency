@@ -11,7 +11,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
-load("@score_toolchains_qnx//rules/fs:ifs.bzl", "qnx_ifs")
+load("@score_rules_imagefs//rules/qnx:ifs.bzl", "qnx_ifs")
 
 config_setting(
     name = "is_qnx_x86_64",
@@ -100,13 +100,15 @@ qnx_ifs(
         ":is_qnx_aarch64": ["install"],  # relative to the .build file’s dir
         "//conditions:default": [],
     }),
+    tags = ["manual"],
+    target_compatible_with = ["@platforms//os:qnx"],
 )
 
 sh_binary(
     name = "run_qemu",
     srcs = ["run_qemu.sh"],
     args = [
-        "$(location @toolchains_qnx_sdp//:host_dir)",
+        "$(location @score_qcc_aarch64_toolchain_pkg//:host_dir)",
         "$(location :init)",
         "$(location @custom_qemu//:qemu_bin)",
         "$(location @custom_qemu//:rpi4_dtb)",
@@ -115,7 +117,9 @@ sh_binary(
         ":init",
         "@custom_qemu//:qemu_bin",
         "@custom_qemu//:rpi4_dtb",
-        "@toolchains_qnx_sdp//:host_all",
-        "@toolchains_qnx_sdp//:host_dir",
+        "@score_qcc_aarch64_toolchain_pkg//:host_all",
+        "@score_qcc_aarch64_toolchain_pkg//:host_dir",
     ],
+    tags = ["manual"],
+    target_compatible_with = ["@platforms//os:qnx"],
 )

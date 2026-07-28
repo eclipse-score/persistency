@@ -18,9 +18,10 @@ Module Safety Plan
 .. document:: Persistency Safety Plan
    :id: doc__persistency_safety_plan
    :status: valid
+   :version: 1
    :safety: ASIL_B
    :security: NO
-   :realizes: wp__module_safety_plan
+   :realizes: wp__module_safety_plan[version==1]
    :tags: persistency
 
 Functional Safety Management Context
@@ -47,7 +48,7 @@ Functional Safety Management Roles
           - Volker Häussler
 
         * - Module Project Manager (= Feature team lead)
-          - Lars Bauhofer
+          - Uwe Maucher
 
 Tailoring
 =========
@@ -143,7 +144,7 @@ Component KVS Workproducts List
         * - :need:`wp__requirements_inspect`
           - :need:`gd_chklst__req_inspection`
           - :ndf:`copy('status', need_id='gd_chklst__req_inspection')`
-          - Checklist used in Pull Request Review
+          - :need:`doc__kvs_req_inspection`
 
         * - :need:`wp__component_arch`
           - :need:`gd_temp__arch_comp`
@@ -153,7 +154,7 @@ Component KVS Workproducts List
         * - :need:`wp__sw_arch_verification`
           - :need:`gd_chklst__arch_inspection_checklist`
           - :ndf:`copy('status', need_id='gd_chklst__arch_inspection_checklist')`
-          - Checklist used in Pull Request Review
+          - :need:`doc__kvs_arc_inspection`
 
         * - :need:`wp__sw_component_fmea`
           - :need:`wp__sw_component_fmea`
@@ -168,7 +169,7 @@ Component KVS Workproducts List
         * - :need:`wp__sw_implementation`
           - :need:`gd_guidl__implementation`
           - :ndf:`copy('status', need_id='gd_guidl__implementation')`
-          - <Link to WP>
+          - :need:`doc__kvs_detailed_design`
 
         * - :need:`wp__verification_sw_unit_test`
           - :need:`gd_guidl__verification_guide`
@@ -178,7 +179,7 @@ Component KVS Workproducts List
         * - :need:`wp__sw_implementation_inspection`
           - :need:`gd_chklst__impl_inspection_checklist`
           - :ndf:`copy('status', need_id='gd_chklst__impl_inspection_checklist')`
-          - Checklist used in Pull Request Review
+          - :need:`doc__kvs_impl_inspection`
 
         * - :need:`wp__verification_comp_int_test`
           - :need:`gd_guidl__verification_guide`
@@ -255,7 +256,7 @@ If the OSS element is classified as
 Link to project planning
 ------------------------
 
-<add here a link to your module's planning for the above work products, e.g. a link to a ticket.>
+`Persistency Feature Team Planning <https://github.com/orgs/eclipse-score/projects/20/views/12>`__
 
 
 Module Safety Package
@@ -267,24 +268,20 @@ documents and work products status have to go to "valid" (after the relevant ver
 Module Documents Status
 -----------------------
 
-For all the work product documents the status can be seen by following the "Link to WP".
-A summary of the status is also documented in the project's documentation management plan.
+For all the work product documents the status can be seen in :ref:`persistency_module_documentation`.
 
-See <add here the section reference to the documentation management plan>
 
 Component Documents Status
 --------------------------
 
-For all the work product documents the status can be seen by following the "Link to WP".
-A summary of the status is also documented in the project's documentation management plan.
+For all the work product documents the status can be seen  in :ref:`persistency_module_documentation`.
 
-See <add here the section reference to the documentation management plan>
 
 Component Requirements Status
 -----------------------------
 
 .. needtable::
-   :filter: docname is not None and "persistency" in docname and "requirements" in docname
+   :filter: docname is not None and "kvs" in docname and "requirements" in docname
    :style: table
    :types: comp_req
    :tags: component_name
@@ -296,7 +293,7 @@ Component AoU Status
 --------------------
 
 .. needtable::
-   :filter: docname is not None and "persistency" in docname and "requirements" in docname
+   :filter: docname is not None and "kvs" in docname and "requirements" in docname
    :style: table
    :types: aou_req
    :tags: component_name
@@ -308,7 +305,7 @@ Component Architecture Status
 -----------------------------
 
 .. needtable::
-   :filter: docname is not None and "persistency" in docname and "architecture" in docname
+   :filter: docname is not None and "kvs" in docname and "architecture" in docname
    :style: table
    :types: comp_arc_sta; comp_arc_dyn
    :tags: component_name
@@ -325,5 +322,4 @@ The following deviations from the module safety plan are present in the module s
 These are deviations from planned processes execution and/or work product results,
 safety anomalies in the sense of known bugs in the software are reported in the release notes.
 
-<Describe here the deviations, whether they have an impact on module's safety functions,
-how these can be mitigated or argued and if and when a resolution is planned.>
+No deviations from the module safety plan are present in the module safety package.
