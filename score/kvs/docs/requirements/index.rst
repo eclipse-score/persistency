@@ -352,61 +352,22 @@ Component Requirements
    The component shall maintain a configurable maximum number of snapshots. The maximum number shall be in the range <0..3>.
    A value of zero means that snapshot operations are disabled, while a non-zero value specifies the maximum number of snapshots.
 
-.. comp_req:: Snapshot lifecycle APIs
-   :id: comp_req__kvs__snapshot_lifecycle_apis
+.. comp_req:: Snapshot create API
+   :id: comp_req__kvs__snapshot_create_api
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
    :status: valid
    :version: 1
-   :derived_from: feat_req__persistency__snapshot_create[version==1], feat_req__persistency__snapshot_restore[version==1], feat_req__persistency__snapshot_remove[version==1]
+   :derived_from: feat_req__persistency__snapshot_create[version==1]
    :belongs_to: comp__persistency_kvs[version==1]
    :tags: inspected
 
-   The component shall provide APIs to create, restore, and delete snapshots.
+   The component shall provide API for creation of snapshots with an argument that selects a dedicated snapshot slot by snapshot index.
 
    .. note::
 
       A snapshot is a point-in-time, frozen view on all values in a key-value storage.
-
-.. comp_req:: Explicit snapshot operations
-   :id: comp_req__kvs__explicit_snapshot_operations
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :status: valid
-   :version: 1
-   :derived_from: feat_req__persistency__snapshot_create[version==1], feat_req__persistency__snapshot_restore[version==1], feat_req__persistency__snapshot_remove[version==1]
-   :belongs_to: comp__persistency_kvs[version==1]
-   :tags: inspected
-
-   The component shall perform snapshot creation, restoration, and deletion only when explicitly triggered by the user through the corresponding snapshot API.
-
-.. comp_req:: Snapshot slot selection
-   :id: comp_req__kvs__snapshot_slot_selection
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :status: valid
-   :version: 1
-   :derived_from: feat_req__persistency__snapshot_create[version==1], feat_req__persistency__cfg[version==1]
-   :belongs_to: comp__persistency_kvs[version==1]
-   :tags: inspected
-
-   The component shall provide the snapshot lifecycle APIs with an argument that selects a dedicated snapshot slot by snapshot index.
-
-.. comp_req:: Snapshot slot indexing
-   :id: comp_req__kvs__snapshot_id
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :derived_from: feat_req__persistency__snapshot_create[version==1]
-   :status: valid
-   :version: 1
-   :belongs_to: comp__persistency_kvs[version==1]
-   :tags: inspected
-
-   The component shall identify snapshot slots by a zero-based index, where the first slot has index 0, the second slot has index 1, and so on.
 
 .. comp_req:: Snapshot create
    :id: comp_req__kvs__snapshot_create
@@ -434,6 +395,58 @@ Component Requirements
 
    The component shall overwrite the selected snapshot slot when the slot is occupied.
 
+.. comp_req:: Snapshot restore API
+   :id: comp_req__kvs__snapshot_restore_api
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :derived_from: feat_req__persistency__snapshot_restore[version==1]
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
+
+   The component shall provide API for restoration of snapshots with an argument that selects a dedicated snapshot slot by snapshot index.
+
+.. comp_req:: Snapshot remove API
+   :id: comp_req__kvs__snapshot_remove_api
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :derived_from: feat_req__persistency__snapshot_remove[version==1]
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
+
+   The component shall provide API for removing of snapshots with an argument that selects a dedicated snapshot slot by snapshot index.
+
+.. comp_req:: Explicit snapshot operations
+   :id: comp_req__kvs__explicit_snapshot_operations
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :derived_from: feat_req__persistency__snapshot_create[version==1], feat_req__persistency__snapshot_restore[version==1], feat_req__persistency__snapshot_remove[version==1]
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
+
+   The component shall perform snapshot creation, restoration, and deletion only when explicitly triggered by the user through the corresponding APIs.
+
+.. comp_req:: Snapshot slot indexing
+   :id: comp_req__kvs__snapshot_id
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :derived_from: feat_req__persistency__snapshot_create[version==1]
+   :status: valid
+   :version: 1
+   :belongs_to: comp__persistency_kvs[version==1]
+   :tags: inspected
+
+   The component shall identify snapshot slots by a zero-based index, where the first slot has index 0, the second slot has index 1, and so on.
+
 .. comp_req:: Snapshot data source
    :id: comp_req__kvs__snapshot_source
    :reqtype: Functional
@@ -447,8 +460,8 @@ Component Requirements
 
    The component shall use the live values that were set by the user, regardless of whether the values were flushed to disk.
 
-.. comp_req:: Snapshot slot occupancy query
-   :id: comp_req__kvs__snapshot_slot_occupancy_query
+.. comp_req:: Snapshot slot occupancy query API
+   :id: comp_req__kvs__snapshot_slot_occupancy_query_api
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
