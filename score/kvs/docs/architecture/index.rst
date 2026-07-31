@@ -71,6 +71,7 @@ The live component architecture template is maintained in the
    :security: YES
    :safety: ASIL_B
    :status: invalid
+   :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
    :implements:
    :fulfils: comp_req__kvs__key_naming[version==1]
@@ -89,6 +90,7 @@ Dynamic Architecture
    :security: YES
    :safety: ASIL_B
    :status: invalid
+   :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
    :fulfils: comp_req__kvs__key_naming[version==1]
 
@@ -113,6 +115,7 @@ Internal Components
 .. comp_arc_sta:: Component Name 2
    :id: comp_arc_sta__kvs__2
    :status: invalid
+   :version: 1
    :safety: ASIL_B
    :security: YES
    :implements:
