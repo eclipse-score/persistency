@@ -26,76 +26,24 @@ Verification Report
 
 .. mod:: Persistency Module
        :id: mod__persistency
+       :version: 1
        :status: valid
        :safety: ASIL_B
        :security: NO
        :includes: comp__persistency_kvs[version==1]
 
-.. mod_insp:: KVS Requirements Inspection Record
-       :id: mod_insp__kvs__req
-       :safety: ASIL_B
-       :security: NO
-       :status: valid
-       :inspection_type: requirements
-       :inspection_state: approved
-       :checklist_ref: gd_chklst__req_inspection
-       :reviewers: kvs-reviewer-a,kvs-reviewer-b
-       :checklist_type: req
-       :findings_total: 0
-       :findings_open: 0
-       :inspection_date: 2026-07-07
-       :belongs_to: mod__persistency
-       :inspects: comp_req__kvs__key_naming[version==1], comp_req__kvs__value_default[version==1], aou_req__persistency__error_handling[version==1]
-       :evidence: doc__kvs_req_inspection
-
-.. mod_insp:: Persistency Architecture Inspection Record
-       :id: mod_insp__persistency__arch
-       :safety: ASIL_B
-       :security: NO
-       :status: valid
-       :inspection_type: architecture
-       :inspection_state: approved
-       :checklist_ref: gd_chklst__arch_inspection_checklist
-       :reviewers: feature-reviewer-a,feature-reviewer-b
-       :checklist_type: arc
-       :findings_total: 0
-       :findings_open: 0
-       :inspection_date: 2026-07-07
-       :belongs_to: mod__persistency
-       :inspects: feat_arc_sta__persistency__static[version==1], feat_arc_dyn__persistency__read_key[version==1]
-       :evidence: doc__persistency_kvs_architecture[version==1]
-
-.. mod_insp:: KVS Implementation Inspection Record
-       :id: mod_insp__kvs__impl
-       :safety: ASIL_B
-       :security: NO
-       :status: valid
-       :inspection_type: implementation
-       :inspection_state: approved
-       :checklist_ref: gd_chklst__impl_inspection_checklist
-       :reviewers: kvs-impl-reviewer-a
-       :checklist_type: impl
-       :findings_total: 0
-       :findings_open: 0
-       :inspection_date: 2026-07-07
-       :belongs_to: mod__persistency
-       :inspects: feat_arc_dyn__persistency__write_key[version==1], feat_arc_dyn__persistency__flush[version==1]
-       :evidence: doc__persistency_kvs_architecture[version==1]
-
 .. mod_ver_report:: Persistency Module Verification Summary
        :id: mod_vrep__persistency__report
+       :version: 1
        :safety: ASIL_B
        :security: NO
        :status: valid
-       :verification_method: test_and_inspection
-       :requirements_coverage_percent: 100
-       :structural_coverage_percent: 0
+       :verification_method: test
+       :requirements_tests_completely_passed_percent: 100
+       :line_coverage_percent: 0
        :branch_coverage_percent: 0
-       :verdict: open
-       :report_version: 1
-       :release_baseline: main
+       :applies_to_module_version: 1
        :belongs_to: mod__persistency
-       :contains: mod_insp__kvs__req, mod_insp__persistency__arch, mod_insp__kvs__impl
        :covers: comp_req__kvs__key_naming[version==1], comp_req__kvs__value_default[version==1], feat_arc_sta__persistency__static[version==1], feat_saf_dfa__persistency__execution_blocking[version==1], feat_saf_fmea__persistency__err_handl[version==1]
        :evidence: doc__persistency_verification_report, doc__persistency_safety_analysis_fdr
        :realizes: wp__verification_module_ver_report[version==1]
@@ -113,7 +61,7 @@ Verification Report contains:
        :filter: type in ["comp_req", "aou_req"] and docname is not None and "kvs/docs/requirements" in docname and status == "valid"
        :style: table
        :sort: id
-       :columns: id as "ID";status as "Status";tags as "Tags";fully_verifies_back as "Fully Verified By Tests";partially_verifies_back as "Partially Verified By Tests";inspects_back as "Inspected By"
+       :columns: id as "ID";status as "Status";tags as "Tags";fully_verifies_back as "Fully Verified By Tests";partially_verifies_back as "Partially Verified By Tests"
 
 **1.2. on Architecture**
 
@@ -121,16 +69,16 @@ Verification Report contains:
        :filter: type in ["feat_arc_sta", "feat_arc_dyn", "comp_arc_sta", "comp_arc_dyn"] and status == "valid" and ("persistency" in id or "kvs" in id)
        :style: table
        :sort: id
-       :columns: id as "ID";type_name as "Type";status as "Status";fully_verifies_back as "Fully Verified By Tests";partially_verifies_back as "Partially Verified By Tests";inspects_back as "Inspected By"
+       :columns: id as "ID";type_name as "Type";status as "Status";fully_verifies_back as "Fully Verified By Tests";partially_verifies_back as "Partially Verified By Tests"
 
 **1.3. on Detailed Design**
 
 .. needtable:: Detailed Design Verification Coverage
        :filter: id == "doc__kvs_detailed_design"
        :style: table
-       :columns: id as "ID";status as "Status";inspects_back as "Inspected By";realizes as "Realizes"
+       :columns: id as "ID";status as "Status";realizes as "Realizes"
 
-The above requirement, architecture, and detailed design tables are generated from needs relations and inspection records.
+The above requirement, architecture, and detailed design tables are generated from needs relations.
 
 **2. DFA Report**
 
@@ -161,14 +109,6 @@ This section remains manual until unit coverage artifacts are exported as needs.
 
 Automatic static-analysis findings needs are currently not available in this repository's needs dataset.
 This section remains manual until static-analysis artifacts are exported as needs.
-
-**4.3. Manual Code Inspection**
-
-.. needtable:: Inspection Records (Requirements, Architecture, Implementation)
-       :filter: type == "mod_insp" and ("persistency" in id or "kvs" in id)
-       :style: table
-       :sort: id
-       :columns: id as "Inspection ID";inspection_type as "Type";inspection_state as "State";findings_open as "Open Findings";inspects as "Inspected Artifacts";evidence as "Evidence"
 
 **5. Software component qualification verification report**
 
