@@ -64,28 +64,6 @@ class SnapshotCount : public Scenario
         return "count";
     }
 
-    /**
-     * Requirement not being met:
-     *   - The snapshot is created for each data stored.
-     *   - Max count should be configurable.
-     *
-     * TestSnapshotCountFirstFlush
-     *      Issue: The test expects the final snapshot_count to be min(count,
-     * snapshot_max_count) (e.g., 1 for count=1, snapshot_max_count=1/3/10).
-     *      Observed: C++ emits snapshot_count: 0 after the first flush.
-     *      Possible Root Cause: In C++, the snapshot count is not incremented after
-     * the first flush because the snapshot rotation logic and counting are tied to
-     * the hardcoded max (not the parameter).
-     *
-     * TestSnapshotCountFull
-     *      Issue: The test expects a sequence of snapshot_count values: [0, 1] for count=2, [0, 1,
-     * 2, 3] for count=4, etc. Observed: C++ emits [0, 0, 1] or [0, 0, 1, 2, 3], but the first value
-     * is always 0, and the final value is not as expected. Possible Root Cause: The C++
-     * implementation may not be accumulating the count correctly, it stores or updates the count
-     * only after flush when MAX<3.
-     *
-     * Raised bugs: https://github.com/eclipse-score/persistency/issues/108
-     */
     void run(const std::string& input) const final
     {
         auto obj{get_object(input)};
@@ -116,6 +94,9 @@ class SnapshotCount : public Scenario
             {
                 throw std::runtime_error{"Failed to flush"};
             }
+
+            // Create snapshot in the first available slot. Ignore failure if max count is reached.
+            kvs.snapshot_create();
         }
 
         {
@@ -142,8 +123,6 @@ class SnapshotMaxCount : public Scenario
 
     void run(const std::string& input) const final
     {
-        auto obj{get_object(input)};
-        auto count{get_field<int32_t>(obj, "count")};
         auto params{KvsParameters::from_json(input)};
 
         auto kvs{kvs_instance(params)};
@@ -183,6 +162,13 @@ class SnapshotRestore : public Scenario
             if (!flush_result)
             {
                 throw std::runtime_error{"Failed to flush"};
+            }
+
+            // Create snapshot in the first available slot.
+            auto create_result{kvs.snapshot_create()};
+            if (!create_result)
+            {
+                throw std::runtime_error{"Failed to create snapshot"};
             }
         }
 
@@ -243,6 +229,13 @@ class SnapshotPaths : public Scenario
             {
                 throw std::runtime_error{"Failed to flush"};
             }
+
+            // Create snapshot in the first available slot.
+            auto create_result{kvs.snapshot_create()};
+            if (!create_result)
+            {
+                throw std::runtime_error{"Failed to create snapshot"};
+            }
         }
 
         {
@@ -254,12 +247,127 @@ class SnapshotPaths : public Scenario
     }
 };
 
+class SnapshotCreate : public Scenario
+{
+  public:
+    ~SnapshotCreate() final = default;
+
+    std::string name() const final
+    {
+        return "create";
+    }
+
+    void run(const std::string& input) const final
+    {
+        auto params{KvsParameters::from_json(input)};
+
+        auto kvs{kvs_instance(params)};
+        auto set_result{kvs.set_value("counter", KvsValue{42})};
+        if (!set_result)
+        {
+            throw std::runtime_error{"Failed to set value"};
+        }
+
+        // Flush only: in C++ this does NOT create a snapshot.
+        auto flush_result{kvs.flush()};
+        if (!flush_result)
+        {
+            throw std::runtime_error{"Failed to flush"};
+        }
+
+        auto count_after_flush{kvs.snapshot_count()};
+        if (!count_after_flush)
+        {
+            throw std::runtime_error{"Unable to get snapshot count"};
+        }
+        TRACING_INFO(kTargetName,
+                     std::pair{std::string{"snapshot_count_after_flush"}, count_after_flush.value()});
+
+        // Explicitly create snapshot.
+        auto create_result{kvs.snapshot_create()};
+        TRACING_INFO(kTargetName,
+                     std::pair{std::string{"result"}, create_result ? "Ok(())" : "Err(OutOfStorageSpace)"});
+
+        auto count_after_create{kvs.snapshot_count()};
+        if (!count_after_create)
+        {
+            throw std::runtime_error{"Unable to get snapshot count"};
+        }
+        TRACING_INFO(kTargetName,
+                     std::pair{std::string{"snapshot_count_after_create"}, count_after_create.value()});
+    }
+};
+
+class SnapshotDelete : public Scenario
+{
+  public:
+    ~SnapshotDelete() final = default;
+
+    std::string name() const final
+    {
+        return "delete";
+    }
+
+    void run(const std::string& input) const final
+    {
+        auto obj{get_object(input)};
+        auto count{get_field<int32_t>(obj, "count")};
+        auto snapshot_id{get_field<uint64_t>(obj, "snapshot_id")};
+        auto params{KvsParameters::from_json(input)};
+
+        // Create snapshots.
+        for (int32_t i{0}; i < count; ++i)
+        {
+            auto kvs{kvs_instance(params)};
+            auto set_result{kvs.set_value("counter", KvsValue{i})};
+            if (!set_result)
+            {
+                throw std::runtime_error{"Failed to set value"};
+            }
+
+            // Flush KVS.
+            auto flush_result{kvs.flush()};
+            if (!flush_result)
+            {
+                throw std::runtime_error{"Failed to flush"};
+            }
+
+            // Create snapshot in the first available slot.
+            auto create_result{kvs.snapshot_create()};
+            if (!create_result)
+            {
+                throw std::runtime_error{"Failed to create snapshot"};
+            }
+        }
+
+        {
+            auto kvs{kvs_instance(params)};
+
+            auto delete_result{kvs.snapshot_delete(snapshot_id)};
+            TRACING_INFO(kTargetName,
+                         std::pair{std::string{"result"}, delete_result ? "Ok(())" : "Err(InvalidSnapshotId)"});
+
+            if (delete_result)
+            {
+                auto count_result{kvs.snapshot_count()};
+                if (!count_result)
+                {
+                    throw std::runtime_error{"Unable to get snapshot count after delete"};
+                }
+                TRACING_INFO(kTargetName, std::pair{std::string{"snapshot_count"}, count_result.value()});
+            }
+        }
+    }
+};
+
 ScenarioGroup::Ptr snapshots_group()
 {
     return ScenarioGroup::Ptr{new ScenarioGroupImpl{"snapshots",
                                                     {std::make_shared<SnapshotCount>(),
                                                      std::make_shared<SnapshotMaxCount>(),
                                                      std::make_shared<SnapshotRestore>(),
-                                                     std::make_shared<SnapshotPaths>()},
+                                                     std::make_shared<SnapshotPaths>(),
+                                                     std::make_shared<SnapshotCreate>(),
+                                                     std::make_shared<SnapshotDelete>()},
                                                     {}}};
 }
