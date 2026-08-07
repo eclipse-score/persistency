@@ -18,7 +18,7 @@ Module Safety Plan
 .. document:: Persistency Safety Plan
    :id: doc__persistency_safety_plan
    :status: valid
-   :version: 1
+   :version: 2
    :safety: ASIL_B
    :security: NO
    :realizes: wp__module_safety_plan[version==1]
@@ -56,7 +56,8 @@ Tailoring
 Additional to the tailoring in the SW platform project as defined in the :need:`wp__platform_safety_plan` we define here the additional tailoring on module level.
 
 | - Excluded for this module are additionally the following workproducts (and their related requirements):
-|   - Safety Analysis will not be performed on module level, because they are identical to the feature level.
+|   - Safety Analysis will not be performed on module level, because they are identical to the feature level
+|   - Detailed Design will not be performed on module level, because it's optional acccording to the process description
 
 Functional Safety Module Workproducts
 =====================================
@@ -166,11 +167,6 @@ Component KVS Workproducts List
           - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
           - :need:`doc__kvs_dfa`
 
-        * - :need:`wp__sw_implementation`
-          - :need:`gd_guidl__implementation`
-          - :ndf:`copy('status', need_id='gd_guidl__implementation')`
-          - :need:`doc__kvs_detailed_design`
-
         * - :need:`wp__verification_sw_unit_test`
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
@@ -186,10 +182,7 @@ Component KVS Workproducts List
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
           - <Link to WP>
 
-        * - :need:`wp__sw_component_class`
-          - :need:`gd_guidl__component_classification`
-          - :ndf:`copy('status', need_id='gd_guidl__component_classification')`
-          - :need:`doc__json_comp_class`
+
 
 
 OSS (sub-)component qualification plan
@@ -250,7 +243,7 @@ If the OSS element is classified as
 
         * - :need:`wp__sw_component_class`
           - :need:`gd_guidl__component_classification`
-          - Always needed as basis for tailoring.
+          - :need:`doc__json_comp_class`
 
 
 Link to project planning
@@ -284,9 +277,8 @@ Component Requirements Status
    :filter: docname is not None and "kvs" in docname and "requirements" in docname
    :style: table
    :types: comp_req
-   :tags: component_name
-   :columns: id;status;tags
-   :colwidths: 25,25,25
+   :columns: id;status
+   :colwidths: 25,25
    :sort: title
 
 Component AoU Status
@@ -296,9 +288,8 @@ Component AoU Status
    :filter: docname is not None and "kvs" in docname and "requirements" in docname
    :style: table
    :types: aou_req
-   :tags: component_name
-   :columns: id;status;tags
-   :colwidths: 25,25,25
+   :columns: id;status
+   :colwidths: 25,25
    :sort: title
 
 Component Architecture Status
@@ -308,9 +299,8 @@ Component Architecture Status
    :filter: docname is not None and "kvs" in docname and "architecture" in docname
    :style: table
    :types: comp_arc_sta; comp_arc_dyn
-   :tags: component_name
-   :columns: id;status;tags
-   :colwidths: 25,25,25
+   :columns: id;status
+   :colwidths: 25,25
    :sort: title
 
 .. _persistency_safety_package_deviations:
