@@ -38,13 +38,5 @@
   {
     "version": "v0.3.2",
     "url": "https://eclipse-score.github.io/persistency/v0.3.2/"
-  },
-  {
-    "version": "pr-360",
-    "url": "https://eclipse-score.github.io/persistency/pr-360/"
-  },
-  {
-    "version": "pr-361",
-    "url": "https://eclipse-score.github.io/persistency/pr-361/"
   }
 ]
