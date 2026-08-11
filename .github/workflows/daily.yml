@@ -25,13 +25,6 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
-  # On changes to this workflow file
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/daily.yml'
-
   # Manually trigger the workflow from the GitHub UI
   workflow_dispatch: {}
 
