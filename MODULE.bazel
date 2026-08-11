@@ -58,8 +58,9 @@ bazel_dep(name = "score_rules_imagefs", version = "0.0.3", dev_dependency = True
 
 bazel_dep(name = "score_docs_as_code", version = "7.0.1")
 
-bazel_dep(name = "score_platform", version = "0.6.4", dev_dependency = True)
-bazel_dep(name = "score_process", version = "2.0.3", dev_dependency = True)
+# docs dependencies (feature requirements etc.)
+bazel_dep(name = "score_platform", version = "0.6.4")
+bazel_dep(name = "score_process", version = "2.0.3")
 
 bazel_dep(name = "score_python_basics", version = "0.3.4")
 bazel_dep(name = "score_tooling", version = "1.2.0")
