@@ -157,17 +157,16 @@ Footnotes
 [A collection of footnotes cited in the CR, and a place to list non-inline hyperlink targets.]
 
 .. toctree::
-   :hidden:
 
-   docs/architecture/chklst_arc_inspection.rst
-   docs/architecture/component_architecture.rst
-   docs/architecture/index.rst
-   docs/detailed_design/index.rst
-   docs/detailed_design/chklst_impl_inspection.rst
+   architecture/chklst_arc_inspection.rst
+   architecture/component_architecture.rst
+   architecture/index.rst
+   detailed_design/index.rst
+   detailed_design/chklst_impl_inspection.rst
    kvs.rst
-   docs/requirements/index.rst
-   docs/requirements/chklst_req_inspection.rst
-   docs/requirements/statistics.rst
-   docs/safety_analysis/aou_requirements.rst
-   docs/safety_analysis/fmea.rst
-   docs/safety_analysis/dfa.rst
+   requirements/index.rst
+   requirements/chklst_req_inspection.rst
+   requirements/statistics.rst
+   safety_analysis/aou_requirements.rst
+   safety_analysis/fmea.rst
+   safety_analysis/dfa.rst

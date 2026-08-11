@@ -22,7 +22,19 @@ docs(
         "@score_platform//:needs_json",
         "@score_process//:needs_json",
     ],
-    source_dir = ".",
+    source_dir = "docs",
+    bundles = [
+        {
+            # JSON Component?
+            "bundle": "//score:json_docs",
+            "mount_at": "components/json",
+        },
+        {
+            # KVS Component
+            "bundle": "//score:kvs_docs",
+            "mount_at": "components/kvs",
+        },
+    ]
 )
 
 setup_starpls(
