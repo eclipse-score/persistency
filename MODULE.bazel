@@ -54,7 +54,7 @@ bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "score_baselibs", version = "0.2.10")
 bazel_dep(name = "score_bazel_platforms", version = "0.1.2")
 
-bazel_dep(name = "score_rules_imagefs", version = "0.0.3", dev_dependency = True)
+bazel_dep(name = "score_rules_imagefs", version = "0.0.4", dev_dependency = True)
 
 bazel_dep(name = "score_python_basics", version = "0.3.4")
 bazel_dep(name = "score_tooling", version = "1.2.0")
