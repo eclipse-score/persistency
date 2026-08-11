@@ -18,11 +18,6 @@ load("//:project_config.bzl", "PROJECT_CONFIG")
 # Creates all documentation targets:
 # - `:docs` for building documentation at build-time
 docs(
-    data = [
-        "@score_platform//:needs_json",
-        "@score_process//:needs_json",
-    ],
-    source_dir = "docs",
     bundles = [
         {
             # JSON Component?
@@ -34,7 +29,12 @@ docs(
             "bundle": "//score:kvs_docs",
             "mount_at": "components/kvs",
         },
-    ]
+    ],
+    data = [
+        "@score_platform//:needs_json",
+        "@score_process//:needs_json",
+    ],
+    source_dir = "docs",
 )
 
 setup_starpls(
