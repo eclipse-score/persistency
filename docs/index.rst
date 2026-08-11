@@ -93,12 +93,13 @@ Module / Feature Documentation
 .. toctree::
    :maxdepth: 1
 
-   docs/features/persistency/index
-   docs/manuals/index
-   docs/release/release_note
-   docs/safety_mgt/index
-   docs/security_mgt/index
-   docs/verification_report/module_verification_report
+   features/persistency/index
+   manuals/index
+   release/release_note
+   safety_mgt/index
+   security_mgt/index
+   verification_report/module_verification_report
+   components/index
 
 
 Module / Feature documentation overview
@@ -116,22 +117,8 @@ Module / Feature documentation overview
 Component documentation
 -------------------------------
 
-.. toctree::
-   :maxdepth: 1
+See :ref:`component_documentation` for details.
 
-   score/json/docs/index
-   score/kvs/index
-
-Component documentation overview
-++++++++++++++++++++++++++++++++
-
-.. needtable::
-   :filter: docname is not None and "score" in docname
-   :style: table
-   :types: document
-   :columns: title;id;safety;security;status
-   :colwidths: 25,35,15,15,15
-   :sort: title
 
 Examples
 --------
