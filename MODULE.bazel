@@ -61,7 +61,7 @@ bazel_dep(name = "score_tooling", version = "1.2.0")
 bazel_dep(name = "score_logging", version = "0.2.2")
 
 # docs-as-code and docs dependencies (feature requirements etc.)
-bazel_dep(name = "score_docs_as_code", version = "7.0.1")
+bazel_dep(name = "score_docs_as_code", version = "7.1.0")
 bazel_dep(name = "score_platform", version = "0.6.4")
 bazel_dep(name = "score_process", version = "2.0.3")
 
