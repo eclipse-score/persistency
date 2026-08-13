@@ -72,14 +72,6 @@ single_version_override(
     version = "1.69.0",
 )
 
-# TODO: remove once inherited properly from `score_logging`.
-bazel_dep(name = "trlc", version = "0.0.0", dev_dependency = True)
-git_override(
-    module_name = "trlc",
-    commit = "650b51a47264a4f232b3341f473527710fc32669",  # trlc-2.0.2 release
-    remote = "https://github.com/bmw-software-engineering/trlc.git",
-)
-
 bazel_dep(name = "buildifier_prebuilt", version = "8.5.1")
 bazel_dep(name = "aspect_rules_lint", version = "2.5.0")
 
