@@ -14,7 +14,7 @@ use crate::error_code::ErrorCode;
 use crate::kvs_api::{InstanceId, SnapshotId};
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_value::{KvsMap, KvsValue};
-use crate::log::{debug, error, trace, ScoreDebug};
+use crate::log::{debug, error, trace, FormatSpec, ScoreDebug, Writer};
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -162,7 +162,7 @@ impl JsonBackendBuilder {
 
     /// Set the working directory used by the JSON backend.
     pub fn working_dir(mut self, working_dir: PathBuf) -> Self {
-        trace!("'working_dir' set to {:?}", working_dir);
+        trace!("'working_dir' set to {:?}", working_dir.to_string_lossy().into_owned());
         self.working_dir = working_dir;
         self
     }
@@ -190,13 +190,24 @@ impl Default for JsonBackendBuilder {
 }
 
 /// KVS backend implementation based on TinyJSON.
-#[derive(Clone, Debug, PartialEq, ScoreDebug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct JsonBackend {
     working_dir: PathBuf,
     snapshot_max_count: usize,
 }
 
+impl ScoreDebug for JsonBackend {
+    fn fmt(&self, f: Writer, spec: &FormatSpec) -> score_log::fmt::Result {
+        let working_dir = Self::path_for_log(&self.working_dir);
+        ScoreDebug::fmt(&working_dir, f, spec)
+    }
+}
+
 impl JsonBackend {
+    fn path_for_log(path: &Path) -> String {
+        path.to_string_lossy().into_owned()
+    }
+
     fn parse(s: &str) -> Result<JsonValue, ErrorCode> {
         s.parse().map_err(ErrorCode::from)
     }
@@ -260,15 +271,15 @@ impl JsonBackend {
             ext.is_some_and(|ep| ep.to_str().is_some_and(|es| es == extension))
         }
 
-        debug!("Checking KVS file path: {:?}", kvs_path);
+        debug!("Checking KVS file path: {:?}", Self::path_for_log(kvs_path));
         if !check_extension(kvs_path, "json") {
-            error!("Invalid KVS file path extension: {:?}", kvs_path);
+            error!("Invalid KVS file path extension: {:?}", Self::path_for_log(kvs_path));
             return Err(ErrorCode::KvsFileReadError);
         }
 
-        debug!("Checking hash file path: {:?}", hash_path);
+        debug!("Checking hash file path: {:?}", Self::path_for_log(hash_path));
         if !check_extension(hash_path, "hash") {
-            error!("Invalid hash file path extension: {:?}", hash_path);
+            error!("Invalid hash file path extension: {:?}", Self::path_for_log(hash_path));
             return Err(ErrorCode::KvsHashFileReadError);
         }
 
@@ -279,24 +290,25 @@ impl JsonBackend {
         Self::check_path_extensions(kvs_path, hash_path)?;
 
         // Load KVS file.
-        debug!("Loading KVS file: {:?}", kvs_path);
+        debug!("Loading KVS file: {:?}", Self::path_for_log(kvs_path));
         let json_str = fs::read_to_string(kvs_path).inspect_err(|_| {
-            error!("Failed to load KVS file: {:?}", kvs_path);
+            error!("Failed to load KVS file: {:?}", Self::path_for_log(kvs_path));
         })?;
 
         // Load hash file.
-        debug!("Loading hash file: {:?}", hash_path);
+        debug!("Loading hash file: {:?}", Self::path_for_log(hash_path));
         let hash_bytes = fs::read(hash_path).inspect_err(|_| {
-            error!("Failed to load hash file: {:?}", hash_path);
+            error!("Failed to load hash file: {:?}", Self::path_for_log(hash_path));
         })?;
 
         // Perform hash check.
         debug!(
             "Performing hash check, KVS file: {:?}, hash file: {:?}",
-            kvs_path, hash_path
+            Self::path_for_log(kvs_path),
+            Self::path_for_log(hash_path)
         );
         if hash_bytes.len() != 4 {
-            error!("Invalid hash length: {:?}", hash_path);
+            error!("Invalid hash length: {:?}", Self::path_for_log(hash_path));
             return Err(ErrorCode::ValidationFailed);
         }
 
@@ -304,14 +316,18 @@ impl JsonBackend {
         let hash_kvs = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
 
         if hash_kvs != file_hash {
-            error!("Hash mismatch, KVS file: {:?}, hash file: {:?}", kvs_path, hash_path);
+            error!(
+                "Hash mismatch, KVS file: {:?}, hash file: {:?}",
+                Self::path_for_log(kvs_path),
+                Self::path_for_log(hash_path)
+            );
             return Err(ErrorCode::ValidationFailed);
         }
 
         // Parse KVS from string to `JsonValue`.
-        debug!("Parsing KVS file: {:?}", kvs_path);
+        debug!("Parsing KVS file: {:?}", Self::path_for_log(kvs_path));
         let json_value = Self::parse(&json_str).inspect_err(|_| {
-            error!("Failed to parse KVS file: {:?}", kvs_path);
+            error!("Failed to parse KVS file: {:?}", Self::path_for_log(kvs_path));
         })?;
 
         // Cast from `JsonValue` to `KvsValue`.
@@ -334,24 +350,28 @@ impl JsonBackend {
         let json_value = JsonValue::from(kvs_value);
 
         // Stringify `JsonValue` and save to KVS file.
-        debug!("Stringifying KVS file: {:?}", kvs_path);
+        debug!("Stringifying KVS file: {:?}", Self::path_for_log(kvs_path));
         let json_str = Self::stringify(&json_value).inspect_err(|_| {
-            error!("Failed to stringify KVS file content: {:?}", kvs_path);
+            error!(
+                "Failed to stringify KVS file content: {:?}",
+                Self::path_for_log(kvs_path)
+            );
         })?;
 
-        debug!("Saving KVS file: {:?}", kvs_path);
+        debug!("Saving KVS file: {:?}", Self::path_for_log(kvs_path));
         fs::write(kvs_path, &json_str).inspect_err(|_| {
-            error!("Failed to save KVS file: {:?}", kvs_path);
+            error!("Failed to save KVS file: {:?}", Self::path_for_log(kvs_path));
         })?;
 
         // Generate hash and save to hash file.
         debug!(
             "Generating KVS hash, KVS file: {:?}, hash file: {:?}",
-            kvs_path, hash_path
+            Self::path_for_log(kvs_path),
+            Self::path_for_log(hash_path)
         );
         let hash = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
         fs::write(hash_path, hash.to_be_bytes()).inspect_err(|_| {
-            error!("Failed to save hash file: {:?}", hash_path);
+            error!("Failed to save hash file: {:?}", Self::path_for_log(hash_path));
         })?;
 
         Ok(())
