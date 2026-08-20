@@ -1,0 +1,53 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+#
+# Coverage Justification Database
+# ================================
+#
+# This file defines justified non-covered lines for achieving 100% effective coverage.
+#
+# Each justification has:
+#   - id: Unique kebab-case identifier
+#   - category: One of: defensive_programming, tool_false_positive, platform_specific, other
+#   - reason: Explanation why the line(s) cannot be covered
+#   - platforms: (optional) List of platforms this justification applies to: [linux], [qnx], or [linux, qnx]
+#               When omitted, the justification applies to all platforms.
+#   - locations: (optional) File + line specifications where justification applies
+#
+# Lines can also be justified via in-code markers referencing the ID:
+#   // COV_JUSTIFIED <id>           — justifies the current line
+#   // COV_JUSTIFIED_START <id>     — starts a justified region
+#   // COV_JUSTIFIED_STOP           — ends the justified region
+#
+# Validation rules:
+#   - IDs must be unique and kebab-case (lowercase + hyphens)
+#   - Every justification needs a non-empty reason
+#   - Stale justifications (line is actually covered) produce warnings
+#   - References to non-existent IDs produce errors
+#
+# Example entries:
+#
+# - id: kvs-parser-defensive-match-arm
+#   category: defensive_programming
+#   reason: >
+#     Wildcard arm in match over fully-handled enum. Kept as defensive
+#     programming against future enum additions.
+#   locations:
+#     - file: src/rust/rust_kvs/src/kvs.rs
+#       line_start: 1201
+#       line_end: 1203
+#
+
+version: 1
+
+justifications: []
