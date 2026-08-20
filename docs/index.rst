@@ -101,6 +101,7 @@ Module / Feature Documentation
    verification_report/module_verification_report
    components/index
 
+.. _module_documents_docs_features_persistency:
 
 Module / Feature documentation overview
 +++++++++++++++++++++++++++++++++++++++
