@@ -12,8 +12,6 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-.. _feature_architecture_persistency:
-
 Architecture
 ============
 
