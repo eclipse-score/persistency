@@ -20,7 +20,8 @@ KvsBuilder::KvsBuilder(const InstanceId& instance_id)
     : instance_id(instance_id),
       need_defaults(false),
       need_kvs(false),
-      directory("./data_folder/") /* Default Directory */
+      directory("./data_folder/"),                 /* Default Directory */
+      maximum_size(KVS_DEFAULT_MAX_SIZE_BYTES)     /* Default max size in bytes */
 {
 }
 
@@ -42,6 +43,12 @@ KvsBuilder& KvsBuilder::dir(std::string&& dir_path)
     return *this;
 }
 
+KvsBuilder& KvsBuilder::max_size(std::optional<size_t> max_bytes)
+{
+    this->maximum_size = max_bytes;
+    return *this;
+}
+
 score::Result<Kvs> KvsBuilder::build()
 {
     score::Result<Kvs> result = score::MakeUnexpected(ErrorCode::UnmappedError);
@@ -55,7 +62,8 @@ score::Result<Kvs> KvsBuilder::build()
     result = Kvs::open(instance_id,
                        need_defaults ? OpenNeedDefaults::Required : OpenNeedDefaults::Optional,
                        need_kvs ? OpenNeedKvs::Required : OpenNeedKvs::Optional,
-                       std::move(directory));
+                       std::move(directory),
+                       maximum_size);
 
     return result;
 }
