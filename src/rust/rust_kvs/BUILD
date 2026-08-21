@@ -10,7 +10,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-load("@rules_rust//rust:defs.bzl", "miri_test", "rust_library", "rust_test")
+load("@rules_rust//rust:defs.bzl", "miri_test", "rust_binary", "rust_library", "rust_test")
 
 rust_library(
     name = "rust_kvs",
@@ -31,6 +31,47 @@ rust_test(
         "ut",
     ],
     deps = ["@score_crates//:tempfile"],
+)
+
+rust_binary(
+    name = "basic",
+    srcs = ["examples/basic.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rust_kvs",
+        "@score_crates//:tempfile",
+    ],
+)
+
+rust_binary(
+    name = "custom_types",
+    srcs = ["examples/custom_types.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rust_kvs",
+        "@score_crates//:tempfile",
+    ],
+)
+
+rust_binary(
+    name = "defaults",
+    srcs = ["examples/defaults.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rust_kvs",
+        "@score_crates//:tempfile",
+        "@score_crates//:tinyjson",
+    ],
+)
+
+rust_binary(
+    name = "snapshots",
+    srcs = ["examples/snapshots.rs"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rust_kvs",
+        "@score_crates//:tempfile",
+    ],
 )
 
 miri_test(
