@@ -26,7 +26,7 @@ this repository:
 ## Usage
 
 ```bash
-bazel coverage --config=llvm_cov //src/... --build_tests_only
+bazel coverage --config=llvm_cov //score/... --build_tests_only
 
 bazel run @score_tooling//coverage:generate_coverage_html -- \
     --yaml quality/coverage/coverage_justifications.yaml --testlogs-subdir src

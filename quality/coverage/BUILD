@@ -26,9 +26,9 @@ score_coverage_scope(
     testonly = True,
     visibility = ["//quality/coverage:__subpackages__"],
     deps = [
-        "//src/cpp/src:kvs_cpp",
-        "//src/rust/rust_kvs",
-        "//src/rust/rust_kvs_tool:kvs_tool",
+        "//score/kvs:kvs_cpp",
+        "//score/kvs/rust_kvs",
+        "//score/kvs/rust_kvs_tool:kvs_tool",
     ],
 )
 

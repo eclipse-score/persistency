@@ -29,7 +29,7 @@ jobs:
         config: ['per-x86_64-qnx', 'per-arm64-qnx']
     with:
       bazel-target: >-
-        //:kvs_cpp //src/rust/rust_kvs:rust_kvs //src/rust/rust_kvs_tool:kvs_tool
+        //:kvs_cpp //score/kvs/rust_kvs:rust_kvs //score/kvs/rust_kvs_tool:kvs_tool
       bazel-config: ${{ matrix.config }}
       extra-bazel-flags: '--lockfile_mode=error'
       credential-helper: 'tools/qnx_credential_helper.py'

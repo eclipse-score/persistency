@@ -29,14 +29,14 @@ config_setting(
     ],
 )
 
-# Build artifact comes from //src/rust/rust_kvs_tool:kvs_tool (built for QNX by --platforms)
+# Build artifact comes from //score/kvs/rust_kvs_tool:kvs_tool (built for QNX by --platforms)
 genrule(
     name = "stage_kvs_tool",
-    srcs = ["//src/rust/rust_kvs_tool:kvs_tool"],
+    srcs = ["//score/kvs/rust_kvs_tool:kvs_tool"],
     outs = ["install/usr/bin/kvs_tool"],
     cmd = """
       mkdir -p $(RULEDIR)/install/usr/bin
-      cp $(location //src/rust/rust_kvs_tool:kvs_tool) $@
+      cp $(location //score/kvs/rust_kvs_tool:kvs_tool) $@
       chmod +x $@
     """,
     visibility = ["//visibility:public"],
@@ -59,11 +59,11 @@ genrule(
 #TODO: enable when test_scenarios/rust:test_scenarios is built for QNX
 #genrule(
 #    name = "stage_rust_test_scenarios",
-#    srcs = ["//tests/test_scenarios/rust:test_scenarios"],
+#    srcs = ["//score/kvs/tests/test_scenarios/rust:test_scenarios"],
 #    outs = ["install/usr/bin/test_scenarios/rust"],
 #    cmd = """
 #      mkdir -p $(RULEDIR)/install/usr/bin
-#      cp $(location //tests/test_scenarios/rust:test_scenarios) $@
+#      cp $(location //score/kvs/tests/test_scenarios/rust:test_scenarios) $@
 #      chmod +x $@
 #    """,
 #)

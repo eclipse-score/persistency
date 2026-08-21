@@ -14,7 +14,7 @@
 # ============================================================================
 # LLVM source-based coverage (Linux, Clang + Ferrocene) — unified Rust + C++
 # ============================================================================
-# Use with: bazel coverage --config=llvm_cov //src/... --build_tests_only
+# Use with: bazel coverage --config=llvm_cov //score/... --build_tests_only
 #
 # IMPORTANT: do NOT combine with --config=per-x86_64-linux. That config appends
 # the GCC --extra_toolchains AFTER the LLVM one and GCC would win toolchain
