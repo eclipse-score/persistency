@@ -31,11 +31,12 @@ docs(
             "mount_at": "components/kvs",
         },
     ],
-    data = [
-        "@score_platform//:needs_json",
-        "@score_process_description//:needs_json",
+    external_needs = [
+        "@score_platform//:needs_json_file",
+        "@score_process_description//:needs_json_file",
     ],
-    source_dir = "docs",
+    project = "S-CORE persistency",
+    project_url = "https://eclipse-score.github.io/persistency/",
 )
 
 setup_starpls(
