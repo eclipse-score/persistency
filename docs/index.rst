@@ -135,7 +135,9 @@ To build the module:
 
 .. code-block:: bash
 
-   bazel build //src/...
+   bazel build --config=per-x86_64-linux -- //score/...
+
+Building without an explicit ``--config`` (e.g. ``per-x86_64-linux``, ``per-x86_64-qnx``, ``per-arm64-qnx``) is not supported.
 
 To run all tests:
 
@@ -147,13 +149,13 @@ To run Unit Tests:
 
 .. code-block:: bash
 
-   bazel test //src/...
+   bazel test //:unit_tests
 
 To run Component / Feature Integration Tests:
 
 .. code-block:: bash
 
-   bazel test //tests/...
+   bazel test //:cit_tests
 
 Module Configuration
 --------------------

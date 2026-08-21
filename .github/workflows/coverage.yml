@@ -34,7 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           bazel coverage --lockfile_mode=error --config=llvm_cov \
-            //src/... --build_tests_only
+            //score/... --build_tests_only
 
       - name: Generate unified coverage report
         env:
@@ -46,7 +46,7 @@ jobs:
           set -euo pipefail
           bazel run --lockfile_mode=error @score_tooling//coverage:generate_coverage_html -- \
             --yaml quality/coverage/coverage_justifications.yaml \
-            --testlogs-subdir src \
+            --testlogs-subdir score \
             --archive-dir coverage_artifact
 
       # upload-artifact zips its input itself, so the script assembles an

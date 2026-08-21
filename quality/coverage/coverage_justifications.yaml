@@ -43,7 +43,7 @@
 #     Wildcard arm in match over fully-handled enum. Kept as defensive
 #     programming against future enum additions.
 #   locations:
-#     - file: src/rust/rust_kvs/src/kvs.rs
+#     - file: score/kvs/rust_kvs/src/kvs.rs
 #       line_start: 1201
 #       line_end: 1203
 #

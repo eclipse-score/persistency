@@ -11,6 +11,18 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
+load("@score_docs_as_code//:docs.bzl", "docs_bundle")
+
+docs_bundle(
+    name = "kvs_docs",
+    code_targets = [
+        ":kvs_cpp",
+        "//score/kvs/rust_kvs:rust_kvs",
+    ],
+    source_dir = "docs",
+    visibility = ["//visibility:public"],
+)
+
 # The filegroup is used to collect all source files for the tests.
 
 cc_library(
@@ -36,7 +48,7 @@ cc_library(
         "kvsbuilder.hpp",
     ],
     implementation_deps = [
-        "//src/cpp/src/internal:kvs_helper",
+        "//score/kvs/internal:kvs_helper",
     ],
     includes = ["."],
     visibility = [
@@ -44,7 +56,7 @@ cc_library(
     ],
     deps = [
         ":kvsvalue",
-        "//src/cpp/src/internal:error",
+        "//score/kvs/internal:error",
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/json",
         "@score_baselibs//score/mw/log",
