@@ -11,8 +11,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
-project = "S-CORE Persistency"
+project = "S-CORE persistency"
 project_url = "https://eclipse-score.github.io/persistency/"
+version = "0.1"
 
 extensions = [
     "score_sphinx_bundle",
