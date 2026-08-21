@@ -25,7 +25,7 @@ cc_test(
     visibility = ["//:__pkg__"],
     deps = [
         "//:kvs_cpp",
-        "//src/cpp/src/internal:kvs_helper",
+        "//score/kvs/internal:kvs_helper",
         "@googletest//:gtest_main",
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/filesystem:mock",
@@ -44,7 +44,7 @@ cc_test(
     visibility = ["//:__pkg__"],
     deps = [
         "//:kvs_cpp",
-        "//src/cpp/src/internal:kvs_helper",
+        "//score/kvs/internal:kvs_helper",
         "@google_benchmark//:benchmark",
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/json",

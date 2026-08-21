@@ -142,8 +142,8 @@ jobs:
       - name: Build via Bazel
         run: |
           set -euo pipefail
-          echo "Running: bazel build --lockfile_mode=error --config=per-x86_64-linux //src/..."
-          bazel build --lockfile_mode=error --config=per-x86_64-linux //src/...
+          echo "Running: bazel build --lockfile_mode=error --config=per-x86_64-linux //score/..."
+          bazel build --lockfile_mode=error --config=per-x86_64-linux //score/...
 
       - name: Run Unit Tests via Bazel
         run: |
@@ -158,7 +158,7 @@ jobs:
           # not just the C++ wrapper layer that plain `bazel coverage` would instrument.
           bazel test --lockfile_mode=error --config=per-x86_64-linux --config=ferrocene-coverage \
             --nocache_test_results \
-            //src/rust/...
+            //score/kvs/rust_kvs/...
           # Generate the HTML report via the dedicated repo target (same as rust_coverage.yml).
           RUST_RUN_OUT=$(bazel run --lockfile_mode=error //:rust_coverage 2>&1)
           echo "${RUST_RUN_OUT}"
@@ -191,7 +191,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p artifacts
-          find bazel-testlogs/src/ -name 'test.xml' -print0 | xargs -0 -I{} cp --parents {} artifacts/
+          find bazel-testlogs/score/ -name 'test.xml' -print0 | xargs -0 -I{} cp --parents {} artifacts/
           cp -r cpp_coverage artifacts/
           cp -r rust_coverage artifacts/
           zip -r ${{ github.event.repository.name }}_coverage_report_${RELEASE_VERSION}${ARTIFACT_SUFFIX}.zip artifacts/
