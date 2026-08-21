@@ -13,6 +13,8 @@
 
 name: QNX8 Build
 on:
+  pull_request:
+    types: [opened, reopened, synchronize]
   pull_request_target:
     types: [opened, reopened, synchronize]
   push:
@@ -20,6 +22,11 @@ on:
       - main
 jobs:
   qnx-build:
+    # Run pushes to the main branch ||
+    # same-repository PRs without approval ||
+    # fork PRs through pull_request_target for approval
+    if: >-
+      (github.event_name == 'push') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository)
     uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@4777f90939a4f7cdc06c0ebe9856252e7d3c3e4a # v0.0.3-2-g4777f90
     permissions:
       contents: read
