@@ -13,7 +13,7 @@
 
 # Rust-C++ tests
 
-For general information check [main README.md file](../README.md).
+For general information check [main README.md file](../../../README.md).
 
 ## Setup
 
@@ -22,7 +22,7 @@ Create `venv`, activate and install dependencies:
 ```bash
 python -m venv <REPO_ROOT>/.venv
 source <REPO_ROOT>/.venv/bin/activate
-pip install -r <REPO_ROOT>/tests/test_cases/requirements.txt
+pip install -r <REPO_ROOT>/score/kvs/tests/test_cases/requirements.txt
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ pip install -r <REPO_ROOT>/tests/test_cases/requirements.txt
 Set current working directory to the following:
 
 ```bash
-cd <REPO_ROOT>/tests/test_cases
+cd <REPO_ROOT>/score/kvs/tests/test_cases
 ```
 
 ### Run tests
@@ -91,13 +91,13 @@ bazel test //:cit_tests
 When the dependencies in [requirements.txt](test_cases/requirements.txt) file are manually modified, the user should invoke command and commit changes:
 
 ```bash
-bazel run //tests/test_cases:requirements.update
+bazel run //score/kvs/tests/test_cases:requirements.update
 ```
 
 In order to update all dependencies use:
 
 ```bash
-bazel run //tests/test_cases:requirements.update -- --upgrade
+bazel run //score/kvs/tests/test_cases:requirements.update -- --upgrade
 ```
 
 ## Standalone execution of test scenarios
@@ -109,7 +109,7 @@ Test scenarios can be run independently from `pytest`.
 Set current working directory to the following:
 
 ```bash
-cd <REPO_ROOT>/tests/test_scenarios/rust
+cd <REPO_ROOT>/score/kvs/tests/test_scenarios/rust
 ```
 
 List all available scenarios:
@@ -141,36 +141,36 @@ Run test scenario executable directly:
 Set current working directory to the following:
 
 ```bash
-cd <REPO_ROOT>/tests/test_scenarios/cpp
+cd <REPO_ROOT>/score/kvs/tests/test_scenarios/cpp
 ```
 
 List all available scenarios:
 
 ```bash
-bazel run //tests/test_scenarios/cpp:test_scenarios -- --list-scenarios
+bazel run //score/kvs/tests/test_scenarios/cpp:test_scenarios -- --list-scenarios
 ```
 
 Run specific test scenario:
 
 ```bash
-bazel run //tests/test_scenarios/cpp:test_scenarios -- --name <TEST_GROUP>.<TEST_SCENARIO> --input <TEST_INPUT>
+bazel run //score/kvs/tests/test_scenarios/cpp:test_scenarios -- --name <TEST_GROUP>.<TEST_SCENARIO> --input <TEST_INPUT>
 ```
 
 Example:
 
 ```bash
-bazel run //tests/test_scenarios/cpp:test_scenarios -- --name basic.basic --input '{"kvs_parameters":{"instance_id":0}}'
+bazel run //score/kvs/tests/test_scenarios/cpp:test_scenarios -- --name basic.basic --input '{"kvs_parameters":{"instance_id":0}}'
 ```
 
 Run test scenario executable directly:
 
 ```bash
-<REPO_ROOT>/bazel-bin/tests/test_scenarios/cpp/test_scenarios --name basic.basic --input '{"kvs_parameters":{"instance_id":0}}'
+<REPO_ROOT>/bazel-bin/score/kvs/tests/test_scenarios/cpp/test_scenarios --name basic.basic --input '{"kvs_parameters":{"instance_id":0}}'
 ```
 
 Run with GDB:
 
 ```bash
-bazel build //tests/test_scenarios/cpp:test_scenarios -c dbg --strip never
-gdb --args <REPO_ROOT>/bazel-bin/tests/test_scenarios/cpp/test_scenarios --name <TEST_GROUP>.<TEST_SCENARIO> --input '{"kvs_parameters":{"instance_id":0}}'
+bazel build //score/kvs/tests/test_scenarios/cpp:test_scenarios -c dbg --strip never
+gdb --args <REPO_ROOT>/bazel-bin/score/kvs/tests/test_scenarios/cpp/test_scenarios --name <TEST_GROUP>.<TEST_SCENARIO> --input '{"kvs_parameters":{"instance_id":0}}'
 ```

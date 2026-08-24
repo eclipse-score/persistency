@@ -36,13 +36,13 @@ def pytest_addoption(parser):
     parser.addoption(
         "--cpp-target-name",
         type=str,
-        default="//tests/test_scenarios/cpp:test_scenarios",
+        default="//score/kvs/tests/test_scenarios/cpp:test_scenarios",
         help="C++ test scenario executable target.",
     )
     parser.addoption(
         "--rust-target-name",
         type=str,
-        default="//tests/test_scenarios/rust:test_scenarios",
+        default="//score/kvs/tests/test_scenarios/rust:test_scenarios",
         help="Rust test scenario executable target.",
     )
     parser.addoption(
@@ -141,8 +141,8 @@ def pytest_runtest_makereport(item, call):
     # If bazel is used, modify command
     if "BAZEL_VERSION" in os.environ:
         report.command = report.command.replace(
-            "tests/",
-            "bazel run //tests/",
+            "score/kvs/tests/",
+            "bazel run //score/kvs/tests/",
         ).replace(
             " --name",
             "-- --name",

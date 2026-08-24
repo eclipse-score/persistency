@@ -20,6 +20,8 @@ permissions:
   id-token: write
 
 on:
+  pull_request:
+    types: [opened, reopened, synchronize]
   pull_request_target:
     types: [opened, reopened, synchronize] # Allows forks to trigger the docs build
   push:
@@ -32,6 +34,11 @@ on:
 
 jobs:
   docs-verify:
+    # Run pushes to the main branch, merge groups, releases ||
+    # same-repository PRs without approval ||
+    # fork PRs through pull_request_target for approval
+    if: >-
+      (github.event_name == 'push') || (github.event_name == 'merge_group') || (github.event_name == 'release') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository)
     uses: eclipse-score/cicd-workflows/.github/workflows/docs-verify.yml@c1c90b1a82a1fab0fc202979dde6686b2162d5a8 # v0.0.0
     permissions:
       pull-requests: write
@@ -40,6 +47,8 @@ jobs:
       bazel-docs-verify-target: "--lockfile_mode=error //:docs_check"
 
   cit-tests:
+    if: >-
+      (github.event_name == 'push') || (github.event_name == 'merge_group') || (github.event_name == 'release') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository)
     uses: ./.github/workflows/component_integration_tests.yml
     secrets: inherit
 
