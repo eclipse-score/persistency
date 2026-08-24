@@ -29,7 +29,7 @@ bazel_dep(name = "score_platform", version = "0.7.0")
 bazel_dep(name = "score_process_description", version = "2.1.1")
 bazel_dep(name = "score_python_basics", version = "0.3.4")
 bazel_dep(name = "score_test_scenarios", version = "0.4.1")
-bazel_dep(name = "score_tooling", version = "2.1.1")
+bazel_dep(name = "score_tooling", version = "2.2.0")
 
 # Development dependencies (alphabetically sorted)
 bazel_dep(name = "aspect_rules_lint", version = "2.7.2", dev_dependency = True)
