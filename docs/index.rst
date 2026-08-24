@@ -47,15 +47,16 @@ The module template includes the following top-level structure:
     │   │       ├── safety_planning/    # Feature safety planning artifacts
     │   │       ├── security_analysis/  # Feature security analysis artifacts [wp__feature_security_analysis]
     │   │       └── security_planning/  # Feature security planning artifacts
-    │   ├── manuals/                    # Module manual, integration manual, table of assumptions of use,
-    │   │                               #   safety manual [wp__module_safety_manual],
-    │   │                               #   needs table of [wp__requirements_feat_aou]
-    │   │                               #   security manual [wp__module_security_manual]
-    │   ├── release/                    # Module release note [wp__module_sw_release_note]
-    │   ├── safety_mgt/                 # Module safety plan [wp__module_safety_plan],
-    │   │                               #   module safety package [wp__module_safety_package],
-    │   │                               #   formal document and safety analysis reviews [wp__fdr_reports]
-    │   ├── security_mgt/               # Module security plan [wp__module_security_plan],
+    │   ├── module/                     # Module documentation
+    │   │   ├── manuals/                # Module manual, integration manual, table of assumptions of use,
+    │   │   │                           #   safety manual [wp__module_safety_manual],
+    │   │   │                           #   needs table of [wp__requirements_feat_aou]
+    │   │   │                           #   security manual [wp__module_security_manual]
+    │   │   ├── release/                # Module release note [wp__module_sw_release_note]
+    │   │   ├── safety_mgt/             # Module safety plan [wp__module_safety_plan],
+    │   │   │                           #   module safety package [wp__module_safety_package],
+    │   │   │                           #   formal document and safety analysis reviews [wp__fdr_reports]
+    │   │   └── security_mgt/           # Module security plan [wp__module_security_plan],
     │   │                               #   module security package [wp__module_security_package],
     │   │                               #   formal document reviews [wp__fdr_reports_security],
     │   │                               #   module SW bill of material [wp__sw_module_sbom]
@@ -63,24 +64,24 @@ The module template includes the following top-level structure:
     │                                   #   module verifications [wp__verification_module_ver_report],
     ├── examples/                       # Usage examples for the module / features
     ├── score/                          # Components of the module
-    │   ├── tests/                      # Module-level tests (e.g., feature integration tests, system tests) [wp__verification_comp_int_test]
     │   └── <component_name>/           # Component folder for each component of the module
-    │       ├── docs/                   # Documentation of the component
-    │       │   ├── architecture/       # Component architecture [wp__component_arch]
-    │       │   │                       #   (only if lower level components exist)
-    |       |   |                       #   architecture review [wp__sw_arch_verification],
-    │       │   ├── detailed_design/    # Detailed design [wp__sw_implementation]
-    │       │   │                       #   code inspection [wp__sw_implementation_inspection]
-    │       │   ├── requirements/       # Component requirements [wp__requirements_comp],[wp__requirements_inspect]
-    │       │   ├── safety_analysis/    # Safety analysis [wp__sw_component_fmea], [wp__sw_component_dfa], [wp__requirements_comp_aou]
-    |       |   |                       # Component classification [wp__sw_component_class] for pre-existing software
-    │       │   │                       #   (only if component architecture exists)
-    │       │   ├── security_analysis/  # Security analysis [wp__sw_component_security_analysis]
-    │       │   │                       #   (only if component architecture exists)
-    │       │   └── manuals/            # User documentation (of a single component, e.g., user manual of a library component, optional)
-    │       └── src/                    # Source files, include files, unit tests [wp__verification_sw_unit_test],
-    │           ├── <lower_level_comp>/ # Lower level component (follows <component_name> structure)
-    │           └── tests/              # Component-level tests (e.g., unit tests) [wp__verification_sw_unit_test]
+    │   │   ├── docs/                   # Documentation of the component
+    │   │   │   ├── architecture/       # Component architecture [wp__component_arch]
+    │   │   │   │                       #   (only if lower level components exist)
+    |   │   |   |                       #   architecture review [wp__sw_arch_verification],
+    │   │   │   ├── detailed_design/    # Detailed design [wp__sw_implementation]
+    │   │   │   │                       #   code inspection [wp__sw_implementation_inspection]
+    │   │   │   ├── requirements/       # Component requirements [wp__requirements_comp],[wp__requirements_inspect]
+    │   │   │   ├── safety_analysis/    # Safety analysis [wp__sw_component_fmea], [wp__sw_component_dfa], [wp__requirements_comp_aou]
+    |   │   |   |                       #   Component classification [wp__sw_component_class] for pre-existing software
+    │   │   │   │                       #   (only if component architecture exists)
+    │   │   │   ├── security_analysis/  # Security analysis [wp__sw_component_security_analysis]
+    │   │   │   │                       #   (only if component architecture exists)
+    │   │   │   └── manuals/            # User documentation (of a single component, e.g., user manual of a library component, optional)
+    │   │   ├── <pub_interface_files>/  # Public interfaces and implementation files of the component; the optional src/ is omitted
+    │   │   ├── <lower_level_comp>/     # Lower level component (follows <component_name> structure)
+    │   │   └── tests/                  # Component-level tests (e.g., integration and unit tests)
+    ├── tests/                          # Module-level tests (e.g., feature integration tests, system tests) [wp__verification_feat_int_test]
     ├── MODULE.bazel                    # Bazel module definition
     ├── BUILD                           # Root build rules
     ├── project_config.bzl              # Project metadata used by Bazel macros
@@ -94,10 +95,10 @@ Module / Feature Documentation
    :maxdepth: 1
 
    features/persistency/index
-   manuals/index
-   release/release_note
-   safety_mgt/index
-   security_mgt/index
+   module/manuals/index
+   module/release/release_note
+   module/safety_mgt/index
+   module/security_mgt/index
    verification_report/module_verification_report
    components/index
 

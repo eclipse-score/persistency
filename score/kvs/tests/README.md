@@ -13,7 +13,7 @@
 
 # Rust-C++ tests
 
-For general information check [main README.md file](../README.md).
+For general information check [main README.md file](../../../README.md).
 
 ## Setup
 
@@ -30,7 +30,7 @@ pip install -r <REPO_ROOT>/score/kvs/tests/test_cases/requirements.txt
 Set current working directory to the following:
 
 ```bash
-cd <REPO_ROOT>/tests/test_cases
+cd <REPO_ROOT>/score/kvs/tests/test_cases
 ```
 
 ### Run tests
