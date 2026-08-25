@@ -67,21 +67,23 @@ bazel run //:help
 Build selected target:
 
 ```bash
-bazel build <TARGET_NAME>
+bazel build --config=per-x86_64-linux -- <TARGET_NAME>
 ```
 
 Build all targets:
 
 ```bash
-bazel build //...
+bazel build --config=per-x86_64-linux -- //...
 ```
+
+> Building without an explicit `--config` (e.g. `per-x86_64-linux`, `per-x86_64-qnx`, `per-arm64-qnx`) is not supported.
 
 ## Run
 
 List all rust library targets:
 
 ```bash
-bazel query 'kind(rust_library, //src/...)'
+bazel query 'kind(rust_library, //score/...)'
 ```
 
 Run selected target:
@@ -107,7 +109,7 @@ bazel test //...
 Run Component Integration Tests (grouped into single Test Suite):
 
 ```bash
-bazel test //src/rust/rust_kvs:cit
+bazel test //score/kvs/tests/test_cases:cit
 ```
 
 Run selected test target:

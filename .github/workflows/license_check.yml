@@ -14,6 +14,8 @@
 name: License check preparation
 
 on:
+  pull_request:
+    types: [opened, reopened, synchronize]
   pull_request_target:
     types: [opened, reopened, synchronize]
   merge_group:
@@ -26,6 +28,11 @@ permissions:
 
 jobs:
   license-check:
+    # Run merge groups ||
+    # same-repository PRs without approval ||
+    # fork PRs through pull_request_target for approval
+    if: >-
+      (github.event_name == 'merge_group') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository)
     uses: eclipse-score/cicd-workflows/.github/workflows/license-check.yml@c1c90b1a82a1fab0fc202979dde6686b2162d5a8 # v0.0.0
     with:
       repo-url: "${{ github.server_url }}/${{ github.repository }}"
