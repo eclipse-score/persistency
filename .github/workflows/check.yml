@@ -75,16 +75,16 @@ jobs:
         run: |
           bazel build --lockfile_mode=error \
             --config=per-x86_64-linux \
-            //src/rust/rust_kvs:rust_kvs \
-            //src/rust/rust_kvs_tool:kvs_tool
+            //score/kvs/rust_kvs:rust_kvs \
+            //score/kvs/rust_kvs_tool:kvs_tool
 
       - name: Bazel Unit Tests
         run: |
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //src/rust/rust_kvs:tests
+          bazel test --lockfile_mode=error --config=per-x86_64-linux //score/kvs/rust_kvs:tests
 
       - name: Bazel Miri Tests
         run: |
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //src/rust/rust_kvs:tests_miri --test_output=all
+          bazel test --lockfile_mode=error --config=per-x86_64-linux //score/kvs/rust_kvs:tests_miri --test_output=all
 
   cpp-bazel:
     runs-on: ubuntu-latest

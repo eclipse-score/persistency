@@ -180,3 +180,7 @@ And also the following AoUs in "valid" state and with "inspected" tag set (for t
    :columns: id;status;tags
    :colwidths: 25,25,25
    :sort: title
+
+
+.. needextend:: c.this_doc() and docname is not None
+   :+tags: kvs

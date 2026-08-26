@@ -61,6 +61,8 @@ jobs:
       - name: Create and push tag
         id: create-tag
         run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           TAG="v${{ inputs.version }}"
           git tag -a "$TAG" -m "Release $TAG"
           git push origin "$TAG"
@@ -85,10 +87,8 @@ jobs:
   release-verification:
     needs: [prepare-release]
     if: |
-      always() && (
-        github.event_name == 'release' ||
-        github.event_name == 'workflow_dispatch'
-      )
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_dispatch' && (inputs.dry_run || needs.prepare-release.result != 'failure'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -126,11 +126,6 @@ jobs:
             echo "ARTIFACT_SUFFIX=" >> "$GITHUB_ENV"
           fi
 
-      - name: Install lcov
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lcov
-
       - name: Setup Bazel with shared caching
         uses: bazel-contrib/setup-bazel@0.19.0
         with:
@@ -142,8 +137,8 @@ jobs:
       - name: Build via Bazel
         run: |
           set -euo pipefail
-          echo "Running: bazel build --lockfile_mode=error --config=per-x86_64-linux //src/..."
-          bazel build --lockfile_mode=error --config=per-x86_64-linux //src/...
+          echo "Running: bazel build --lockfile_mode=error --config=per-x86_64-linux //score/..."
+          bazel build --lockfile_mode=error --config=per-x86_64-linux //score/...
 
       - name: Run Unit Tests via Bazel
         run: |
@@ -151,49 +146,30 @@ jobs:
           echo "Running: bazel test --lockfile_mode=error --config=per-x86_64-linux //:unit_tests"
           bazel test --lockfile_mode=error --config=per-x86_64-linux //:unit_tests
 
-      - name: Run Unit Test with Coverage for Rust
+      - name: Run unified Rust + C++ coverage
         run: |
           set -euo pipefail
-          # Use ferrocene-coverage config so coverage is collected for Rust source files (.rs),
-          # not just the C++ wrapper layer that plain `bazel coverage` would instrument.
-          bazel test --lockfile_mode=error --config=per-x86_64-linux --config=ferrocene-coverage \
-            --nocache_test_results \
-            //src/rust/...
-          # Generate the HTML report via the dedicated repo target (same as rust_coverage.yml).
-          RUST_RUN_OUT=$(bazel run --lockfile_mode=error //:rust_coverage 2>&1)
-          echo "${RUST_RUN_OUT}"
-          RUST_LINE_COV=$(echo "${RUST_RUN_OUT}" | grep -oP 'Overall line coverage: \K[0-9.]+(?=%)'| head -1 || true)
-          echo "RUST_LINE_COV=${RUST_LINE_COV}" >> "$GITHUB_ENV"
-          # Copy coverage HTML to a fixed path for archiving
-          cp -r "$(bazel info bazel-bin)/coverage/rust-tests" rust_coverage
+          bazel coverage --lockfile_mode=error --config=llvm_cov \
+            //score/... --build_tests_only
 
-      - name: Run Unit Test with Coverage for C++
+      - name: Generate unified coverage report
+        env:
+          # Report-only; see coverage.yml for the rationale on this threshold.
+          COVERAGE_THRESHOLD: "0"
         run: |
           set -euo pipefail
-          bazel coverage --lockfile_mode=error --config=per-x86_64-linux //:test_kvs_cpp \
-            --collect_code_coverage \
-            --combined_report=lcov \
-            --experimental_generate_llvm_lcov \
-            --nocache_test_results \
-            --nostamp
-          GENHTML_OUT=$(genhtml "$(bazel info output_path)/_coverage/_coverage_report.dat" \
-            -o=cpp_coverage \
-            --show-details \
-            --legend \
-            --function-coverage \
-            --branch-coverage)
-          echo "${GENHTML_OUT}"
-          CPP_LINE_COV=$(echo "${GENHTML_OUT}" | grep -oP 'lines\.*: \K[0-9.]+(?=%)')
-          echo "CPP_LINE_COV=${CPP_LINE_COV}" >> "$GITHUB_ENV"
+          bazel run --lockfile_mode=error @score_tooling//coverage:generate_coverage_html -- \
+            --yaml quality/coverage/coverage_justifications.yaml \
+            --testlogs-subdir score \
+            --archive-dir coverage_artifact
 
       - name: Create archive of test report
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p artifacts
-          find bazel-testlogs/src/ -name 'test.xml' -print0 | xargs -0 -I{} cp --parents {} artifacts/
-          cp -r cpp_coverage artifacts/
-          cp -r rust_coverage artifacts/
+          find bazel-testlogs/score/ -name 'test.xml' -print0 | xargs -0 -I{} cp --parents {} artifacts/
+          cp -r coverage_artifact artifacts/
           zip -r ${{ github.event.repository.name }}_coverage_report_${RELEASE_VERSION}${ARTIFACT_SUFFIX}.zip artifacts/
 
       - name: Upload artifacts (workflow artifact — always, including dry runs)
@@ -261,9 +237,7 @@ jobs:
 
             echo "| Build (x86_64-linux) | ✅ |"
             echo "| Unit tests | ${TEST_RESULT} |"
-
-            echo "| Rust coverage | ${{ env.RUST_LINE_COV != '' && format('{0} %', env.RUST_LINE_COV) || 'n/a' }} |"
-            echo "| C++ coverage  | ${{ env.CPP_LINE_COV != '' && format('{0} %', env.CPP_LINE_COV) || 'n/a' }} |"
+            echo "| Unified coverage (Rust + C++) | see coverage report artifact |"
 
             echo ""
             echo "### Artifacts"

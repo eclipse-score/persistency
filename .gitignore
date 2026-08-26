@@ -40,8 +40,8 @@ user.bazelrc
 .ruff_cache
 
 # docs:incremental and docs:ide_support build artifacts
-/_build
-docs/ubproject.toml
+_build
+ubproject.toml
 
 # Vale - editorial style guide
 .vale.ini
@@ -63,5 +63,5 @@ devenv.local.nix
 target
 
 # --- keep test fixture payloads under install/ (override *.so, *.a, etc.)
-!tests/integration_test_scenarios/install/
-!tests/integration_test_scenarios/install/**
+!score/kvs/tests/integration_test_scenarios/install/
+!score/kvs/tests/integration_test_scenarios/install/**
