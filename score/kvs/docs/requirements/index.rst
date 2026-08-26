@@ -339,7 +339,7 @@ Component Requirements
    as needed.
 
 .. comp_req:: Snapshot maximum number
-   :id: comp_req__kvs__snapshot_max_num
+   :id: comp_req__kvs__snapshot_max_num_api
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
@@ -437,7 +437,7 @@ Component Requirements
    The component shall perform snapshot creation, restoration, and deletion only when explicitly triggered by the user through the corresponding APIs.
 
 .. comp_req:: Snapshot slot indexing
-   :id: comp_req__kvs__snapshot_id
+   :id: comp_req__kvs__snapshot_id_api
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
@@ -474,6 +474,108 @@ Component Requirements
    :tags: valid
 
    The component shall provide an API to check whether a slot identified by a snapshot index is free or occupied.
+
+.. comp_req:: Snapshot Creation
+:id: comp_req__kvs__snapshot_creation
+:reqtype: Functional
+:security: NO
+:safety: ASIL_B
+:derived_from: feat_req__persistency__snapshot_create[version==1]
+:status: invalid
+:version: 1
+:belongs_to: comp__persistency_kvs[version==1]
+:tags: inspected
+
+   The component shall create a snapshot each time data is stored.
+
+   .. note::
+
+      This requirement is invalid after change of snapshot handling (see <ticket-id>)
+
+.. comp_req:: Snapshot Maximum Number
+:id: comp_req__kvs__snapshot_max_num
+:reqtype: Functional
+:security: NO
+:safety: ASIL_B
+:derived_from: feat_req__persistency__cfg[version==1]
+:status: invalid
+:version: 1
+:belongs_to: comp__persistency_kvs[version==1]
+:tags: inspected
+
+   The component shall maintain a configurable maximum number of snapshots.
+
+   .. note::
+
+      This requirement is invalid after change of snapshot handling (see <ticket-id>)
+
+.. comp_req:: Snapshot IDs
+:id: comp_req__kvs__snapshot_id
+:reqtype: Functional
+:security: NO
+:safety: ASIL_B
+:derived_from: feat_req__persistency__snapshot_create[version==1]
+:status: invalid
+:version: 1
+:belongs_to: comp__persistency_kvs[version==1]
+:tags: inspected
+
+   The component shall assign the ID 1 to the newest snapshot and shall increment the IDs of older snapshots accordingly.
+
+     .. note::
+
+      This requirement is invalid after change of snapshot handling (see <ticket-id>)
+
+.. comp_req:: Snapshot Rotation
+:id: comp_req__kvs__snapshot_rotate
+:reqtype: Functional
+:security: NO
+:safety: ASIL_B
+:derived_from: feat_req__persistency__snapshot_remove[version==1],feat_req__persistency__snapshot_restore[version==1]
+:status: invalid
+:version: 1
+:belongs_to: comp__persistency_kvs[version==1]
+:tags: inspected
+
+   The component shall rotate and delete the oldest snapshot when the maximum number is reached.
+
+   .. note::
+
+      This requirement is invalid after change of snapshot handling (see <ticket-id>)
+
+.. comp_req:: Snapshot Restore
+:id: comp_req__kvs__snapshot_restore
+:reqtype: Functional
+:security: NO
+:safety: ASIL_B
+:derived_from: feat_req__persistency__snapshot_restore[version==1]
+:status: invalid
+:version: 1
+:belongs_to: comp__persistency_kvs[version==1]
+:tags: inspected
+
+   The component shall allow restoration of a snapshot by its ID.
+
+   .. note::
+
+      This requirement is invalid after change of snapshot handling (see <ticket-id>)
+
+.. comp_req:: Snapshot Deletion
+:id: comp_req__kvs__snapshot_delete
+:reqtype: Functional
+:security: NO
+:safety: ASIL_B
+:derived_from: feat_req__persistency__snapshot_remove[version==1]
+:status: invalid
+:version: 1
+:belongs_to: comp__persistency_kvs[version==1]
+:tags: inspected
+
+   The component shall allow deletion of individual snapshots.
+
+   .. note::
+
+      This requirement is invalid after change of snapshot handling (see <ticket-id>)
 
 .. comp_req:: Engineering Mode
    :id: comp_req__kvs__eng_mode
