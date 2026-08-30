@@ -211,5 +211,5 @@ This file should be placed in the working directory:
 - The KVS will use these defaults for any key not explicitly set.
 - You must also provide a CRC file (e.g., `defaults.json.crc`) alongside the defaults file. This CRC file is generated using the Adler-32 checksum algorithm, as implemented in the codebase. The CRC ensures the integrity of the defaults file at runtime.
 ## 5. More Examples
-- See `src/cpp/tests/` for C++ test scenarios and usage patterns.
-- See `src/rust/rust_kvs/examples/` for Rust usage patterns.
+- See `score/kvs/tests/` for C++ test scenarios and usage patterns.
+- See `score/kvs/rust_kvs/examples/` for Rust usage patterns.

@@ -29,7 +29,7 @@
     slogger2
     dumper
     mqueue
-    random 
+    random
 
 
     ############################################################################################
@@ -68,13 +68,13 @@
 
     #display_msg "Starting serial driver (/dev/ser1)"
     devc-serpl011 -b115200 -c48000000 -e -F -u1 0xfe201000,153
-    
+
 
     ############################################################################################
     ## SPI driver
     ############################################################################################
     #display_msg "Starting SPI master driver ..."
-    #spi-bcm2711 
+    #spi-bcm2711
     #waitfor /dev/io-spi
 
 
@@ -110,7 +110,7 @@
     ## Network driver
     ############################################################################################
     display_msg "Starting networking ..."
-    io-sock  -m phy -m fdt -m phy_fdt -d genet -m pci -d em -d ix -d re -d igc -m usb -d axe -d axge -d cdce -d smsc 
+    io-sock  -m phy -m fdt -m phy_fdt -d genet -m pci -d em -d ix -d re -d igc -m usb -d axe -d axge -d cdce -d smsc
 
 
     ############################################################################################
@@ -616,11 +616,11 @@ ldqnx-64.so.2=ldqnx-64.so.2
 /usr/sbin/random=random
 /usr/sbin/tracelogger=tracelogger
 
-[uid=0 gid=0 perms=0755] /usr/bin/kvs_tool=bazel-out/k8-fastbuild/bin/tests/integration_test_scenarios/install/usr/bin/kvs_tool
-[uid=0 gid=0 perms=0755] /usr/bin/kvs_test.sh=bazel-out/k8-fastbuild/bin/tests/integration_test_scenarios/install/usr/bin/kvs_test.sh
+[uid=0 gid=0 perms=0755] /usr/bin/kvs_tool=bazel-out/k8-fastbuild/bin/score/kvs/tests/integration_test_scenarios/install/usr/bin/kvs_tool
+[uid=0 gid=0 perms=0755] /usr/bin/kvs_test.sh=bazel-out/k8-fastbuild/bin/score/kvs/tests/integration_test_scenarios/install/usr/bin/kvs_test.sh
 
 #TODO: enable when rust_test_scenarios is built for QNX
-#[uid=0 gid=0 perms=0755] /usr/bin/test_scenarios/rust=bazel-out/k8-fastbuild/bin/tests/integration_test_scenarios/install/usr/bin/test_scenarios/rust
+#[uid=0 gid=0 perms=0755] /usr/bin/test_scenarios/rust=bazel-out/k8-fastbuild/bin/score/kvs/tests/integration_test_scenarios/install/usr/bin/test_scenarios/rust
 
 
 
@@ -807,4 +807,3 @@ usb_start.sh = {
 #DISCONNECTED) echo __BOARD_FILES__   >/dev/console; slay -f dhcp.; ifconfig  delete ;;
 #esac
 #}
-
