@@ -31,14 +31,15 @@ jobs:
     steps:
       - name: Checkout repository (pull_request_target via workflow_call)
         if: ${{ github.event_name == 'pull_request_target' }}
-        uses: actions/checkout@v4
+        # TODO(#349): temporary v4.2.2 pin; remove once secure fork-PR checkout is finalized.
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.head_ref || github.event.pull_request.head.ref || github.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
 
       - name: Checkout repository
         if: ${{ github.event_name != 'pull_request_target' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup Rust build environment
         uses: dtolnay/rust-toolchain@stable
@@ -55,11 +56,11 @@ jobs:
 
       - name: Build C++ test scenarios with Bazel
         run: |
-          bazel build --lockfile_mode=error --config=per-x86_64-linux //tests/test_scenarios/cpp:test_scenarios
+          bazel build --lockfile_mode=error --config=per-x86_64-linux //score/kvs/tests/test_scenarios/cpp:test_scenarios
 
       - name: Build Rust test scenarios with Bazel
         run: |
-          bazel build --lockfile_mode=error --config=per-x86_64-linux //tests/test_scenarios/rust:test_scenarios
+          bazel build --lockfile_mode=error --config=per-x86_64-linux //score/kvs/tests/test_scenarios/rust:test_scenarios
 
       - name: Set up Python 3
         uses: actions/setup-python@v5
@@ -70,7 +71,7 @@ jobs:
         run: |
           python -m venv .venv
           source .venv/bin/activate
-          pip install -r tests/test_cases/requirements.txt
+          pip install -r score/kvs/tests/test_cases/requirements.txt
 
       - name: Run Python tests with pytest
         run: |
@@ -79,7 +80,7 @@ jobs:
 
       - name: Run Python tests with bazel
         run: |
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //tests/test_cases:cit
+          bazel test --lockfile_mode=error --config=per-x86_64-linux //score/kvs/tests/test_cases:cit
 
       - name: Prepare test reports
         if: always()

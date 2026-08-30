@@ -24,7 +24,6 @@ common --experimental_scale_timeouts=2.0
 common --http_connector_attempts=10
 common --http_connector_retry_max_timeout=1s
 common --http_timeout_scaling=2.0
-
 common --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_unknown_linux_gnu
 
 # -------------------------------------------------------------------------------
@@ -35,7 +34,7 @@ build --tool_java_language_version=17
 build --java_runtime_version=remotejdk_17
 build --tool_java_runtime_version=remotejdk_17
 
-build --@score_baselibs//src/log:safety_level=qm
+build --@score_baselibs//score/log_rust:safety_level=qm
 build --@score_baselibs//score/json:base_library=nlohmann
 build --@score_logging//score/mw/log/flags:KRemote_Logging=False
 
@@ -81,26 +80,17 @@ build:per-arm64-qnx --extra_toolchains=@score_qnx_aarch64_ifs_toolchain//:ifs-aa
 build:per-arm64-qnx --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_aarch64_unknown_nto_qnx800
 
 
-# -------------------------------------------------------------------------------
-# Ferrocene Rust coverage config
-# -------------------------------------------------------------------------------
-build:ferrocene-coverage --@rules_rust//rust/settings:extra_rustc_flag=-Cinstrument-coverage
-build:ferrocene-coverage --@rules_rust//rust/settings:extra_rustc_flag=-Clink-dead-code
-build:ferrocene-coverage --@rules_rust//rust/settings:extra_rustc_flag=-Ccodegen-units=1
-build:ferrocene-coverage --@rules_rust//rust/settings:extra_rustc_flag=-Cdebuginfo=2
-build:ferrocene-coverage --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cinstrument-coverage
-build:ferrocene-coverage --@rules_rust//rust/settings:extra_exec_rustc_flag=-Clink-dead-code
-build:ferrocene-coverage --@rules_rust//rust/settings:extra_exec_rustc_flag=-Ccodegen-units=1
-build:ferrocene-coverage --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebuginfo=2
-test:ferrocene-coverage --run_under=@score_tooling//coverage:llvm_profile_wrapper
-
-
 # Coverage configuration for C++
 coverage --features=coverage
 coverage --combined_report=lcov
 coverage --cache_test_results=no
 
+# Unified LLVM source-based coverage (Rust + C++), see quality/coverage/README.md.
+# Use with: bazel coverage --config=llvm_cov //src/... --build_tests_only
+import %workspace%/quality/coverage/coverage.bazelrc
+
 # -------------------------------------------------------------------------------
-# Import local user workspace file, if exists
+# Import local user workspace file, if exists (kept LAST so local settings can
+# override everything above, including the coverage config)
 # -------------------------------------------------------------------------------
 try-import %workspace%/user.bazelrc
