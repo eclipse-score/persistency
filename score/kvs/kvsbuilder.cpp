@@ -20,8 +20,8 @@ KvsBuilder::KvsBuilder(const InstanceId& instance_id)
     : instance_id(instance_id),
       need_defaults(false),
       need_kvs(false),
-      directory("./data_folder/"),                 /* Default Directory */
-      maximum_size(KVS_DEFAULT_MAX_SIZE_BYTES)     /* Default max size in bytes */
+      directory("./data_folder/"), /* Default Directory */
+      maximum_size(std::nullopt)   /* No storage limit by default */
 {
 }
 

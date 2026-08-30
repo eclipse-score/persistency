@@ -27,14 +27,12 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <optional>
 
 #define KVS_MAX_SNAPSHOTS 3
-static constexpr size_t HASH_FILE_SIZE = 4;
 
 namespace score::mw::per::kvs
-
 {
+
 struct InstanceId
 {
     size_t id;
@@ -163,6 +161,8 @@ class Kvs final
      *                 - OpenNeedKvs::Optional: An empty KVS will be used if no KVS exists.
      * @param dir The directory path where the KVS files are located. It is passed as an rvalue
      * reference to avoid unnecessary copying. Use "" or "." for the current directory.
+     * @param max_storage_bytes Optional maximum total storage size in bytes. When unset
+     *                          (the default), no storage limit is enforced.
      * @return A Result object containing either:
      *         - A Kvs object if the operation is successful.
      *         - An ErrorCode if an error occurs during the operation.
@@ -175,7 +175,7 @@ class Kvs final
                                    OpenNeedDefaults need_defaults,
                                    OpenNeedKvs need_kvs,
                                    const std::string&& dir,
-                                   std::optional<size_t> max_storage_bytes);
+                                   std::optional<size_t> max_storage_bytes = std::nullopt);
 
     /**
      * @brief Resets a key-value-storage to its initial state
@@ -370,32 +370,33 @@ class Kvs final
     */
     score::Result<size_t> calculate_potential_size();
 
-    private:
-        /* Private constructor to prevent direct instantiation */
-        Kvs();
+  private:
+    /* Private constructor to prevent direct instantiation */
+    Kvs();
 
-        /* Internal storage and configuration details.*/
-        std::mutex kvs_mutex;
-        std::unordered_map<std::string, KvsValue> kvs;
+    /* Internal storage and configuration details.*/
+    std::mutex kvs_mutex;
+    std::unordered_map<std::string, KvsValue> kvs;
 
-        /* Optional default values */
-        std::unordered_map<std::string, KvsValue> default_values;
+    /* Optional default values */
+    std::unordered_map<std::string, KvsValue> default_values;
 
-        /* Filename prefix */
-        score::filesystem::Path filename_prefix;
+    /* Filename prefix */
+    score::filesystem::Path filename_prefix;
 
-        /* Filesystem handling */
-        std::unique_ptr<score::filesystem::Filesystem> filesystem;
+    /* Filesystem handling */
+    std::unique_ptr<score::filesystem::Filesystem> filesystem;
 
-        /* Json handling */
-        std::unique_ptr<score::json::IJsonParser> parser;
-        std::unique_ptr<score::json::IJsonWriter> writer;
+    /* Json handling */
+    std::unique_ptr<score::json::IJsonParser> parser;
+    std::unique_ptr<score::json::IJsonWriter> writer;
 
-        /* Logging */
-        std::unique_ptr<score::mw::log::Logger> logger;
+    /* Logging */
+    std::unique_ptr<score::mw::log::Logger> logger;
 
-        /* Maximum storage limit in bytes */
-        std::optional<size_t> max_storage_bytes;
+    /* Maximum storage limit in bytes. Unset means no limit is enforced. */
+    std::optional<size_t> max_storage_bytes;
+
     /* Private Methods */
     score::ResultBlank snapshot_rotate();
     score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);

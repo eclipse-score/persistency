@@ -30,6 +30,12 @@ using namespace std;
 namespace score::mw::per::kvs
 {
 
+namespace
+{
+/* Size of a snapshot hash file in bytes (adler32 checksum) */
+constexpr size_t HASH_FILE_SIZE = 4U;
+} /* namespace */
+
 /*********************** KVS Implementation *********************/
 Kvs::Kvs()
     : filesystem(std::make_unique<score::filesystem::Filesystem>(
@@ -333,7 +339,6 @@ score::Result<bool> Kvs::key_exists(const std::string_view key)
     return result;
 }
 
-
 /* Retrieve the value associated with a key*/
 score::Result<KvsValue> Kvs::get_value(const std::string_view key)
 {
@@ -526,6 +531,7 @@ score::Result<size_t> Kvs::get_current_storage_size() {
     }
     return total_size;
 }
+
 /* Helper: write data to a file and ensure it reaches physical storage.*/
 score::ResultBlank Kvs::write_and_sync(const std::string& path, const void* data, std::size_t size)
 {
