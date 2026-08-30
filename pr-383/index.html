@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Persistency Documentation &#8212; S-CORE Persistency  documentation</title>
+    <title>Persistency Documentation &#8212; S-CORE persistency  documentation</title>
   
   
   
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
@@ -46,10 +46,10 @@
     <link rel="stylesheet" type="text/css" href="_static/sphinx-needs/modern.css?v=803738c0" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
     <script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -64,7 +64,7 @@
     <script src="_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://eclipse-score.github.io/persistency/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = '';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
@@ -76,7 +76,7 @@
     <link rel="next" title="Persistency" href="features/persistency/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
+  <meta name="docsearch:version" content="0.0.0" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -94,7 +94,9 @@
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -164,29 +166,29 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="manuals/index.html">
+  <a class="nav-link nav-internal" href="module/index.html">
+    Persistency Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="module/manuals/index.html">
     Manuals
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="release/release_note.html">
+  <a class="nav-link nav-internal" href="module/release/release_note.html">
     Release Note
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="safety_mgt/index.html">
+  <a class="nav-link nav-internal" href="module/safety_mgt/index.html">
     Safety Management
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="security_mgt/index.html">
-    Security Management
   </a>
 </li>
 
@@ -198,6 +200,13 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="module/security_mgt/index.html">
+    Security Management
+  </a>
+</li>
+
+
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="verification_report/module_verification_report.html">
     Verification Report
@@ -235,11 +244,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -252,8 +268,7 @@
           
           
           
-          <a href="https://github.com/eclipse-score" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/eclipse-score" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -333,28 +348,35 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="manuals/index.html">
+  <a class="nav-link nav-internal" href="module/index.html">
+    Persistency Module
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="module/manuals/index.html">
     Manuals
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="release/release_note.html">
+  <a class="nav-link nav-internal" href="module/release/release_note.html">
     Release Note
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="safety_mgt/index.html">
+  <a class="nav-link nav-internal" href="module/safety_mgt/index.html">
     Safety Management
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="security_mgt/index.html">
+  <a class="nav-link nav-internal" href="module/security_mgt/index.html">
     Security Management
   </a>
 </li>
@@ -385,11 +407,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -402,8 +431,7 @@
           
           
           
-          <a href="https://github.com/eclipse-score" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/eclipse-score" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -497,15 +525,16 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
 │   │       ├── safety_planning/    # Feature safety planning artifacts
 │   │       ├── security_analysis/  # Feature security analysis artifacts [wp__feature_security_analysis]
 │   │       └── security_planning/  # Feature security planning artifacts
-│   ├── manuals/                    # Module manual, integration manual, table of assumptions of use,
-│   │                               #   safety manual [wp__module_safety_manual],
-│   │                               #   needs table of [wp__requirements_feat_aou]
-│   │                               #   security manual [wp__module_security_manual]
-│   ├── release/                    # Module release note [wp__module_sw_release_note]
-│   ├── safety_mgt/                 # Module safety plan [wp__module_safety_plan],
-│   │                               #   module safety package [wp__module_safety_package],
-│   │                               #   formal document and safety analysis reviews [wp__fdr_reports]
-│   ├── security_mgt/               # Module security plan [wp__module_security_plan],
+│   ├── module/                     # Module documentation
+│   │   ├── manuals/                # Module manual, integration manual, table of assumptions of use,
+│   │   │                           #   safety manual [wp__module_safety_manual],
+│   │   │                           #   needs table of [wp__requirements_feat_aou]
+│   │   │                           #   security manual [wp__module_security_manual]
+│   │   ├── release/                # Module release note [wp__module_sw_release_note]
+│   │   ├── safety_mgt/             # Module safety plan [wp__module_safety_plan],
+│   │   │                           #   module safety package [wp__module_safety_package],
+│   │   │                           #   formal document and safety analysis reviews [wp__fdr_reports]
+│   │   └── security_mgt/           # Module security plan [wp__module_security_plan],
 │   │                               #   module security package [wp__module_security_package],
 │   │                               #   formal document reviews [wp__fdr_reports_security],
 │   │                               #   module SW bill of material [wp__sw_module_sbom]
@@ -513,24 +542,24 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
 │                                   #   module verifications [wp__verification_module_ver_report],
 ├── examples/                       # Usage examples for the module / features
 ├── score/                          # Components of the module
-│   ├── tests/                      # Module-level tests (e.g., feature integration tests, system tests) [wp__verification_comp_int_test]
 │   └── &lt;component_name&gt;/           # Component folder for each component of the module
-│       ├── docs/                   # Documentation of the component
-│       │   ├── architecture/       # Component architecture [wp__component_arch]
-│       │   │                       #   (only if lower level components exist)
-|       |   |                       #   architecture review [wp__sw_arch_verification],
-│       │   ├── detailed_design/    # Detailed design [wp__sw_implementation]
-│       │   │                       #   code inspection [wp__sw_implementation_inspection]
-│       │   ├── requirements/       # Component requirements [wp__requirements_comp],[wp__requirements_inspect]
-│       │   ├── safety_analysis/    # Safety analysis [wp__sw_component_fmea], [wp__sw_component_dfa], [wp__requirements_comp_aou]
-|       |   |                       # Component classification [wp__sw_component_class] for pre-existing software
-│       │   │                       #   (only if component architecture exists)
-│       │   ├── security_analysis/  # Security analysis [wp__sw_component_security_analysis]
-│       │   │                       #   (only if component architecture exists)
-│       │   └── manuals/            # User documentation (of a single component, e.g., user manual of a library component, optional)
-│       └── src/                    # Source files, include files, unit tests [wp__verification_sw_unit_test],
-│           ├── &lt;lower_level_comp&gt;/ # Lower level component (follows &lt;component_name&gt; structure)
-│           └── tests/              # Component-level tests (e.g., unit tests) [wp__verification_sw_unit_test]
+│   │   ├── docs/                   # Documentation of the component
+│   │   │   ├── architecture/       # Component architecture [wp__component_arch]
+│   │   │   │                       #   (only if lower level components exist)
+|   │   |   |                       #   architecture review [wp__sw_arch_verification],
+│   │   │   ├── detailed_design/    # Detailed design [wp__sw_implementation]
+│   │   │   │                       #   code inspection [wp__sw_implementation_inspection]
+│   │   │   ├── requirements/       # Component requirements [wp__requirements_comp],[wp__requirements_inspect]
+│   │   │   ├── safety_analysis/    # Safety analysis [wp__sw_component_fmea], [wp__sw_component_dfa], [wp__requirements_comp_aou]
+|   │   |   |                       #   Component classification [wp__sw_component_class] for pre-existing software
+│   │   │   │                       #   (only if component architecture exists)
+│   │   │   ├── security_analysis/  # Security analysis [wp__sw_component_security_analysis]
+│   │   │   │                       #   (only if component architecture exists)
+│   │   │   └── manuals/            # User documentation (of a single component, e.g., user manual of a library component, optional)
+│   │   ├── &lt;pub_interface_files&gt;/  # Public interfaces and implementation files of the component; the optional src/ is omitted
+│   │   ├── &lt;lower_level_comp&gt;/     # Lower level component (follows &lt;component_name&gt; structure)
+│   │   └── tests/                  # Component-level tests (e.g., integration and unit tests)
+├── tests/                          # Module-level tests (e.g., feature integration tests, system tests) [wp__verification_feat_int_test]
 ├── MODULE.bazel                    # Bazel module definition
 ├── BUILD                           # Root build rules
 ├── project_config.bzl              # Project metadata used by Bazel macros
@@ -543,16 +572,17 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="features/persistency/index.html">Persistency</a></li>
-<li class="toctree-l1"><a class="reference internal" href="manuals/index.html">Manuals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release/release_note.html">Release Note</a></li>
-<li class="toctree-l1"><a class="reference internal" href="safety_mgt/index.html">Safety Management</a></li>
-<li class="toctree-l1"><a class="reference internal" href="security_mgt/index.html">Security Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module/index.html">Persistency Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module/manuals/index.html">Manuals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module/release/release_note.html">Release Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module/safety_mgt/index.html">Safety Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module/security_mgt/index.html">Security Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="verification_report/module_verification_report.html">Verification Report</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components/index.html">Component documentation</a></li>
 </ul>
 </div>
 <section id="module-feature-documentation-overview">
-<h3><a class="toc-backref" href="#id4" role="doc-backlink">Module / Feature documentation overview</a><a class="headerlink" href="#module-feature-documentation-overview" title="Link to this heading">#</a></h3>
+<span id="module-documents-docs-features-persistency"></span><h3><a class="toc-backref" href="#id4" role="doc-backlink">Module / Feature documentation overview</a><a class="headerlink" href="#module-feature-documentation-overview" title="Link to this heading">#</a></h3>
 <div class="needstable_wrapper docutils container" id="needtable-index-0">
 <div class="pst-scrollable-table-container"><table class="NEEDS_TABLE table" id="needtable-index-0-table_node">
 <colgroup>
@@ -578,7 +608,7 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
 <td class="needs_status"><p>draft</p></td>
 </tr>
 <tr class="need row-odd"><td class="needs_title"><p>Persistency Codeowners</p></td>
-<td class="needs_id"><p><a class="reference internal" href="safety_mgt/module_codeowners.html#doc__persistency_codeowners">doc__persistency_codeowners</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/safety_mgt/module_codeowners.html#doc__persistency_codeowners">doc__persistency_codeowners</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>YES</p></td>
 <td class="needs_status"><p>valid</p></td>
@@ -608,43 +638,43 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>Persistency Release Note</p></td>
-<td class="needs_id"><p><a class="reference internal" href="release/release_note.html#doc__persistency_release_note">doc__persistency_release_note</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/release/release_note.html#doc__persistency_release_note">doc__persistency_release_note</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>NO</p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-odd"><td class="needs_title"><p>Persistency Safety Analysis Checklist</p></td>
-<td class="needs_id"><p><a class="reference internal" href="safety_mgt/feature_safety_analysis_fdr.html#doc__persistency_safety_analysis_fdr">doc__persistency_safety_analysis_fdr</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/safety_mgt/feature_safety_analysis_fdr.html#doc__persistency_safety_analysis_fdr">doc__persistency_safety_analysis_fdr</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>YES</p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>Persistency Safety Analysis Checklist</p></td>
-<td class="needs_id"><p><a class="reference internal" href="safety_mgt/module_safety_analysis_fdr.html#doc__module_safety_analysis_fdr">doc__module_safety_analysis_fdr</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/safety_mgt/module_safety_analysis_fdr.html#doc__module_safety_analysis_fdr">doc__module_safety_analysis_fdr</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>YES</p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-odd"><td class="needs_title"><p>Persistency Safety Manual</p></td>
-<td class="needs_id"><p><a class="reference internal" href="manuals/safety_manual.html#doc__persistency_safety_manual">doc__persistency_safety_manual</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/manuals/safety_manual.html#doc__persistency_safety_manual">doc__persistency_safety_manual</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>NO</p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>Persistency Safety Package Formal Review</p></td>
-<td class="needs_id"><p><a class="reference internal" href="safety_mgt/module_safety_package_fdr.html#doc__persistency_safety_package_fdr">doc__persistency_safety_package_fdr</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/safety_mgt/module_safety_package_fdr.html#doc__persistency_safety_package_fdr">doc__persistency_safety_package_fdr</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>NO</p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-odd"><td class="needs_title"><p>Persistency Safety Plan</p></td>
-<td class="needs_id"><p><a class="reference internal" href="safety_mgt/module_safety_plan.html#doc__persistency_safety_plan">doc__persistency_safety_plan</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/safety_mgt/module_safety_plan.html#doc__persistency_safety_plan">doc__persistency_safety_plan</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>NO</p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>Persistency Safety Plan Formal Review</p></td>
-<td class="needs_id"><p><a class="reference internal" href="safety_mgt/module_safety_plan_fdr.html#doc__persistency_safety_plan_fdr">doc__persistency_safety_plan_fdr</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/safety_mgt/module_safety_plan_fdr.html#doc__persistency_safety_plan_fdr">doc__persistency_safety_plan_fdr</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>NO</p></td>
 <td class="needs_status"><p>valid</p></td>
@@ -656,25 +686,25 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>Persistency Security Manual</p></td>
-<td class="needs_id"><p><a class="reference internal" href="manuals/security_manual.html#doc__persistency_security_manual">doc__persistency_security_manual</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/manuals/security_manual.html#doc__persistency_security_manual">doc__persistency_security_manual</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>YES</p></td>
 <td class="needs_status"><p>draft</p></td>
 </tr>
 <tr class="need row-odd"><td class="needs_title"><p>Persistency Security Package Formal Review</p></td>
-<td class="needs_id"><p><a class="reference internal" href="security_mgt/module_security_package_fdr.html#doc__persistency_sec_pkg_fdr">doc__persistency_sec_pkg_fdr</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/security_mgt/module_security_package_fdr.html#doc__persistency_sec_pkg_fdr">doc__persistency_sec_pkg_fdr</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>YES</p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>Persistency Security Plan</p></td>
-<td class="needs_id"><p><a class="reference internal" href="security_mgt/module_security_plan.html#doc__persistency_security_plan">doc__persistency_security_plan</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/security_mgt/module_security_plan.html#doc__persistency_security_plan">doc__persistency_security_plan</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>YES</p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-odd"><td class="needs_title"><p>Persistency Security Plan Formal Review</p></td>
-<td class="needs_id"><p><a class="reference internal" href="security_mgt/module_security_plan_fdr.html#doc__persistency_security_plan_fdr">doc__persistency_security_plan_fdr</a></p></td>
+<td class="needs_id"><p><a class="reference internal" href="module/security_mgt/module_security_plan_fdr.html#doc__persistency_security_plan_fdr">doc__persistency_security_plan_fdr</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
 <td class="needs_security"><p>YES</p></td>
 <td class="needs_status"><p>valid</p></td>
@@ -708,19 +738,20 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
 <section id="quick-start">
 <h2><a class="toc-backref" href="#id7" role="doc-backlink">Quick Start</a><a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
 <p>To build the module:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span>build<span class="w"> </span>//src/...
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span>build<span class="w"> </span>--config<span class="o">=</span>per-x86_64-linux<span class="w"> </span>--<span class="w"> </span>//score/...
 </pre></div>
 </div>
+<p>Building without an explicit <code class="docutils literal notranslate"><span class="pre">--config</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">per-x86_64-linux</span></code>, <code class="docutils literal notranslate"><span class="pre">per-x86_64-qnx</span></code>, <code class="docutils literal notranslate"><span class="pre">per-arm64-qnx</span></code>) is not supported.</p>
 <p>To run all tests:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span><span class="nb">test</span><span class="w"> </span>//...
 </pre></div>
 </div>
 <p>To run Unit Tests:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span><span class="nb">test</span><span class="w"> </span>//src/...
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span><span class="nb">test</span><span class="w"> </span>//:unit_tests
 </pre></div>
 </div>
 <p>To run Component / Feature Integration Tests:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span><span class="nb">test</span><span class="w"> </span>//tests/...
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span><span class="nb">test</span><span class="w"> </span>//:cit_tests
 </pre></div>
 </div>
 </section>
@@ -793,7 +824,7 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/eclipse-score/persistency/edit/main//home/runner/work/persistency/persistency/docs/index.rst">
+    <a href="https://github.com/eclipse-score/persistency/edit/main/docs/index.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -818,8 +849,8 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -843,7 +874,7 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>
