@@ -1,0 +1,7 @@
+common --registry=https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/
+common --registry=https://bcr.bazel.build
+
+
+build:aarch64-qnx --incompatible_strict_action_env
+build:aarch64-qnx --platforms=@score_bazel_platforms//:aarch64-qnx-sdp_8.0.0-posix
+build:aarch64-qnx --sandbox_writable_path=/var/tmp

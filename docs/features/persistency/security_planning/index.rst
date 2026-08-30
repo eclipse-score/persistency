@@ -12,7 +12,6 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-.. _documents_docs_features_persistency:
 
 Feature Security Planning
 =========================

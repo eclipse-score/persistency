@@ -64,13 +64,14 @@ The components are designed to cover the expectations from the feature architect
 A component can optional also consist of subcomponents to further structure the architecture. The component and its static views can also optionally use interfaces provided by other components.
 
 The live component architecture template is maintained in the
-`module template documentation <https://eclipse-score.github.io/module_template/component_architecture_template.html>`_.
+`module template documentation <https://eclipse-score.github.io/module_template/main/components/component_example/architecture/component_architecture.html>`_.
 
 .. comp_arc_sta:: Component Name (Static View)
    :id: comp_arc_sta__kvs__static_view
    :security: YES
    :safety: ASIL_B
    :status: invalid
+   :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
    :implements:
    :fulfils: comp_req__kvs__key_naming[version==1]
@@ -89,6 +90,7 @@ Dynamic Architecture
    :security: YES
    :safety: ASIL_B
    :status: invalid
+   :version: 1
    :belongs_to: comp__persistency_kvs[version==1]
    :fulfils: comp_req__kvs__key_naming[version==1]
 
@@ -113,6 +115,7 @@ Internal Components
 .. comp_arc_sta:: Component Name 2
    :id: comp_arc_sta__kvs__2
    :status: invalid
+   :version: 1
    :safety: ASIL_B
    :security: YES
    :implements:
@@ -129,5 +132,3 @@ Internal Components
 
     - Replace the example content by the real content (according to :need:`gd_guidl__arch_design`)
     - Set the status to valid and start the review/merge process
-
-

@@ -178,7 +178,7 @@ checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
 [[package]]
 name = "score_log"
 version = "0.0.1"
-source = "git+https://github.com/eclipse-score/baselibs_rust.git?tag=v0.1.0#0eba2934fa8b0e1a343ec6bf6f7ff00cec27d81c"
+source = "git+https://github.com/eclipse-score/baselibs.git?rev=2603afd58043810118b21ce7fca37a33894e5aef#2603afd58043810118b21ce7fca37a33894e5aef"
 dependencies = [
  "score_log_fmt",
  "score_log_fmt_macro",
@@ -187,12 +187,12 @@ dependencies = [
 [[package]]
 name = "score_log_fmt"
 version = "0.0.1"
-source = "git+https://github.com/eclipse-score/baselibs_rust.git?tag=v0.1.0#0eba2934fa8b0e1a343ec6bf6f7ff00cec27d81c"
+source = "git+https://github.com/eclipse-score/baselibs.git?rev=2603afd58043810118b21ce7fca37a33894e5aef#2603afd58043810118b21ce7fca37a33894e5aef"
 
 [[package]]
 name = "score_log_fmt_macro"
 version = "0.0.1"
-source = "git+https://github.com/eclipse-score/baselibs_rust.git?tag=v0.1.0#0eba2934fa8b0e1a343ec6bf6f7ff00cec27d81c"
+source = "git+https://github.com/eclipse-score/baselibs.git?rev=2603afd58043810118b21ce7fca37a33894e5aef#2603afd58043810118b21ce7fca37a33894e5aef"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -250,7 +250,7 @@ checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
 [[package]]
 name = "stdout_logger"
 version = "0.0.1"
-source = "git+https://github.com/eclipse-score/baselibs_rust.git?tag=v0.1.0#0eba2934fa8b0e1a343ec6bf6f7ff00cec27d81c"
+source = "git+https://github.com/eclipse-score/baselibs.git?rev=2603afd58043810118b21ce7fca37a33894e5aef#2603afd58043810118b21ce7fca37a33894e5aef"
 dependencies = [
  "score_log",
 ]
