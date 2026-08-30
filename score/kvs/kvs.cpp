@@ -126,8 +126,8 @@ score::Result<std::unordered_map<std::string, KvsValue>> Kvs::parse_json_data(co
                    loading with an error rather than silently dropping data. */
                 if (!is_key_length_valid(key))
                 {
-                    logger->LogError() << "Key length " << key.length() << " exceeds maximum allowed "
-                                       << KVS_MAX_KEY_LENGTH_BYTES << " bytes while loading";
+                    logger->LogError() << "Key length" << key.length() << "exceeds maximum allowed"
+                                       << KVS_MAX_KEY_LENGTH_BYTES << "bytes while loading";
                     result = score::MakeUnexpected(ErrorCode::KeyTooLong);
                     error = true;
                     break;
@@ -460,8 +460,8 @@ score::ResultBlank Kvs::set_value(const std::string_view key, const KvsValue& va
     /* comp_req__kvs__key_length: reject keys that exceed the maximum length. */
     if (!is_key_length_valid(key))
     {
-        logger->LogError() << "Key length " << key.length() << " exceeds maximum allowed "
-                           << KVS_MAX_KEY_LENGTH_BYTES << " bytes";
+        logger->LogError() << "Key length" << key.length() << "exceeds maximum allowed"
+                           << KVS_MAX_KEY_LENGTH_BYTES << "bytes";
         return score::MakeUnexpected(ErrorCode::KeyTooLong);
     }
 
