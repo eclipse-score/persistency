@@ -622,7 +622,7 @@ score::Result<std::string> Kvs::serialize_and_check() {
             {
                 auto conv = kvsvalue_to_any(value);
                 if (!conv) {
-                    return score::MakeUnexpected(static_cast<ErrorCode>(*conv.error()));
+                    return score::MakeUnexpected<std::string>(conv.error());
                 }
                 root_obj.emplace(key, std::move(conv.value()));
             }
@@ -640,7 +640,7 @@ score::Result<std::string> Kvs::serialize_and_check() {
     // 2. Get the size of all other persisted files
     auto current_size_res = get_current_storage_size();
     if (!current_size_res) {
-        return score::MakeUnexpected(static_cast<ErrorCode>(*current_size_res.error()));
+        return score::MakeUnexpected<std::string>(current_size_res.error());
     }
 
     // 3. Calculate the potential total size
@@ -660,7 +660,7 @@ score::Result<std::string> Kvs::serialize_and_check() {
 score::ResultBlank Kvs::flush() {
     auto result = serialize_and_check();
     if (!result) {
-        return score::MakeUnexpected(static_cast<ErrorCode>(*result.error()));
+        return score::MakeUnexpected<score::Blank>(result.error());
     }
 
     auto rotate_result = snapshot_rotate();
@@ -675,14 +675,14 @@ score::ResultBlank Kvs::flush() {
 score::Result<size_t> Kvs::calculate_potential_size() {
     auto result = serialize_and_check();
     if (!result) {
-        return score::MakeUnexpected(static_cast<ErrorCode>(*result.error()));
+        return score::MakeUnexpected<size_t>(result.error());
     }
 
     // Re-calculate size to return it, as serialize_and_check only returns the buffer
     const std::string& buf = result.value();
     auto current_size_res = get_current_storage_size();
     if (!current_size_res) {
-        return score::MakeUnexpected(static_cast<ErrorCode>(*current_size_res.error()));
+        return score::MakeUnexpected<size_t>(current_size_res.error());
     }
 
     return current_size_res.value() + buf.size() + HASH_FILE_SIZE;

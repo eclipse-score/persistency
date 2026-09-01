@@ -92,11 +92,11 @@ class KvsBuilder final
 
     /**
      * @brief Configure the maximum storage size for the KVS in bytes.
-     * @param max_bytes The maximum allowed total storage size in bytes. When this option
-     *                  is not used, no storage limit is enforced.
+     * @param max_storage_bytes The maximum allowed total storage size in bytes. When this
+     *                          option is not used, no storage limit is enforced.
      * @return Reference to this builder (for chaining).
      */
-    KvsBuilder& max_size(std::optional<size_t> max_bytes);
+    KvsBuilder& max_storage_bytes(std::optional<size_t> max_storage_bytes);
 
     /**
      * @brief Builds and opens the Kvs instance with the configured options.
@@ -112,7 +112,7 @@ class KvsBuilder final
     bool need_defaults;                  ///< Whether default values are required
     bool need_kvs;                       ///< Whether an existing KVS is required
     std::string directory;               ///< Directory where to store the KVS Files
-    std::optional<size_t> maximum_size;  ///< Maximum total storage size in bytes; unset means no limit
+    std::optional<size_t> maximum_storage_bytes;  ///< Maximum total storage size in bytes; unset means no limit
 };
 
 } /* namespace score::mw::per::kvs */

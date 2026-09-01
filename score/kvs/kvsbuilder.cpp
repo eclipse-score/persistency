@@ -20,8 +20,8 @@ KvsBuilder::KvsBuilder(const InstanceId& instance_id)
     : instance_id(instance_id),
       need_defaults(false),
       need_kvs(false),
-      directory("./data_folder/"), /* Default Directory */
-      maximum_size(std::nullopt)   /* No storage limit by default */
+      directory("./data_folder/"),        /* Default Directory */
+      maximum_storage_bytes(std::nullopt) /* No storage limit by default */
 {
 }
 
@@ -43,9 +43,9 @@ KvsBuilder& KvsBuilder::dir(std::string&& dir_path)
     return *this;
 }
 
-KvsBuilder& KvsBuilder::max_size(std::optional<size_t> max_bytes)
+KvsBuilder& KvsBuilder::max_storage_bytes(std::optional<size_t> max_storage_bytes)
 {
-    this->maximum_size = max_bytes;
+    this->maximum_storage_bytes = max_storage_bytes;
     return *this;
 }
 
@@ -63,7 +63,7 @@ score::Result<Kvs> KvsBuilder::build()
                        need_defaults ? OpenNeedDefaults::Required : OpenNeedDefaults::Optional,
                        need_kvs ? OpenNeedKvs::Required : OpenNeedKvs::Optional,
                        std::move(directory),
-                       maximum_size);
+                       maximum_storage_bytes);
 
     return result;
 }
