@@ -20,8 +20,7 @@ KvsBuilder::KvsBuilder(const InstanceId& instance_id)
     : instance_id(instance_id),
       need_defaults(false),
       need_kvs(false),
-      directory("./data_folder/") /* Default Directory */
-      ,
+      directory("./data_folder/"), /* Default Directory */
       max_snapshots(KVS_DEFAULT_MAX_SNAPSHOTS)
 {
 }
