@@ -1,0 +1,62 @@
+# ******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# ******************************************************************************
+
+name: License Check
+
+on:
+  workflow_call:
+    inputs:
+      head-sha:
+        description: "Head SHA for trusted checkouts from workflow_run; empty when called with PR context"
+        required: false
+        default: ""
+        type: string
+      head-repository:
+        description: "Repository of the head commit (fork PRs); empty for base-repo checkouts"
+        required: false
+        default: ""
+        type: string
+    secrets:
+      dash-api-token:
+        description: "Eclipse GitLab API token for DASH"
+        required: true
+
+jobs:
+  license-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          lfs: true
+          persist-credentials: false
+          ref: ${{ inputs.head-sha != '' && inputs.head-sha || github.ref }}
+          repository: ${{ inputs.head-repository != '' && inputs.head-repository || github.repository }}
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@8cb04a772ab4c1eb984e9c1b493a182e96c5e425 # v0.19.0
+        with:
+          bazelisk-version: 1.29.0
+          disk-cache: true
+
+      - name: Run License Check via Bazel
+        env:
+          DASH_API_TOKEN: ${{ secrets.dash-api-token }}
+        run: |
+          set -euo pipefail
+          bazel run --lockfile_mode=error //:license-check -- \
+            -review -project automotive.score \
+            -repo "${{ github.server_url }}/${{ github.repository }}" \
+            -token "$DASH_API_TOKEN"
