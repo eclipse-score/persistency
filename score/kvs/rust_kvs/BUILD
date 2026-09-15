@@ -25,6 +25,7 @@ rust_library(
 
 rust_test(
     name = "tests",
+    size = "small",
     crate = "rust_kvs",
     tags = [
         "unit_tests",
