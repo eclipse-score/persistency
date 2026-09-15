@@ -56,13 +56,13 @@ jobs:
           DASH_API_TOKEN: ${{ secrets.dash-api-token }}
         run: |
           set -euo pipefail
-          # The DASH tool rejects an empty -token value; omit the flag when
-          # no token is configured (public license data needs no token).
+          # -review requires a token per the DASH tool's usage contract;
+          # without a token, run anonymous checks against public license data.
           TOKEN_ARGS=""
           if [[ -n "$DASH_API_TOKEN" ]]; then
-            TOKEN_ARGS="-token $DASH_API_TOKEN"
+            TOKEN_ARGS="-review -token $DASH_API_TOKEN"
           fi
           bazel run --lockfile_mode=error //:license-check -- \
-            -review -project automotive.score \
+            -project automotive.score \
             -repo "${{ github.server_url }}/${{ github.repository }}" \
             $TOKEN_ARGS
