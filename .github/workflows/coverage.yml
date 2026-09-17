@@ -1,0 +1,58 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+name: Unified Coverage (LLVM)
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+
+jobs:
+  llvm_coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.14.0
+        with:
+          disk-cache: true
+          repository-cache: true
+          bazelisk-cache: true
+
+      - name: Run unified Rust + C++ coverage
+        run: |
+          set -euo pipefail
+          bazel coverage --lockfile_mode=error --config=llvm_cov \
+            //score/... --build_tests_only
+
+      - name: Generate unified coverage report
+        env:
+          # Report-only during the introduction phase; raise stepwise toward
+          # 100 (effective coverage with justifications) as tests and
+          # justifications land, then drop the env to use the default of 100.
+          COVERAGE_THRESHOLD: "0"
+        run: |
+          set -euo pipefail
+          bazel run --lockfile_mode=error @score_tooling//coverage:generate_coverage_html -- \
+            --yaml quality/coverage/coverage_justifications.yaml \
+            --testlogs-subdir score \
+            --archive-dir coverage_artifact
+
+      # upload-artifact zips its input itself, so the script assembles an
+      # unzipped directory (--archive-dir) to avoid a zip inside a zip.
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.repository.name }}_coverage_report
+          path: coverage_artifact

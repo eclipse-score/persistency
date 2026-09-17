@@ -1,0 +1,7 @@
+{
+    "appId": "TEST",
+    "appDesc": "Rust test scenarios",
+    "logMode": "kConsole",
+    "logLevel": "kVerbose",
+    "logLevelThresholdConsole": "kInfo"
+}

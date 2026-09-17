@@ -14,10 +14,10 @@
 [tool.pytest]
 addopts = ["-v"]
 pythonpath = [
-    "tests/test_cases",
-    "tests/test_cases/tests",
+    "score/kvs/tests/test_cases",
+    "score/kvs/tests/test_cases/tests",
 ]
-testpaths = ["tests/test_cases/tests"]
+testpaths = ["score/kvs/tests/test_cases/tests"]
 log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s %(levelname)s %(message)s"

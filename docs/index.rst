@@ -12,101 +12,165 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
+.. _persistency_module_documentation:
+
+Persistency Documentation
+=========================
+
+This documentation describes the structure, usage and configuration of the Bazel-based C++/Rust module template according to the `SCORE module folder structure <https://eclipse-score.github.io/score/main/contribute/general/folder.html#module-folder-structure>`_ and the `SCORE building blocks concept <https://eclipse-score.github.io/process_description/main/general_concepts/score_building_blocks_concept.html>`_.
+
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
+
+Overview
+--------
+
+This repository provides a standardized setup for projects using **C++** or **Rust** and **Bazel** as a build system.
+It integrates best practices for build, test, CI/CD and documentation.
+
+Module Layout
+-------------
+
+The module template includes the following top-level structure:
+
+.. code-block:: text
+
+    <module_name>/                      # Root folder of the module, subfolder only if more than one module exists in the repository
+    ├── .github/
+    │   └── workflows/                  # CI/CD pipelines
+    ├── docs/                           # Global documentation of the module
+    │   ├── features/                   # Feature documentation and architecture
+    │   │   └── <feature_name>/         # Feature folder parts for each feature which should be in module documentation
+    │   │       ├── architecture/       # Feature architecture [wp__feature_arch] and of architecture review [wp__sw_arch_verification]
+    │   │       ├── safety_analysis/    # Feature safety analysis artifacts ([wp__feature_fmea], [wp__feature_dfa], [wp__requirements_feat_aou])
+    │   │       ├── safety_planning/    # Feature safety planning artifacts
+    │   │       ├── security_analysis/  # Feature security analysis artifacts [wp__feature_security_analysis]
+    │   │       └── security_planning/  # Feature security planning artifacts
+    │   ├── module/                     # Module documentation
+    │   │   ├── manuals/                # Module manual, integration manual, table of assumptions of use,
+    │   │   │                           #   safety manual [wp__module_safety_manual],
+    │   │   │                           #   needs table of [wp__requirements_feat_aou]
+    │   │   │                           #   security manual [wp__module_security_manual]
+    │   │   ├── release/                # Module release note [wp__module_sw_release_note]
+    │   │   ├── safety_mgt/             # Module safety plan [wp__module_safety_plan],
+    │   │   │                           #   module safety package [wp__module_safety_package],
+    │   │   │                           #   formal document and safety analysis reviews [wp__fdr_reports]
+    │   │   └── security_mgt/           # Module security plan [wp__module_security_plan],
+    │   │                               #   module security package [wp__module_security_package],
+    │   │                               #   formal document reviews [wp__fdr_reports_security],
+    │   │                               #   module SW bill of material [wp__sw_module_sbom]
+    │   └── verification_report/        # Module verification report,
+    │                                   #   module verifications [wp__verification_module_ver_report],
+    ├── examples/                       # Usage examples for the module / features
+    ├── score/                          # Components of the module
+    │   └── <component_name>/           # Component folder for each component of the module
+    │   │   ├── docs/                   # Documentation of the component
+    │   │   │   ├── architecture/       # Component architecture [wp__component_arch]
+    │   │   │   │                       #   (only if lower level components exist)
+    |   │   |   |                       #   architecture review [wp__sw_arch_verification],
+    │   │   │   ├── detailed_design/    # Detailed design [wp__sw_implementation]
+    │   │   │   │                       #   code inspection [wp__sw_implementation_inspection]
+    │   │   │   ├── requirements/       # Component requirements [wp__requirements_comp],[wp__requirements_inspect]
+    │   │   │   ├── safety_analysis/    # Safety analysis [wp__sw_component_fmea], [wp__sw_component_dfa], [wp__requirements_comp_aou]
+    |   │   |   |                       #   Component classification [wp__sw_component_class] for pre-existing software
+    │   │   │   │                       #   (only if component architecture exists)
+    │   │   │   ├── security_analysis/  # Security analysis [wp__sw_component_security_analysis]
+    │   │   │   │                       #   (only if component architecture exists)
+    │   │   │   └── manuals/            # User documentation (of a single component, e.g., user manual of a library component, optional)
+    │   │   ├── <pub_interface_files>/  # Public interfaces and implementation files of the component; the optional src/ is omitted
+    │   │   ├── <lower_level_comp>/     # Lower level component (follows <component_name> structure)
+    │   │   └── tests/                  # Component-level tests (e.g., integration and unit tests)
+    ├── tests/                          # Module-level tests (e.g., feature integration tests, system tests) [wp__verification_feat_int_test]
+    ├── MODULE.bazel                    # Bazel module definition
+    ├── BUILD                           # Root build rules
+    ├── project_config.bzl              # Project metadata used by Bazel macros
+    └── README.md                       # Entry point of the repository
+
+
+Module / Feature Documentation
+------------------------------
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   persistency/index
+   features/persistency/index
+   module/index
+   module/manuals/index
+   module/release/release_note
+   module/safety_mgt/index
+   module/security_mgt/index
+   verification_report/module_verification_report
+   components/index
 
-Key-Value-Storage (rust_kvs) Documentation
-==========================================
+.. _module_documents_docs_features_persistency:
 
-This documentation describes the `rust_kvs` crate, which provides a key-value storage implementation with JSON-like persistence using Rust.
+Module / Feature documentation overview
++++++++++++++++++++++++++++++++++++++++
 
-Summary
--------
+.. needtable::
+   :filter: docname is not None and ("features" in docname or "manuals" in docname or "release" in docname or "safety_mgt" in docname or "security_mgt" in docname or "verification_report" in docname)
+   :style: table
+   :types: document
+   :columns: title;id;safety;security;status
+   :colwidths: 25,35,15,15,15
+   :sort: title
 
-**Crate:** `rust_kvs`
 
-**Purpose:** Key-Value-Storage API and Implementation
+Component documentation
+-------------------------------
 
-**Description:**  
-This crate provides a Key-Value-Store using TinyJSON to persist the data. It uses the Adler32 crate to validate stored data and depends only on the Rust standard library.
+See :ref:`component_documentation` for details.
 
-Introduction
-------------
 
-The key-value store is initialized with `Kvs::open` and can be flushed with `Kvs::flush`.
+Examples
+--------
 
-All TinyJSON-supported datatypes are available:
+No examples yet.
 
-- `Number`: `f64`
-- `Boolean`: `bool`
-- `String`: `String`
-- `Null`: `()`
-- `Array`: `Vec<KvsValue>`
-- `Object`: `HashMap<String, KvsValue>`
 
-JSON arrays can hold mixed types.
 
-Usage Notes:
+Quick Start
+-----------
 
-- Use `Kvs::set_value(key, value)` to write.
-- Use `Kvs::get_value::<T>(key)` to read.
-- If a key is missing, the store checks for a default and returns it.
-- Defaults are not flushed unless explicitly written.
+To build the module:
 
-To check for defaults:
+.. code-block:: bash
 
-- `Kvs::get_default_value`
-- `Kvs::is_value_default`
+   bazel build --config=per-x86_64-linux -- //score/...
 
-Example
--------
+Building without an explicit ``--config`` (e.g. ``per-x86_64-linux``, ``per-x86_64-qnx``, ``per-arm64-qnx``) is not supported.
 
-.. code-block:: rust
+To run all tests:
 
-   use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, KvsValue};
-   use std::collections::HashMap;
+.. code-block:: bash
 
-   fn main() -> Result<(), ErrorCode> {
-       let kvs = Kvs::open(
-           InstanceId::new(0),
-           OpenNeedDefaults::Optional,
-           OpenNeedKvs::Optional)?;
+   bazel test //...
 
-       kvs.set_value("number", 123.0)?;
-       kvs.set_value("bool", true)?;
-       kvs.set_value("string", "First".to_string())?;
-       kvs.set_value("null", ())?;
-       kvs.set_value(
-           "array",
-           vec![
-               KvsValue::from(456.0),
-               false.into(),
-               "Second".to_string().into(),
-           ],
-       )?;
-       kvs.set_value(
-           "object",
-           HashMap::from([
-               ("sub-number".into(), KvsValue::from(789.0)),
-               ("sub-bool".into(), true.into()),
-               ("sub-string".into(), "Third".to_string().into()),
-               ("sub-null".into(), ().into()),
-               (
-                   "sub-array".into(),
-                   KvsValue::from(vec![
-                       KvsValue::from(1246.0),
-                       false.into(),
-                       "Fourth".to_string().into(),
-                   ]),
-               ),
-           ]),
-       )?;
+To run Unit Tests:
 
-       Ok(())
+.. code-block:: bash
+
+   bazel test //:unit_tests
+
+To run Component / Feature Integration Tests:
+
+.. code-block:: bash
+
+   bazel test //:cit_tests
+
+Module Configuration
+--------------------
+
+The `project_config.bzl` file defines metadata used by Bazel macros.
+
+Example:
+
+.. code-block:: python
+
+   PROJECT_CONFIG = {
+       "asil_level": "QM",
+       "source_code": ["cpp", "rust"]
    }
 
-- :need:`feat_req__persistency__tooling`
-- :need:`feat_req__persistency__variant_management`
-- :need:`feat_req__persistency__fast_access`
+This enables conditional behavior (e.g., choosing `clang-tidy` for C++ or `clippy` for Rust).
