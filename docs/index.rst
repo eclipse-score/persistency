@@ -109,7 +109,7 @@ Module / Feature documentation overview
 +++++++++++++++++++++++++++++++++++++++
 
 .. needtable::
-   :filter: docname is not None and ("features" in docname or "manuals" in docname or "release" in docname or "safety_mgt" in docname or "security_mgt" in docname or "verification_report" in docname)
+   :filter: docname is not None and "components/" in docname
    :style: table
    :types: document
    :columns: title;id;safety;security;status
