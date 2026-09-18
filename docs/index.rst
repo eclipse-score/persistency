@@ -118,7 +118,7 @@ Module / Feature documentation overview
 
 
 Component documentation
--------------------------------
+-----------------------
 
 See :ref:`component_documentation` for details.
 

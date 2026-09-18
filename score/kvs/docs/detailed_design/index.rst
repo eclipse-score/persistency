@@ -36,7 +36,7 @@ Description
 | Design Constraints
 
 Rationale Behind Decomposition into Units
-******************************************
+*****************************************
 | mandatory: a motivation for the decomposition into one or more units.
 
 .. note:: Reason for split into multiple units could be-
