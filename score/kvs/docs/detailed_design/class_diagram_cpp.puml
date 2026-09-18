@@ -55,10 +55,13 @@ interface IKvs <<interface>> {
     + IsValueDefault(key : string) : Result<bool>
     + SetValue(key : string, value : KvsValue) : ResultBlank
     + RemoveKey(key : string) : ResultBlank
+    + RemoveAllKeys() : ResultBlank
+    + DiscardPendingChanges() : ResultBlank
     + Flush() : ResultBlank
     + SnapshotCount() : Result<size_t>
     + SnapshotMaxCount() : size_t
     + SnapshotRestore(snapshot_id : SnapshotId) : ResultBlank
+    + GetStorageFileSize() : Result<size_t>
 }
 
 IKvsBackend -[hidden]right- IKvs
@@ -109,10 +112,13 @@ class KvsMock  <<mock>> {
     + IsValueDefault(key : string) : Result<bool>
     + SetValue(key : string, value : KvsValue) : ResultBlank
     + RemoveKey(key : string) : ResultBlank
+    + RemoveAllKeys() : ResultBlank
+    + DiscardPendingChanges() : ResultBlank
     + Flush() : ResultBlank
     + SnapshotCount() : Result<size_t>
     + SnapshotMaxCount() : size_t
     + SnapshotRestore(snapshot_id : SnapshotId) : ResultBlank
+    + GetStorageFileSize() : Result<size_t>
 }
 
 class Kvs <<implementation>> {
@@ -130,10 +136,13 @@ class Kvs <<implementation>> {
     + IsValueDefault(key : string) : Result<bool>
     + SetValue(key : string, value : KvsValue) : ResultBlank
     + RemoveKey(key : string) : ResultBlank
+    + RemoveAllKeys() : ResultBlank
+    + DiscardPendingChanges() : ResultBlank
     + Flush() : ResultBlank
     + SnapshotCount() : Result<size_t>
     + SnapshotMaxCount() : size_t
     + SnapshotRestore(snapshot_id : SnapshotId) : ResultBlank
+    + GetStorageFileSize() : Result<size_t>
 }
 
 ' Relationships

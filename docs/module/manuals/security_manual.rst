@@ -79,7 +79,7 @@ List of AoUs on the user of the platform features or the module of this Security
                 results.append(need)
 
 Security concept of the OoC
-----------------------------
+---------------------------
 | <Describe here the security concept incl. which attack paths are taken care of, reactions of the implemented functions under threatened operating conditions ... if this is not already documented sufficiently in the feature documentation "security impact" section of all the features the module is used in.>
 
 Security Weaknesses, Vulnerabilities

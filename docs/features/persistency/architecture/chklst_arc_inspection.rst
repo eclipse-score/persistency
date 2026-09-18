@@ -210,3 +210,4 @@ and the following dynamic views:
     The above tables filtering must be updated according to your Feature.
 
     - Modify ``feature_name`` to be your Feature Name in lower snake case
+    

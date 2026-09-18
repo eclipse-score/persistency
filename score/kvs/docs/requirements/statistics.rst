@@ -88,7 +88,7 @@ In Detail
 
 
 All passed Tests
------------------
+----------------
 
 .. needtable:: SUCCESSFUL TESTS
    :filter: result == "passed"
@@ -97,7 +97,7 @@ All passed Tests
 
 
 Details About Testcases
-------------------------
+-----------------------
 
 .. needpie:: Test Types Used In Testcases
    :labels: static-code-analysis, structural-statement-coverage, structural-branch-coverage, walkthrough, inspection, interface-test, requirements-based, resource-usage, control-flow-analysis, data-flow-analysis, fault-injection, struct-func-cov, struct-call-cov
