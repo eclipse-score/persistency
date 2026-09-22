@@ -17,7 +17,7 @@ load("@score_tooling//python_basics:defs.bzl", "score_py_pytest", "score_virtual
 # Referenced by //:sbom (python_lockfiles).
 exports_files(
     ["requirements.txt.lock"],
-    visibility = ["//visibility:public"],
+    visibility = ["//:__pkg__"],
 )
 
 # In order to update the requirements, change the `requirements.in` file and run:
@@ -64,6 +64,7 @@ score_py_pytest(
     },
     pytest_config = "//:pyproject.toml",
     target_compatible_with = ["@platforms//os:linux"],
+    visibility = ["//:__pkg__"],
     deps = all_requirements,
 )
 
@@ -86,6 +87,7 @@ score_py_pytest(
     },
     pytest_config = "//:pyproject.toml",
     target_compatible_with = ["@platforms//os:linux"],
+    visibility = ["//:__pkg__"],
     deps = all_requirements,
 )
 
