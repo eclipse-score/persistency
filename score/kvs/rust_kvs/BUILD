@@ -31,6 +31,7 @@ rust_test(
         "unit_tests",
         "ut",
     ],
+    visibility = ["//:__pkg__"],
     deps = ["@score_crates//:tempfile"],
 )
 

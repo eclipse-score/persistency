@@ -60,21 +60,42 @@ copyright_checker(
     visibility = ["//visibility:public"],
 )
 
-# Generates SBOMs (SPDX 2.3 + CycloneDX 1.6) for the KVS library.
+# Generates the product SBOM (SPDX 2.3 + CycloneDX 1.6) for the KVS library.
 # - Rust crate licenses/suppliers come from the crates.io API via
 #   auto_crates_cache (network access required at build time).
-# - Python dependency licenses come from dash-license-scan via the
-#   python_lockfiles path (host JRE required).
+# - Build-time/test tooling is covered separately by //:build_tools_sbom.
 sbom(
-    name = "sbom",
+    name = "product_sbom",
     auto_crates_cache = True,
     cargo_lockfile = "Cargo.lock",
     component_name = "score_persistency",
     module_lockfiles = [":MODULE.bazel.lock"],
-    python_lockfiles = ["//score/kvs/tests/test_cases:requirements.txt.lock"],
     targets = [
         "//score/kvs:kvs_cpp",
         "//score/kvs/rust_kvs:rust_kvs",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# Qualification inventory for Python-based build and test tools. This is kept
+# separate from the product SBOM because build-time dependencies are not
+# product/runtime dependencies.
+sbom(
+    name = "build_tools_sbom",
+    testonly = True,
+    auto_cdxgen = False,
+    auto_crates_cache = False,
+    component_name = "score_persistency_build_tools",
+    exclude_patterns = ["rules_python++pip+"],
+    module_lockfiles = [":MODULE.bazel.lock"],
+    output_formats = ["spdx"],
+    python_lockfiles = [
+        "//score/kvs/tests/test_cases:requirements.txt.lock",
+    ],
+    targets = [
+        "//:docs",
+        "//:unit_tests",
+        "//:cit_tests",
     ],
     visibility = ["//visibility:public"],
 )
