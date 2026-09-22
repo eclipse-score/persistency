@@ -37,6 +37,7 @@ bazel_dep(name = "buildifier_prebuilt", version = "8.5.1.3", dev_dependency = Tr
 bazel_dep(name = "google_benchmark", version = "1.9.5", dev_dependency = True)
 bazel_dep(name = "googletest", version = "1.17.0.bcr.2", dev_dependency = True)
 bazel_dep(name = "score_bazel_cpp_toolchains", version = "1.0.3", dev_dependency = True)
+bazel_dep(name = "score_sbom", version = "0.1.1", dev_dependency = True)
 bazel_dep(name = "score_rules_imagefs", version = "0.1.0", dev_dependency = True)
 bazel_dep(name = "score_rust_policies", version = "0.0.5", dev_dependency = True)
 bazel_dep(name = "score_toolchains_rust", version = "0.10.0", dev_dependency = True)
@@ -123,6 +124,11 @@ use_repo(
     "score_qnx_aarch64_ifs_toolchain",
     "score_qnx_x86_64_ifs_toolchain",
 )
+
+# SBOM metadata: tracks module versions used by the //:sbom target
+# (see root BUILD file).
+sbom_ext = use_extension("@score_sbom//:extensions.bzl", "sbom_metadata", dev_dependency = True)
+use_repo(sbom_ext, "sbom_metadata")
 
 # *******************************************************************************
 # Coverage toolchain (LLVM source-based coverage pipeline from
