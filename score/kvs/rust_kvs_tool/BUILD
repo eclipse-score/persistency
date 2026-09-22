@@ -27,7 +27,7 @@ rust_binary(
     visibility = ["//visibility:public"],
     deps = [
         "//score/kvs/rust_kvs",
-        "@score_baselibs//src/log/score_log",
+        "@score_baselibs//score/log_rust/score_log",
         "@score_crates//:pico_args",
         "@score_crates//:tinyjson",
         "@score_logging//score/mw/log/rust/score_log_bridge",
