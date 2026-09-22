@@ -11,10 +11,23 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
+load("@rules_license//rules:license.bzl", "license")
 load("@score_docs_as_code//:docs.bzl", "docs")
 load("@score_format_checker//:macros.bzl", "use_format_targets")
 load("@score_tooling//:defs.bzl", "cli_helper", "copyright_checker", "dash_license_checker", "setup_starpls")
 load("//:project_config.bzl", "PROJECT_CONFIG")
+
+# Machine-readable license declaration for SBOM/compliance tooling (e.g.
+# rules_license's gather_licenses_info aspect, or score_sbom once it consumes
+# rules_license providers).
+license(
+    name = "license",
+    package_name = "score_persistency",
+    license_kinds = ["@rules_license//licenses/spdx:Apache-2.0"],
+    package_url = "https://github.com/eclipse-score/persistency",
+)
+
+package(default_applicable_licenses = [":license"])
 
 # Creates all documentation targets:
 # - `:docs` for building documentation at build-time
