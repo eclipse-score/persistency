@@ -95,6 +95,7 @@ Module / Feature Documentation
    :maxdepth: 1
 
    features/persistency/index
+   module/index
    module/manuals/index
    module/release/release_note
    module/safety_mgt/index
@@ -108,7 +109,7 @@ Module / Feature documentation overview
 +++++++++++++++++++++++++++++++++++++++
 
 .. needtable::
-   :filter: docname is not None and ("features" in docname or "manuals" in docname or "release" in docname or "safety_mgt" in docname or "security_mgt" in docname or "verification_report" in docname)
+   :filter: docname is not None and "components/" in docname
    :style: table
    :types: document
    :columns: title;id;safety;security;status
@@ -117,7 +118,7 @@ Module / Feature documentation overview
 
 
 Component documentation
--------------------------------
+-----------------------
 
 See :ref:`component_documentation` for details.
 

@@ -15,7 +15,7 @@
 .. _component_documentation:
 
 Component documentation
--------------------------------
+-----------------------
 
 .. toctree::
    :maxdepth: 1

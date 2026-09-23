@@ -41,6 +41,7 @@ score_virtualenv(
 # Tests targets
 score_py_pytest(
     name = "cit_cpp",
+    size = "small",
     srcs = glob(["tests/**/*.py"]) + ["test_properties.py"],
     args = [
         "-m cpp",
@@ -62,6 +63,7 @@ score_py_pytest(
 
 score_py_pytest(
     name = "cit_rust",
+    size = "small",
     srcs = glob(["tests/**/*.py"]) + ["test_properties.py"],
     args = [
         "-m rust",

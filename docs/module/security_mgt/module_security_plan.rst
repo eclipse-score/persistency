@@ -59,7 +59,7 @@ Additional to the tailoring in the SW platform project as defined in the :need:`
 |   - No workproducts excluded
 
 Security Module Workproducts
-=============================
+============================
 
 .. list-table:: Module Workproducts
         :header-rows: 1

@@ -101,6 +101,8 @@ enum class OpenJsonNeedFile
  * - `is_value_default`: Checks if a default value exists for a specific key.
  * - `set_value`: Sets the value for a specific key in the KVS.
  * - `remove_key`: Removes a specific key from the KVS.
+ * - `remove_all_keys`: Removes all keys from the KVS.
+ * - `discard_pending_changes`: Drops all in-memory changes made since the last flush or since open.
  * - `flush`: Flushes the KVS to storage.
  * - `flush_default`: Flushes the default values to storage.
  * - `snapshot_count`: Retrieves the number of available snapshots.
@@ -108,6 +110,7 @@ enum class OpenJsonNeedFile
  * - `snapshot_restore`: Restores the KVS from a specified snapshot.
  * - `get_kvs_filename`: Retrieves the filename (path) associated with a snapshot.
  * - `get_hash_filename`: Retrieves the hashname (path) associated with a snapshot.
+ * - `get_storage_file_size`: Retrieves the size in bytes of the persisted KVS data and hash files.
  *
  * Private Methods:
  * - `snapshot_rotate`: Rotates the snapshots, ensuring that the maximum count is maintained.
@@ -284,6 +287,32 @@ class Kvs final
     score::ResultBlank remove_key(const std::string_view key);
 
     /**
+     * @brief Removes all key-value pairs from the store.
+     *
+     * @return A score::Result object that indicates the success or failure of the operation.
+     *         - On success: Returns a blank score::Result.
+     *         - On failure: Returns an ErrorCode describing the error.
+     */
+    score::ResultBlank remove_all_keys();
+
+    /**
+     * @brief Discards all pending changes to the key-value store.
+     *
+     * Reloads the key-value pairs from persistent storage, dropping every change made since the
+     * last successful `flush()` or - if `flush()` was never called - since `open()`.
+     * Default values are not affected, since they are read-only for this instance.
+     *
+     * A store that was opened without an existing KVS file and never flushed discards to empty.
+     *
+     * @return A score::Result object that indicates the success or failure of the operation.
+     *         - On success: Returns a blank score::Result.
+     *         - On failure: Returns an ErrorCode describing the error. Because the persisted data
+     *           is re-read, this includes storage errors such as `KvsHashFileReadError`,
+     *           `ValidationFailed` and `JsonParserError`.
+     */
+    score::ResultBlank discard_pending_changes();
+
+    /**
      * @brief Flushes the key-value store, ensuring that all pending changes
      *        are written to the underlying storage.
      *
@@ -351,6 +380,23 @@ class Kvs final
      *         - On failure: An error code describing the reason for the failure.
      */
     score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const;
+
+    /**
+     * @brief Retrieves the size of the persisted key-value store on disk.
+     *
+     * Returns the combined size in bytes of the current KVS data file and its hash file
+     * (snapshot 0). Rotated snapshots and the defaults files are not included.
+     *
+     * Since the size is read from storage, it reflects the last successful `flush()` and not
+     * any pending in-memory changes. A file that does not exist contributes zero, so a store
+     * that was never flushed reports a size of 0 instead of an error.
+     *
+     * @return A score::Result object that indicates the success or failure of the operation.
+     *         - On success: The combined size of both files in bytes.
+     *         - On failure: `ErrorCode::PhysicalStorageFailure` if a file exists but its size
+     *           cannot be determined.
+     */
+    score::Result<size_t> get_storage_file_size() const;
 
   private:
     /* Private constructor to prevent direct instantiation */

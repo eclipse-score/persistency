@@ -1,6 +1,6 @@
 ..
    # *******************************************************************************
-   # Copyright (c) 2025 Contributors to the Eclipse Foundation
+   # Copyright (c) 2026 Contributors to the Eclipse Foundation
    #
    # See the NOTICE file(s) distributed with this work for additional
    # information regarding copyright ownership.
@@ -13,16 +13,15 @@
    # *******************************************************************************
 
 
-Safety Analysis: FMEA
-=====================
+.. _persistency_module:
 
-.. document:: KVS FMEA
-   :id: doc__kvs_fmea
-   :status: valid
+Persistency Module
+==================
+
+.. mod:: Persistency Module
+   :id: mod__persistency
    :version: 1
+   :security: YES
    :safety: ASIL_B
-   :security: NO
-   :realizes: wp__sw_component_fmea[version==1]
-   :tags: Persistency KVS
-
-Because there is no sub-components in KVS, the results of the FMEA are the same as on feature level :need:`doc__persistency_fmea`.
+   :status: valid
+   :includes: comp__persistency_kvs[version==1]

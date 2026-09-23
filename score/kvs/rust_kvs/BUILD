@@ -17,7 +17,7 @@ rust_library(
     srcs = glob(["src/**/*.rs"]),
     visibility = ["//visibility:public"],
     deps = [
-        "@score_baselibs//src/log/score_log",
+        "@score_baselibs//score/log_rust/score_log",
         "@score_crates//:adler32",
         "@score_crates//:tinyjson",
     ],
@@ -25,6 +25,7 @@ rust_library(
 
 rust_test(
     name = "tests",
+    size = "small",
     crate = "rust_kvs",
     tags = [
         "unit_tests",

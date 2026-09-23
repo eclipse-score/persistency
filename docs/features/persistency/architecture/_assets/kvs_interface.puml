@@ -25,10 +25,13 @@ interface IKvs {
     set_default_value
     set_value
     remove_key
+    remove_all_keys
+    discard_pending_changes
     flush
     snapshot_count
     snapshot_max_count
     snapshot_restore
+    get_storage_file_size
 }
 
 @enduml
