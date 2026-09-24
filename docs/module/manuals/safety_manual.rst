@@ -60,21 +60,12 @@ AoU Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
-   :version: 1
+   :version: 2
    :tags: environment
 
-   The application shall handle if the feature persistency is not available.
-
-.. aou_req:: Application execution
-   :id: aou_req__persistency__appl_exec
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :status: valid
-   :version: 1
-   :tags: environment
-
-   The execution of persistency shall not be blocked by the application.
+   The application shall detect and handle the unavailability of the feature persistency.
+   Unavailability covers errors reported by the persistency API as well as persistency calls which do
+   not return or return too late (e.g. caused by blocked or delayed execution of the calling context).
 
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -119,9 +110,11 @@ List of AoUs on the user of the platform features or the module of this safety m
 
 Safety concept of the SEooC
 ---------------------------
-| Persistency is full determistic developed. Detected errors will be reportet and Application has to handle them. Also if there are
-| errors which might have inpact on Persistency, but can not be detected by Persistency, the application has to handle the case that
-| persistency is not available. The execution of persistency shall not be blocked by the application.
+| Persistency is developed fully deterministic. Detected errors are reported to the application, which has to handle them.
+| Persistency is executed in the execution context of the calling application. Failures which can not be detected by persistency
+| itself, like blocked or delayed execution, result in persistency not being available (no or too late response). The application
+| has to handle this unavailability (see :need:`aou_req__persistency__error_handling`). Keeping persistency available is therefore
+| not a safety relevant assumption on the application.
 
 Safety Anomalies
 ----------------
