@@ -18,6 +18,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -40,7 +41,7 @@ namespace score::mw::per::kvs
  * - String (std::string)
  * - Null (std::nullptr_t)
  * - Array (std::vector<KvsValue>)
- * - Object (std::unordered_map<std::string, KvsValue>)
+ * - Object (std::vector<std::pair<std::string, KvsValue>>)
  *
  * ## Public Methods:
  * - `KvsValue(double number)`: Constructs a KvsValue holding a number.
@@ -52,6 +53,7 @@ namespace score::mw::per::kvs
  * KvsValue numberValue(42.0);
  * KvsValue stringValue("Hello, World!");
  * KvsValue arrayValue(KvsValue::Array{numberValue, stringValue});
+ * KvsValue objectValue(KvsValue::Object{{"number", numberValue}, {"text", stringValue}});
  *
  * if (numberValue.getType() == KvsValue::Type::Number) {
  *     double number = std::get<double>(numberValue.getValue());
@@ -63,8 +65,9 @@ class KvsValue final
 {
   public:
     /* Define the possible types for KvsValue*/
-    using Array = std::vector<std::shared_ptr<KvsValue>>;
-    using Object = std::unordered_map<std::string, std::shared_ptr<KvsValue>>;
+    /* KvsValue is incomplete here; both containers support incomplete element types. */
+    using Array = std::vector<KvsValue>;
+    using Object = std::vector<std::pair<std::string, KvsValue>>;
 
     /* Enum to represent the type of the value*/
     enum class Type
@@ -92,8 +95,9 @@ class KvsValue final
     explicit KvsValue(const std::string& str) : value(str), type(Type::String) {}
     explicit KvsValue(std::nullptr_t) : value(nullptr), type(Type::Null) {}
     explicit KvsValue(const Array& array);
+    explicit KvsValue(Array&& array);
     explicit KvsValue(const Object& object);
-    explicit KvsValue(const std::vector<KvsValue>& array);
+    explicit KvsValue(Object&& object);
     explicit KvsValue(const std::unordered_map<std::string, KvsValue>& object);
 
     /* Copy constructor */
@@ -103,10 +107,12 @@ class KvsValue final
     KvsValue& operator=(const KvsValue& other);
 
     /* Move constructor */
-    KvsValue(KvsValue&& other) noexcept : value(std::move(other.value)), type(other.type) {}
+    KvsValue(KvsValue&& other) noexcept;
 
     /* move assignment operator */
     KvsValue& operator=(KvsValue&& other) noexcept;
+
+    ~KvsValue();
 
     /* Get the type of the value*/
     Type getType() const

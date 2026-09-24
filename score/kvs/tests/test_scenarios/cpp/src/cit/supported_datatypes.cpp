@@ -136,11 +136,11 @@ class SupportedDatatypesValues : public Scenario
                 return "null";
             case KvsValue::Type::Array:
             {
-                const auto& arr = std::get<std::vector<std::shared_ptr<KvsValue>>>(v.getValue());
+                const auto& arr = std::get<KvsValue::Array>(v.getValue());
                 std::string json = "[";
                 for (size_t i = 0; i < arr.size(); ++i)
                 {
-                    const auto& elem = *arr[i];
+                    const auto& elem = arr[i];
                     json += "{\"t\":\"" + SupportedDatatypesValues(elem).name() +
                             "\",\"v\":" + kvs_value_to_string(elem) + "}";
                     if (i + 1 < arr.size())
@@ -151,12 +151,12 @@ class SupportedDatatypesValues : public Scenario
             }
             case KvsValue::Type::Object:
             {
-                const auto& obj = std::get<std::unordered_map<std::string, std::shared_ptr<KvsValue>>>(v.getValue());
+                const auto& obj = std::get<KvsValue::Object>(v.getValue());
                 std::string json = "{";
                 size_t count = 0;
                 for (const auto& kv : obj)
                 {
-                    const auto& elem = *kv.second;
+                    const auto& elem = kv.second;
                     json += "\"" + kv.first + "\":{\"t\":\"" + SupportedDatatypesValues(elem).name() +
                             "\",\"v\":" + kvs_value_to_string(elem) + "}";
                     if (++count < obj.size())

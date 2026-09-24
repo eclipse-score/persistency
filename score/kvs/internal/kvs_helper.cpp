@@ -213,7 +213,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any)
                                 result = score::MakeUnexpected(ErrorCode::InvalidValueType);
                                 break;
                             }
-                            arr.emplace_back(std::make_shared<KvsValue>(std::move(conv.value())));
+                            arr.emplace_back(std::move(conv.value()));
                         }
                         if (!error)
                         {
@@ -240,8 +240,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any)
                                 result = score::MakeUnexpected(ErrorCode::InvalidValueType);
                                 break;
                             }
-                            map.emplace(std::string(key.GetAsStringView()),
-                                        std::make_shared<KvsValue>(std::move(conv.value())));
+                            map.emplace_back(std::string(key.GetAsStringView()), std::move(conv.value()));
                         }
                         if (!error)
                         {
@@ -336,9 +335,9 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv)
         {
             obj.emplace("t", score::json::Any(std::string("arr")));
             score::json::List list;
-            for (auto& elem : std::get<KvsValue::Array>(kv.getValue()))
+            for (const auto& elem : std::get<KvsValue::Array>(kv.getValue()))
             {
-                auto conv = kvsvalue_to_any(*elem);
+                auto conv = kvsvalue_to_any(elem);
                 if (!conv)
                 {
                     result = score::MakeUnexpected(ErrorCode::InvalidValueType);
@@ -357,9 +356,9 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv)
         {
             obj.emplace("t", score::json::Any(std::string("obj")));
             score::json::Object inner_obj;
-            for (auto& [key, value] : std::get<KvsValue::Object>(kv.getValue()))
+            for (const auto& [key, value] : std::get<KvsValue::Object>(kv.getValue()))
             {
-                auto conv = kvsvalue_to_any(*value);
+                auto conv = kvsvalue_to_any(value);
                 if (!conv)
                 {
                     result = score::MakeUnexpected(ErrorCode::InvalidValueType);
