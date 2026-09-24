@@ -1,0 +1,98 @@
+# ******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# ******************************************************************************
+
+name: Trusted chain gate
+
+on:
+  workflow_call:
+    inputs:
+      head-sha:
+        description: "Exact head SHA of the fork PR"
+        required: true
+        type: string
+      label-name:
+        description: "Name of the approval label"
+        required: false
+        default: "approved-for-ci"
+        type: string
+    outputs:
+      approved:
+        description: "true if the trusted chain may run"
+        value: ${{ jobs.gate.outputs.approved }}
+      pr-number:
+        description: "PR number the gate resolved"
+        value: ${{ jobs.gate.outputs.pr-number }}
+      head-repository:
+        description: "Fork repository the head commit lives in"
+        value: ${{ jobs.gate.outputs.head-repository }}
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      approved: ${{ steps.decide.outputs.approved }}
+      pr-number: ${{ steps.decide.outputs.pr-number }}
+      head-repository: ${{ steps.decide.outputs.head-repository }}
+    steps:
+      - name: Resolve PR and apply approved-for-ci gate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ inputs.head-sha }}
+          LABEL_NAME: ${{ inputs.label-name }}
+        run: |
+          set -euo pipefail
+
+          REPO="${{ github.repository }}"
+
+          # Find the open PR whose head commit is exactly the SHA from the
+          # original untrusted run. Never use a mutable ref name.
+          PR_JSON="$(gh api "repos/$REPO/pulls?state=open&per_page=100" \
+            --jq ".[] | select(.head.sha == \"$HEAD_SHA\")" | head -n 1)"
+          if [[ -z "$PR_JSON" ]]; then
+            echo "No open PR found for head SHA $HEAD_SHA" >&2
+            echo "approved=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          PR_NUMBER="$(echo "$PR_JSON" | jq -r .number)"
+          HEAD_REPO="$(echo "$PR_JSON" | jq -r .head.repo.full_name)"
+          echo "pr-number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "head-repository=$HEAD_REPO" >> "$GITHUB_OUTPUT"
+
+          # Timeline check: the label must exist and no push event may follow
+          # it. Force pushes surface as head_ref_force_pushed, regular pushes
+          # as synchronize; both invalidate.
+          TIMELINE="$(gh api "repos/$REPO/issues/$PR_NUMBER/timeline" --paginate)"
+          LABEL_TIME="$(echo "$TIMELINE" \
+            | jq -r --arg label "$LABEL_NAME" \
+              '.[] | select(.event == "labeled" and .label.name == $label)
+               | .created_at' | tail -n 1)"
+          if [[ -z "$LABEL_TIME" ]]; then
+            echo "approved=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          PUSHED_AFTER_LABEL="$(echo "$TIMELINE" \
+            | jq -r --arg since "$LABEL_TIME" \
+              '.[] | select((.event == "synchronize" or .event == "head_ref_force_pushed")
+               and .created_at > $since) | .created_at' | head -n 1)"
+          if [[ -n "$PUSHED_AFTER_LABEL" ]]; then
+            echo "approved=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "approved=true" >> "$GITHUB_OUTPUT"
