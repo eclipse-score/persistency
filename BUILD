@@ -13,8 +13,8 @@
 
 load("@score_docs_as_code//:docs.bzl", "docs")
 load("@score_format_checker//:macros.bzl", "use_format_targets")
-load("@score_tooling//:defs.bzl", "cli_helper", "copyright_checker", "dash_license_checker", "setup_starpls")
-load("//:project_config.bzl", "PROJECT_CONFIG")
+load("@score_sbom//:defs.bzl", "sbom")
+load("@score_tooling//:defs.bzl", "cli_helper", "copyright_checker", "setup_starpls")
 
 # Creates all documentation targets:
 # - `:docs` for building documentation at build-time
@@ -60,34 +60,43 @@ copyright_checker(
     visibility = ["//visibility:public"],
 )
 
-# Needed for Dash tool to check python dependency licenses.
-# This is a workaround to filter out local packages from the Cargo.lock file.
-# The tool is intended for third-party content.
-genrule(
-    name = "filtered_cargo_lock",
-    srcs = ["Cargo.lock"],
-    outs = ["Cargo.lock.filtered"],
-    cmd = """
-    awk '
-    BEGIN { skip = 0; data = "" }
-    /^\\[\\[package\\]\\]/ {
-        if (data != "" && !skip) print data;
-        skip = 1;
-        data = $$0;
-        next;
-    }
-    data != "" { data = data "\\n" $$0 }
-    # any package that has a "source = " line will not be skipped.
-    /^source = / { skip = 0 }
-    END { if (data != "" && !skip) print data }
-    ' $(location Cargo.lock) > $@
-    """,
+# Generates the product SBOM (SPDX 2.3 + CycloneDX 1.6) for the KVS library.
+# - Rust crate licenses/suppliers come from the crates.io API via
+#   auto_crates_cache (network access required at build time).
+# - Build-time/test tooling is covered separately by //:build_tools_sbom.
+sbom(
+    name = "product_sbom",
+    auto_crates_cache = True,
+    cargo_lockfile = "Cargo.lock",
+    component_name = "score_persistency",
+    module_lockfiles = [":MODULE.bazel.lock"],
+    targets = [
+        "//score/kvs:kvs_cpp",
+        "//score/kvs/rust_kvs:rust_kvs",
+    ],
+    visibility = ["//visibility:public"],
 )
 
-dash_license_checker(
-    src = ":filtered_cargo_lock",
-    file_type = "",  # let it auto-detect based on project_config
-    project_config = PROJECT_CONFIG,
+# Qualification inventory for Python-based build and test tools. This is kept
+# separate from the product SBOM because build-time dependencies are not
+# product/runtime dependencies.
+sbom(
+    name = "build_tools_sbom",
+    testonly = True,
+    auto_cdxgen = False,
+    auto_crates_cache = False,
+    component_name = "score_persistency_build_tools",
+    exclude_patterns = ["rules_python++pip+"],
+    module_lockfiles = [":MODULE.bazel.lock"],
+    output_formats = ["spdx"],
+    python_lockfiles = [
+        "//score/kvs/tests/test_cases:requirements.txt.lock",
+    ],
+    targets = [
+        "//:docs",
+        "//:unit_tests",
+        "//:cit_tests",
+    ],
     visibility = ["//visibility:public"],
 )
 
