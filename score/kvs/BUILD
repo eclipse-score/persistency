@@ -19,6 +19,7 @@ docs_bundle(
         ":kvs_cpp",
         "//score/kvs/rust_kvs:rust_kvs",
     ],
+    primary_need_id = "comp__persistency_kvs",
     source_dir = "docs",
     visibility = ["//visibility:public"],
 )
