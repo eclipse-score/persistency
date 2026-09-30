@@ -25,16 +25,6 @@ Architecture
    :tags: persistency
 
 
-.. comp:: persistency::kvs
-   :id: comp__persistency_kvs
-   :security: YES
-   :safety: ASIL_B
-   :status: valid
-   :version: 1
-   :implements: logic_arc_int__persistency__interface[version==1]
-   :belongs_to: feat__persistency[version==1]
-
-
 --------
 
 The Key-Value-Storage (kvs) provides the capability to efficiently store,

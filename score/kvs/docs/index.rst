@@ -26,6 +26,15 @@ KVS (Key Value Store)
    :realizes: wp__cmpt_request[version==1]
    :tags: Persistency KVS
 
+.. comp:: persistency::kvs
+   :id: comp__persistency_kvs
+   :security: YES
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :implements: logic_arc_int__persistency__interface[version==1]
+   :belongs_to: feat__persistency[version==1]
+
 Abstract
 ========
 
