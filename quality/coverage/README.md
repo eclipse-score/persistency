@@ -13,9 +13,9 @@
 
 # Coverage (consumer layer)
 
-Unified C++ + Rust coverage via the shared LLVM pipeline in
-`@score_tooling//coverage`. This directory only holds what is specific to
-this repository:
+Unified C++ + Rust coverage via the qualified S-CORE coverage tool,
+[`score_coverage`](https://eclipse-score.github.io/coverage_tool/main/). This
+directory only holds what is specific to this repository:
 
 | File | Purpose |
 |---|---|
@@ -28,8 +28,8 @@ this repository:
 ```bash
 bazel coverage --config=llvm_cov //score/... --build_tests_only
 
-bazel run @score_tooling//coverage:generate_coverage_html -- \
-    --yaml quality/coverage/coverage_justifications.yaml --testlogs-subdir src
+bazel run @score_coverage//:generate_coverage_html -- \
+    --yaml quality/coverage/coverage_justifications.yaml --testlogs-subdir score
 
 xdg-open coverage_linux/index.html
 ```
@@ -42,7 +42,7 @@ compares *effective* coverage (covered + justified) against
 `COVERAGE_THRESHOLD` (CI: report-only during introduction, see
 `.github/workflows/coverage.yml`).
 
-Full documentation lives with the pipeline:
-[adoption guide](https://github.com/eclipse-score/tooling/blob/main/coverage/README.md)
+Full documentation lives with the tool:
+[user manual](https://eclipse-score.github.io/coverage_tool/main/manual/user_manual.html)
 and
-[mechanism deep-dive](https://github.com/eclipse-score/tooling/blob/main/coverage/COVERAGE_GUIDE.md).
+[architecture](https://eclipse-score.github.io/coverage_tool/main/architecture/index.html).
