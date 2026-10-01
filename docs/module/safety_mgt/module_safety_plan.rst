@@ -241,9 +241,6 @@ If the OSS element is classified as
           - :need:`gd_guidl__verification_guide`
           - Always needed (for Q and QR classification)
 
-        * - :need:`wp__sw_component_class`
-          - :need:`gd_guidl__component_classification`
-          - :need:`doc__json_comp_class`
 
 
 Link to project planning

@@ -18,20 +18,16 @@ title Sequence Diagram: Check if Key contains Default Value
 participant "User" as actor
 participant "«component» :kvs" as kvs
 
-actor -> kvs: Does key have default value
+actor -> kvs: Does key use default value
 
-alt default-key-exists
-    alt key-exists
-        alt default-and-key-match
-            kvs --> actor: Key contains default value
-        else key-doesnt-exist
-            kvs --> actor: Key doesn't containt default value
-        end
-    else key-doesnt-exist
-        kvs --> actor: Key contains default value
+alt key-exists
+    kvs --> actor: Key doesn't use default value
+else key-doesnt-exist
+    alt default-exists
+        kvs --> actor: Key uses default value
+    else default-doesnt-exist
+        kvs --> actor: Key-Not-Found-Error
     end
-else default-doesnt-exist
-    kvs --> actor: Key doesn't contain default value
 end
 
 @enduml

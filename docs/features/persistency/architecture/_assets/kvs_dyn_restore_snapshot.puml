@@ -20,10 +20,23 @@ participant "«component» :kvs" as kvs
 
 actor -> kvs: Restore snapshot
 
-alt snapshot-restore-success
-    kvs --> actor: Snapshot restored successfully
-else snapshot-restore-error
-    kvs --> actor: Snapshot-Not-Available-Error
+alt kvs-available
+    alt snapshot-id-valid
+        alt snapshot-data-valid
+            kvs --> actor: Snapshot restored successfully
+        else snapshot-file-read-error
+            kvs --> actor: KVS-File-Read-Error / KVS-Hash-File-Read-Error
+        else snapshot-hash-mismatch
+            kvs --> actor: Validation-Failed-Error
+        else snapshot-parse-error
+            kvs --> actor: JSON-Parser-Error
+        end
+    else snapshot-id-invalid
+        note right of kvs: ID is the current KVS (0)\nor exceeds the number of snapshots
+        kvs --> actor: Invalid-Snapshot-Id-Error
+    end
+else kvs-busy
+    kvs --> actor: Resource-Busy-Error
 end
 
 @enduml
