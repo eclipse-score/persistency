@@ -58,17 +58,5 @@
   {
     "version": "v0.3.2",
     "url": "https://eclipse-score.github.io/persistency/v0.3.2/"
-  },
-  {
-    "version": "pr-450",
-    "url": "https://eclipse-score.github.io/persistency/pr-450/"
-  },
-  {
-    "version": "pr-451",
-    "url": "https://eclipse-score.github.io/persistency/pr-451/"
-  },
-  {
-    "version": "pr-449",
-    "url": "https://eclipse-score.github.io/persistency/pr-449/"
   }
 ]
