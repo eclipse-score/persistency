@@ -14,7 +14,7 @@
 load("@score_docs_as_code//:docs.bzl", "docs")
 load("@score_format_checker//:macros.bzl", "use_format_targets")
 load("@score_sbom//:defs.bzl", "sbom")
-load("@score_tooling//:defs.bzl", "cli_helper", "copyright_checker", "setup_starpls")
+load("@score_tooling//:defs.bzl", "cli_helper", "copyright_checker", "dash_license_checker", "setup_starpls")
 
 # Creates all documentation targets:
 # - `:docs` for building documentation at build-time
@@ -60,13 +60,19 @@ copyright_checker(
     visibility = ["//visibility:public"],
 )
 
+dash_license_checker(
+    src = "//:Cargo.lock",
+    file_type = "cargo",
+    filter_keywords = ["github.com/eclipse-score/"],
+    visibility = ["//visibility:public"],
+)
+
 # Generates the product SBOM (SPDX 2.3 + CycloneDX 1.6) for the KVS library.
 # - Rust crate licenses/suppliers come from the crates.io API via
 #   auto_crates_cache (network access required at build time).
 # - Build-time/test tooling is covered separately by //:sbom_docs_tests.
 sbom(
     name = "sbom_product",
-    cargo_lockfile = "Cargo.lock",
     component_name = "score_persistency",
     module_lockfiles = [":MODULE.bazel.lock"],
     targets = [
