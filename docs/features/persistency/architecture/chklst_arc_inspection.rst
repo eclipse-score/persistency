@@ -13,6 +13,9 @@
    # *******************************************************************************
 
 
+Persistency Architecture Inspection
+===================================
+
 .. document:: Persistency Architecture Inspection Checklist
    :id: doc__persistency_arc_inspection
    :status: draft
@@ -20,38 +23,52 @@
    :safety: ASIL_B
    :security: YES
    :realizes: wp__sw_arch_verification[version==1]
+   :tags: persistency
+
+Participants
+------------
+
+.. note::
+
+   As described in the concept :need:`doc_concept__wp_inspections` the following “inspection roles” are filled:
+
+   * content responsible (author): main author of the feature architecture
+   * reviewer: main content reviewer, different from the content responsible
+   * moderator: safety manager, security manager or quality manager initiating the inspection
+
+
+.. list-table:: Architecture Inspection Participants
+    :header-rows: 1
+
+    * - Author(s)
+      - Reviewer(s)
+      - Moderator
+    * - `<https://github.com/umaucher>`_
+      - `<https://github.com/vinodreddy-g>`_
+      - `<https://github.com/janis-qorix>`_
 
 
 Architecture Inspection Checklist
-=================================
+---------------------------------
 
-Purpose
--------
+.. note::
 
-The purpose of the software architecture checklist is to ensure that the design meets the criteria and quality as
-defined per project processes and guidelines for feature and component architectural design elements.
-It helps to check the compliance with requirements, identify errors or inconsistencies, and ensure adherence to best
-practices.
-The checklist guides evaluation of the architecture design, identifies potential problems, and aids in
-communication and documentation of architectural decisions to stakeholders.
+   **Purpose**
 
-Conduct
--------
+   The purpose of the software architecture checklist is to ensure that the design meets the criteria and quality
+   as defined per project processes and guidelines for feature and component architectural design elements.
+   It helps to check the compliance with requirements, identify errors or inconsistencies, and ensure adherence to best practices.
+   The checklist guides evaluation of the architecture design, identifies potential problems, and aids in communication and
+   documentation of architectural decisions to stakeholders.
 
-As described in the concept :need:`doc_concept__wp_inspections` the following "inspection roles" are expected to be filled:
+   **Checklist**
 
-- content responsible (author): <contributor/committer explicitly named here, who is the main author, as can be seen in config mgt tooling>
-- reviewer: <contributor/committer explicitly named here, who is the main content reviewer, must be different from content responsible>
-- moderator: <committer explicitly named here, who is is the safety manager, security manager or quality manager initiating the inspection>
+   It is mandatory to fill in the “passed” column with “yes” or “no” for each checklist item and additionally to add in the remarks why it is passed or not passed.
+   In case of “no” an issue link to the issue tracking system has to be added in the last column (if not solved in the same issue).
+   If a Review ID is not applicable for your architecture, then state ""n/a" in status and comment accordingly in remarks.
+   See also :need:`doc_concept__wp_inspections` for further information about reviews in general and inspection in particular.
 
-Checklist
----------
-
-It is mandatory to fill in the "passed" column with "yes" or "no" for each checklist item and additionally to add in the remarks why it is passed or not passed.
-In case of "no" an issue link to the issue tracking system has to be added in the last column (if not solved in the same issue).
-See also :need:`doc_concept__wp_inspections` for further information about reviews in general and inspection in particular.
-
-.. list-table:: Architecture Design Review Checklist
+.. list-table:: Architecture Inspection Checklist
     :header-rows: 1
 
     * - Review Id
@@ -68,8 +85,8 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
       -
     * - ARC_01_02
       - Does the software architecture design consider all the requirements allocated to the architectural element, including functional, non-functional, safety, and security requirements and all related design decisions?
-      - manual
       - Check if all requirements allocated to the architectural element are considered in the design. This includes functional requirements (e.g. functional safety requirements), non-functional requirements (e.g. performance, reliability), and security requirements (e.g. confidentiality, integrity). Additionally, ensure that all related design decisions are taken into account and documented in the architectural design.
+      -
       -
       -
     * - ARC_01_03
@@ -179,35 +196,33 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
       -
 
 
-.. attention::
-    The above checklist entries must be filled according to your feature architecture in scope.
+Summary
+-------
 
-Note: If a Review ID is not applicable for your architecture, then state ""n/a" in status and comment accordingly in remarks.
+Inspected Static Architecture Views
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following static views in "valid" state and with "inspected" tag set are in the scope of this inspection:
 
 .. needtable::
-   :filter: "feature_name" in docname and "architecture" in docname and docname is not None and status == "valid"
+   :filter: "persistency" in docname and "architecture" in docname and docname is not None and status == "valid"
    :style: table
    :types: feat_arc_sta
-   :tags: feature_name
+   :tags: persistency
    :columns: id;status;tags
    :colwidths: 25,25,25
    :sort: title
 
-and the following dynamic views:
+Inspected Dynamic Architecture Views
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+and the following dynamic views "valid" state and with "inspected" tag set are in the scope of this inspection:
 
 .. needtable::
-   :filter: "feature_name" in docname and "architecture" in docname and docname is not None and status == "valid"
+   :filter: "persistency" in docname and "architecture" in docname and docname is not None and status == "valid"
    :style: table
    :types: feat_arc_dyn
-   :tags: feature_name
+   :tags: persistency
    :columns: id;status;tags
    :colwidths: 25,25,25
    :sort: title
-
-.. attention::
-    The above tables filtering must be updated according to your Feature.
-
-    - Modify ``feature_name`` to be your Feature Name in lower snake case
-    

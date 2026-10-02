@@ -34,13 +34,13 @@ Additional to the tailoring in the SW platform project as defined in the project
 
   - no tailoring is used for the feature
 
-Safety Work products List
+Safety Work Products List
 =========================
 
-.. list-table:: Feature persistency Work products
+.. list-table:: Persistency Safety Work products
     :header-rows: 1
 
-    * - Workproduct Id
+    * - Work product Id
       - Link to process
       - Process status
       - Link to WP
@@ -66,13 +66,13 @@ Safety Work products List
       - :need:`doc__persistency_architecture`
 
     * - :need:`wp__feature_fmea`
-      - :need:`gd_guidl__safety_analysis`
-      - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
+      - :need:`gd_temp__feat_saf_fmea`
+      - :ndf:`copy('status', need_id='gd_temp__feat_saf_fmea')`
       - :need:`doc__persistency_fmea`
 
     * - :need:`wp__feature_dfa`
-      - :need:`gd_guidl__safety_analysis`
-      - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
+      - :need:`gd_temp__feat_saf_dfa`
+      - :ndf:`copy('status', need_id='gd_temp__feat_saf_dfa')`
       - :need:`doc__persistency_dfa`
 
     * - :need:`wp__requirements_inspect`
@@ -107,11 +107,11 @@ See :ref:`module_documents_docs_features_persistency`
 Feature Requirements Status
 ---------------------------
 
+The feature requirements are maintained in the SCORE platform repository.
+
 .. needtable::
-   :filter: docname is not None and "persistency" in docname and "requirements" in docname
+   :filter: type == "feat_req" and id.startswith("feat_req__persistency__")
    :style: table
-   :types: feat_req
-   :tags: persistency
    :columns: id;status
    :colwidths: 25,25
    :sort: title
@@ -120,10 +120,8 @@ Feature AoU Status
 ------------------
 
 .. needtable::
-   :filter: docname is not None and "persistency" in docname and "requirements" in docname
+   :filter: type == "aou_req" and id.startswith("aou_req__persistency__")
    :style: table
-   :types: aou_req
-   :tags: persistency
    :columns: id;status
    :colwidths: 25,25
    :sort: title
@@ -135,7 +133,6 @@ Feature Architecture Status
    :filter: docname is not None and "persistency" in docname and "architecture" in docname
    :style: table
    :types: feat_arc_sta; feat_arc_dyn
-   :tags: persistency
    :columns: id;status
    :colwidths: 25,25
    :sort: title

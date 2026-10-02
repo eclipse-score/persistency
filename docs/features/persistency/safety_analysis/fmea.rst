@@ -31,10 +31,9 @@ following tables. For all applicable failure initiators, the FMEA has to be perf
 Failure Mode List
 -----------------
 
-Fault Models for sequence diagrams
-  .. list-table:: Fault Models for sequence diagrams
-     :header-rows: 1
-     :widths: 10,20,10,20
+.. list-table:: Fault Models for sequence diagrams
+    :header-rows: 1
+    :widths: 10,20,10,20
 
     * - ID
       - Failure Mode
@@ -43,7 +42,7 @@ Fault Models for sequence diagrams
     * - MF_01_01
       - message is not received (is a subset/more precise description of MF_01_05)
       - yes
-      - :need:`feat_saf_fmea__persistency__message_nreived`
+      - :need:`feat_saf_fmea__persistency__msg_not_received`
     * - MF_01_02
       - message received too late (only relevant if delay is a realistic fault)
       - yes
@@ -105,9 +104,9 @@ FMEA
 ----
 For all identified applicable failure initiators, the FMEA is performed in the following section.
 
-.. feat_saf_fmea:: Persistency
+.. feat_saf_fmea:: Message is not received
     :violates: feat_arc_dyn__persistency__check_key_default, feat_arc_dyn__persistency__delete_key, feat_arc_dyn__persistency__flush, feat_arc_dyn__persistency__read_key, feat_arc_dyn__persistency__read_from_storage, feat_arc_dyn__persistency__write_key, feat_arc_dyn__persistency__snapshot_restore
-    :id: feat_saf_fmea__persistency__message_nreived
+    :id: feat_saf_fmea__persistency__msg_not_received
     :fault_id: MF_01_01
     :failure_effect: Message is not received so the feature persistency is not available.
     :mitigated_by: aou_req__persistency__error_handling
@@ -115,10 +114,10 @@ For all identified applicable failure initiators, the FMEA is performed in the f
     :status: valid
     :version: 1
 
-    User is not able to use the feature. Middleware cant be used. User is not able to use the feature. Middleware cant be used. Loss of execution can only be caused by the application, not by the persistency feature itself.
+    User is not able to use the feature. Middleware cant be used. Loss of execution can only be caused by the application, not by the persistency feature itself.
     Failure handling is addressed to the application by the aou_req__persistency__error_handling.
 
-.. feat_saf_fmea:: Persistency
+.. feat_saf_fmea:: Message received too late
     :violates: feat_arc_dyn__persistency__check_key_default, feat_arc_dyn__persistency__delete_key, feat_arc_dyn__persistency__flush, feat_arc_dyn__persistency__read_key, feat_arc_dyn__persistency__read_from_storage, feat_arc_dyn__persistency__write_key, feat_arc_dyn__persistency__snapshot_restore
     :id: feat_saf_fmea__persistency__late_message
     :fault_id: MF_01_02
@@ -128,9 +127,9 @@ For all identified applicable failure initiators, the FMEA is performed in the f
     :status: valid
     :version: 1
 
-    Subset of MF_01_01 if the delay is to long.
+    Subset of MF_01_01 if the delay is too long.
 
-.. feat_saf_fmea:: Persistency
+.. feat_saf_fmea:: Message is corrupted
     :violates: feat_arc_dyn__persistency__check_key_default, feat_arc_dyn__persistency__delete_key, feat_arc_dyn__persistency__flush, feat_arc_dyn__persistency__read_key, feat_arc_dyn__persistency__read_from_storage, feat_arc_dyn__persistency__write_key, feat_arc_dyn__persistency__snapshot_restore
     :id: feat_saf_fmea__persistency__corrupted_message
     :fault_id: MF_01_05
@@ -142,7 +141,7 @@ For all identified applicable failure initiators, the FMEA is performed in the f
 
     Covered by MF_01_01
 
-.. feat_saf_fmea:: Persistency
+.. feat_saf_fmea:: Message is not sent
     :violates: feat_arc_dyn__persistency__check_key_default, feat_arc_dyn__persistency__delete_key, feat_arc_dyn__persistency__flush, feat_arc_dyn__persistency__read_key, feat_arc_dyn__persistency__read_from_storage, feat_arc_dyn__persistency__write_key, feat_arc_dyn__persistency__snapshot_restore
     :id: feat_saf_fmea__persistency__not_sent
     :fault_id: MF_01_06
@@ -154,7 +153,7 @@ For all identified applicable failure initiators, the FMEA is performed in the f
 
     Covered by MF_01_01 because the violation cause is the same.
 
-.. feat_saf_fmea:: Persistency
+.. feat_saf_fmea:: Loss of execution
     :violates: feat_arc_dyn__persistency__check_key_default, feat_arc_dyn__persistency__delete_key, feat_arc_dyn__persistency__flush, feat_arc_dyn__persistency__read_key, feat_arc_dyn__persistency__read_from_storage, feat_arc_dyn__persistency__write_key, feat_arc_dyn__persistency__snapshot_restore
     :id: feat_saf_fmea__persistency__err_handl
     :fault_id: EX_01_04
