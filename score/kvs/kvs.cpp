@@ -717,7 +717,7 @@ score::ResultBlank Kvs::snapshot_rotate()
                 if (errno != ENOENT)
                 {
                     error = true;
-                    logger->LogError() << "error: could not rename hash file" << snap_old << "- Rename Errorcode"
+                    logger->LogError() << "error: could not rename hash file" << snap_old << "- Rename ErrorCode"
                                        << errno;
                     result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
                 }
@@ -732,7 +732,7 @@ score::ResultBlank Kvs::snapshot_rotate()
                     {
                         error = true;
                         logger->LogError()
-                            << "error: could not rename snapshot file" << snap_old << "- Rename Errorcode" << errno;
+                            << "error: could not rename snapshot file" << snap_old << "- Rename ErrorCode" << errno;
                         result = score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
                     }
                 }

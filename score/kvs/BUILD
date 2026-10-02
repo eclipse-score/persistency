@@ -17,7 +17,7 @@ load("@score_docs_as_code//:docs.bzl", "docs_bundle")
 docs_bundle(
     name = "kvs_docs",
     code_targets = [
-        ":kvs_cpp",
+        ":kvs",
         "//score/kvs_rust",
     ],
     primary_need_id = "comp__persistency_kvs",
@@ -26,37 +26,25 @@ docs_bundle(
 )
 
 cc_library(
-    name = "kvsvalue",
+    name = "kvs",
     srcs = [
-        "kvsvalue.cpp",
-    ],
-    hdrs = ["kvsvalue.hpp"],
-    includes = ["."],
-    visibility = [
-        "//visibility:public",
-    ],
-)
-
-cc_library(
-    name = "kvs_cpp",
-    srcs = [
+        "error.cpp",
+        "error.hpp",
+        "internal/kvs_helper.cpp",
+        "internal/kvs_helper.hpp",
         "kvs.cpp",
         "kvsbuilder.cpp",
+        "kvsvalue.cpp",
     ],
     hdrs = [
         "kvs.hpp",
         "kvsbuilder.hpp",
+        "kvsvalue.hpp",
     ],
-    implementation_deps = [
-        "//score/kvs/internal:kvs_helper",
-    ],
-    includes = ["."],
     visibility = [
         "//visibility:public",
     ],
     deps = [
-        ":kvsvalue",
-        "//score/kvs/internal:error",
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/json",
         "@score_baselibs//score/mw/log",
@@ -69,7 +57,6 @@ cc_test(
     size = "small",
     srcs = [
         "kvs_builder_test.cpp",
-        "kvs_error_test.cpp",
         "kvs_general_test.cpp",
         "kvs_general_test.hpp",
         "kvs_helper_test.cpp",
@@ -77,8 +64,7 @@ cc_test(
     ],
     visibility = ["//:__pkg__"],
     deps = [
-        "//:kvs_cpp",
-        "//score/kvs/internal:kvs_helper",
+        ":kvs",
         "@googletest//:gtest_main",
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/filesystem:mock",

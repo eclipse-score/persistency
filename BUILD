@@ -107,13 +107,6 @@ exports_files(
 # Add target for formatting checks
 use_format_targets()
 
-alias(
-    name = "kvs_cpp",
-    actual = "//score/kvs:kvs_cpp",
-    tags = ["cli_help=Build KVS CPP [build]"],
-    visibility = ["//visibility:public"],
-)
-
 test_suite(
     name = "unit_tests",
     tests = [
