@@ -120,8 +120,10 @@ Feature AoU Status
 ------------------
 
 .. needtable::
-   :filter: type == "aou_req" and id.startswith("aou_req__persistency__")
+   :filter: docname is not None and "persistency" in docname and "aou_requirements" in docname
    :style: table
+   :types: aou_req
+   :tags: persistency
    :columns: id;status
    :colwidths: 25,25
    :sort: title

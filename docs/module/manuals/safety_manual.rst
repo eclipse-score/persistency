@@ -55,6 +55,11 @@ Assumed Platform Safety Requirements
 Assumptions of Use
 ------------------
 
+
+The assumptions of use of the feature are documented in :need:`doc__persistency_feat_aou`,
+the assumptions of use of the components in the respective component documentation.
+They are listed in the following sections.
+
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 | Generally the assumption of the S-CORE platform SEooC is that it is integrated in a safe system, i.e. the POSIX OS it runs on is qualified and also the HW related failures are taken into account by the system integrator, if not otherwise stated in the module's safety concept.
