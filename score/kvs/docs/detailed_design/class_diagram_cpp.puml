@@ -39,28 +39,28 @@ class KvsBuilder <<implementation>> {
 interface IKvsBackend <<interface>> {
     + LoadKvs(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
     + LoadDefaults(instance_id : InstanceId) : Result<KvsMap>
-    + Flush(instance_id : InstanceId, kvs : KvsMap) : ResultBlank
+    + Flush(instance_id : InstanceId, kvs : KvsMap) : Result<void>
     + SnapshotCount(instance_id : InstanceId) : Result<size_t>
     + SnapshotRestore(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
     + SnapshotMaxCount() : size_t
 }
 
 interface IKvs <<interface>> {
-    + Reset() : ResultBlank
-    + ResetKey(key : string) : ResultBlank
+    + Reset() : Result<void>
+    + ResetKey(key : string) : Result<void>
     + GetAllKeys() : Result<vector<string>>
     + KeyExists(key : string) : Result<bool>
     + GetValue(key : string) : Result<KvsValue>
     + GetDefaultValue(key : string) : Result<KvsValue>
     + IsValueDefault(key : string) : Result<bool>
-    + SetValue(key : string, value : KvsValue) : ResultBlank
-    + RemoveKey(key : string) : ResultBlank
-    + RemoveAllKeys() : ResultBlank
-    + DiscardPendingChanges() : ResultBlank
-    + Flush() : ResultBlank
+    + SetValue(key : string, value : KvsValue) : Result<void>
+    + RemoveKey(key : string) : Result<void>
+    + RemoveAllKeys() : Result<void>
+    + DiscardPendingChanges() : Result<void>
+    + Flush() : Result<void>
     + SnapshotCount() : Result<size_t>
     + SnapshotMaxCount() : size_t
-    + SnapshotRestore(snapshot_id : SnapshotId) : ResultBlank
+    + SnapshotRestore(snapshot_id : SnapshotId) : Result<void>
     + GetStorageFileSize() : Result<size_t>
 }
 
@@ -72,7 +72,7 @@ KvsMock  -[hidden]right- Kvs
 class MockBackend <<mock>> {
     + LoadKvs(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
     + LoadDefaults(instance_id : InstanceId) : Result<KvsMap>
-    + Flush(instance_id : InstanceId, kvs : KvsMap) : ResultBlank
+    + Flush(instance_id : InstanceId, kvs : KvsMap) : Result<void>
     + SnapshotCount(instance_id : InstanceId) : Result<size_t>
     + SnapshotRestore(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
     + SnapshotMaxCount() : size_t
@@ -90,7 +90,7 @@ class JsonBackend <<implementation>> {
     + JsonBackend(instance_id : InstanceId, filename_prefix : path, filesystem : score::filesystem, directory : string, max_snapshot_count : size_t)
     + LoadKvs(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
     + LoadDefaults(instance_id : InstanceId) : Result<KvsMap>
-    + Flush(instance_id : InstanceId, kvs : KvsMap) : ResultBlank
+    + Flush(instance_id : InstanceId, kvs : KvsMap) : Result<void>
     + SnapshotCount(instance_id : InstanceId) : Result<size_t>
     + SnapshotRestore(instance_id : InstanceId, snapshot_id : SnapshotId) : Result<KvsMap>
     + SnapshotMaxCount() : size_t
@@ -103,21 +103,21 @@ class JsonBackend <<implementation>> {
 }
 
 class KvsMock  <<mock>> {
-    + Reset() : ResultBlank
-    + ResetKey(key : string) : ResultBlank
+    + Reset() : Result<void>
+    + ResetKey(key : string) : Result<void>
     + GetAllKeys() : Result<vector<string>>
     + KeyExists(key : string) : Result<bool>
     + GetValue(key : string) : Result<KvsValue>
     + GetDefaultValue(key : string) : Result<KvsValue>
     + IsValueDefault(key : string) : Result<bool>
-    + SetValue(key : string, value : KvsValue) : ResultBlank
-    + RemoveKey(key : string) : ResultBlank
-    + RemoveAllKeys() : ResultBlank
-    + DiscardPendingChanges() : ResultBlank
-    + Flush() : ResultBlank
+    + SetValue(key : string, value : KvsValue) : Result<void>
+    + RemoveKey(key : string) : Result<void>
+    + RemoveAllKeys() : Result<void>
+    + DiscardPendingChanges() : Result<void>
+    + Flush() : Result<void>
     + SnapshotCount() : Result<size_t>
     + SnapshotMaxCount() : size_t
-    + SnapshotRestore(snapshot_id : SnapshotId) : ResultBlank
+    + SnapshotRestore(snapshot_id : SnapshotId) : Result<void>
     + GetStorageFileSize() : Result<size_t>
 }
 
@@ -127,21 +127,21 @@ class Kvs <<implementation>> {
     - logger : ptr<mw::log::Logger>
     - backend : IKvsBackend
     __
-    + Reset() : ResultBlank
-    + ResetKey(key : string) : ResultBlank
+    + Reset() : Result<void>
+    + ResetKey(key : string) : Result<void>
     + GetAllKeys() : Result<vector<string>>
     + KeyExists(key : string) : Result<bool>
     + GetValue(key : string) : Result<KvsValue>
     + GetDefaultValue(key : string) : Result<KvsValue>
     + IsValueDefault(key : string) : Result<bool>
-    + SetValue(key : string, value : KvsValue) : ResultBlank
-    + RemoveKey(key : string) : ResultBlank
-    + RemoveAllKeys() : ResultBlank
-    + DiscardPendingChanges() : ResultBlank
-    + Flush() : ResultBlank
+    + SetValue(key : string, value : KvsValue) : Result<void>
+    + RemoveKey(key : string) : Result<void>
+    + RemoveAllKeys() : Result<void>
+    + DiscardPendingChanges() : Result<void>
+    + Flush() : Result<void>
     + SnapshotCount() : Result<size_t>
     + SnapshotMaxCount() : size_t
-    + SnapshotRestore(snapshot_id : SnapshotId) : ResultBlank
+    + SnapshotRestore(snapshot_id : SnapshotId) : Result<void>
     + GetStorageFileSize() : Result<size_t>
 }
 

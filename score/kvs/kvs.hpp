@@ -129,8 +129,7 @@ enum class OpenJsonNeedFile
  * - `writer`: A unique pointer to a JSON writer for writing KVS data.
  *
  * ----------------Notice----------------
- * - Blank should be used instead of void for Result class
- * Refer: "Blank and score::ResultBlank shall be used for `T` instead of `void`" in result.h
+ * - `void` should be used instead of the deprecated blank Result alias.
  * A KVS Object is not copyable, but it can be moved.
  *
  */
@@ -181,7 +180,7 @@ class Kvs final
      * @brief Resets a key-value-storage to its initial state
      *
      */
-    score::ResultBlank reset();
+    score::Result<void> reset();
 
     /**
      * @brief Retrieves all keys stored in the key-value store.
@@ -246,7 +245,7 @@ class Kvs final
      *         - On success: Returns a blank score::Result.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::ResultBlank reset_key(const std::string_view key);
+    score::Result<void> reset_key(const std::string_view key);
 
     /**
      * @brief Checks if the specified key wasn't set yet and uses its default value.
@@ -273,7 +272,7 @@ class Kvs final
      *         - On success: Returns a blank score::Result.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::ResultBlank set_value(const std::string_view key, const KvsValue& value);
+    score::Result<void> set_value(const std::string_view key, const KvsValue& value);
 
     /**
      * @brief Removes a key-value pair from the store based on the specified key.
@@ -284,7 +283,7 @@ class Kvs final
      *         - On success: Returns a blank score::Result.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::ResultBlank remove_key(const std::string_view key);
+    score::Result<void> remove_key(const std::string_view key);
 
     /**
      * @brief Removes all key-value pairs from the store.
@@ -293,7 +292,7 @@ class Kvs final
      *         - On success: Returns a blank score::Result.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::ResultBlank remove_all_keys();
+    score::Result<void> remove_all_keys();
 
     /**
      * @brief Discards all pending changes to the key-value store.
@@ -310,7 +309,7 @@ class Kvs final
      *           is re-read, this includes storage errors such as `KvsHashFileReadError`,
      *           `ValidationFailed` and `JsonParserError`.
      */
-    score::ResultBlank discard_pending_changes();
+    score::Result<void> discard_pending_changes();
 
     /**
      * @brief Flushes the key-value store, ensuring that all pending changes
@@ -320,7 +319,7 @@ class Kvs final
      *         - On success: Returns a blank score::Result.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::ResultBlank flush();
+    score::Result<void> flush();
 
     /**
      * @brief Retrieves the number of snapshots currently stored in the key-value store.
@@ -349,17 +348,17 @@ class Kvs final
      * restoration process fails, an appropriate error code is returned.
      *
      * @param snapshot_id The identifier of the snapshot to restore from.
-     * @return score::ResultBlank
+    * @return score::Result<void>
      *         - On success: An empty score::Result indicating the restoration was successful.
      *         - On failure: An error code describing the reason for the failure.
      */
-    score::ResultBlank snapshot_restore(const SnapshotId& snapshot_id);
+    score::Result<void> snapshot_restore(const SnapshotId& snapshot_id);
 
     /**
      * @brief Retrieves the filename associated with a given snapshot ID in the key-value store.
      *
      * @param snapshot_id The identifier of the snapshot for which the filename is to be retrieved.
-     * @return score::ResultBlank
+    * @return score::Result<score::filesystem::Path>
      *         - On success: A score::filesystem::Path with the filename (path) associated with the
      * snapshot ID.
      *         - On failure: An error code describing the reason for the failure.
@@ -374,7 +373,7 @@ class Kvs final
      * store metadata or integrity information for the snapshot.
      *
      * @param snapshot_id The identifier of the snapshot for which the hash filename is requested.
-     * @return score::ResultBlank
+    * @return score::Result<score::filesystem::Path>
      *         - On success: A score::filesystem::Path with the filename (path) of the hash file
      * associated with the snapshot ID.
      *         - On failure: An error code describing the reason for the failure.
@@ -423,12 +422,12 @@ class Kvs final
     std::unique_ptr<score::mw::log::Logger> logger;
 
     /* Private Methods */
-    score::ResultBlank snapshot_rotate();
+    score::Result<void> snapshot_rotate();
     score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
     score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix,
                                                                        OpenJsonNeedFile need_file);
-    score::ResultBlank write_json_data(const std::string& buf);
-    score::ResultBlank write_and_sync(const std::string& path, const void* data, std::size_t size);
+    score::Result<void> write_json_data(const std::string& buf);
+    score::Result<void> write_and_sync(const std::string& path, const void* data, std::size_t size);
 };
 
 } /* namespace score::mw::per::kvs */
