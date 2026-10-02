@@ -13,7 +13,7 @@
 use crate::helpers::kvs_hash_paths;
 use crate::helpers::kvs_instance::kvs_instance;
 use crate::helpers::kvs_parameters::KvsParameters;
-use rust_kvs::prelude::{KvsApi, SnapshotId};
+use kvs_rust::prelude::{KvsApi, SnapshotId};
 use serde_json::Value;
 use test_scenarios_rust::scenario::{Scenario, ScenarioGroup, ScenarioGroupImpl};
 use tracing::info;
