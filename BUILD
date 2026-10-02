@@ -115,22 +115,10 @@ alias(
 )
 
 test_suite(
-    name = "test_kvs_cpp",
-    tests = ["//score/kvs/tests:test_kvs_cpp"],
-    visibility = ["//visibility:public"],
-)
-
-test_suite(
-    name = "bm_kvs_cpp",
-    tests = ["//score/kvs/tests:bm_kvs_cpp"],
-    visibility = ["//visibility:public"],
-)
-
-test_suite(
     name = "unit_tests",
     tests = [
-        "test_kvs_cpp",
-        "//score/kvs_rust:tests",
+        "//score/kvs:unit_tests",
+        "//score/kvs_rust:unit_tests",
     ],
     visibility = ["//visibility:public"],
 )
