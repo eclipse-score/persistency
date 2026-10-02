@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
     "score/kvs/rust_kvs",
-    "score/kvs/rust_kvs_tool",
+    "score/kvs_tool",
     "score/kvs/tests/test_scenarios/rust",
 ]
 
@@ -14,7 +14,7 @@ edition = "2021"
 
 [workspace.dependencies]
 rust_kvs = { path = "score/kvs/rust_kvs" }
-rust_kvs_tool = { path = "score/kvs/rust_kvs_tool" }
+kvs_tool = { path = "score/kvs_tool" }
 score_log = { git = "https://github.com/eclipse-score/baselibs.git", rev = "2603afd58043810118b21ce7fca37a33894e5aef", features = [
     "qm",
 ] }

@@ -28,7 +28,7 @@ score_coverage_scope(
     deps = [
         "//score/kvs:kvs_cpp",
         "//score/kvs/rust_kvs",
-        "//score/kvs/rust_kvs_tool:kvs_tool",
+        "//score/kvs_tool",
     ],
 )
 
