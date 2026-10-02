@@ -57,7 +57,7 @@ Additional to the tailoring in the SW platform project as defined in the :need:`
 
 | - Excluded for this module are additionally the following workproducts (and their related requirements):
 |   - Safety Analysis will not be performed on module level, because they are identical to the feature level
-|   - Detailed Design will not be performed on module level, because it's optional acccording to the process description
+|   - Detailed Design will not be performed on module level, because it's optional according to the process description
 
 Functional Safety Module Workproducts
 =====================================
@@ -96,8 +96,8 @@ Module Workproducts List
           - :need:`doc__persistency_safety_package_fdr`
 
         * - :need:`wp__fdr_reports` (module's Safety Analyses & DFA)
-          - :need:`gd_guidl__safety_analysis`
-          - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
+          - :need:`gd_chklst__safety_analysis`
+          - :ndf:`copy('status', need_id='gd_chklst__safety_analysis')`
           - n/a because no safety analysis performed for the components. They will be overtaken from the feature.
 
         * - :need:`wp__audit_report`
@@ -158,13 +158,13 @@ Component KVS Workproducts List
           - :need:`doc__kvs_arc_inspection`
 
         * - :need:`wp__sw_component_fmea`
-          - :need:`wp__sw_component_fmea`
-          - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
+          - :need:`gd_temp__comp_saf_fmea`
+          - :ndf:`copy('status', need_id='gd_temp__comp_saf_fmea')`
           - :need:`doc__kvs_fmea`
 
         * - :need:`wp__sw_component_dfa`
-          - :need:`wp__sw_component_dfa`
-          - :ndf:`copy('status', need_id='gd_guidl__safety_analysis')`
+          - :need:`gd_temp__comp_saf_dfa`
+          - :ndf:`copy('status', need_id='gd_temp__comp_saf_dfa')`
           - :need:`doc__kvs_dfa`
 
         * - :need:`wp__verification_sw_unit_test`
@@ -213,7 +213,7 @@ If the OSS element is classified as
           - :need:`gd_chklst__req_inspection`
           - <Reasoning for tailoring>
 
-        * - :need:`wf__cr_mt_comparch`
+        * - :need:`wp__component_arch`
           - :need:`gd_temp__arch_comp`
           - <Reasoning for tailoring, needed for example in case of deficits in process Id 3&4 and complexity Ids 1&4>
 
@@ -223,7 +223,7 @@ If the OSS element is classified as
 
         * - :need:`wp__sw_arch_verification`
           - :need:`gd_chklst__arch_inspection_checklist`
-          - <Reasoning for tailoring, needed if also wf__cr_mt_comparch is required>
+          - <Reasoning for tailoring, needed if also wp__component_arch is required>
 
         * - :need:`wp__sw_implementation`
           - n/a

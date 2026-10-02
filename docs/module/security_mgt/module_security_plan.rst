@@ -76,7 +76,7 @@ Security Module Workproducts
           - :ndf:`copy('status', need_id='gd_guidl__security_plan_definitions')`
           - <Link to issue>
           - this document
-          - valid
+          - :ndf:`copy('status', need_id='doc__persistency_security_plan')`
 
         * - :need:`wp__module_security_package`
           - :need:`gd_guidl__security_package`
@@ -85,21 +85,21 @@ Security Module Workproducts
           - this document (including the linked documentation)
           - valid
 
-        * - :need:`wp__fdr_reports` (module Security Plan)
+        * - :need:`wp__fdr_reports_security` (module Security Plan)
           - :need:`gd_chklst__security_plan`
           - :ndf:`copy('status', need_id='gd_chklst__security_plan')`
           - <Link to issue>
           - :need:`doc__persistency_security_plan_fdr`
           - :ndf:`copy('status', need_id='doc__persistency_security_plan_fdr')`
 
-        * - :need:`wp__fdr_reports` (module Security Package)
+        * - :need:`wp__fdr_reports_security` (module Security Package)
           - :need:`gd_chklst__security_package`
           - :ndf:`copy('status', need_id='gd_chklst__security_package')`
           - <Link to issue>
           - :need:`doc__persistency_sec_pkg_fdr`
           - :ndf:`copy('status', need_id='doc__persistency_sec_pkg_fdr')`
 
-        * - :need:`wp__fdr_reports` (module's Security Analyses)
+        * - :need:`wp__fdr_reports_security` (module's Security Analyses)
           - :need:`gd_guidl__security_analysis`
           - :ndf:`copy('status', need_id='gd_guidl__security_analysis')`
           - <Link to issue>
@@ -114,25 +114,25 @@ Security Module Workproducts
           - <WP status (manual)>
 
         * - :need:`wp__module_security_manual`
-          - :need:`gd_temp__platform_security_manual`
-          - :ndf:`copy('status', need_id='gd_temp__platform_security_manual')`
+          - :need:`gd_temp__module_security_manual`
+          - :ndf:`copy('status', need_id='gd_temp__module_security_manual')`
           - <Link to issue>
-          - <Link to WP>
-          - <automated>
+          - :need:`doc__persistency_security_manual`
+          - :ndf:`copy('status', need_id='doc__persistency_security_manual')`
 
         * - :need:`wp__verification_module_ver_report`
           - :need:`gd_temp__mod_ver_report`
           - :ndf:`copy('status', need_id='gd_temp__mod_ver_report')`
           - <Link to issue>
-          - <Link to WP>
-          - <automated>
+          - :need:`doc__persistency_verification_report`
+          - :ndf:`copy('status', need_id='doc__persistency_verification_report')`
 
         * - :need:`wp__module_sw_release_note`
           - :need:`gd_temp__rel_mod_rel_note`
           - :ndf:`copy('status', need_id='gd_temp__rel_mod_rel_note')`
           - <Link to issue>
-          - <Link to WP>
-          - <automated>
+          - :need:`doc__persistency_release_note`
+          - :ndf:`copy('status', need_id='doc__persistency_release_note')`
 
         * - :need:`wp__sw_module_sbom`
           - template not yet created
