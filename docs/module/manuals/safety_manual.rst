@@ -56,21 +56,9 @@ Assumptions of Use
 ------------------
 
 
-AoU Requirements
-################
-
-.. aou_req:: Persistency Error handling
-   :id: aou_req__persistency__error_handling
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :status: valid
-   :version: 2
-   :tags: persistency, environment
-
-   The application shall detect and handle the unavailability of the feature persistency.
-   Unavailability covers errors reported by the persistency API as well as persistency calls which do
-   not return or return too late (e.g. caused by blocked or delayed execution of the calling context).
+The assumptions of use of the feature are documented in :need:`doc__persistency_feat_aou`,
+the assumptions of use of the components in the respective component documentation.
+They are listed in the following sections.
 
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
