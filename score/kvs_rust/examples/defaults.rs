@@ -15,7 +15,7 @@
 //! - Default-specific APIs: `get_default_value`, `is_value_default`.
 //! - Key-value operations behavior on defaults available.
 
-use rust_kvs::prelude::*;
+use kvs_rust::prelude::*;
 use std::path::PathBuf;
 use tempfile::tempdir;
 use tinyjson::JsonValue;

@@ -55,11 +55,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a5f13b858c8d314ee3e8f639011f7ccefe71f97f96e50151fb991f267928e2c"
 
 [[package]]
+name = "kvs_rust"
+version = "0.1.0"
+dependencies = [
+ "adler32",
+ "score_log",
+ "tempfile",
+ "tinyjson",
+]
+
+[[package]]
 name = "kvs_tool"
 version = "0.1.0"
 dependencies = [
+ "kvs_rust",
  "pico-args",
- "rust_kvs",
  "score_log",
  "stdout_logger",
  "tinyjson",
@@ -145,16 +155,6 @@ name = "r-efi"
 version = "5.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "69cdb34c158ceb288df11e18b4bd39de994f6657d83847bdffdbd7f346754b0f"
-
-[[package]]
-name = "rust_kvs"
-version = "0.1.0"
-dependencies = [
- "adler32",
- "score_log",
- "tempfile",
- "tinyjson",
-]
 
 [[package]]
 name = "rustix"
@@ -283,7 +283,7 @@ dependencies = [
 name = "test_scenarios"
 version = "0.1.0"
 dependencies = [
- "rust_kvs",
+ "kvs_rust",
  "score_log",
  "serde",
  "serde_json",

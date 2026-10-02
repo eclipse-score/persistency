@@ -10,7 +10,7 @@ path = "kvs_tool.rs"
 
 
 [dependencies]
-rust_kvs.workspace = true
+kvs_rust.workspace = true
 tinyjson.workspace = true
 pico-args.workspace = true
 score_log.workspace = true

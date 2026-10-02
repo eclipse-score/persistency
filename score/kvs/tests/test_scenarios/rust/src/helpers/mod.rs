@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 // *******************************************************************************
-use rust_kvs::prelude::{InstanceId, SnapshotId};
+use kvs_rust::prelude::{InstanceId, SnapshotId};
 use std::path::{Path, PathBuf};
 
 pub mod kvs_instance;

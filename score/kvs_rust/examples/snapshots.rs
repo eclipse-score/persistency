@@ -14,7 +14,7 @@
 //! - Snapshot count and max count.
 //! - Snapshot restore.
 
-use rust_kvs::prelude::*;
+use kvs_rust::prelude::*;
 use tempfile::tempdir;
 
 fn main() -> Result<(), ErrorCode> {
