@@ -54,7 +54,7 @@
 //! ## Example Usage
 //!
 //! ```
-//! use rust_kvs::prelude::*;
+//! use kvs_rust::prelude::*;
 //! use std::collections::HashMap;
 //!
 //! fn main() -> Result<(), ErrorCode> {

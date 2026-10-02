@@ -5,7 +5,7 @@ edition.workspace = true
 
 
 [dependencies]
-rust_kvs.workspace = true
+kvs_rust.workspace = true
 tinyjson.workspace = true
 score_log.workspace = true
 tracing = "0.1.41"

@@ -75,7 +75,7 @@
 //!
 
 use pico_args::Arguments;
-use rust_kvs::prelude::*;
+use kvs_rust::prelude::*;
 use score_log::error;
 use std::collections::HashMap;
 use tinyjson::JsonValue;

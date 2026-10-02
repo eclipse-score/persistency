@@ -13,8 +13,8 @@
 load("@rules_rust//rust:defs.bzl", "miri_test", "rust_library", "rust_test")
 
 rust_library(
-    name = "rust_kvs",
-    srcs = glob(["src/**/*.rs"]),
+    name = "kvs_rust",
+    srcs = glob(["*.rs"]),
     visibility = ["//visibility:public"],
     deps = [
         "@score_baselibs//score/log_rust/score_log",
@@ -26,7 +26,7 @@ rust_library(
 rust_test(
     name = "tests",
     size = "small",
-    crate = "rust_kvs",
+    crate = "kvs_rust",
     tags = [
         "unit_tests",
         "ut",

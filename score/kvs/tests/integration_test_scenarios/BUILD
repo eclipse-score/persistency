@@ -29,14 +29,14 @@ config_setting(
     ],
 )
 
-# Build artifact comes from //score/kvs/rust_kvs_tool:kvs_tool (built for QNX by --platforms)
+# Build artifact comes from //score/kvs_tool (built for QNX by --platforms)
 genrule(
     name = "stage_kvs_tool",
-    srcs = ["//score/kvs/rust_kvs_tool:kvs_tool"],
+    srcs = ["//score/kvs_tool"],
     outs = ["install/usr/bin/kvs_tool"],
     cmd = """
       mkdir -p $(RULEDIR)/install/usr/bin
-      cp $(location //score/kvs/rust_kvs_tool:kvs_tool) $@
+      cp $(location //score/kvs_tool) $@
       chmod +x $@
     """,
     visibility = ["//visibility:public"],

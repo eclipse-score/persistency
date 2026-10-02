@@ -16,7 +16,7 @@
 // This is to ensure file is not improperly detected as empty test file.
 
 use core::iter::zip;
-use rust_kvs::kvs_value::KvsValue;
+use kvs_rust::kvs_value::KvsValue;
 
 /// Compare `KvsValue` objects.
 ///
