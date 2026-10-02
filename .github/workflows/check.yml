@@ -76,7 +76,7 @@ jobs:
           bazel build --lockfile_mode=error \
             --config=per-x86_64-linux \
             //score/kvs/rust_kvs:rust_kvs \
-            //score/kvs/rust_kvs_tool:kvs_tool
+            //score/kvs_tool
 
       - name: Bazel Unit Tests
         run: |
