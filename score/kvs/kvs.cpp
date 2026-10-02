@@ -262,14 +262,14 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
 }
 
 /* Reset KVS to initial state*/
-score::ResultBlank Kvs::reset()
+score::Result<void> Kvs::reset()
 {
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock())
     {
         kvs.clear();
-        result = score::ResultBlank{};
+        result = score::Result<void>{};
     }
     else
     {
@@ -373,9 +373,9 @@ score::Result<KvsValue> Kvs::get_default_value(const std::string_view key)
 }
 
 /* Resets a Key to its default value (Deletes written key if default is available) */
-score::ResultBlank Kvs::reset_key(const std::string_view key)
+score::Result<void> Kvs::reset_key(const std::string_view key)
 {
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock_kvs(kvs_mutex, std::try_to_lock);
     if (!lock_kvs.owns_lock())
     {
@@ -395,11 +395,11 @@ score::ResultBlank Kvs::reset_key(const std::string_view key)
             {
                 (void)kvs.erase(
                     std::string(key)); /* Return Value ignored, since its already secured, that the key exists*/
-                result = score::ResultBlank{};
+                result = score::Result<void>{};
             }
             else
             {
-                result = score::ResultBlank{};
+                result = score::Result<void>{};
             }
         }
     }
@@ -423,14 +423,14 @@ score::Result<bool> Kvs::is_value_default(const std::string_view key) const
 }
 
 /* Set the value for a key*/
-score::ResultBlank Kvs::set_value(const std::string_view key, const KvsValue& value)
+score::Result<void> Kvs::set_value(const std::string_view key, const KvsValue& value)
 {
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock())
     {
         kvs.insert_or_assign(std::string(key), value);
-        result = score::ResultBlank{};
+        result = score::Result<void>{};
     }
     else
     {
@@ -441,16 +441,16 @@ score::ResultBlank Kvs::set_value(const std::string_view key, const KvsValue& va
 }
 
 /* Remove a key-value pair*/
-score::ResultBlank Kvs::remove_key(const std::string_view key)
+score::Result<void> Kvs::remove_key(const std::string_view key)
 {
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock())
     {
         const auto erased = kvs.erase(std::string(key));
         if (erased > 0U)
         {
-            result = score::ResultBlank{};
+            result = score::Result<void>{};
         }
         else
         {
@@ -465,14 +465,14 @@ score::ResultBlank Kvs::remove_key(const std::string_view key)
     return result;
 }
 
-score::ResultBlank Kvs::remove_all_keys()
+score::Result<void> Kvs::remove_all_keys()
 {
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock())
     {
         kvs.clear();
-        result = score::ResultBlank{};
+        result = score::Result<void>{};
     }
     else
     {
@@ -483,9 +483,9 @@ score::ResultBlank Kvs::remove_all_keys()
 }
 
 /* Drop all in-memory changes by reloading the persisted KVS file */
-score::ResultBlank Kvs::discard_pending_changes()
+score::Result<void> Kvs::discard_pending_changes()
 {
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock())
     {
@@ -501,7 +501,7 @@ score::ResultBlank Kvs::discard_pending_changes()
         else
         {
             kvs = std::move(data_res.value());
-            result = score::ResultBlank{};
+            result = score::Result<void>{};
         }
     }
     else
@@ -513,7 +513,7 @@ score::ResultBlank Kvs::discard_pending_changes()
 }
 
 /* Helper: write data to a file and ensure it reaches physical storage.*/
-score::ResultBlank Kvs::write_and_sync(const std::string& path, const void* data, std::size_t size)
+score::Result<void> Kvs::write_and_sync(const std::string& path, const void* data, std::size_t size)
 {
     auto file_deleter = [](std::FILE* f) {
         if (f != nullptr)
@@ -553,9 +553,9 @@ score::ResultBlank Kvs::write_and_sync(const std::string& path, const void* data
 }
 
 /* Helper Function to write JSON data to a file for flush process (also adds Hash file)*/
-score::ResultBlank Kvs::write_json_data(const std::string& buf)
+score::Result<void> Kvs::write_json_data(const std::string& buf)
 {
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     score::filesystem::Path json_path{filename_prefix.Native() + "_0.json"};
     score::filesystem::Path dir = json_path.ParentPath();
     if (!dir.Empty())
@@ -591,9 +591,9 @@ score::ResultBlank Kvs::write_json_data(const std::string& buf)
 }
 
 /* Flush the key-value store*/
-score::ResultBlank Kvs::flush()
+score::Result<void> Kvs::flush()
 {
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     /* Create JSON Object */
     score::json::Object root_obj;
     bool error = false;
@@ -695,9 +695,9 @@ size_t Kvs::snapshot_max_count() const
 }
 
 /* Rotate Snapshots */
-score::ResultBlank Kvs::snapshot_rotate()
+score::Result<void> Kvs::snapshot_rotate()
 {
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock())
     {
@@ -744,7 +744,7 @@ score::ResultBlank Kvs::snapshot_rotate()
         }
         if (!error)
         {
-            result = score::ResultBlank{};
+            result = score::Result<void>{};
         }
     }
     else
@@ -756,9 +756,9 @@ score::ResultBlank Kvs::snapshot_rotate()
 }
 
 /* Restore the key-value store from a snapshot*/
-score::ResultBlank Kvs::snapshot_restore(const SnapshotId& snapshot_id)
+score::Result<void> Kvs::snapshot_restore(const SnapshotId& snapshot_id)
 {
-    score::ResultBlank result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
     if (lock.owns_lock())
     {
@@ -789,7 +789,7 @@ score::ResultBlank Kvs::snapshot_restore(const SnapshotId& snapshot_id)
                 else
                 {
                     kvs = std::move(data_res.value());
-                    result = score::ResultBlank{};
+                    result = score::Result<void>{};
                 }
             }
         }
