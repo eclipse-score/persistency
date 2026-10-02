@@ -13,8 +13,8 @@
 #ifndef SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP
 #define SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP
 
-#include "error.hpp"
-#include "kvsvalue.hpp"
+#include "score/kvs/error.hpp"
+#include "score/kvs/kvsvalue.hpp"
 #include "score/json/json_parser.h" /* For JSON Any Type */
 #include <sstream>
 #include <string>

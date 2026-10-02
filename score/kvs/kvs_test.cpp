@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#include "test_kvs_general.hpp"
+#include "kvs_general_test.hpp"
 
 TEST(kvs_constructor, move_constructor)
 {
@@ -196,7 +196,7 @@ TEST(kvs_open_json, open_json_json_invalid)
     auto result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Required);
     ASSERT_FALSE(result);
     EXPECT_EQ(static_cast<ErrorCode>(*result.error()),
-              ErrorCode::JsonParserError); /* Errorcode passed by parse json function*/
+              ErrorCode::JsonParserError); /* ErrorCode passed by parse json function*/
 
     /* JSON not existing */
     system(("rm -rf " + kvs_prefix + ".json").c_str());

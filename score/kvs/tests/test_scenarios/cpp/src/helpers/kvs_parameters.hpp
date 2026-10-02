@@ -12,7 +12,7 @@
  ********************************************************************************/
 #pragma once
 
-#include <kvs.hpp>
+#include "score/kvs/kvs.hpp"
 
 struct KvsParameters
 {

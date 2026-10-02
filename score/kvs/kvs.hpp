@@ -13,7 +13,7 @@
 #ifndef SCORE_LIB_KVS_KVS_HPP
 #define SCORE_LIB_KVS_KVS_HPP
 
-#include "internal/error.hpp"
+#include "error.hpp"
 #include "kvsvalue.hpp"
 #include "score/filesystem/filesystem.h"
 #include "score/json/json_parser.h"

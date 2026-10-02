@@ -14,19 +14,11 @@ load("@rules_rust//rust:defs.bzl", "miri_binary", "rust_binary")
 
 rust_binary(
     name = "kvs_tool",
-    srcs = [
-        "src/kvs_tool.rs",
-    ],
+    srcs = ["kvs_tool.rs"],
     crate_features = ["score_log_bridge"],
-    crate_name = "rust_kvs_tool",
-    rustc_flags = [
-        "-Clink-arg=-lstdc++",
-        "-Clink-arg=-lm",
-        "-Clink-arg=-lc",
-    ],
     visibility = ["//visibility:public"],
     deps = [
-        "//score/kvs/rust_kvs",
+        "//score/kvs_rust",
         "@score_baselibs//score/log_rust/score_log",
         "@score_crates//:pico_args",
         "@score_crates//:tinyjson",

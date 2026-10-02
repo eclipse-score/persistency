@@ -16,7 +16,7 @@
 //! - Usage with KVS.
 
 use core::net::IpAddr;
-use rust_kvs::prelude::*;
+use kvs_rust::prelude::*;
 use tempfile::tempdir;
 
 /// `Point` is used as an example of nested serializable objects.
