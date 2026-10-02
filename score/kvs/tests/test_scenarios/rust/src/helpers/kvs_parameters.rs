@@ -12,7 +12,7 @@
 // *******************************************************************************
 //! KVS parameters test helpers.
 
-use rust_kvs::prelude::{InstanceId, KvsDefaults, KvsLoad};
+use kvs_rust::prelude::{InstanceId, KvsDefaults, KvsLoad};
 use serde::{de, Deserialize, Deserializer};
 use serde_json::Value;
 use std::path::PathBuf;

@@ -13,7 +13,7 @@
 //! KVS instance test helpers.
 
 use crate::helpers::kvs_parameters::KvsParameters;
-use rust_kvs::prelude::{ErrorCode, JsonBackendBuilder, Kvs, KvsBuilder};
+use kvs_rust::prelude::{ErrorCode, JsonBackendBuilder, Kvs, KvsBuilder};
 
 /// Create KVS instance based on provided parameters.
 pub fn kvs_instance(kvs_parameters: KvsParameters) -> Result<Kvs, ErrorCode> {

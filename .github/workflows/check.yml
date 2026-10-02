@@ -75,16 +75,16 @@ jobs:
         run: |
           bazel build --lockfile_mode=error \
             --config=per-x86_64-linux \
-            //score/kvs/rust_kvs:rust_kvs \
-            //score/kvs/rust_kvs_tool:kvs_tool
+            //score/kvs_rust \
+            //score/kvs_tool
 
       - name: Bazel Unit Tests
         run: |
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //score/kvs/rust_kvs:tests
+          bazel test --lockfile_mode=error --config=per-x86_64-linux //score/kvs_rust:unit_tests
 
       - name: Bazel Miri Tests
         run: |
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //score/kvs/rust_kvs:tests_miri --test_output=all
+          bazel test --lockfile_mode=error --config=per-x86_64-linux //score/kvs_rust:unit_tests_miri --test_output=all
 
   cpp-bazel:
     runs-on: ubuntu-latest
@@ -104,7 +104,7 @@ jobs:
 
       - name: Bazel Unit Test with Coverage
         run: |
-          bazel coverage --lockfile_mode=error --config=per-x86_64-linux //:test_kvs_cpp \
+          bazel coverage --lockfile_mode=error --config=per-x86_64-linux //score/kvs:unit_tests \
             --collect_code_coverage \
             --combined_report=lcov \
             --experimental_generate_llvm_lcov \
@@ -132,6 +132,3 @@ jobs:
           name: ${{ github.event.repository.name }}_cpp_coverage_report
           path: cpp_coverage/
           retention-days: 10
-
-      - name: Bazel Benchmark
-        run: bazel run --lockfile_mode=error --config=per-x86_64-linux -c opt //:bm_kvs_cpp
