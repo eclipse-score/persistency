@@ -1,0 +1,63 @@
+# ******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# ******************************************************************************
+
+name: License Check (forks)
+
+# Trusted chain entry point for fork PRs, per ADR 0001: runs in the base repository context with secrets, but only after
+# the approved-for-ci gate passes for the exact head SHA of the original untrusted run.
+
+on:
+  workflow_run:
+    workflows: ["PR Checks"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  approved-for-ci-gate:
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name != github.repository
+    uses: ./.github/workflows/trusted_chain_gate.yml
+    with:
+      head-sha: ${{ github.event.workflow_run.head_sha }}
+    secrets: inherit
+
+  license-check:
+    needs: [approved-for-ci-gate]
+    if: needs.approved-for-ci-gate.outputs.approved == 'true'
+    uses: ./.github/workflows/license_check_core.yml
+    with:
+      head-sha: ${{ github.event.workflow_run.head_sha }}
+      head-repository: ${{ needs.approved-for-ci-gate.outputs.head-repository }}
+    secrets:
+      dash-api-token: ${{ secrets.ECLIPSE_GITLAB_API_TOKEN }}
+
+  notify-pending-approval:
+    needs: [approved-for-ci-gate]
+    if: needs.approved-for-ci-gate.outputs.approved != 'true' && needs.approved-for-ci-gate.outputs.pr-number != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on PR about missing or invalidated approval
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
+        with:
+          issue-number: ${{ needs.approved-for-ci-gate.outputs.pr-number }}
+          comment-author: 'github-actions[bot]'
+          body: |
+            The trusted license check was **skipped**: no valid `approved-for-ci` approval for head commit
+            `${{ github.event.workflow_run.head_sha }}`.
+
+            A codeowner can apply the `approved-for-ci` label to this PR. Any
+            push after labelling invalidates it; re-labelling re-runs the check.
