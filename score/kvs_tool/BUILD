@@ -1,5 +1,5 @@
 # *******************************************************************************
-# Copyright (c) 2026 Contributors to the Eclipse Foundation
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -10,19 +10,25 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
+load("@rules_rust//rust:defs.bzl", "miri_binary", "rust_binary")
 
-alias(
+rust_binary(
     name = "kvs_tool",
-    actual = "//score/kvs_tool:kvs_tool",
-    deprecation = "//score/kvs/rust_kvs_tool:kvs_tool has moved to //score/kvs_tool:kvs_tool. " +
-                  "Update your dependency to the new //score/... label.",
+    srcs = ["kvs_tool.rs"],
+    crate_features = ["score_log_bridge"],
     visibility = ["//visibility:public"],
+    deps = [
+        "//score/kvs_rust",
+        "@score_baselibs//score/log_rust/score_log",
+        "@score_crates//:pico_args",
+        "@score_crates//:tinyjson",
+        "@score_logging//score/mw/log/rust/score_log_bridge",
+    ],
 )
 
-alias(
+miri_binary(
     name = "kvs_tool_miri",
-    actual = "//score/kvs_tool:kvs_tool_miri",
-    deprecation = "//score/kvs/rust_kvs_tool:kvs_tool_miri has moved to //score/kvs_tool:kvs_tool_miri. " +
-                  "Update your dependency to the new //score/... label.",
+    crate = ":kvs_tool",
+    tags = ["manual"],
     visibility = ["//visibility:public"],
 )

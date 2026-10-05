@@ -15,7 +15,7 @@
 //! - Basic key-value operations: `get_value`, `get_value_as`, `set_value`, `get_all_keys`.
 //! - Other key-value operations: `reset`, `key_exists`, `remove_key`.
 
-use rust_kvs::prelude::*;
+use kvs_rust::prelude::*;
 use std::collections::HashMap;
 use tempfile::tempdir;
 

@@ -13,7 +13,7 @@
 use crate::helpers::kvs_instance::kvs_instance;
 use crate::helpers::kvs_parameters::KvsParameters;
 use crate::helpers::{kvs_hash_paths, to_str};
-use rust_kvs::prelude::*;
+use kvs_rust::prelude::*;
 use test_scenarios_rust::scenario::{Scenario, ScenarioGroup, ScenarioGroupImpl};
 use tracing::info;
 

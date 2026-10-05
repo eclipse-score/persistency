@@ -95,7 +95,7 @@ bazel run --config=per-x86_64-linux <TARGET_NAME>
 ### Run CLI tool
 
 ```bash
-bazel run --config=per-x86_64-linux //score/kvs/rust_kvs_tool:kvs_tool -- --help
+bazel run --config=per-x86_64-linux //score/kvs_tool -- --help
 ```
 
 ```text
