@@ -138,7 +138,7 @@ int main() {
 
 From `examples/basic.rs`:
 ```rust
-use rust_kvs::prelude::*;
+use kvs_rust::prelude::*;
 use std::collections::HashMap;
 use tempfile::tempdir;
 
@@ -212,4 +212,4 @@ This file should be placed in the working directory:
 - You must also provide a CRC file (e.g., `defaults.json.crc`) alongside the defaults file. This CRC file is generated using the Adler-32 checksum algorithm, as implemented in the codebase. The CRC ensures the integrity of the defaults file at runtime.
 ## 5. More Examples
 - See `score/kvs/tests/` for C++ test scenarios and usage patterns.
-- See `score/kvs/rust_kvs/examples/` for Rust usage patterns.
+- See `score/kvs_rust/examples/` for Rust usage patterns.

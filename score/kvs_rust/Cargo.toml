@@ -1,18 +1,18 @@
 [package]
-name = "rust_kvs"
+name = "kvs_rust"
 version.workspace = true
 edition.workspace = true
 
+[lib]
+path = "lib.rs"
 
 [dependencies]
 adler32.workspace = true
 tinyjson.workspace = true
 score_log.workspace = true
 
-
 [dev-dependencies]
 tempfile = "3.20"
-
 
 [lints]
 workspace = true

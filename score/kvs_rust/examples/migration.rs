@@ -13,7 +13,7 @@
 
 //! Example for migrations between backends.
 
-use rust_kvs::prelude::*;
+use kvs_rust::prelude::*;
 use score_log::ScoreDebug;
 
 /// Example custom backend.
