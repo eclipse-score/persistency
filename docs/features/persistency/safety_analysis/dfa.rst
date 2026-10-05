@@ -181,6 +181,7 @@ DFA
    :id: feat_saf_dfa__persistency__execution_blocking
    :failure_id: UI_01_06
    :failure_effect: Blocking of execution, persistency is not available.
+   :safety_relevant: yes
    :mitigated_by: aou_req__persistency__error_handling
    :sufficient: yes
    :status: valid
@@ -194,6 +195,7 @@ DFA
    :id: feat_saf_dfa__persistency__data_corruption
    :failure_id: CO_01_02
    :failure_effect: Data exchanged with the file system is corrupted, lost or inconsistent.
+   :safety_relevant: yes
    :mitigated_by: feat_req__persistency__integrity_check, feat_req__persistency__reset_resistant, feat_req__persistency__access_control, aou_req__persistency__error_handling
    :sufficient: yes
    :status: valid
@@ -209,6 +211,7 @@ DFA
    :id: feat_saf_dfa__persistency__shared_instance
    :failure_id: SI_01_03
    :failure_effect: Two software elements of a process use the same KVS instance and modify each other's data.
+   :safety_relevant: yes
    :mitigated_by: aou_req__persistency__instance_separation
    :sufficient: yes
    :status: valid
@@ -222,6 +225,7 @@ DFA
    :id: feat_saf_dfa__persistency__multi_process
    :failure_id: UI_01_09
    :failure_effect: Unsynchronized access of two processes makes the persisted data inconsistent.
+   :safety_relevant: yes
    :mitigated_by: feat_req__persistency__multiple_app
    :sufficient: yes
    :status: valid
@@ -237,6 +241,7 @@ DFA
    :id: feat_saf_dfa__persistency__memory_depletion
    :failure_id: UI_01_11
    :failure_effect: Runtime allocation of the kvs depletes the heap shared with other software elements.
+   :safety_relevant: yes
    :mitigated_by: feat_req__persistency__dynamic_memory_alloc, feat_req__persistency__cfg
    :sufficient: yes
    :status: valid
