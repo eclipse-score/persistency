@@ -24,7 +24,7 @@ rust_binary(
     visibility = ["//score/kvs/tests/test_cases:__pkg__"],
     deps =
         [
-            "//score/kvs/rust_kvs",
+            "//score/kvs_rust",
             "@score_crates//:serde",
             "@score_crates//:serde_json",
             "@score_crates//:tinyjson",

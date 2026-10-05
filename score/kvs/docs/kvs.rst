@@ -12,15 +12,15 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-Key-Value-Storage (rust_kvs) Documentation
+Key-Value-Storage (kvs_rust) Documentation
 ==========================================
 
-This documentation describes the `rust_kvs` crate, which provides a key-value storage implementation with JSON-like persistence using Rust.
+This documentation describes the `kvs_rust` crate, which provides a key-value storage implementation with JSON-like persistence using Rust.
 
 Summary
 -------
 
-**Crate:** `rust_kvs`
+**Crate:** `kvs_rust`
 
 **Purpose:** Key-Value-Storage API and Implementation
 
@@ -60,7 +60,7 @@ Example
 
 .. code-block:: rust
 
-   use rust_kvs::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, KvsValue};
+   use kvs_rust::{ErrorCode, InstanceId, Kvs, OpenNeedDefaults, OpenNeedKvs, KvsValue};
    use std::collections::HashMap;
 
    fn main() -> Result<(), ErrorCode> {
