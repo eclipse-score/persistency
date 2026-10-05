@@ -67,5 +67,5 @@ devenv.local.nix
 target
 
 # --- keep test fixture payloads under install/ (override *.so, *.a, etc.)
-!score/kvs/tests/integration_test_scenarios/install/
-!score/kvs/tests/integration_test_scenarios/install/**
+!tests/integration_test_scenarios/install/
+!tests/integration_test_scenarios/install/**
