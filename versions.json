@@ -78,5 +78,9 @@
   {
     "version": "pr-465",
     "url": "https://eclipse-score.github.io/persistency/pr-465/"
+  },
+  {
+    "version": "pr-467",
+    "url": "https://eclipse-score.github.io/persistency/pr-467/"
   }
 ]
