@@ -24,10 +24,11 @@ bazel_dep(name = "score_baselibs", version = "0.2.13")
 bazel_dep(name = "score_crates", version = "0.0.12")
 git_override(
     module_name = "score_crates",
-    commit = "45e3f82251f895da56f46b24183d7952a6af5663",
+    commit = "177d34048f006a9682e5b0d411d5960e8dfaafb6",
     # FIXME: remove once a score_crates release ships Cargo.Bazel.lock in dependency form
     remote = "https://github.com/qorix-group/score-crates.git",
 )
+
 bazel_dep(name = "score_docs_as_code", version = "8.3.0")
 bazel_dep(name = "score_format_checker", version = "0.1.1")
 bazel_dep(name = "score_logging", version = "0.2.4")

@@ -4150,7 +4150,7 @@
     "@@rules_rust+//crate_universe:extensions.bzl%crate": {
       "general": {
         "bzlTransitiveDigest": "CmLuXHIhx4Mmg+ZUUP4yeGxBJuSx1qeOyrdMZGjumc4=",
-        "usagesDigest": "U1P1y03ChQ4IbenBuwE6wjQtstkpy95/RKlIYk8KTtE=",
+        "usagesDigest": "SeYKoWf3hszXRCw2kMJIWQuFVs4zqJgEXCX9WcDvF3Y=",
         "recordedFileInputs": {
           "@@score_crates+//Cargo.Bazel.lock": "7250af2a8edcb2cffa4a8d45dc9008c3cd10b925d1baf01134430875fe7f1740",
           "@@score_crates+//Cargo.lock": "970a9a28b77ecfee41f0ed18eed4b602a4dcbcce60a2445328bd529d12885c10"
