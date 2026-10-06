@@ -20,6 +20,8 @@ Component documentation
 .. toctree::
    :maxdepth: 1
 
+.. _module_documents_docs_features_persistency:
+
 Component documentation overview
 ++++++++++++++++++++++++++++++++
 
