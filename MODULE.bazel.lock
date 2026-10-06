@@ -1059,11 +1059,6 @@
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_coverage/0.3.1/source.json": "328c3bb04ec50bb2cbd81070af41ac7247022cb006724340e251c73159e369b4",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_cr_checker/0.2.2/MODULE.bazel": "dc36d9c35543db918c3fb5b93a8e684431f56c7c784cf2a1b90f35802a373c98",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_cr_checker/0.3.1/MODULE.bazel": "f49e037d7fbc0b2a8b2734fc6b47334e8cc8589ca7a5aa0f3ccca85cc5f79fac",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_crates/0.0.10/MODULE.bazel": "80599c71cfc5827a189ab40fe2f320c8f52e0fca5bcc7c8bf8bfbdead7f97a74",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_crates/0.0.11/MODULE.bazel": "ef4590c417955837ce12549c6de26e008cb2957fe481844a45ae5f3d66e21211",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_crates/0.0.12/MODULE.bazel": "1b65e71e485f8124083d8a88c3f3e6dc57c39ee67799aef822ba7b9fca9876c1",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_crates/0.0.12/source.json": "dbfb022285fe393acf406d1c12c7b9137ede0e0a49c3ebb2acc46498960b7a69",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_crates/0.0.7/MODULE.bazel": "4b08e2124d1627b08a9a5ce86e3693fe6eea302d0aad98c05216d26da3fced89",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_dash_license_checker/0.1.1/MODULE.bazel": "76681dbd2d45b5c540869a2337174086c56c54953aab1d02cd878b59d31d13a5",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_devcontainer/1.11.0/MODULE.bazel": "fb6041c96e949a151307b4690ee81cf5d9254d6bf79540184b16567b04397171",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_devcontainer/1.11.1/MODULE.bazel": "a4d27e121bdee44906e0eac49a74427446482ce16158827802b29c7c3d378150",
@@ -4155,7 +4150,7 @@
     "@@rules_rust+//crate_universe:extensions.bzl%crate": {
       "general": {
         "bzlTransitiveDigest": "CmLuXHIhx4Mmg+ZUUP4yeGxBJuSx1qeOyrdMZGjumc4=",
-        "usagesDigest": "6hhGNIFXR7obdKQm4PII0+dbEM67u/60GWv3bUGTLdE=",
+        "usagesDigest": "U1P1y03ChQ4IbenBuwE6wjQtstkpy95/RKlIYk8KTtE=",
         "recordedFileInputs": {
           "@@score_crates+//Cargo.Bazel.lock": "7250af2a8edcb2cffa4a8d45dc9008c3cd10b925d1baf01134430875fe7f1740",
           "@@score_crates+//Cargo.lock": "970a9a28b77ecfee41f0ed18eed4b602a4dcbcce60a2445328bd529d12885c10"
