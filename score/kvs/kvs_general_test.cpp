@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#include "test_kvs_general.hpp"
+#include "kvs_general_test.hpp"
 
 /* adler32 control instance */
 uint32_t adler32(const std::string& data)

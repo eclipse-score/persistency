@@ -126,22 +126,10 @@ alias(
 )
 
 test_suite(
-    name = "test_kvs_cpp",
-    tests = ["//score/kvs/tests:test_kvs_cpp"],
-    visibility = ["//visibility:public"],
-)
-
-test_suite(
-    name = "bm_kvs_cpp",
-    tests = ["//score/kvs/tests:bm_kvs_cpp"],
-    visibility = ["//visibility:public"],
-)
-
-test_suite(
     name = "unit_tests",
     tests = [
-        "test_kvs_cpp",
-        "//score/kvs/rust_kvs:tests",
+        "//score/kvs:unit_tests",
+        "//score/kvs/rust_kvs:unit_tests",
     ],
     visibility = ["//visibility:public"],
 )
@@ -159,14 +147,14 @@ test_suite(
     name = "miri_tests",
     tags = ["manual"],
     tests = [
-        "//score/kvs/rust_kvs:tests_miri_error_code",
-        "//score/kvs/rust_kvs:tests_miri_json_backend",
-        "//score/kvs/rust_kvs:tests_miri_kvs",
-        "//score/kvs/rust_kvs:tests_miri_kvs_api",
-        "//score/kvs/rust_kvs:tests_miri_kvs_builder",
-        "//score/kvs/rust_kvs:tests_miri_kvs_mock",
-        "//score/kvs/rust_kvs:tests_miri_kvs_serialize",
-        "//score/kvs/rust_kvs:tests_miri_kvs_value",
+        "//score/kvs/rust_kvs:unit_tests_miri_error_code",
+        "//score/kvs/rust_kvs:unit_tests_miri_json_backend",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs_api",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs_builder",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs_mock",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs_serialize",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs_value",
     ],
     visibility = ["//visibility:public"],
 )

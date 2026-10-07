@@ -24,7 +24,7 @@ rust_library(
 )
 
 rust_test(
-    name = "tests",
+    name = "unit_tests",
     size = "small",
     crate = "rust_kvs",
     tags = [
@@ -36,71 +36,71 @@ rust_test(
 )
 
 miri_test(
-    name = "tests_miri",
-    crate = ":tests",
+    name = "unit_tests_miri",
+    crate = ":unit_tests",
     tags = ["manual"],
     visibility = ["//visibility:public"],
 )
 
 miri_test(
-    name = "tests_miri_error_code",
-    crate = ":tests",
+    name = "unit_tests_miri_error_code",
+    crate = ":unit_tests",
     miri_args = ["error_code::"],
     tags = ["manual"],
     visibility = ["//visibility:public"],
 )
 
 miri_test(
-    name = "tests_miri_json_backend",
-    crate = ":tests",
+    name = "unit_tests_miri_json_backend",
+    crate = ":unit_tests",
     miri_args = ["json_backend::"],
     tags = ["manual"],
     visibility = ["//visibility:public"],
 )
 
 miri_test(
-    name = "tests_miri_kvs",
-    crate = ":tests",
+    name = "unit_tests_miri_kvs",
+    crate = ":unit_tests",
     miri_args = ["kvs::"],
     tags = ["manual"],
     visibility = ["//visibility:public"],
 )
 
 miri_test(
-    name = "tests_miri_kvs_api",
-    crate = ":tests",
+    name = "unit_tests_miri_kvs_api",
+    crate = ":unit_tests",
     miri_args = ["kvs_api::"],
     tags = ["manual"],
     visibility = ["//visibility:public"],
 )
 
 miri_test(
-    name = "tests_miri_kvs_builder",
-    crate = ":tests",
+    name = "unit_tests_miri_kvs_builder",
+    crate = ":unit_tests",
     miri_args = ["kvs_builder::"],
     tags = ["manual"],
     visibility = ["//visibility:public"],
 )
 
 miri_test(
-    name = "tests_miri_kvs_mock",
-    crate = ":tests",
+    name = "unit_tests_miri_kvs_mock",
+    crate = ":unit_tests",
     miri_args = ["kvs_mock::"],
     tags = ["manual"],
     visibility = ["//visibility:public"],
 )
 
 miri_test(
-    name = "tests_miri_kvs_serialize",
-    crate = ":tests",
+    name = "unit_tests_miri_kvs_serialize",
+    crate = ":unit_tests",
     miri_args = ["kvs_serialize::"],
     tags = ["manual"],
     visibility = ["//visibility:public"],
 )
 
 miri_test(
-    name = "tests_miri_kvs_value",
-    crate = ":tests",
+    name = "unit_tests_miri_kvs_value",
+    crate = ":unit_tests",
     miri_args = ["kvs_value::"],
     tags = ["manual"],
     visibility = ["//visibility:public"],
