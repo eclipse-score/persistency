@@ -14,7 +14,7 @@ load("@rules_rust//rust:defs.bzl", "miri_test", "rust_library", "rust_test")
 
 rust_library(
     name = "rust_kvs",
-    srcs = glob(["src/**/*.rs"]),
+    srcs = glob(["*.rs"]),
     visibility = ["//visibility:public"],
     deps = [
         "@score_baselibs//score/log_rust/score_log",
