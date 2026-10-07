@@ -16,7 +16,7 @@ namespace score::mw::per::kvs
 {
 
 /*********************** Error Implementation *********************/
-std::string_view MyErrorDomain::MessageFor(const score::result::ErrorCode& code) const noexcept
+std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code) const noexcept
 {
     std::string_view msg;
     switch (static_cast<ErrorCode>(code))
@@ -92,9 +92,14 @@ std::string_view MyErrorDomain::MessageFor(const score::result::ErrorCode& code)
     return msg;
 }
 
-score::result::Error MakeError(ErrorCode code, std::string_view user_message) noexcept
+namespace
 {
-    return {static_cast<score::result::ErrorCode>(code), my_error_domain, user_message};
+constexpr KvsErrorDomain kvs_error_domain;
+}
+
+score::result::Error MakeError(const ErrorCode code, const std::string_view user_message) noexcept
+{
+    return {static_cast<score::result::ErrorCode>(code), kvs_error_domain, user_message};
 }
 
 } /* namespace score::mw::per::kvs */
