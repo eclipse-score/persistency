@@ -12,9 +12,9 @@
 # *******************************************************************************
 
 load("@score_docs_as_code//:docs.bzl", "docs")
-load("@score_format_checker//:macros.bzl", "use_format_targets")
 load("@score_sbom//:defs.bzl", "sbom")
 load("@score_tooling//:defs.bzl", "cli_helper", "copyright_checker", "dash_license_checker", "setup_starpls")
+load("@score_tooling//third_party/format:macros.bzl", "use_format_targets")
 
 # Creates all documentation targets:
 # - `:docs` for building documentation at build-time
