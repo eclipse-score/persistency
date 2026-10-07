@@ -26,14 +26,7 @@ KVS (Key Value Store)
    :realizes: wp__cmpt_request[version==1]
    :tags: Persistency KVS
 
-.. comp:: persistency::kvs
-   :id: comp__persistency_kvs
-   :security: YES
-   :safety: ASIL_B
-   :status: valid
-   :version: 1
-   :implements: logic_arc_int__persistency__interface[version==1]
-   :belongs_to: feat__persistency[version==1]
+
 
 Abstract
 ========
@@ -120,11 +113,6 @@ analyze the impact of the feature.
 We use an iterative development process and apply results from the next steps
 back to the feature request. For TinyJSON we will perform a software component
 classification.
-
-:need:`doc__json_comp_class`
-
-To ensure the freedom of interference the feature key-value storage should not
-be used within different processes.
 
 
 License Impact

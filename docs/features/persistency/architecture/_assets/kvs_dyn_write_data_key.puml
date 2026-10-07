@@ -19,6 +19,10 @@ participant "User" as actor
 participant "«component» :kvs" as kvs
 
 actor -> kvs: Set value for key
-kvs --> actor: Value set for key
+alt kvs-available
+    kvs --> actor: Value set for key
+else kvs-busy
+    kvs --> actor: Resource-Busy-Error
+end
 
 @enduml

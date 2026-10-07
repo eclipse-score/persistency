@@ -666,7 +666,7 @@ TEST(kvs_write_json_data, write_json_data_filesystem_failure)
     ASSERT_NE(standard_mock, nullptr);
     EXPECT_CALL(*standard_mock, CreateDirectories(::testing::_))
         .WillOnce(::testing::Return(
-            score::ResultBlank(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotCreateDirectory))));
+            score::Result<void>(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotCreateDirectory))));
     kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     auto result = kvs->write_json_data(kvs_json);

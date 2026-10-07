@@ -17,7 +17,14 @@
 Persistency Documentation
 =========================
 
-This documentation describes the structure, usage and configuration of the Bazel-based C++/Rust module template according to the `SCORE module folder structure <https://eclipse-score.github.io/score/main/contribute/general/folder.html#module-folder-structure>`_ and the `SCORE building blocks concept <https://eclipse-score.github.io/process_description/main/general_concepts/score_building_blocks_concept.html>`_.
+This documentation describes the Persistency module of S-CORE. The module implements the
+Persistency feature with the Key-Value-Storage (KVS), which stores, retrieves and manages
+key-value pairs persistently in JSON format on the file system. It provides a Rust and a C++
+implementation.
+
+The documentation follows the `SCORE module folder structure <https://eclipse-score.github.io/score/main/contribute/general/folder.html#module-folder-structure>`_
+and the `SCORE building blocks concept <https://eclipse-score.github.io/process_description/main/general_concepts/score_building_blocks_concept.html>`_.
+The feature requirements are maintained in the `SCORE platform repository <https://eclipse-score.github.io/score/main/features/index.html>`_.
 
 .. toctree::
    :titlesonly:
@@ -54,7 +61,7 @@ The Module documentation covers the module-level view, including architecture, s
    verification_report/module_verification_report
 
 .. needtable::
-   :filter: docname is not None and "components/" in docname
+   :filter: docname is not None and not docname.startswith("components/")
    :style: table
    :types: document
    :columns: title;id;safety;security;status
@@ -82,7 +89,16 @@ The Components documentation provides detailed documentation for each individual
 Examples
 --------
 
-No examples yet.
+Usage examples of the Rust implementation are located in ``score/kvs/rust_kvs/examples``:
+
+- ``basic.rs``: creating a KVS instance with ``KvsBuilder`` and basic key-value operations
+- ``defaults.rs``: usage of default values
+- ``snapshots.rs``: snapshot count and snapshot restore
+- ``custom_types.rs``: serialization and deserialization of custom types
+- ``migration.rs``: migration between storage backends
+
+The example ``basic.rs`` is executed with ``cargo run -p rust_kvs --example basic``, the other examples accordingly with their file name.
+The integration of the module into a Bazel project is described in ``examples/README.md``.
 
 
 .. _quick-start-building-testing:
@@ -129,8 +145,8 @@ Example:
 .. code-block:: python
 
    PROJECT_CONFIG = {
-       "asil_level": "QM",
-       "source_code": ["cpp", "rust"]
+       "asil_level": "ASIL_B",
+       "source_code": ["cpp", "rust"],
    }
 
 The configuration enables conditional build behavior:

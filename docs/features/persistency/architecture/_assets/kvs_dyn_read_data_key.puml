@@ -23,11 +23,7 @@ actor -> kvs: Get value for key
 alt key-exists
     kvs --> actor: Return value for key
 else key-doesnt-exist
-    alt default-exists
-        kvs --> actor: Return default value for key
-    else default-doesnt-exist
-        kvs --> actor: Key-Not-Found error
-    end
+    kvs --> actor: Key-Not-Found-Error
 end
 
 @enduml

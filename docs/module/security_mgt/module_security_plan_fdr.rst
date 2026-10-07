@@ -21,7 +21,7 @@ Security Plan Formal Review Report
    :version: 1
    :safety: ASIL_B
    :security: YES
-   :realizes: wp__fdr_reports[version==1]
+   :realizes: wp__fdr_reports_security[version==1]
    :tags: persistency
 
 **1. Purpose**
