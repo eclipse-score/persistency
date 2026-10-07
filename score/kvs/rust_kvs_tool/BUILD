@@ -15,7 +15,7 @@ load("@rules_rust//rust:defs.bzl", "miri_binary", "rust_binary")
 rust_binary(
     name = "kvs_tool",
     srcs = [
-        "src/kvs_tool.rs",
+        "kvs_tool.rs",
     ],
     crate_features = ["score_log_bridge"],
     crate_name = "rust_kvs_tool",
