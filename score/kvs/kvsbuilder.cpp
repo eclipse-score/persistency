@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#include "kvsbuilder.hpp"
+#include "score/kvs/kvsbuilder.hpp"
 
 namespace score::mw::per::kvs
 {

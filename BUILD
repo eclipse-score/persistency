@@ -76,7 +76,7 @@ sbom(
     component_name = "score_persistency",
     module_lockfiles = [":MODULE.bazel.lock"],
     targets = [
-        "//score/kvs:kvs_cpp",
+        "//score/kvs:kvs",
         "//score/kvs/rust_kvs:rust_kvs",
     ],
     visibility = ["//visibility:public"],
@@ -120,7 +120,8 @@ use_format_targets()
 
 alias(
     name = "kvs_cpp",
-    actual = "//score/kvs:kvs_cpp",
+    actual = "//score/kvs",
+    deprecation = "//:kvs_cpp is deprecated. Update your dependency to the //score/kvs label.",
     tags = ["cli_help=Build KVS CPP [build]"],
     visibility = ["//visibility:public"],
 )

@@ -28,10 +28,10 @@
  * kvsbuilder) and derive from kvsvalue in unittests*/
 #define private public
 #define final
-#include "kvsbuilder.hpp"
+#include "score/kvs/kvsbuilder.hpp"
 #undef private
 #undef final
-#include "internal/kvs_helper.hpp"
+#include "score/kvs/internal/kvs_helper.hpp"
 #include "score/filesystem/filesystem_mock.h"
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"

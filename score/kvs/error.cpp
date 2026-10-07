@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#include "error.hpp"
+#include "score/kvs/error.hpp"
 
 namespace score::mw::per::kvs
 {

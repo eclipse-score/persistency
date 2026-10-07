@@ -77,7 +77,7 @@ You can now continue in this guide to create a simple consumer-producer program 
 The C++ API is centered around `KvsBuilder` and `Kvs` classes. Here is a minimal example based on the test scenarios:
 
 ```cpp
-#include "kvsbuilder.hpp"
+#include "score/kvs/kvsbuilder.hpp"
 #include <iostream>
 
 int main() {

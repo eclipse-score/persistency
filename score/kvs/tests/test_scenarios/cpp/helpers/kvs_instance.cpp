@@ -12,7 +12,7 @@
  ********************************************************************************/
 
 #include "helpers/kvs_instance.hpp"
-#include <kvsbuilder.hpp>
+#include "score/kvs/kvsbuilder.hpp"
 
 score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params)
 {

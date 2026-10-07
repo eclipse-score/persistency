@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#include "kvs.hpp"
+#include "score/kvs/kvs.hpp"
 #include "internal/kvs_helper.hpp"
 #include <unistd.h>  // fileno(), fdatasync()
 #include <cstdio>    // std::fopen, std::fwrite, std::fflush, std::fclose

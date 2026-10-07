@@ -12,8 +12,8 @@
  ********************************************************************************/
 #include "test_basic.hpp"
 
-#include <kvs.hpp>
-#include <kvsbuilder.hpp>
+#include "score/kvs/kvs.hpp"
+#include "score/kvs/kvsbuilder.hpp"
 #include <cassert>
 #include <iostream>
 #include <unordered_map>

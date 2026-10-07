@@ -13,7 +13,7 @@
 #ifndef SCORE_LIB_KVS_KVSBUILDER_HPP
 #define SCORE_LIB_KVS_KVSBUILDER_HPP
 
-#include "kvs.hpp"
+#include "score/kvs/kvs.hpp"
 #include <string>
 
 namespace score::mw::per::kvs
@@ -31,7 +31,7 @@ namespace score::mw::per::kvs
  * \brief Example Usage
  * \code
  *  #include <iostream>
- *  #include "kvsbuilder.hpp"
+ *  #include "score/kvs/kvsbuilder.hpp"
  *
  *  using namespace score::mw::per::kvs;
  *
