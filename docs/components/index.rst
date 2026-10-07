@@ -26,7 +26,7 @@ Component documentation overview
 ++++++++++++++++++++++++++++++++
 
 .. needtable::
-   :filter: docname is not None and "score" in docname
+   :filter: docname is not None and docname.startswith("components/")
    :style: table
    :types: document
    :columns: title;id;safety;security;status
