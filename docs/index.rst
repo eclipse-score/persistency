@@ -60,12 +60,11 @@ The Feature documentation covers the feature-level definition of the Persistency
 Module Documentation
 ---------------------
 
-The Module documentation covers the module-level view, including architecture, safety management documents, and the user manual.
+The Module documentation covers the module-level view (:ref:`persistency_module`), including architecture, safety management documents, and the user manual.
 
 .. toctree::
    :maxdepth: 1
 
-   module/index
    verification_report/module_verification_report
 
 .. needtable::
