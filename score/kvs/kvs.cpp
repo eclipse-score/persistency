@@ -87,9 +87,9 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
 }
 
 /* Helper Function to parse JSON data for open_json*/
-score::Result<std::unordered_map<std::string, KvsValue>> Kvs::parse_json_data(const std::string& data)
+score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data)
 {
-    score::Result<unordered_map<std::string, KvsValue>> result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<KeyValueMap> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     auto any_res = parser->FromBuffer(data);
 
     if (!any_res)
@@ -99,7 +99,7 @@ score::Result<std::unordered_map<std::string, KvsValue>> Kvs::parse_json_data(co
     else
     {
         score::json::Any root = std::move(any_res).value();
-        std::unordered_map<std::string, KvsValue> result_value;
+        KeyValueMap result_value;
 
         if (auto obj = root.As<score::json::Object>(); obj.has_value())
         {
@@ -136,15 +136,15 @@ score::Result<std::unordered_map<std::string, KvsValue>> Kvs::parse_json_data(co
 }
 
 /* Open and read JSON File */
-score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const score::filesystem::Path& prefix,
-                                                                   OpenJsonNeedFile need_file)
+score::Result<Kvs::KeyValueMap> Kvs::open_json(const score::filesystem::Path& prefix,
+                                               const OpenJsonNeedFile need_file)
 {
     score::filesystem::Path json_file = prefix.Native() + ".json";
     score::filesystem::Path hash_file = prefix.Native() + ".hash";
     std::string data;
     bool error = false;   /* Error flag */
     bool new_kvs = false; /* Flag to check if new KVS file is created*/
-    score::Result<std::unordered_map<string, KvsValue>> result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<KeyValueMap> result = score::MakeUnexpected(ErrorCode::UnmappedError);
 
     /* Read JSON file */
     ifstream in(json_file.CStr());
@@ -160,7 +160,7 @@ score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const score::
         {
             logger->LogInfo() << "file" << json_file << "not found, using empty data";
             new_kvs = true;
-            result = score::Result<std::unordered_map<string, KvsValue>>({});
+            result = score::Result<KeyValueMap>({});
         }
     }
     else
@@ -217,8 +217,9 @@ score::Result<std::unordered_map<string, KvsValue>> Kvs::open_json(const score::
 
 /* Open KVS Instance */
 score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
-                             OpenNeedDefaults need_defaults,
-                             OpenNeedKvs need_kvs,
+                             const SnapshotId& snapshot_id,
+                             const OpenNeedDefaults& need_defaults,
+                             const OpenNeedKvs& need_kvs,
                              const std::string&& dir)
 {
     score::Result<Kvs> result =
@@ -228,12 +229,18 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
     score::filesystem::Path base_path(dir);
     score::filesystem::Path filename_prefix = base_path / ("kvs_" + std::to_string(instance_id.id));
     const score::filesystem::Path filename_default = filename_prefix.Native() + "_default";
-    const score::filesystem::Path filename_kvs = filename_prefix.Native() + "_0";
+    const score::filesystem::Path filename_kvs = filename_prefix.Native() + "_" + std::to_string(snapshot_id.id);
 
     Kvs kvs; /* Create KVS instance */
-    auto default_res = kvs.open_json(
-        filename_default,
-        need_defaults == OpenNeedDefaults::Required ? OpenJsonNeedFile::Required : OpenJsonNeedFile::Optional);
+    score::Result<KeyValueMap> default_res{};
+
+    if (need_defaults != OpenNeedDefaults::Ignored)
+    {
+        default_res = kvs.open_json(
+            filename_default,
+            need_defaults == OpenNeedDefaults::Required ? OpenJsonNeedFile::Required : OpenJsonNeedFile::Optional);
+    }
+
     if (!default_res)
     {
         result = score::MakeUnexpected(static_cast<ErrorCode>(
@@ -241,8 +248,15 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
     }
     else
     {
-        auto kvs_res = kvs.open_json(
-            filename_kvs, need_kvs == OpenNeedKvs::Required ? OpenJsonNeedFile::Required : OpenJsonNeedFile::Optional);
+        score::Result<KeyValueMap> kvs_res{};
+
+        if (need_kvs != OpenNeedKvs::Ignored)
+        {
+            kvs_res = kvs.open_json(
+                filename_kvs,
+                need_kvs == OpenNeedKvs::Required ? OpenJsonNeedFile::Required : OpenJsonNeedFile::Optional);
+        }
+
         if (!kvs_res)
         {
             result = score::MakeUnexpected(static_cast<ErrorCode>(*kvs_res.error()));
@@ -252,8 +266,9 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
             kvs.kvs = std::move(kvs_res.value());
             kvs.default_values = std::move(default_res.value());
             kvs.filename_prefix = filename_prefix;
-            kvs.logger->LogInfo() << "opened KVS: instance" << instance_id.id;
-            kvs.logger->LogInfo() << "max snapshot count:" << KVS_MAX_SNAPSHOTS;
+            kvs.logger->LogInfo() << "[instance=" << instance_id.id << "]"
+                                  << "[snapshot=" << snapshot_id.id << "]"
+                                  << "[maxSnapshotCount=" << KVS_MAX_SNAPSHOTS << "] KVS opened";
             result = std::move(kvs);
         }
     }
