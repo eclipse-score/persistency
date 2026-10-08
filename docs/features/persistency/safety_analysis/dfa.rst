@@ -138,7 +138,7 @@ Unintended impacts to function due to various failures.
   * - UI_01_04
     - Deadlocks
     - no
-    - One mutex per instance, never more than one lock held; C++ returns Resource-Busy-Error instead of waiting.
+    - One mutex per instance (Rust additionally one for the instance pool in the builder); never more than one lock is held at a time. Rust waits for the lock; C++ does not wait and returns MutexLockFailed.
   * - UI_01_05
     - Livelocks
     - no
