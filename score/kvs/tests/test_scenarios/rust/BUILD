@@ -14,13 +14,8 @@ load("@rules_rust//rust:defs.bzl", "rust_binary")
 
 rust_binary(
     name = "test_scenarios",
-    srcs = glob(["src/**/*.rs"]),
+    srcs = glob(["**/*.rs"]),
     crate_features = ["score_log_bridge"],
-    rustc_flags = [
-        "-Clink-arg=-lstdc++",
-        "-Clink-arg=-lm",
-        "-Clink-arg=-lc",
-    ],
     visibility = ["//score/kvs/tests/test_cases:__pkg__"],
     deps =
         [

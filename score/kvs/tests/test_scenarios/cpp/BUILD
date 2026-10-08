@@ -15,15 +15,13 @@ load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 cc_binary(
     name = "test_scenarios",
     srcs = glob([
-        "src/**/*.cpp",
-        "src/**/*.hpp",
+        "**/*.cpp",
+        "**/*.hpp",
     ]),
     copts = [
         "-g",
     ],
-    includes = [
-        "src",
-    ],
+    includes = ["."],
     visibility = ["//visibility:public"],
     deps = [
         "//score/kvs:kvs_cpp",
