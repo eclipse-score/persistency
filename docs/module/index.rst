@@ -25,3 +25,15 @@ Persistency Module
    :safety: ASIL_B
    :status: valid
    :includes: comp__persistency_kvs[version==1]
+
+Module Documents
+-----------------
+
+.. toctree::
+   :maxdepth: 1
+
+   manuals/index
+   release/release_note
+   safety_mgt/index
+   security_mgt/index
+

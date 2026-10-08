@@ -26,44 +26,72 @@ The documentation follows the `SCORE module folder structure <https://eclipse-sc
 and the `SCORE building blocks concept <https://eclipse-score.github.io/process_description/main/general_concepts/score_building_blocks_concept.html>`_.
 The feature requirements are maintained in the `SCORE platform repository <https://eclipse-score.github.io/score/main/features/index.html>`_.
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
+.. toctree::
+   :titlesonly:
+   :hidden:
+   :glob:
 
-Module / Feature Documentation
-------------------------------
+   module/index
+
+Overview
+--------
+
+This repository provides a standardized setup for projects using **C++** or **Rust** and **Bazel** as a build system.
+It integrates best practices for build, test, CI/CD and documentation.
+
+Feature Documentation
+----------------------
+
+The Feature documentation covers the feature-level definition of the Persistency module, including architecture and safety planning artifacts.
 
 .. toctree::
    :maxdepth: 1
 
    features/persistency/index
-   module/index
-   module/manuals/index
-   module/release/release_note
-   module/safety_mgt/index
-   module/security_mgt/index
-   verification_report/module_verification_report
-   components/index
-
-.. _module_documents_docs_features_persistency:
-
-Module / Feature documentation overview
-+++++++++++++++++++++++++++++++++++++++
 
 .. needtable::
-   :filter: docname is not None and not docname.startswith("components/")
+   :filter: docname is not None and docname.startswith("features/")
    :style: table
    :types: document
    :columns: title;id;safety;security;status
    :colwidths: 25,35,15,15,15
    :sort: title
 
+Module Documentation
+---------------------
 
-Component documentation
------------------------
+The Module documentation covers the module-level view (:ref:`persistency_module`), including architecture, safety management documents, and the user manual.
 
-See :ref:`component_documentation` for details.
+.. toctree::
+   :maxdepth: 1
 
+   verification_report/module_verification_report
+
+.. needtable::
+   :filter: docname is not None and (docname.startswith("module/") or docname.startswith("verification_report/"))
+   :style: table
+   :types: document
+   :columns: title;id;safety;security;status
+   :colwidths: 25,35,15,15,15
+   :sort: title
+
+Component Documentation
+------------------------
+
+The Components documentation provides detailed documentation for each individual library component, including requirements, architecture, and design decisions:
+
+.. toctree::
+   :maxdepth: 1
+
+   components/index
+
+.. needtable::
+   :filter: docname is not None and docname.startswith("components/")
+   :style: table
+   :types: document
+   :columns: title;id;safety;security;status
+   :colwidths: 25,35,15,15,15
+   :sort: title
 
 Examples
 --------
@@ -80,9 +108,10 @@ The example ``basic.rs`` is executed with ``cargo run -p rust_kvs --example basi
 The integration of the module into a Bazel project is described in ``examples/README.md``.
 
 
+.. _quick-start-building-testing:
 
-Quick Start
------------
+Quick Start - Building and Testing
+===================================
 
 To build the module:
 
@@ -110,11 +139,15 @@ To run Component / Feature Integration Tests:
 
    bazel test //:cit_tests
 
-Module Configuration
---------------------
 
-The ``project_config.bzl`` file in the root of the repository defines metadata used by Bazel macros.
-The Persistency module uses the following configuration:
+Module Build Configuration
+---------------------------
+
+The ``project_config.bzl`` file at the root of the module defines metadata used by Bazel macros.
+This file controls build behavior and project-specific settings. It should follow the S-CORE definition.
+See `S-CORE user guide for project_config.bzl <https://eclipse-score.github.io/score/main/users_guide/building_simple_application/first_score_module.html#project-config-bzl>`_ for details.
+
+Example:
 
 .. code-block:: python
 
@@ -123,4 +156,8 @@ The Persistency module uses the following configuration:
        "source_code": ["cpp", "rust"],
    }
 
-See `S-CORE user guide for project_config.bzl <https://eclipse-score.github.io/score/main/users_guide/building_simple_application/first_score_module.html#project-config-bzl>`_ for details.
+The configuration enables conditional build behavior:
+
+* **Language-specific tools**: For C++ code, tools like ``clang-tidy`` are used; for Rust code, ``clippy`` is used
+* **Safety level**: The ASIL level affects safety-related build settings and validation
+* **Source code languages**: The build system optimizes for the configured languages
