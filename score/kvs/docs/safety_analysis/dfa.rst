@@ -13,8 +13,8 @@
    # *******************************************************************************
 
 
-Dependent Failure Analysis
-==========================
+KVS DFA (Dependent Failure Analysis)
+====================================
 
 .. document:: KVS DFA
    :id: doc__kvs_dfa
@@ -25,4 +25,6 @@ Dependent Failure Analysis
    :realizes: wp__sw_component_dfa[version==1]
    :tags: Persistency KVS
 
-Because there is no sub-components in KVS, the results of the FMEA are the same as on feature level :need:`doc__persistency_dfa`.
+The KVS component has no sub-components (:need:`doc__kvs_component_architecture`). According to
+:need:`doc_concept__safety_analysis`, the results of the DFA are therefore the same as on feature level,
+see :need:`doc__persistency_dfa`. No additional component level analysis is needed.

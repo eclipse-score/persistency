@@ -13,8 +13,8 @@
    # *******************************************************************************
 
 
-Safety Analysis: FMEA
-=====================
+KVS FMEA (Failure Modes and Effects Analysis)
+=============================================
 
 .. document:: KVS FMEA
    :id: doc__kvs_fmea
@@ -25,4 +25,6 @@ Safety Analysis: FMEA
    :realizes: wp__sw_component_fmea[version==1]
    :tags: Persistency KVS
 
-Because there is no sub-components in KVS, the results of the FMEA are the same as on feature level :need:`doc__persistency_fmea`.
+The KVS component has no sub-components (:need:`doc__kvs_component_architecture`). According to
+:need:`doc_concept__safety_analysis`, the results of the FMEA are therefore the same as on feature level,
+see :need:`doc__persistency_fmea`. No additional component level analysis is needed.
