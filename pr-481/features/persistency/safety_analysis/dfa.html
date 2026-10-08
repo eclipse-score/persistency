@@ -476,7 +476,7 @@
                   
   <section id="dfa-dependent-failure-analysis">
 <h1>DFA (Dependent Failure Analysis)<a class="headerlink" href="#dfa-dependent-failure-analysis" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-62ea310c">
+<div class="need_container docutils container" id="SNCB-70bd6e15">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_dfa">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -666,7 +666,7 @@
 <tr class="row-odd"><td><p>UI_01_04</p></td>
 <td><p>Deadlocks</p></td>
 <td><p>no</p></td>
-<td><p>One mutex per instance, never more than one lock held; C++ returns Resource-Busy-Error instead of waiting.</p></td>
+<td><p>One mutex per instance (Rust additionally one for the instance pool in the builder); never more than one lock is held at a time. Rust waits for the lock; C++ does not wait and returns MutexLockFailed.</p></td>
 </tr>
 <tr class="row-even"><td><p>UI_01_05</p></td>
 <td><p>Livelocks</p></td>
@@ -715,7 +715,7 @@
 </section>
 <section id="dfa">
 <h2>DFA<a class="headerlink" href="#dfa" title="Link to this heading">#</a></h2>
-<div class="need_container docutils container" id="SNCB-955a1cdf">
+<div class="need_container docutils container" id="SNCB-516c918e">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_dfa table" id="feat_saf_dfa__persistency__execution_blocking">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -764,7 +764,7 @@ too late response, handled by <a class="reference internal" href="aou_requiremen
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-d253f1f1">
+<div class="need_container docutils container" id="SNCB-73abbfb6">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_dfa table" id="feat_saf_dfa__persistency__data_corruption">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -815,7 +815,7 @@ too late response, handled by <a class="reference internal" href="aou_requiremen
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-b10969b5">
+<div class="need_container docutils container" id="SNCB-75891c2a">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_dfa table" id="feat_saf_dfa__persistency__shared_instance">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -864,7 +864,7 @@ too late response, handled by <a class="reference internal" href="aou_requiremen
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-95ba8895">
+<div class="need_container docutils container" id="SNCB-90a2651d">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_dfa table" id="feat_saf_dfa__persistency__multi_process">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -915,7 +915,7 @@ too late response, handled by <a class="reference internal" href="aou_requiremen
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-12943aee">
+<div class="need_container docutils container" id="SNCB-205ff567">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_dfa table" id="feat_saf_dfa__persistency__memory_depletion">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
