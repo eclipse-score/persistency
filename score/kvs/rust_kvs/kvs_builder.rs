@@ -64,6 +64,9 @@ pub struct KvsBuilder {
     /// Instance ID.
     instance_id: InstanceId,
 
+    /// Snapshot ID to load, if explicitly configured.
+    snapshot_id: Option<SnapshotId>,
+
     /// Defaults handling mode.
     defaults: Option<KvsDefaults>,
 
@@ -88,6 +91,7 @@ impl KvsBuilder {
     pub fn new(instance_id: InstanceId) -> Self {
         Self {
             instance_id,
+            snapshot_id: None,
             defaults: None,
             kvs_load: None,
             backend: None,
@@ -100,6 +104,13 @@ impl KvsBuilder {
     ///   * Max number of KVS instances
     pub fn max_instances() -> usize {
         KVS_MAX_INSTANCES
+    }
+
+    /// Configure the snapshot to load. Defaults to snapshot `0`.
+    pub fn snapshot(mut self, snapshot_id: SnapshotId) -> Self {
+        trace!("'snapshot_id' set to {:?}", snapshot_id);
+        self.snapshot_id = Some(snapshot_id);
+        self
     }
 
     /// Configure defaults handling mode.
@@ -147,6 +158,11 @@ impl KvsBuilder {
         // Compare instance ID.
         if self.instance_id != other.instance_id {
             error!("Instance ID mismatched");
+            false
+        }
+        // Compare snapshot ID.
+        else if self.snapshot_id.is_some_and(|v| v != other.snapshot_id) {
+            error!("Snapshot ID mismatched");
             false
         }
         // Compare defaults handling mode.
@@ -233,6 +249,7 @@ impl KvsBuilder {
         // Initialize KVS instance with provided parameters.
         let parameters = KvsParameters {
             instance_id,
+            snapshot_id: self.snapshot_id.unwrap_or(SnapshotId(0)),
             defaults: self.defaults.unwrap_or(KvsDefaults::Optional),
             kvs_load: self.kvs_load.unwrap_or(KvsLoad::Optional),
             backend: self.backend.unwrap_or(Box::new(JsonBackendBuilder::new().build())),
@@ -254,7 +271,7 @@ impl KvsBuilder {
 
         // Load KVS and hash files.
         debug!("Loading KVS data");
-        let snapshot_id = SnapshotId(0);
+        let snapshot_id = parameters.snapshot_id;
         let kvs_map = match parameters.kvs_load {
             KvsLoad::Ignored => KvsMap::new(),
             KvsLoad::Optional => match parameters.backend.load_kvs(instance_id, snapshot_id) {
@@ -302,7 +319,7 @@ mod kvs_builder_tests {
     // Tests reuse JSON backend to ensure valid load/save behavior.
     use crate::error_code::ErrorCode;
     use crate::json_backend::{JsonBackend, JsonBackendBuilder};
-    use crate::kvs_api::{InstanceId, KvsDefaults, KvsLoad, SnapshotId};
+    use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
     use crate::kvs_builder::{KvsBuilder, KVS_MAX_INSTANCES, KVS_POOL};
     use crate::kvs_value::{KvsMap, KvsValue};
     use core::ops::DerefMut;
@@ -349,6 +366,7 @@ mod kvs_builder_tests {
         let kvs = builder.build().unwrap();
 
         assert_eq!(kvs.parameters().instance_id, instance_id);
+        assert_eq!(kvs.parameters().snapshot_id, SnapshotId(0));
         // Check default values.
         assert_eq!(kvs.parameters().defaults, KvsDefaults::Optional);
         assert_eq!(kvs.parameters().kvs_load, KvsLoad::Optional);
@@ -381,6 +399,43 @@ mod kvs_builder_tests {
         assert_eq!(kvs.parameters().defaults, KvsDefaults::Optional);
         assert_eq!(kvs.parameters().kvs_load, KvsLoad::Ignored);
         assert!(kvs.parameters().backend.dyn_eq(&JsonBackendBuilder::new().build()));
+    }
+
+    #[test]
+    fn test_build_load_selected_snapshot() {
+        let _lock = lock_and_reset();
+
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let instance_id = InstanceId(2);
+        let snapshot_id = SnapshotId(2);
+        create_kvs_files(&dir_path, instance_id, snapshot_id).unwrap();
+
+        let backend = JsonBackendBuilder::new().working_dir(dir_path).build();
+        let kvs = KvsBuilder::new(instance_id)
+            .snapshot(snapshot_id)
+            .kvs_load(KvsLoad::Required)
+            .backend(Box::new(backend))
+            .build()
+            .unwrap();
+
+        assert_eq!(kvs.parameters().snapshot_id, snapshot_id);
+        assert_eq!(kvs.get_value_as::<f64>("number1").unwrap(), 321.0);
+    }
+
+    #[test]
+    fn test_build_instance_exists_different_snapshot() {
+        let _lock = lock_and_reset();
+
+        let instance_id = InstanceId(1);
+        let _ = KvsBuilder::new(instance_id).kvs_load(KvsLoad::Ignored).build().unwrap();
+
+        let result = KvsBuilder::new(instance_id)
+            .snapshot(SnapshotId(1))
+            .kvs_load(KvsLoad::Ignored)
+            .build();
+
+        assert!(result.is_err_and(|e| e == ErrorCode::InstanceParametersMismatch));
     }
 
     #[test]
