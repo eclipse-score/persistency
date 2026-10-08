@@ -36,13 +36,13 @@ def pytest_addoption(parser):
     parser.addoption(
         "--cpp-target-name",
         type=str,
-        default="//score/kvs/tests/test_scenarios/cpp:test_scenarios",
+        default="//score/kvs/tests/test_scenarios",
         help="C++ test scenario executable target.",
     )
     parser.addoption(
         "--rust-target-name",
         type=str,
-        default="//score/kvs/tests/test_scenarios/rust:test_scenarios",
+        default="//score/kvs/rust_kvs/tests/test_scenarios",
         help="Rust test scenario executable target.",
     )
     parser.addoption(

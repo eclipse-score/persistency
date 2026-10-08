@@ -1,5 +1,5 @@
 # *******************************************************************************
-# Copyright (c) 2025 Contributors to the Eclipse Foundation
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -10,7 +10,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-
 load("@pip_score_persistency_venv_test//:requirements.bzl", "all_requirements")
 load("@score_tools//score_pytest:pytest.bzl", "score_pytest")
 
@@ -19,12 +18,12 @@ score_pytest(
     size = "small",
     srcs = ["//score/kvs/tests/test_cases:cit_files"],
     args = [
-        "-m cpp",
-        "--cpp-target-path=$(rootpath //score/kvs/tests/test_scenarios)",
+        "-m rust",
+        "--rust-target-path=$(rootpath //score/kvs/rust_kvs/tests/test_scenarios)",
         "--traces=all",
         "--log-cli-level=DEBUG",
     ],
-    data = ["//score/kvs/tests/test_scenarios"],
+    data = ["//score/kvs/rust_kvs/tests/test_scenarios"],
     env = {
         "RUST_BACKTRACE": "1",
     },
