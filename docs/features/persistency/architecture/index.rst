@@ -69,7 +69,7 @@ The diagram is generated from the Sphinx Needs model.
    :security: YES
    :safety: ASIL_B
    :includes: logic_arc_int__persistency__interface
-   :fulfils: feat_req__persistency__default_value_get[version==1],feat_req__persistency__default_values[version==1],feat_req__persistency__async_completion[version==1],feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1],feat_req__persistency__load_data[version==1],feat_req__persistency__snapshot_create[version==1],feat_req__persistency__support_datatype_keys[version==1],feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__variant_management[version==1],feat_req__persistency__default_value_file[version==1],feat_req__persistency__cfg[version==1],feat_req__persistency__async_api[version==1],feat_req__persistency__access_control[version==1],feat_req__persistency__concurrency[version==1]
+   :fulfils: feat_req__persistency__default_value_get[version==1],feat_req__persistency__default_values[version==1],feat_req__persistency__async_completion[version==1],feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1],feat_req__persistency__load_data[version==1],feat_req__persistency__snapshot_create[version==1],feat_req__persistency__support_datatype_keys[version==1],feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__variant_management[version==1],feat_req__persistency__default_value_file[version==1],feat_req__persistency__cfg[version==2],feat_req__persistency__async_api[version==1],feat_req__persistency__access_control[version==1],feat_req__persistency__concurrency[version==1]
    :status: valid
    :version: 1
    :belongs_to: feat__persistency[version==1]
