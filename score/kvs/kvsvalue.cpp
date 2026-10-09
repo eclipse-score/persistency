@@ -23,17 +23,6 @@ KvsValue::KvsValue(const Object& object) : value(object), type(Type::Object) {}
 
 KvsValue::KvsValue(Object&& object) : value(std::move(object)), type(Type::Object) {}
 
-KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) : type(Type::Object)
-{
-    Object entries;
-    entries.reserve(object.size());
-    for (const auto& [key, item] : object)
-    {
-        entries.emplace_back(key, item);
-    }
-    value = std::move(entries);
-}
-
 /* copy constructor */
 KvsValue::KvsValue(const KvsValue& other) : value(other.value), type(other.type) {}
 

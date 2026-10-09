@@ -97,15 +97,21 @@ const std::string kvs_prefix = data_dir + "kvs_" + std::to_string(instance) + "_
 const std::string filename_prefix = data_dir + "kvs_" + std::to_string(instance);
 
 const std::string default_json = R"({
-    "default": {
-        "t": "i32",
-        "v": 5
+    "t": "obj",
+    "v": {
+        "default": {
+            "t": "i32",
+            "v": 5
+        }
     }
 })";
 const std::string kvs_json = R"({
-    "kvs": {
-        "t": "i32",
-        "v": 2
+    "t": "obj",
+    "v": {
+        "kvs": {
+            "t": "i32",
+            "v": 2
+        }
     }
 })";
 

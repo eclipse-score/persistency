@@ -87,9 +87,9 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
 }
 
 /* Helper Function to parse JSON data for open_json*/
-score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data)
+score::Result<KvsMap> Kvs::parse_json_data(const std::string& data)
 {
-    score::Result<KeyValueMap> result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<KvsMap> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     auto any_res = parser->FromBuffer(data);
 
     if (!any_res)
@@ -99,36 +99,14 @@ score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data)
     else
     {
         score::json::Any root = std::move(any_res).value();
-        KeyValueMap result_value;
-
-        if (auto obj = root.As<score::json::Object>(); obj.has_value())
+        auto conv = any_to_kvsvalue(root);
+        if (!conv)
         {
-            bool error = false;
-            for (const auto& element : obj.value().get())
-            {
-                auto sv = element.first.GetAsStringView();
-                std::string key(sv.data(), sv.size());
-
-                auto conv = any_to_kvsvalue(element.second);
-                if (!conv)
-                {
-                    result = score::MakeUnexpected(static_cast<ErrorCode>(*conv.error()));
-                    error = true;
-                    break;
-                }
-                else
-                {
-                    result_value.emplace(std::move(key), std::move(conv.value()));
-                }
-            }
-            if (!error)
-            {
-                result = std::move(result_value);
-            }
+            result = score::MakeUnexpected(static_cast<ErrorCode>(*conv.error()));
         }
         else
         {
-            result = score::MakeUnexpected(ErrorCode::JsonParserError);
+            result = std::move(std::get<KvsMap>(conv->getValue()));
         }
     }
 
@@ -136,15 +114,14 @@ score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data)
 }
 
 /* Open and read JSON File */
-score::Result<Kvs::KeyValueMap> Kvs::open_json(const score::filesystem::Path& prefix,
-                                               const OpenJsonNeedFile need_file)
+score::Result<KvsMap> Kvs::open_json(const score::filesystem::Path& prefix, const OpenJsonNeedFile need_file)
 {
     score::filesystem::Path json_file = prefix.Native() + ".json";
     score::filesystem::Path hash_file = prefix.Native() + ".hash";
     std::string data;
     bool error = false;   /* Error flag */
     bool new_kvs = false; /* Flag to check if new KVS file is created*/
-    score::Result<KeyValueMap> result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    score::Result<KvsMap> result = score::MakeUnexpected(ErrorCode::UnmappedError);
 
     /* Read JSON file */
     ifstream in(json_file.CStr());
@@ -160,7 +137,7 @@ score::Result<Kvs::KeyValueMap> Kvs::open_json(const score::filesystem::Path& pr
         {
             logger->LogInfo() << "file" << json_file << "not found, using empty data";
             new_kvs = true;
-            result = score::Result<KeyValueMap>({});
+            result = score::Result<KvsMap>({});
         }
     }
     else
@@ -232,7 +209,7 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
     const score::filesystem::Path filename_kvs = filename_prefix.Native() + "_" + std::to_string(snapshot_id.id);
 
     Kvs kvs; /* Create KVS instance */
-    score::Result<KeyValueMap> default_res{};
+    score::Result<KvsMap> default_res{};
 
     if (need_defaults != OpenNeedDefaults::Ignored)
     {
@@ -248,7 +225,7 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
     }
     else
     {
-        score::Result<KeyValueMap> kvs_res{};
+        score::Result<KvsMap> kvs_res{};
 
         if (need_kvs != OpenNeedKvs::Ignored)
         {
@@ -610,25 +587,30 @@ score::Result<void> Kvs::flush()
 {
     score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     /* Create JSON Object */
-    score::json::Object root_obj;
+    score::cpp::optional<score::json::Object> root_obj;
     bool error = false;
     {
         std::unique_lock<std::mutex> lock(kvs_mutex, std::try_to_lock);
         if (lock.owns_lock())
         {
-            for (const auto& [key, value] : kvs)
+            auto conv = kvsvalue_to_any(KvsValue{kvs});
+            if (!conv)
             {
-                auto conv = kvsvalue_to_any(value);
-                if (!conv)
+                result = score::MakeUnexpected(static_cast<ErrorCode>(*conv.error()));
+                error = true;
+            }
+            else
+            {
+
+                auto kvs_as_any{std::move(*conv)};
+                if (auto obj = kvs_as_any.As<score::json::Object>(); obj.has_value())
                 {
-                    result = score::MakeUnexpected(static_cast<ErrorCode>(*conv.error()));
-                    error = true;
-                    break;
+                    root_obj = std::move(kvs_as_any.As<score::json::Object>().value().get());
                 }
                 else
                 {
-                    root_obj.emplace(key, std::move(conv.value()) /*emplace in map uses move operator*/
-                    );
+                    result = score::MakeUnexpected(static_cast<ErrorCode>(*obj.error()));
+                    error = true;
                 }
             }
         }
@@ -642,7 +624,7 @@ score::Result<void> Kvs::flush()
     if (!error)
     {
         /* Serialize Buffer */
-        auto buf_res = writer->ToBuffer(root_obj);
+        auto buf_res = writer->ToBuffer(*root_obj);
         if (!buf_res)
         {
             result = score::MakeUnexpected(ErrorCode::JsonGeneratorError);

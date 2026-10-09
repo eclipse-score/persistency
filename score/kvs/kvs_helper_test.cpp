@@ -539,8 +539,8 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_array)
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_object)
 {
     KvsValue::Object obj;
-    obj.emplace_back("flag", KvsValue(true));   // Boolean
-    obj.emplace_back("count", KvsValue(42.0));  // F64
+    obj.emplace("flag", KvsValue(true));   // Boolean
+    obj.emplace("count", KvsValue(42.0));  // F64
     KvsValue obj_val(obj);
 
     auto result = kvsvalue_to_any(obj_val);
@@ -578,8 +578,8 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_invalid)
     EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 
     KvsValue::Object obj;
-    obj.emplace_back("valid", KvsValue(42.0));
-    obj.emplace_back("invalid", invalid);
+    obj.emplace("valid", KvsValue(42.0));
+    obj.emplace("invalid", invalid);
     KvsValue obj_invalid(obj);
     result = kvsvalue_to_any(obj_invalid);
     EXPECT_FALSE(result.has_value());

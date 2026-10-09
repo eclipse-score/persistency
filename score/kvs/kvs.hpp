@@ -139,8 +139,6 @@ enum class OpenJsonNeedFile : std::uint8_t
 class Kvs final
 {
   public:
-    using KeyValueMap = std::unordered_map<std::string, KvsValue>;
-
     // Deleted copy constructor and assignment operator to prevent copying
     Kvs(const Kvs&) = delete;
     Kvs& operator=(const Kvs&) = delete;
@@ -409,10 +407,10 @@ class Kvs final
 
     /* Internal storage and configuration details.*/
     std::mutex kvs_mutex;
-    KeyValueMap kvs;
+    KvsMap kvs;
 
     /* Optional default values */
-    KeyValueMap default_values;
+    KvsMap default_values;
 
     /* Filename prefix */
     score::filesystem::Path filename_prefix;
@@ -429,8 +427,8 @@ class Kvs final
 
     /* Private Methods */
     score::Result<void> snapshot_rotate();
-    score::Result<KeyValueMap> parse_json_data(const std::string& data);
-    score::Result<KeyValueMap> open_json(const score::filesystem::Path& prefix,
+    score::Result<KvsMap> parse_json_data(const std::string& data);
+    score::Result<KvsMap> open_json(const score::filesystem::Path& prefix,
                                          const OpenJsonNeedFile need_file);
     score::Result<void> write_json_data(const std::string& buf);
     score::Result<void> write_and_sync(const std::string& path, const void* data, std::size_t size);
