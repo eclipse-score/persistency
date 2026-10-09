@@ -25,6 +25,11 @@
 namespace score::mw::per::kvs
 {
 
+class KvsValue;
+
+/// Key-value storage map type.
+using KvsMap = std::unordered_map<std::string, KvsValue>;
+
 /* Define the KvsValue class*/
 /**
  * @class KvsValue
@@ -67,7 +72,7 @@ class KvsValue final
     /* Define the possible types for KvsValue*/
     /* KvsValue is incomplete here; both containers support incomplete element types. */
     using Array = std::vector<KvsValue>;
-    using Object = std::vector<std::pair<std::string, KvsValue>>;
+    using Object = KvsMap;
 
     /* Enum to represent the type of the value*/
     enum class Type
@@ -98,7 +103,6 @@ class KvsValue final
     explicit KvsValue(Array&& array);
     explicit KvsValue(const Object& object);
     explicit KvsValue(Object&& object);
-    explicit KvsValue(const std::unordered_map<std::string, KvsValue>& object);
 
     /* Copy constructor */
     KvsValue(const KvsValue& other);

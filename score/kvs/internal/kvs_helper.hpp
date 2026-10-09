@@ -33,6 +33,10 @@ std::array<uint8_t, 4> get_hash_bytes(const std::string& data);
 bool check_hash(const std::string& data_calculate, std::istream& data_parse);
 score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any);
 score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv);
+/* comp_req__kvs__key_length: single source of truth for the key-length rule,
+   shared by every path that receives a key (set_value, get_value, parse_json_data).
+   std::string_view::length() counts bytes, matching the byte-based requirement. */
+bool is_key_length_valid(std::string_view key);
 
 } /* namespace score::mw::per::kvs */
 
