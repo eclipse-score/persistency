@@ -67,7 +67,7 @@ class KvsValue final
     /* Define the possible types for KvsValue*/
     /* KvsValue is incomplete here; both containers support incomplete element types. */
     using Array = std::vector<KvsValue>;
-    using Object = std::vector<std::pair<std::string, KvsValue>>;
+    using Object = std::unordered_map<std::string, KvsValue>;
 
     /* Enum to represent the type of the value*/
     enum class Type
@@ -98,7 +98,6 @@ class KvsValue final
     explicit KvsValue(Array&& array);
     explicit KvsValue(const Object& object);
     explicit KvsValue(Object&& object);
-    explicit KvsValue(const std::unordered_map<std::string, KvsValue>& object);
 
     /* Copy constructor */
     KvsValue(const KvsValue& other);
@@ -134,6 +133,8 @@ class KvsValue final
     /* The type of the value*/
     Type type;
 };
+
+using KvsMap = KvsValue::Object;
 
 } /* namespace score::mw::per::kvs */
 
