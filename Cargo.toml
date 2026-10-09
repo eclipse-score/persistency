@@ -3,7 +3,7 @@ resolver = "2"
 members = [
     "score/kvs/rust_kvs",
     "score/kvs/rust_kvs_tool",
-    "score/kvs/tests/test_scenarios/rust",
+    "score/kvs/rust_kvs/tests/test_scenarios",
 ]
 
 [workspace.package]

@@ -2,6 +2,7 @@
 name = "rust_kvs"
 version.workspace = true
 edition.workspace = true
+autotests = false
 
 [lib]
 path = "lib.rs"
