@@ -26,7 +26,7 @@ Safety Manual
 
 Introduction/Scope
 ------------------
-| This manual will cover the Feature Persistency. It's based on the components KVS and Tiny JSON.
+| This manual covers the module Persistency with the feature Persistency, which is realized by the component KVS (:need:`comp__persistency_kvs`) in a C++ and a Rust implementation.
 
 Assumed Platform Safety Requirements
 ------------------------------------
@@ -75,6 +75,10 @@ AoU Requirements
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 | Generally the assumption of the S-CORE platform SEooC is that it is integrated in a safe system, i.e. the POSIX OS it runs on is qualified and also the HW related failures are taken into account by the system integrator, if not otherwise stated in the module's safety concept.
+| The module expects the following OS services to be safe:
+| - file system access: open, read, write, flush and sync to the storage (``fdatasync``), rename and remove of files. The C++ implementation uses them via ``score::filesystem`` of the baselibs and the C standard library, the Rust implementation via the Rust standard library (``std::fs``);
+| - thread synchronization (mutex);
+| - heap memory allocation.
 
 List of AoUs expected from the environment the module runs on:
 
@@ -100,6 +104,10 @@ Assumptions on the User
 
 List of AoUs on the user of the platform features or the module of this safety manual:
 
+Note: The platform safety manual collects all platform wide AoUs (to be fulfilled by the user for any feature).
+This module safety manual collects all AoUs specific to the feature Persistency and its realizing component.
+For the feature Persistency the platform safety manual and this module safety manual have to be considered.
+
 .. needtable::
    :style: table
    :columns: title;id;status
@@ -120,12 +128,20 @@ Safety concept of the SEooC
 | itself, like blocked or delayed execution, result in persistency not being available (no or too late response). The application
 | has to handle this unavailability (see :need:`aou_req__persistency__error_handling`). Keeping persistency available is therefore
 | not a safety relevant assumption on the application.
+| The integrity of the persisted data is checked when it is loaded: the data file is only used if its Adler-32 checksum
+| matches the stored checksum file, otherwise an error is reported and the data is not provided (see :need:`feat_req__persistency__integrity_check`).
+| The previous states of the data are kept as snapshots, which the application can restore after a reported error.
+| The safety analyses of the feature are documented in :need:`doc__persistency_fmea` and :need:`doc__persistency_dfa`.
 
 Safety Anomalies
 ----------------
+| Anomalies (bugs in ASIL SW, detected by testing or by users, which could not be fixed) known before release are documented in the module release notes :need:`doc__persistency_release_note`.
 | No known safety anomalies related to the module persistency exist.
 
 References
 ----------
-| <link to the user manual>
-| <other links>
+| Module user manual: :need:`doc__persistency_user_manual`
+| Module safety plan: :need:`doc__persistency_safety_plan`
+| Feature architecture: :need:`doc__persistency_kvs_architecture`
+| Component architecture: :need:`doc__kvs_component_architecture`
+| Feature safety analyses: :need:`doc__persistency_fmea`, :need:`doc__persistency_dfa`

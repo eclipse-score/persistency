@@ -27,9 +27,10 @@ Assigned Committer(s)
 =====================
 
 According to `Persistency Module Codeowners <https://github.com/eclipse-score/persistency/blob/main/.github/CODEOWNERS>`_
-the following committer is assigned to guard the Persistency repository:
+the following committers are assigned to guard the Persistency repository:
 
 - `<https://github.com/vinodreddy-g>`_
+- `<https://github.com/PandaeDo>`_
 - `<https://github.com/umaucher>`_
 - `<https://github.com/antonkri>`_
 
@@ -42,7 +43,8 @@ The evidences are not published openly due to personal data confidentiality, but
 
 - `<https://github.com/vinodreddy-g>`_: SW developer and architect at Tier 1 > 10 years for safety related SW. Contribution to process community.
 - `<https://github.com/umaucher>`_ : SW developer and architect at OEM > 10 years for safety related SW. Contribution to feature team.
-- `<https://github.com/antonkri>`_ SW developer and architect at OEM > 10 years for safety related SW. Contribution to feature teams.
+- `<https://github.com/antonkri>`_: SW developer and architect at OEM > 10 years for safety related SW. Contribution to feature teams.
+- `<https://github.com/PandaeDo>`_: skill check performed as elected platform safety manager, see :need:`doc__platform_safety_manager`.
 
 
 The S-CORE processes are trained on the job by the Persistency module safety manager to the CODEOWNERS.
