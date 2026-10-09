@@ -90,5 +90,7 @@ Security Weaknesses, Vulnerabilities
 
 References
 ----------
-| <link to the user manual>
-| <other links>
+| Module user manual: :need:`doc__persistency_user_manual`
+| Module security plan: :need:`doc__persistency_security_plan`
+| Feature security analysis: :need:`doc__persistency_stride`
+| Feature architecture: :need:`doc__persistency_kvs_architecture`
