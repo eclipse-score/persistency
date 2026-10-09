@@ -51,6 +51,13 @@ git_override(
     remote = "https://github.com/eclipse-score/tools",
 )
 
+# Pinned past v8.3.0 for the FMEA attribute failure_root_cause (#916).
+git_override(
+    module_name = "score_docs_as_code",
+    commit = "3893e35942e95d949a668fff93f05a2ca11c7687",
+    remote = "https://github.com/eclipse-score/docs-as-code",
+)
+
 # Python toolchain configuration
 PYTHON_VERSION = "3.12"
 
