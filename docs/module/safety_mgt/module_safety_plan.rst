@@ -24,10 +24,13 @@ Module Safety Plan
    :realizes: wp__module_safety_plan[version==1]
    :tags: persistency
 
+:note: The module safety plan shall be continuously maintained during the project.
+       Deviations to the module safety plan are documented :ref:`here <persistency_safety_package_deviations>`.
+
 Functional Safety Management Context
 ====================================
 
-This Safety Plan adds to the :need:`wp__platform_safety_plan` all the module development relevant workproducts needed for ISO 26262 conformity.
+This Safety Plan adds to the :need:`wp__platform_safety_plan` all the module development relevant work products needed for ISO 26262 conformity.
 
 Functional Safety Management Scope
 ==================================
@@ -55,22 +58,29 @@ Tailoring
 
 Additional to the tailoring in the SW platform project as defined in the :need:`wp__platform_safety_plan` we define here the additional tailoring on module level.
 
-| - Excluded for this module are additionally the following workproducts (and their related requirements):
-|   - Safety Analysis will not be performed on module level, because they are identical to the feature level
-|   - Detailed Design will not be performed on module level, because it's optional according to the process description
+- Excluded for this module are additionally the following work products (and their related requirements):
 
-Functional Safety Module Workproducts
-=====================================
+  - none
 
-One set of workproducts for the module and one set for each component of the module:
+- Notes on the execution of the planned work products:
 
-Module Workproducts List
-------------------------
+  - The component safety analyses (:need:`doc__kvs_fmea`, :need:`doc__kvs_dfa`) refer to the feature safety analyses,
+    because the KVS component has no internal components (:need:`doc__kvs_component_architecture`).
+  - The detailed design is captured in the source code (public API headers and traits, source code comments) according to
+    :need:`gd_guidl__implementation`. :need:`doc__kvs_detailed_design` documents the decomposition into units.
 
-.. list-table:: Module Workproducts
+Functional Safety Module Work products
+======================================
+
+One set of work products for the module and one set for each component of the module:
+
+Module Work products List
+-------------------------
+
+.. list-table:: Module Work products
         :header-rows: 1
 
-        * - Workproduct Id
+        * - Work product Id
           - Link to process
           - Process status
           - Link to WP
@@ -98,12 +108,12 @@ Module Workproducts List
         * - :need:`wp__fdr_reports` (module's Safety Analyses & DFA)
           - :need:`gd_chklst__safety_analysis`
           - :ndf:`copy('status', need_id='gd_chklst__safety_analysis')`
-          - n/a because no safety analysis performed for the components. They will be overtaken from the feature.
+          - :need:`doc__module_safety_analysis_fdr`
 
         * - :need:`wp__audit_report`
           - performed by external experts
           - n/a
-          - <Link to WP>
+          - Planned with the next S-CORE safety audit, see :ref:`persistency_safety_package_deviations`
 
         * - :need:`wp__module_safety_manual`
           - :need:`gd_temp__safety_manual`
@@ -121,13 +131,13 @@ Module Workproducts List
           - :need:`doc__persistency_release_note`
 
 
-Component KVS Workproducts List
--------------------------------
+Component KVS Work products List
+--------------------------------
 
-.. list-table:: Component KVS Workproducts
+.. list-table:: Component KVS Work products
         :header-rows: 1
 
-        * - Workproduct Id
+        * - Work product Id
           - Link to process
           - Process status
           - Link to WP
@@ -150,7 +160,7 @@ Component KVS Workproducts List
         * - :need:`wp__component_arch`
           - :need:`gd_temp__arch_comp`
           - :ndf:`copy('status', need_id='gd_temp__arch_comp')`
-          - :need:`doc__kvs_architecture`
+          - :need:`doc__kvs_component_architecture`
 
         * - :need:`wp__sw_arch_verification`
           - :need:`gd_chklst__arch_inspection_checklist`
@@ -167,10 +177,16 @@ Component KVS Workproducts List
           - :ndf:`copy('status', need_id='gd_temp__comp_saf_dfa')`
           - :need:`doc__kvs_dfa`
 
+        * - :need:`wp__sw_implementation`
+          - :need:`gd_guidl__implementation`
+          - :ndf:`copy('status', need_id='gd_guidl__implementation')`
+          - :need:`doc__kvs_detailed_design` & `source code <https://github.com/eclipse-score/persistency/tree/main/score/kvs>`__
+
         * - :need:`wp__verification_sw_unit_test`
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
-          - <Link to WP>
+          - Bazel test suites ``//score/kvs:unit_tests`` (C++) and ``//score/kvs/rust_kvs:unit_tests`` (Rust),
+            results in :need:`doc__persistency_verification_report`
 
         * - :need:`wp__sw_implementation_inspection`
           - :need:`gd_chklst__impl_inspection_checklist`
@@ -180,68 +196,22 @@ Component KVS Workproducts List
         * - :need:`wp__verification_comp_int_test`
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
-          - <Link to WP>
+          - Bazel test suites ``//score/kvs/tests/test_cases:cit_cpp`` and ``//score/kvs/tests/test_cases:cit_rust``,
+            results in :need:`doc__persistency_verification_report`
+
+The KVS component is a new development, so no :need:`wp__sw_component_class` is planned for it.
 
 
 
 
 OSS (sub-)component qualification plan
-======================================
+--------------------------------------
 
-For the selected OSS component the following workproducts will be implemented (and why):
+The Rust implementation of the KVS component uses the OSS crates ``tinyjson`` (JSON parsing and generation) and
+``adler32`` (checksum). The C++ implementation uses the S-CORE baselibs only.
 
-If the OSS element is classified as
-    - component, then the below table shall match the above, adding the reasoning for tailoring of work products according to the OSS component classification.
-    - lower level component, then no workproducts additional to the component’s will be planned and activities below are part of the component’s issues.
-
-.. list-table:: OSS (sub-)component Tiny JSON Workproducts
-        :header-rows: 1
-
-        * - Work product Id
-          - Link to process
-          - Reasoning for tailoring
-
-        * - :need:`wp__requirements_comp`
-          - :need:`gd_temp__req_comp_req`
-          - Always needed (for Q and QR classification) and also improves process Id 2
-
-        * - :need:`wp__requirements_comp_aou`
-          - :need:`gd_temp__req_aou_req`
-          - Always needed (for Q and QR classification) and also improves process Id 5
-
-        * - :need:`wp__requirements_inspect`
-          - :need:`gd_chklst__req_inspection`
-          - <Reasoning for tailoring>
-
-        * - :need:`wp__component_arch`
-          - :need:`gd_temp__arch_comp`
-          - <Reasoning for tailoring, needed for example in case of deficits in process Id 3&4 and complexity Ids 1&4>
-
-        * - :need:`wp__sw_component_fmea`
-          - :need:`gd_temp__comp_saf_fmea`
-          - <Reasoning for tailoring, could help arguing too high cyclomatic complexity covered by safety mechanisms>
-
-        * - :need:`wp__sw_arch_verification`
-          - :need:`gd_chklst__arch_inspection_checklist`
-          - <Reasoning for tailoring, needed if also wp__component_arch is required>
-
-        * - :need:`wp__sw_implementation`
-          - n/a
-          - Tailored - If source code is modified, this is not a OSS qualification any more.
-
-        * - :need:`wp__verification_sw_unit_test`
-          - :need:`gd_guidl__verification_guide`
-          - <Reasoning for tailoring, can improve deficits in process Id 6 and complexity Id 3>
-
-        * - :need:`wp__sw_implementation_inspection`
-          - :need:`gd_chklst__impl_inspection_checklist`
-          - <Reasoning for tailoring, can improve deficits in process Id 6 and complexity Id 2>
-
-        * - :need:`wp__verification_comp_int_test`
-          - :need:`gd_guidl__verification_guide`
-          - Always needed (for Q and QR classification)
-
-
+The classification of these OSS crates (:need:`wp__sw_component_class`) and the resulting qualification plan are open,
+see :ref:`persistency_safety_package_deviations`.
 
 Link to project planning
 ------------------------
@@ -258,13 +228,14 @@ documents and work products status have to go to "valid" (after the relevant ver
 Module Documents Status
 -----------------------
 
-For all the work product documents the status can be seen in :ref:`persistency_module_documentation`.
-
+For all the work product documents the status can be seen by following the "Link to WP" and in
+:ref:`persistency_module_documentation`.
 
 Component Documents Status
 --------------------------
 
-For all the work product documents the status can be seen  in :ref:`persistency_module_documentation`.
+For all the work product documents the status can be seen by following the "Link to WP" and in
+:ref:`component_documentation`.
 
 
 Component Requirements Status
@@ -309,4 +280,16 @@ The following deviations from the module safety plan are present in the module s
 These are deviations from planned processes execution and/or work product results,
 safety anomalies in the sense of known bugs in the software are reported in the release notes.
 
-No deviations from the module safety plan are present in the module safety package.
+.. list-table:: Deviations from the module safety plan
+        :header-rows: 1
+
+        * - Work product
+          - Deviation
+          - Planned resolution
+
+        * - :need:`wp__sw_component_class`
+          - The OSS crates ``tinyjson`` and ``adler32`` used by the Rust implementation are not classified. The previous
+            classification of Tiny JSON was removed with the change of the architecture to the baselibs JSON interface.
+          - Classify the crates or replace them by the baselibs interfaces in the Rust implementation.
+
+
