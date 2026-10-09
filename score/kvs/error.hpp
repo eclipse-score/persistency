@@ -18,7 +18,9 @@
 namespace score::mw::per::kvs
 {
 
-/* @brief */
+/**
+ * @brief Error codes reported by the `kvs` API.
+ */
 enum class ErrorCode : score::result::ErrorCode
 {
     /* Error that was not yet mapped*/
@@ -85,14 +87,16 @@ enum class ErrorCode : score::result::ErrorCode
     InvalidValueType,
 };
 
-class MyErrorDomain final : public score::result::ErrorDomain
+/**
+ * @brief Error domain translating `ErrorCode` codes to human-readable messages.
+ */
+class KvsErrorDomain final : public score::result::ErrorDomain
 {
   public:
     std::string_view MessageFor(const score::result::ErrorCode& code) const noexcept override;
 };
 
-constexpr MyErrorDomain my_error_domain;
-score::result::Error MakeError(ErrorCode code, std::string_view user_message = "") noexcept;
+score::result::Error MakeError(const ErrorCode code, const std::string_view user_message = "") noexcept;
 
 } /* namespace score::mw::per::kvs */
 

@@ -13,7 +13,7 @@
 #ifndef SCORE_LIB_KVS_KVS_HPP
 #define SCORE_LIB_KVS_KVS_HPP
 
-#include "internal/error.hpp"
+#include "score/kvs/error.hpp"
 #include "kvsvalue.hpp"
 #include "score/filesystem/filesystem.h"
 #include "score/json/json_parser.h"
@@ -60,24 +60,26 @@ struct SnapshotId
 };
 
 /* Need-Defaults flag*/
-enum class OpenNeedDefaults
+enum class OpenNeedDefaults : std::uint8_t
 {
-    Optional = 0, /* Optional: Use an empty defaults Storage if not available*/
-    Required = 1  /* Required: Defaults must be available*/
+    Required = 0, /* Required: Defaults must be available*/
+    Optional = 1, /* Optional: Use an empty defaults Storage if not available*/
+    Ignored  = 2, /* Ignored:  Defaults are not loaded*/
 };
 
 /* Need-KVS flag*/
-enum class OpenNeedKvs
+enum class OpenNeedKvs : std::uint8_t
 {
-    Optional = 0, /* Optional: Use an empty KVS if no KVS is available*/
-    Required = 1  /* Required: KVS must be already exist*/
+    Required = 0, /* Required: KVS must be already exist*/
+    Optional = 1, /* Optional: Use an empty KVS if no KVS is available*/
+    Ignored  = 2, /* Ignored:  KVS is not loaded*/
 };
 
 /* Need-File flag */
-enum class OpenJsonNeedFile
+enum class OpenJsonNeedFile : std::uint8_t
 {
-    Optional = 0, /* Optional: If the file doesn't exist, start with empty data */
-    Required = 1  /* Required: The file must already exist */
+    Required = 0, /* Required: The file must already exist */
+    Optional = 1, /* Optional: If the file doesn't exist, start with empty data */
 };
 
 /**
@@ -137,6 +139,8 @@ enum class OpenJsonNeedFile
 class Kvs final
 {
   public:
+    using KeyValueMap = std::unordered_map<std::string, KvsValue>;
+
     // Deleted copy constructor and assignment operator to prevent copying
     Kvs(const Kvs&) = delete;
     Kvs& operator=(const Kvs&) = delete;
@@ -152,7 +156,8 @@ class Kvs final
      * It allows the caller to specify whether default values and an existing KVS are required
      * or optional during the opening process.
      *
-     * @param id The instance ID of the KVS. This uniquely identifies the KVS instance.
+     * @param instance_id The instance ID of the KVS. This uniquely identifies the KVS instance.
+     * @param snapshot_id The snapshot ID of the KVS. This uniquely identifies the KVS snapshot.
      * @param need_defaults A flag of type OpenNeedDefaults indicating whether default values
      *                      are required or optional.
      *                      - OpenNeedDefaults::Required: Default values must be available.
@@ -172,8 +177,9 @@ class Kvs final
      *
      */
     static score::Result<Kvs> open(const InstanceId& instance_id,
-                                   OpenNeedDefaults need_defaults,
-                                   OpenNeedKvs need_kvs,
+                                   const SnapshotId& snapshot_id,
+                                   const OpenNeedDefaults& need_defaults,
+                                   const OpenNeedKvs& need_kvs,
                                    const std::string&& dir);
 
     /**
@@ -403,10 +409,10 @@ class Kvs final
 
     /* Internal storage and configuration details.*/
     std::mutex kvs_mutex;
-    std::unordered_map<std::string, KvsValue> kvs;
+    KeyValueMap kvs;
 
     /* Optional default values */
-    std::unordered_map<std::string, KvsValue> default_values;
+    KeyValueMap default_values;
 
     /* Filename prefix */
     score::filesystem::Path filename_prefix;
@@ -423,9 +429,9 @@ class Kvs final
 
     /* Private Methods */
     score::Result<void> snapshot_rotate();
-    score::Result<std::unordered_map<std::string, KvsValue>> parse_json_data(const std::string& data);
-    score::Result<std::unordered_map<std::string, KvsValue>> open_json(const score::filesystem::Path& prefix,
-                                                                       OpenJsonNeedFile need_file);
+    score::Result<KeyValueMap> parse_json_data(const std::string& data);
+    score::Result<KeyValueMap> open_json(const score::filesystem::Path& prefix,
+                                         const OpenJsonNeedFile need_file);
     score::Result<void> write_json_data(const std::string& buf);
     score::Result<void> write_and_sync(const std::string& path, const void* data, std::size_t size);
 };

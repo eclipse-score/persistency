@@ -17,7 +17,7 @@ load("@score_docs_as_code//:docs.bzl", "docs_bundle")
 docs_bundle(
     name = "kvs_docs",
     code_targets = [
-        ":kvs_cpp",
+        ":kvs",
         "//score/kvs/rust_kvs:rust_kvs",
     ],
     primary_need_id = "comp__persistency_kvs",
@@ -26,42 +26,38 @@ docs_bundle(
 )
 
 cc_library(
-    name = "kvsvalue",
+    name = "kvs",
     srcs = [
-        "kvsvalue.cpp",
-    ],
-    hdrs = ["kvsvalue.hpp"],
-    includes = ["."],
-    visibility = [
-        "//visibility:public",
-    ],
-)
-
-cc_library(
-    name = "kvs_cpp",
-    srcs = [
+        "error.cpp",
+        "internal/kvs_helper.cpp",
+        "internal/kvs_helper.hpp",
         "kvs.cpp",
         "kvsbuilder.cpp",
+        "kvsvalue.cpp",
     ],
     hdrs = [
+        "error.hpp",
         "kvs.hpp",
         "kvsbuilder.hpp",
+        "kvsvalue.hpp",
     ],
-    implementation_deps = [
-        "//score/kvs/internal:kvs_helper",
-    ],
-    includes = ["."],
     visibility = [
         "//visibility:public",
     ],
     deps = [
-        ":kvsvalue",
-        "//score/kvs/internal:error",
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/json",
         "@score_baselibs//score/mw/log",
         "@score_baselibs//score/result",
     ],
+)
+
+alias(
+    name = "kvs_cpp",
+    actual = "//score/kvs",
+    deprecation = "//score/kvs:kvs_cpp has moved to //score/kvs " +
+                  "Update your dependency to the //score/kvs label.",
+    visibility = ["//visibility:public"],
 )
 
 cc_test(
@@ -77,8 +73,7 @@ cc_test(
     ],
     visibility = ["//:__pkg__"],
     deps = [
-        ":kvs_cpp",
-        "//score/kvs/internal:kvs_helper",
+        ":kvs",
         "@googletest//:gtest_main",
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/filesystem:mock",

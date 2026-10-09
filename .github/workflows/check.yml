@@ -100,7 +100,7 @@ jobs:
           bazelisk-cache: true
 
       - name: Bazel Build
-        run: bazel build --lockfile_mode=error --config=per-x86_64-linux //:kvs_cpp
+        run: bazel build --lockfile_mode=error --config=per-x86_64-linux //score/kvs
 
       - name: Bazel Unit Test with Coverage
         run: |

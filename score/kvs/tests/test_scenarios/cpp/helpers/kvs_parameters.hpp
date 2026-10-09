@@ -12,7 +12,7 @@
  ********************************************************************************/
 #pragma once
 
-#include <kvs.hpp>
+#include "score/kvs/kvs.hpp"
 
 struct KvsParameters
 {
@@ -25,8 +25,8 @@ struct KvsParameters
     static KvsParameters from_object(const score::json::Object& object);
 
     score::mw::per::kvs::InstanceId instance_id;
-    std::optional<bool> need_defaults;
-    std::optional<bool> need_kvs;
+    std::optional<score::mw::per::kvs::OpenNeedDefaults> need_defaults;
+    std::optional<score::mw::per::kvs::OpenNeedKvs> need_kvs;
     std::optional<std::string> dir;
     std::optional<size_t> snapshot_max_count;
 };

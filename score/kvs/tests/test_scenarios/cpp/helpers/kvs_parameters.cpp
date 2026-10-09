@@ -19,22 +19,24 @@ namespace
 {
 
 /// Deserialize load parameter: "defaults" or "kvs_load".
-std::optional<bool> deserialize_load_param(const score::json::Object& obj_root, const std::string& field_name)
+template <typename T,
+          typename std::enable_if_t<std::is_same_v<T, score::mw::per::kvs::OpenNeedDefaults> || std::is_same_v<T, score::mw::per::kvs::OpenNeedKvs>, bool> = true>
+std::optional<T> deserialize_load_param(const score::json::Object& obj_root, const std::string& field_name)
 {
     if (obj_root.find(field_name) != obj_root.end())
     {
         auto value_str{obj_root.at(field_name).As<std::string>().value().get()};
         if (value_str.compare("ignored") == 0)
         {
-            throw std::runtime_error{"\"ignored\" load parameter is not supported yet"};
+            return T::Ignored;
         }
         else if (value_str.compare("optional") == 0)
         {
-            return false;
+            return T::Optional;
         }
         else if (value_str.compare("required") == 0)
         {
-            return true;
+            return T::Required;
         }
         else
         {
@@ -69,10 +71,10 @@ KvsParameters KvsParameters::from_object(const Object& object)
     KvsParameters params{.instance_id = obj_root.at("instance_id").As<uint64_t>().value()};
 
     // Deserialize "defaults".
-    params.need_defaults = deserialize_load_param(obj_root, "defaults");
+    params.need_defaults = deserialize_load_param<score::mw::per::kvs::OpenNeedDefaults>(obj_root, "defaults");
 
     // Deserialize "kvs_load".
-    params.need_kvs = deserialize_load_param(obj_root, "kvs_load");
+    params.need_kvs = deserialize_load_param<score::mw::per::kvs::OpenNeedKvs>(obj_root, "kvs_load");
 
     // Deserialize "dir".
     if (obj_root.find("dir") != obj_root.end())
