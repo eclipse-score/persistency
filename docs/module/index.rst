@@ -1,6 +1,6 @@
 ..
    # *******************************************************************************
-   # Copyright (c) 2025 Contributors to the Eclipse Foundation
+   # Copyright (c) 2026 Contributors to the Eclipse Foundation
    #
    # See the NOTICE file(s) distributed with this work for additional
    # information regarding copyright ownership.
@@ -12,31 +12,28 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-.. _component_PersistencyJson:
 
-Tiny JSON
-#########
+.. _persistency_module:
+
+Persistency Module
+==================
+
+.. mod:: Persistency Module
+   :id: mod__persistency
+   :version: 1
+   :security: YES
+   :safety: ASIL_B
+   :status: valid
+   :includes: comp__persistency_kvs[version==1]
+
+Module Documents
+-----------------
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 1
 
-   component_classification
+   manuals/index
+   release/release_note
+   safety_mgt/index
+   security_mgt/index
 
-.. document:: Persistency JSON
-   :id: doc__persistencyjson
-   :status: valid
-   :version: 1
-   :safety: ASIL_B
-   :security: NO
-   :realizes: wp__cmpt_request[version==1]
-   :tags: template
-
-
-Abstract
-========
-
-| The component is implemented in the module:
-| `Tiny JSON <https://github.com/rhysd/tinyjson>`_ V.2.5.1
-|
-| Additional documentation considered:
-| `Documentation for Tiny JSON <https://docs.rs/tinyjson/latest/tinyjson/>`_

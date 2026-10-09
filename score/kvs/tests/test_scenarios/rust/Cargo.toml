@@ -3,6 +3,9 @@ name = "test_scenarios"
 version.workspace = true
 edition.workspace = true
 
+[[bin]]
+name = "test_scenarios"
+path = "main.rs"
 
 [dependencies]
 rust_kvs.workspace = true
@@ -15,11 +18,9 @@ serde_json = "1.0.140"
 test_scenarios_rust = { git = "https://github.com/eclipse-score/testing_tools.git", tag = "v0.3.0" }
 stdout_logger = { workspace = true, optional = true }
 
-
 [features]
 default = ["stdout_logger"]
 score_log_bridge = []
-
 
 [lints]
 workspace = true

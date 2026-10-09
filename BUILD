@@ -12,9 +12,10 @@
 # *******************************************************************************
 
 load("@score_docs_as_code//:docs.bzl", "docs")
-load("@score_format_checker//:macros.bzl", "use_format_targets")
-load("@score_tooling//:defs.bzl", "cli_helper", "copyright_checker", "dash_license_checker", "setup_starpls")
-load("//:project_config.bzl", "PROJECT_CONFIG")
+load("@score_sbom//:defs.bzl", "sbom")
+load("@score_tooling//:defs.bzl", "cli_helper", "dash_license_checker", "setup_starpls")
+load("@score_tooling//third_party/format:macros.bzl", "use_format_targets")
+load("@score_tools//cr_checker:cr_checker.bzl", "copyright_checker")
 
 # Creates all documentation targets:
 # - `:docs` for building documentation at build-time
@@ -31,11 +32,12 @@ docs(
             "mount_at": "components/kvs",
         },
     ],
-    data = [
-        "@score_platform//:needs_json",
-        "@score_process_description//:needs_json",
+    external_needs = [
+        "@score_platform//:needs_json_file",
+        "@score_process_description//:needs_json_file",
     ],
-    source_dir = "docs",
+    project = "S-CORE persistency",
+    project_url = "https://eclipse-score.github.io/persistency/",
 )
 
 setup_starpls(
@@ -45,48 +47,49 @@ setup_starpls(
 
 copyright_checker(
     name = "copyright",
-    srcs = [
-        ".github",
-        "BUILD",
-        "MODULE.bazel",
-        "docs",
-        "examples",
-        "score",
-        "tools",
-    ],
-    config = "@score_tooling//cr_checker/resources:config",
-    template = "@score_tooling//cr_checker/resources:templates",
+    exclusion = "//:tools/copyright_exclusions.txt",
     visibility = ["//visibility:public"],
 )
 
-# Needed for Dash tool to check python dependency licenses.
-# This is a workaround to filter out local packages from the Cargo.lock file.
-# The tool is intended for third-party content.
-genrule(
-    name = "filtered_cargo_lock",
-    srcs = ["Cargo.lock"],
-    outs = ["Cargo.lock.filtered"],
-    cmd = """
-    awk '
-    BEGIN { skip = 0; data = "" }
-    /^\\[\\[package\\]\\]/ {
-        if (data != "" && !skip) print data;
-        skip = 1;
-        data = $$0;
-        next;
-    }
-    data != "" { data = data "\\n" $$0 }
-    # any package that has a "source = " line will not be skipped.
-    /^source = / { skip = 0 }
-    END { if (data != "" && !skip) print data }
-    ' $(location Cargo.lock) > $@
-    """,
+dash_license_checker(
+    src = "//:Cargo.lock",
+    file_type = "cargo",
+    filter_keywords = ["github.com/eclipse-score/"],
+    visibility = ["//visibility:public"],
 )
 
-dash_license_checker(
-    src = ":filtered_cargo_lock",
-    file_type = "",  # let it auto-detect based on project_config
-    project_config = PROJECT_CONFIG,
+# Generates the product SBOM (SPDX 2.3 + CycloneDX 1.6) for the KVS library.
+# - Rust crate licenses/suppliers come from the crates.io API via
+#   auto_crates_cache (network access required at build time).
+# - Build-time/test tooling is covered separately by //:sbom_docs_tests.
+sbom(
+    name = "sbom_product",
+    component_name = "score_persistency",
+    module_lockfiles = [":MODULE.bazel.lock"],
+    targets = [
+        "//score/kvs:kvs",
+        "//score/kvs/rust_kvs:rust_kvs",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# Qualification inventory for Python-based build and test tools. This is kept
+# separate from the product SBOM because build-time dependencies are not
+# product/runtime dependencies.
+sbom(
+    name = "sbom_docs_tests",
+    testonly = True,
+    component_name = "score_persistency",
+    module_lockfiles = [":MODULE.bazel.lock"],
+    python_lockfiles = [
+        "//score/kvs/tests/test_cases:requirements.txt.lock",
+        "@score_docs_as_code//src:requirements_lock",
+    ],
+    targets = [
+        "//:docs",
+        "//:unit_tests",
+        "//:cit_tests",
+    ],
     visibility = ["//visibility:public"],
 )
 
@@ -108,28 +111,17 @@ use_format_targets()
 
 alias(
     name = "kvs_cpp",
-    actual = "//score/kvs:kvs_cpp",
+    actual = "//score/kvs",
+    deprecation = "//:kvs_cpp is deprecated. Update your dependency to the //score/kvs label.",
     tags = ["cli_help=Build KVS CPP [build]"],
-    visibility = ["//visibility:public"],
-)
-
-test_suite(
-    name = "test_kvs_cpp",
-    tests = ["//score/kvs/tests:test_kvs_cpp"],
-    visibility = ["//visibility:public"],
-)
-
-test_suite(
-    name = "bm_kvs_cpp",
-    tests = ["//score/kvs/tests:bm_kvs_cpp"],
     visibility = ["//visibility:public"],
 )
 
 test_suite(
     name = "unit_tests",
     tests = [
-        "test_kvs_cpp",
-        "//score/kvs/rust_kvs:tests",
+        "//score/kvs:unit_tests",
+        "//score/kvs/rust_kvs:unit_tests",
     ],
     visibility = ["//visibility:public"],
 )
@@ -155,14 +147,14 @@ test_suite(
     name = "miri_tests",
     tags = ["manual"],
     tests = [
-        "//score/kvs/rust_kvs:tests_miri_error_code",
-        "//score/kvs/rust_kvs:tests_miri_json_backend",
-        "//score/kvs/rust_kvs:tests_miri_kvs",
-        "//score/kvs/rust_kvs:tests_miri_kvs_api",
-        "//score/kvs/rust_kvs:tests_miri_kvs_builder",
-        "//score/kvs/rust_kvs:tests_miri_kvs_mock",
-        "//score/kvs/rust_kvs:tests_miri_kvs_serialize",
-        "//score/kvs/rust_kvs:tests_miri_kvs_value",
+        "//score/kvs/rust_kvs:unit_tests_miri_error_code",
+        "//score/kvs/rust_kvs:unit_tests_miri_json_backend",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs_api",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs_builder",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs_mock",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs_serialize",
+        "//score/kvs/rust_kvs:unit_tests_miri_kvs_value",
     ],
     visibility = ["//visibility:public"],
 )

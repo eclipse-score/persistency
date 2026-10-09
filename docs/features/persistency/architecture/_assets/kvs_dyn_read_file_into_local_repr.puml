@@ -18,41 +18,41 @@ title Sequence Diagram: Read Data into Local Representation (KvsValue)
 participant "User" as actor
 participant "«component» :kvs" as kvs
 participant "«component» :json" as json_parser
-participant "«component» :fs" as fs
+participant "«component» :filesystem" as fs
 
 actor -> kvs: Open KVS
 
-kvs -> fs: Read defaults file
-
-alt file-exists
-    fs --> kvs: Defaults file content (JSON)
-else file-based-error
-    fs --> kvs: File-Error
-    kvs -> actor: File-Error
-end
-
-kvs -> fs: Read defaults file hash
-
-alt file-exists
-    fs --> kvs: Defaults file hash
-else file-based-error
-    fs --> kvs: File-Error
-    kvs -> actor: File-Error
-end
-
-kvs -> kvs: Generate defaults file hash
-
-alt hash-match-success
-    kvs -> json_parser: Parse JSON data
-else hash-match-error
-    kvs -> actor: Hash-Error
-end
-
-alt parsing-success
-    json_parser --> kvs: Parsed JSON object
-else parsing-based-error
-    json_parser -> kvs: Parser-Error
-    kvs -> actor: Parser-Error
+group Load defaults, then load KVS
+    kvs -> fs: Read data file
+    alt file-exists
+        fs --> kvs: Data file content (JSON)
+        kvs -> fs: Read data file hash
+        alt hash-file-exists
+            fs --> kvs: Data file hash
+        else hash-file-read-error
+            fs --> kvs: File-Error
+            kvs --> actor: KVS-Hash-File-Read-Error
+        end
+        kvs -> kvs: Generate hash of data and compare
+        alt hash-match-success
+            kvs -> json_parser: Parse JSON data
+        else hash-match-error
+            kvs --> actor: Validation-Failed-Error
+        end
+        alt parsing-success
+            json_parser --> kvs: Parsed JSON object (KvsValue)
+        else parsing-error
+            json_parser --> kvs: Parser-Error
+            kvs --> actor: JSON-Parser-Error
+        end
+    else file-missing
+        alt file-required
+            fs --> kvs: File-Error
+            kvs --> actor: KVS-File-Read-Error
+        else file-optional
+            kvs -> kvs: Start with empty data
+        end
+    end
 end
 
 kvs --> actor: KVS instance

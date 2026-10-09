@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#include "kvsbuilder.hpp"
+#include "score/kvs/kvsbuilder.hpp"
 
 namespace score::mw::per::kvs
 {
@@ -18,19 +18,26 @@ namespace score::mw::per::kvs
 /*********************** KVS Builder Implementation *********************/
 KvsBuilder::KvsBuilder(const InstanceId& instance_id)
     : instance_id(instance_id),
-      need_defaults(false),
-      need_kvs(false),
+      snapshot_id(SnapshotId{0}),
+      need_defaults(OpenNeedDefaults::Optional),
+      need_kvs(OpenNeedKvs::Optional),
       directory("./data_folder/") /* Default Directory */
 {
 }
 
-KvsBuilder& KvsBuilder::need_defaults_flag(bool flag)
+KvsBuilder& KvsBuilder::snapshot(const SnapshotId& snapshot_id)
+{
+    this->snapshot_id = snapshot_id;
+    return *this;
+}
+
+KvsBuilder& KvsBuilder::need_defaults_flag(const OpenNeedDefaults& flag)
 {
     need_defaults = flag;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::need_kvs_flag(bool flag)
+KvsBuilder& KvsBuilder::need_kvs_flag(const OpenNeedKvs& flag)
 {
     need_kvs = flag;
     return *this;
@@ -53,8 +60,9 @@ score::Result<Kvs> KvsBuilder::build()
     }
 
     result = Kvs::open(instance_id,
-                       need_defaults ? OpenNeedDefaults::Required : OpenNeedDefaults::Optional,
-                       need_kvs ? OpenNeedKvs::Required : OpenNeedKvs::Optional,
+                       snapshot_id,
+                       need_defaults,
+                       need_kvs,
                        std::move(directory));
 
     return result;

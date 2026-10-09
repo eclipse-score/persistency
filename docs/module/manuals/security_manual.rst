@@ -22,7 +22,7 @@ Security Manual
    :safety: ASIL_B
    :security: YES
    :realizes: wp__module_security_manual[version==1]
-   :tags: template
+   :tags: persistency
 
 Introduction/Scope
 ------------------
@@ -54,15 +54,16 @@ List of AoUs expected from the environment the platform / module runs on:
    results = []
 
    for need in needs.filter_types(["aou_req"]):
-      if need and "environment" in need["tags"]:
-                results.append(need)
+      if need and "persistency" in need["tags"] and "environment" in need["tags"]:
+         if need["security"] == "YES":
+            results.append(need)
 
 Assumptions on the User
 ^^^^^^^^^^^^^^^^^^^^^^^
 | As there is no assumption on which specific OS and HW is used, the integration testing of the stakeholder and feature requirements is expected to be performed by the user of the platform OoC. Tests covering all stakeholder and feature requirements performed on a reference platform (tbd link to reference platform specification), reviewed and passed are included in the platform OoC security package.
-| Additionally the components of the platform may have additional specific assumptions how they are used. These are part of every module documentation: <link to add>. Assumptions from components to their users can be fulfilled in two ways:
+| Additionally the components of the platform may have additional specific assumptions how they are used. These are part of every module documentation: :ref:`persistency_module_documentation`. Assumptions from components to their users can be fulfilled in two ways:
 | 1. There are assumption which need to be fulfilled by all SW components, e.g. "every user of an IPC mechanism needs to make sure that he provides correct data (e.g. including appropriate security (access) control)" - in this case the AoU is marked as "platform".
-| 2. There are assumption which can be fulfilled by a security control realized by some other Project platform component and are therefore not relevant for an user who uses the whole platform. But those are relevant if you chose to use the module OcC stand-alone - in this case the AoU is marked as "module". An example would be the "JSON read" which requires "The user shall provide a string as input which is not corrupted due to HW or QM SW errors." - which is covered when using together with safe <Project> platform persistency feature.
+| 2. There are assumption which can be fulfilled by a security control realized by some other Project platform component and are therefore not relevant for an user who uses the whole platform. But those are relevant if you chose to use the module OcC stand-alone - in this case the AoU is marked as "module". An example would be the "JSON read" which requires "The user shall provide a string as input which is not corrupted due to HW or QM SW errors." - which is covered when using together with safe S-CORE platform persistency feature.
 
 List of AoUs on the user of the platform features or the module of this Security Manual:
 
@@ -75,16 +76,17 @@ List of AoUs on the user of the platform features or the module of this Security
    results = []
 
    for need in needs.filter_types(["aou_req"]):
-      if need and "environment" not in need["tags"]:
-                results.append(need)
+      if need and "persistency" in need["tags"] and "environment" not in need["tags"]:
+         if need["security"] == "YES":
+            results.append(need)
 
 Security concept of the OoC
-----------------------------
+---------------------------
 | <Describe here the security concept incl. which attack paths are taken care of, reactions of the implemented functions under threatened operating conditions ... if this is not already documented sufficiently in the feature documentation "security impact" section of all the features the module is used in.>
 
 Security Weaknesses, Vulnerabilities
 ------------------------------------
-| Weaknesses, vulnerabilities (bugs in security relevant SW, detected by testing or by users, which could not be fixed) known before release are documented in the platform/module release notes <add link to release note>.
+| Weaknesses, vulnerabilities (bugs in security relevant SW, detected by testing or by users, which could not be fixed) known before release are documented in the platform/module release notes :need:`doc__persistency_release_note`.
 
 References
 ----------

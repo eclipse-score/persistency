@@ -12,8 +12,8 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-Architecture
-============
+Persistency KVS Architecture
+============================
 
 .. document:: Persistency KVS Feature Architecture
    :id: doc__persistency_kvs_architecture
@@ -24,17 +24,7 @@ Architecture
    :realizes: wp__feature_arch[version==1]
    :tags: persistency
 
-
-.. comp:: persistency::kvs
-   :id: comp__persistency_kvs
-   :security: YES
-   :safety: ASIL_B
-   :status: valid
-   :version: 1
-   :implements: logic_arc_int__persistency__interface[version==1]
-   :belongs_to: feat__persistency[version==1]
-
-
+Overview
 --------
 
 The Key-Value-Storage (kvs) provides the capability to efficiently store,
@@ -49,22 +39,30 @@ Description
   and widely supported way to store and manage key-value pairs.
 - The JSON data persisted is according to RFC-8259.
 
-Rationale Behind Architecture Decomposition
-*******************************************
-
-- The architecture is decomposed to include a dedicated JSON parser component (json) to facilitate the persistent storage of data in JSON format.
-- The architecture is decomposed to include a FileStorage component (fs) to read and write to the file system.
-
-
-Glossary
---------
+Glossary:
 
 - User: Program code that is written by a person that initiates the given
   functionality call or receives a callback.
 
+Requirements
+------------
+
+.. needtable:: Overview of Feature Requirements
+   :style: table
+   :columns: title;id
+   :filter: type == "feat_req" and id.startswith("feat_req__persistency__")
+   :colwidths: 70,30
+
+Rationale Behind Architecture Decomposition
+*******************************************
+
+- The architecture has one component `comp__persistency_kvs` and it uses `mod__baselibs` for JSON handling and file system access.
 
 Static Architecture
 -------------------
+
+The static view shows the feature with its logical interface and the components implementing it.
+The diagram is generated from the Sphinx Needs model.
 
 .. feat_arc_sta:: Static Architecture
    :id: feat_arc_sta__persistency__static
@@ -76,11 +74,19 @@ Static Architecture
    :version: 1
    :belongs_to: feat__persistency[version==1]
 
-   .. uml:: _assets/kvs_static_view.puml
+   .. needarch::
+      :scale: 50
+      :align: center
+
+      {{ draw_feature(need(), needs) }}
 
 
 Dynamic Architecture
 --------------------
+
+The dynamic views describe the interactions between the user and the components of the feature
+for the main use cases of the KVS.
+
 .. feat_arc_dyn:: Check if key contains default value
    :id: feat_arc_dyn__persistency__check_key_default
    :security: YES
@@ -164,3 +170,18 @@ Dynamic Architecture
 
    .. uml:: _assets/kvs_dyn_restore_snapshot.puml
 
+
+Logical Interfaces
+------------------
+
+The logical interfaces of the feature are defined in the platform documentation:
+:need:`logic_arc_int__persistency__interface`.
+
+See `SCORE Features <https://eclipse-score.github.io/score/main/features/index.html>`_ for more information.
+
+Used Components
+---------------
+
+The feature is realized by the following components of the module:
+
+- :need:`comp__persistency_kvs`

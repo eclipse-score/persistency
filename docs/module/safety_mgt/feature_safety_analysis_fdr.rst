@@ -37,12 +37,12 @@ The purpose of this Safety Analysis (DFA and FMEA) checklist template is to coll
       * - Review ID
         - Acceptance Criteria
         - Guidance
+        - Expected result
         - Passed
-        - Remarks
-        - Issue link
+        - Remarks / Issue link
       * - REQ_01_01
         - Is / are the attribute sufficient set correctly?
-        - The mitigations shall have a direct influence ont the violation by prevention, detection or mitigation to reduce the risk to an acceptable level.
+        - The mitigations shall have a direct influence on the violation by prevention, detection or mitigation to reduce the risk to an acceptable level.
         - The mitigations are sufficient.
         - yes
         -
@@ -73,7 +73,7 @@ The purpose of this Safety Analysis (DFA and FMEA) checklist template is to coll
       * - REQ_01_07
         - Is the sufficiency of the "mitigated by" (prevention, detection or mitigation) described or can it be recognized easily?
         - The sufficiency of the "mitigated by" is described in the content of the document. It can be recognized easily.
-        - The "mitigated by" shows clearly that a fault / failure can be mitigated by the linked requirement by prevention, detection or mitigation. It shall be described in the contend.
+        - The "mitigated by" shows clearly that a fault / failure can be mitigated by the linked requirement by prevention, detection or mitigation. It shall be described in the content.
         - yes
         -
       * - REQ_01_08

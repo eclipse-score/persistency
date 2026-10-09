@@ -40,11 +40,16 @@ Assumed Platform Safety Requirements
    :sort: title
 
    results = []
+   stkh_ids = set()
+
+   for need in needs.filter_types(["feat_req"]):
+      if need["id"].startswith("feat_req__persistency__"):
+         for link in need["derived_from"]:
+            stkh_ids.add(link.split("[")[0])
 
    for need in needs.filter_types(["stkh_req"]):
-      if need and "persistency" in need["tags"]:
-         if need["safety"] == "ASIL_B":
-                results.append(need)
+      if need["id"] in stkh_ids and need["safety"] == "ASIL_B":
+         results.append(need)
 
 
 Assumptions of Use
@@ -60,21 +65,12 @@ AoU Requirements
    :security: NO
    :safety: ASIL_B
    :status: valid
-   :version: 1
-   :tags: environment
+   :version: 2
+   :tags: persistency, environment
 
-   The application shall handle if the feature persistency is not available.
-
-.. aou_req:: Application execution
-   :id: aou_req__persistency__appl_exec
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :status: valid
-   :version: 1
-   :tags: environment
-
-   The execution of persistency shall not be blocked by the application.
+   The application shall detect and handle the unavailability of the feature persistency.
+   Unavailability covers errors reported by the persistency API as well as persistency calls which do
+   not return or return too late (e.g. caused by blocked or delayed execution of the calling context).
 
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -97,7 +93,7 @@ List of AoUs expected from the environment the module runs on:
 
 Assumptions on the User
 ^^^^^^^^^^^^^^^^^^^^^^^
-| As there is no assumption on which specific OS and HW is used, the integration testing of the stakeholder and feature requirements is expected to be performed by the user of the platform SEooC. Tests covering all stakeholder and feature requirements performed on a reference platform (tbd link to reference platform specification), reviewed and passed are included in the platform SEooC safety case.
+| As there is no assumption on which specific OS and HW is used, the integration testing of the stakeholder and feature requirements is expected to be performed by the user of the platform SEooC. Tests covering all stakeholder and feature requirements performed on a reference platform (tbd link to reference platform specification), reviewed and passed are included in the platform SEooC safety package.
 | Additionally the components of the platform may have additional specific assumptions how they are used. These are part of every module documentation: :ref:`persistency_module_documentation`. Assumptions from components to their users can be fulfilled in two ways:
 | 1. There are assumption which need to be fulfilled by all SW components, e.g. "every user of an IPC mechanism needs to make sure that he provides correct data (including appropriate ASIL level)" - in this case the AoU is marked as "platform".
 | 2. There are assumption which can be fulfilled by a safety mechanism realized by some other S-CORE platform component and are therefore not relevant for an user who uses the whole platform. But those are relevant if you chose to use the module SEooC stand-alone - in this case the AoU is marked as "module". An example would be the "JSON read" which requires "The user shall provide a string as input which is not corrupted due to HW or QM SW errors." - which is covered when using together with safe S-CORE platform persistency feature.
@@ -119,9 +115,11 @@ List of AoUs on the user of the platform features or the module of this safety m
 
 Safety concept of the SEooC
 ---------------------------
-| Persistency is full determistic developed. Detected errors will be reportet and Application has to handle them. Also if there are
-| errors which might have inpact on Persistency, but can not be detected by Persistency, the application has to handle the case that
-| persistency is not available. The execution of persistency shall not be blocked by the application.
+| Persistency is developed fully deterministic. Detected errors are reported to the application, which has to handle them.
+| Persistency is executed in the execution context of the calling application. Failures which can not be detected by persistency
+| itself, like blocked or delayed execution, result in persistency not being available (no or too late response). The application
+| has to handle this unavailability (see :need:`aou_req__persistency__error_handling`). Keeping persistency available is therefore
+| not a safety relevant assumption on the application.
 
 Safety Anomalies
 ----------------

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#include "test_kvs_general.hpp"
+#include "kvs_general_test.hpp"
 
 /* adler32 control instance */
 uint32_t adler32(const std::string& data)
@@ -25,50 +25,60 @@ uint32_t adler32(const std::string& data)
     return (b << 16) | a;
 }
 
+void store(const std::string& filePath, const std::string& hashPath, const std::string& data)
+{
+    const uint32_t dataHash{adler32(data)};
+
+    std::ofstream file(filePath);
+    if (file.is_open())
+    {
+        file << data;
+        file.close();
+    }
+
+    std::ofstream hashFile(hashPath, std::ios::binary);
+    if (hashFile.is_open())
+    {
+        hashFile.put((dataHash >> 24) & 0xFF);
+        hashFile.put((dataHash >> 16) & 0xFF);
+        hashFile.put((dataHash >> 8) & 0xFF);
+        hashFile.put(dataHash & 0xFF);
+        hashFile.close();
+    }
+}
+
 /* Create Test environment with default data, which is needed in most testcases */
 void prepare_environment()
 {
     /* Prepare the test environment */
     mkdir(data_dir.c_str(), 0777);
 
-    std::ofstream default_json_file(default_prefix + ".json");
-    default_json_file << default_json;
-    default_json_file.close();
+    const std::string default_json_path(default_prefix + ".json");
+    const std::string default_hash_path(default_prefix + ".hash");
+    const std::string kvs_json_path(kvs_prefix + ".json");
+    const std::string kvs_hash_path(kvs_prefix + ".hash");
 
-    std::ofstream kvs_json_file(kvs_prefix + ".json");
-    kvs_json_file << kvs_json;
-    kvs_json_file.close();
-
-    uint32_t default_hash = adler32(default_json);
-    uint32_t kvs_hash = adler32(kvs_json);
-
-    std::ofstream default_hash_file(default_prefix + ".hash", std::ios::binary);
-    default_hash_file.put((default_hash >> 24) & 0xFF);
-    default_hash_file.put((default_hash >> 16) & 0xFF);
-    default_hash_file.put((default_hash >> 8) & 0xFF);
-    default_hash_file.put(default_hash & 0xFF);
-    default_hash_file.close();
-
-    std::ofstream kvs_hash_file(kvs_prefix + ".hash", std::ios::binary);
-    kvs_hash_file.put((kvs_hash >> 24) & 0xFF);
-    kvs_hash_file.put((kvs_hash >> 16) & 0xFF);
-    kvs_hash_file.put((kvs_hash >> 8) & 0xFF);
-    kvs_hash_file.put(kvs_hash & 0xFF);
-    kvs_hash_file.close();
+    store(default_json_path, default_hash_path, default_json);
+    store(kvs_json_path, kvs_hash_path, kvs_json);
 }
 
 void cleanup_environment()
 {
+    cleanup_environment(data_dir);
+}
+
+void cleanup_environment(const std::string& dir)
+{
     /* Cleanup the test environment */
-    if (std::filesystem::exists(data_dir))
+    if (std::filesystem::exists(dir))
     {
-        for (auto& p : std::filesystem::recursive_directory_iterator(data_dir))
+        for (auto& p : std::filesystem::recursive_directory_iterator(dir))
         {
             std::filesystem::permissions(p,
                                          std::filesystem::perms::owner_all | std::filesystem::perms::group_all |
                                              std::filesystem::perms::others_all,
                                          std::filesystem::perm_options::replace);
         }
-        std::filesystem::remove_all(data_dir);
+        std::filesystem::remove_all(dir);
     }
 }

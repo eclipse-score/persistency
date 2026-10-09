@@ -10,7 +10,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#include "test_kvs_general.hpp"
+#include "kvs_general_test.hpp"
+
+namespace {
+    constexpr score::mw::per::kvs::KvsErrorDomain kvs_error_domain;
+}
 
 TEST(kvs_MessageFor, MessageFor)
 {
@@ -45,9 +49,9 @@ TEST(kvs_MessageFor, MessageFor)
     {
         SCOPED_TRACE(static_cast<int>(test.code));
         score::result::ErrorCode code = static_cast<score::result::ErrorCode>(test.code);
-        EXPECT_EQ(my_error_domain.MessageFor(code), test.expected_message);
+        EXPECT_EQ(kvs_error_domain.MessageFor(code), test.expected_message);
     }
 
     score::result::ErrorCode invalid_code = static_cast<score::result::ErrorCode>(9999);
-    EXPECT_EQ(my_error_domain.MessageFor(invalid_code), "Unknown Error!");
+    EXPECT_EQ(kvs_error_domain.MessageFor(invalid_code), "Unknown Error!");
 }

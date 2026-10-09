@@ -15,113 +15,51 @@
 Component Architecture KVS
 ==========================
 
-This page contains the component architecture template snippets that belong to the
-module template repository.
+.. document:: KVS Component Architecture
+   :id: doc__kvs_component_architecture
+   :status: valid
+   :version: 1
+   :safety: ASIL_B
+   :security: YES
+   :realizes: wp__component_arch[version==1]
 
 Overview
 --------
 
-Use these snippets as the starting point for documenting component architecture in
-the module template.
+.. comp:: persistency::kvs
+   :id: comp__persistency_kvs
+   :security: YES
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :implements: logic_arc_int__persistency__interface[version==1]
+   :uses: logic_arc_int__baselibs__json[version==1],logic_arc_int__baselibs__filesystem[version==1],logic_arc_int__log_cpp__logging[version==1]
+   :belongs_to: feat__persistency[version==1]
 
 Static Architecture
 -------------------
 
-.. code-block:: rst
+.. comp_arc_sta:: KVS Static View
+   :id: comp_arc_sta__persistency_kvs__sv
+   :status: valid
+   :version: 1
+   :safety: ASIL_B
+   :security: NO
+   :uses: logic_arc_int__baselibs__json[version==1],logic_arc_int__baselibs__filesystem[version==1],logic_arc_int__log_cpp__logging[version==1]
+   :belongs_to: comp__persistency_kvs[version==1]
 
-   .. comp:: Component Name
-      :id: comp__mod_temp_component_name_template
-      :security: YES
-      :safety: ASIL_B
-      :status: invalid
-      :implements: logic_arc_int__feature_name__interface_name1[version==1]
-      :consists_of: comp__component_name_internal_1[version==1],comp__component_name_internal_2[version==1],comp__component_name_internal_3[version==1]
-      :belongs_to: feat__feature_name[version==1]
+   .. needarch::
+      :scale: 50
+      :align: center
 
-   .. comp_arc_sta:: Component Name (Static View)
-      :id: comp_arc_sta__mod_temp_component_name__sv
-      :security: YES
-      :safety: ASIL_B
-      :status: invalid
-      :belongs_to: comp__mod_temp_component_name_template[version==1]
-      :uses: logic_arc_int__feature_name__interface_name1[version==1]
-      :fulfils: comp_req__mod_temp_component_name__some_title[version==1]
-
-      .. needarch::
-         :scale: 50
-         :align: center
-
-         {{ draw_component(need(), needs) }}
+      {{ draw_component(need(), needs) }}
 
 Dynamic Architecture
 --------------------
 
-.. code-block:: rst
+tbd
 
-   .. comp_arc_dyn:: Dynamic View
-      :id: comp_arc_dyn__mod_temp_component_name__dv
-      :security: YES
-      :safety: ASIL_B
-      :status: invalid
-      :belongs_to: comp__mod_temp_component_name_template[version==1]
-      :fulfils: comp_req__mod_temp_component_name__some_title[version==1]
+Interfaces
+----------
 
-      Put here a sequence diagram
-
-Component Interface
--------------------
-
-The rendered component-interface example is maintained here so the module template
-repository owns the live ``real_arc_int`` example.
-
-.. code-block:: rst
-
-    .. real_arc_int:: Component Interface 1
-        :id: real_arc_int__mod_temp_component_name__if_1
-        :status: valid
-        :version: 1
-        :safety: ASIL_B
-        :security: NO
-        :language: cpp
-
-        .. needarch::
-            :scale: 50
-            :align: center
-
-            {{ draw_interface(need(), needs)}}
-
-Internal Components
--------------------
-
-.. code-block:: rst
-
-   .. comp_arc_sta:: Component Name Static View
-      :id: comp_arc_sta__mod_temp_component_name__2
-      :status: invalid
-      :safety: ASIL_B
-      :security: YES
-      :fulfils: comp_req__mod_temp_component_name__some_title[version==1]
-      :belongs_to: comp__mod_temp_component_name_template[version==1]
-
-      No architecture but detailed design
-
-   .. comp:: Internal Component 1
-      :id: comp__component_name_internal_1
-      :status: invalid
-      :safety: ASIL_B
-      :security: YES
-      :belongs_to: feat__feature_name[version==1]
-
-   .. comp:: Internal Component 2
-      :id: comp__component_name_internal_2
-      :status: invalid
-      :safety: ASIL_B
-      :security: YES
-      :belongs_to: feat__feature_name[version==1]
-
-   .. comp:: Internal Component 3
-      :id: comp__component_name_internal_3
-      :status: invalid
-      :safety: ASIL_B
-      :security: YES
-      :belongs_to: feat__feature_name[version==1]
+tbd

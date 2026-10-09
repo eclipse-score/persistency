@@ -11,7 +11,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
-load("@score_tooling//coverage:defs.bzl", "score_coverage_reporter", "score_coverage_scope")
+load("@score_coverage//:defs.bzl", "score_coverage_reporter", "score_coverage_scope")
 
 # The production targets whose transitive sources define the coverage scope:
 # the KVS implementations (C++ and Rust) and the KVS command line tool
@@ -26,7 +26,7 @@ score_coverage_scope(
     testonly = True,
     visibility = ["//quality/coverage:__subpackages__"],
     deps = [
-        "//score/kvs:kvs_cpp",
+        "//score/kvs",
         "//score/kvs/rust_kvs",
         "//score/kvs/rust_kvs_tool:kvs_tool",
     ],
@@ -34,7 +34,7 @@ score_coverage_scope(
 
 # Passed to Bazel as --coverage_report_generator (see coverage.bazelrc).
 # Everything else (merger, reporter, justify, effective_coverage,
-# generate_coverage_html) comes from @score_tooling//coverage.
+# generate_coverage_html) comes from @score_coverage.
 score_coverage_reporter(
     name = "reporter_wrapper",
     testonly = True,

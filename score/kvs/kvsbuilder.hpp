@@ -13,7 +13,7 @@
 #ifndef SCORE_LIB_KVS_KVSBUILDER_HPP
 #define SCORE_LIB_KVS_KVSBUILDER_HPP
 
-#include "kvs.hpp"
+#include "score/kvs/kvs.hpp"
 #include <string>
 
 namespace score::mw::per::kvs
@@ -31,15 +31,15 @@ namespace score::mw::per::kvs
  * \brief Example Usage
  * \code
  *  #include <iostream>
- *  #include "kvsbuilder.hpp"
+ *  #include "score/kvs/kvsbuilder.hpp"
  *
  *  using namespace score::mw::per::kvs;
  *
  *  int main() {
  *    // Open kvs
  *    auto open_res = KvsBuilder(0)
- *                        .need_defaults_flag(true)
- *                        .need_kvs_flag(true)
+ *                        .need_defaults_flag(OpenNeedDefaults::Required)
+ *                        .need_kvs_flag(OpenNeedKvs::Required)
  *                        .build();
  *    if (!open_res) return 1;
  *    Kvs kvs = std::move(open_res.value());
@@ -67,18 +67,25 @@ class KvsBuilder final
     explicit KvsBuilder(const InstanceId& instance_id);
 
     /**
+     * @brief Specify the snapshot identifier to be loaded.
+     * @param snapshot_id Unique identifier for the KVS snapshot.
+     * @return Reference to this builder (for chaining).
+     */
+    KvsBuilder& snapshot(const SnapshotId& snapshot_id);
+
+    /**
      * @brief Specify whether default values must be loaded.
      * @param flag True to require default values; false to make them optional.
      * @return Reference to this builder (for chaining).
      */
-    KvsBuilder& need_defaults_flag(bool flag);
+    KvsBuilder& need_defaults_flag(const OpenNeedDefaults& flag);
 
     /**
      * @brief Configure if KVS must exist when opening the KVS.
      * @param flag True to require an existing store; false to allow starting empty.
      * @return Reference to this builder (for chaining).
      */
-    KvsBuilder& need_kvs_flag(bool flag);
+    KvsBuilder& need_kvs_flag(const OpenNeedKvs& flag);
 
     /**
      * @brief Specify the directory where KVS files are stored.
@@ -99,10 +106,11 @@ class KvsBuilder final
     score::Result<Kvs> build();
 
   private:
-    InstanceId instance_id;  ///< ID of the KVS instance
-    bool need_defaults;      ///< Whether default values are required
-    bool need_kvs;           ///< Whether an existing KVS is required
-    std::string directory;   ///< Directory where to store the KVS Files
+    InstanceId instance_id;          ///< ID of the KVS instance
+    SnapshotId snapshot_id;          ///< ID of the KVS snapshot
+    OpenNeedDefaults need_defaults;  ///< Whether default values are required
+    OpenNeedKvs need_kvs;            ///< Whether an existing KVS is required
+    std::string directory;           ///< Directory where to store the KVS Files
 };
 
 } /* namespace score::mw::per::kvs */

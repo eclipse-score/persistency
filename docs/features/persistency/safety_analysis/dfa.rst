@@ -134,7 +134,7 @@ Unintended impacts to function due to various failures.
   * - UI_01_03
     - Stack/Buffer under-/overflow
     - no
-    - Might happens but very unlikely in RUST. Will be considered at the platform DFA.
+    - Might happen but very unlikely in Rust. Will be considered at the platform DFA.
   * - UI_01_04
     - Deadlocks
     - no
@@ -145,8 +145,8 @@ Unintended impacts to function due to various failures.
     - Same consideration as done in UI_01_04.
   * - UI_01_06
     - Blocking of execution
-    - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - yes
+    - :need:`feat_saf_dfa__persistency__execution_blocking`
   * - UI_01_07
     - Incorrect allocation of execution time
     - no
@@ -162,11 +162,11 @@ Unintended impacts to function due to various failures.
   * - UI_01_10
     - CPU time depletion
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed. Will be anylysed at the platform DFA.
+    - Failure initiator not applicable at persistency, so no mitigation is needed. Will be analysed at the platform DFA.
   * - UI_01_11
     - Memory depletion
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed. Will be anylysed at the platform DFA.
+    - Failure initiator not applicable at persistency, so no mitigation is needed. Will be analysed at the platform DFA.
   * - UI_01_12
     - Other HW unavailability
     - no
@@ -176,7 +176,6 @@ Unintended impacts to function due to various failures.
 DFA
 ---
 For all identified applicable failure initiators, the DFA is performed in the following section.
- - Execution blocking will make persistency not available.
 
 
 
@@ -185,10 +184,12 @@ For all identified applicable failure initiators, the DFA is performed in the fo
    :id: feat_saf_dfa__persistency__execution_blocking
    :failure_id: UI_01_06
    :failure_effect: Blocking of execution. This will lead to a unavailability of the persistency feature.
-   :mitigated_by: aou_req__persistency__appl_exec
-   :mitigation_issue:
+   :mitigated_by: aou_req__persistency__error_handling
    :sufficient: yes
    :status: valid
-   :version: 1
+   :version: 2
 
-   Execution blocking will make persistency not available.
+   Persistency is executed in the execution context of the calling application. A blocking of this execution
+   (e.g. by the application itself or by the scheduling of the OS) will make persistency not available, i.e. a
+   persistency call does not return or returns too late. This unavailability is handled by the application
+   according to aou_req__persistency__error_handling.

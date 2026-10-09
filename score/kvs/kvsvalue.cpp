@@ -15,93 +15,37 @@
 namespace score::mw::per::kvs
 {
 
-KvsValue::KvsValue(const Array& array)
-{
-    Array shared_array;
-    shared_array.reserve(array.size());
-    for (const auto& item : array)
-    {
-        shared_array.push_back(std::make_shared<KvsValue>(*item));
-    }
-    value = std::move(shared_array);
-    type = Type::Array;
-}
+KvsValue::KvsValue(const Array& array) : value(array), type(Type::Array) {}
 
-KvsValue::KvsValue(const Object& object)
-{
-    Object shared_object;
-    for (const auto& [key, value] : object)
-    {
-        shared_object[key] = std::make_shared<KvsValue>(*value);
-    }
-    value = std::move(shared_object);
-    type = Type::Object;
-}
+KvsValue::KvsValue(Array&& array) : value(std::move(array)), type(Type::Array) {}
 
-KvsValue::KvsValue(const std::vector<KvsValue>& array)
-{
-    Array shared_array;
-    shared_array.reserve(array.size());  // Reserve space for N elements
-    for (const auto& item : array)
-    {
-        shared_array.emplace_back(std::make_shared<KvsValue>(item));
-    }
-    value = std::move(shared_array);
-    type = Type::Array;
-}
+KvsValue::KvsValue(const Object& object) : value(object), type(Type::Object) {}
 
-KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object)
+KvsValue::KvsValue(Object&& object) : value(std::move(object)), type(Type::Object) {}
+
+KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) : type(Type::Object)
 {
-    Object shared_object;
-    for (const auto& [key, value] : object)
+    Object entries;
+    entries.reserve(object.size());
+    for (const auto& [key, item] : object)
     {
-        shared_object[key] = std::make_shared<KvsValue>(value);
+        entries.emplace_back(key, item);
     }
-    value = std::move(shared_object);
-    type = Type::Object;
+    value = std::move(entries);
 }
 
 /* copy constructor */
-KvsValue::KvsValue(const KvsValue& other) : type(other.type)
-{
-    switch (other.type)
-    {
-        case Type::Array:
-        {
-            const Array& otherArray = std::get<Array>(other.value);
-            Array copiedArray;
-            copiedArray.reserve(otherArray.size());
-            for (const auto& item : otherArray)
-            {
-                copiedArray.push_back(std::make_shared<KvsValue>(*item));
-            }
-            value = std::move(copiedArray);
-            break;
-        }
-        case Type::Object:
-        {
-            const Object& otherObject = std::get<Object>(other.value);
-            Object copiedObject;
-            for (const auto& [key, value] : otherObject)
-            {
-                copiedObject[key] = std::make_shared<KvsValue>(*value);
-            }
-            value = std::move(copiedObject);
-            break;
-        }
-        default:
-            value = other.value;  // For other types, just copy the value
-            break;
-    }
-}
+KvsValue::KvsValue(const KvsValue& other) : value(other.value), type(other.type) {}
+
+/* move constructor */
+KvsValue::KvsValue(KvsValue&& other) noexcept : value(std::move(other.value)), type(other.type) {}
 
 /* copy Assignment Operator */
 KvsValue& KvsValue::operator=(const KvsValue& other)
 {
     if (this != &other)
     {
-        KvsValue temp(other);  // deep copy
-        std::swap(value, temp.value);
+        value = other.value;
         type = other.type;
     }
     return *this;
@@ -117,5 +61,7 @@ KvsValue& KvsValue::operator=(KvsValue&& other) noexcept
     }
     return *this;
 }
+
+KvsValue::~KvsValue() = default;
 
 } /* end namespace score::mw::per::kvs */
