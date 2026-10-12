@@ -1,5 +1,5 @@
 # *******************************************************************************
-# Copyright (c) 2025 Contributors to the Eclipse Foundation
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -10,22 +10,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 
-cc_binary(
+alias(
     name = "test_scenarios",
-    srcs = glob([
-        "**/*.cpp",
-        "**/*.hpp",
-    ]),
-    copts = [
-        "-g",
-    ],
-    includes = ["."],
+    actual = "//score/kvs/tests/test_scenarios",
+    deprecation = "//score/kvs/tests/test_scenarios/cpp:test_scenarios has moved to //score/kvs/tests/test_scenarios.",
     visibility = ["//visibility:public"],
-    deps = [
-        "//score/kvs",
-        "@score_baselibs//score/mw/log:backend_stub_testutil",
-        "@score_test_scenarios//test_scenarios_cpp",
-    ],
 )

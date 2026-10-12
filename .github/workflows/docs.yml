@@ -56,7 +56,7 @@ jobs:
     needs: [docs-verify, cit-tests] # Test reports are needed for traceability links
     # Merge-queue refs may be deleted before this build/deployment starts.
     if: ${{ always() && needs.docs-verify.result == 'success' && github.event_name != 'merge_group' }}
-    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@c1c90b1a82a1fab0fc202979dde6686b2162d5a8 # v0.0.0
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@d31fdc0ba74985a71acbfa1e994fd45e2bbc5fad # v0.0.3-26-gd31fdc0
     permissions:
       contents: write
       pages: write

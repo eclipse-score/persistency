@@ -27,7 +27,7 @@ jobs:
     # fork PRs through pull_request_target for approval
     if: >-
       (github.event_name == 'push') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@4777f90939a4f7cdc06c0ebe9856252e7d3c3e4a # v0.0.3-2-g4777f90
+    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@d31fdc0ba74985a71acbfa1e994fd45e2bbc5fad # v0.0.3-26-gd31fdc0
     permissions:
       contents: read
       pull-requests: read

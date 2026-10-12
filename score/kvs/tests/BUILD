@@ -10,3 +10,26 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
+
+load("@pip_score_persistency_venv_test//:requirements.bzl", "all_requirements")
+load("@score_tools//score_pytest:pytest.bzl", "score_pytest")
+
+score_pytest(
+    name = "cit_tests",
+    size = "small",
+    srcs = ["//score/kvs/tests/test_cases:cit_files"],
+    args = [
+        "-m cpp",
+        "--cpp-target-path=$(rootpath //score/kvs/tests/test_scenarios)",
+        "--traces=all",
+        "--log-cli-level=DEBUG",
+    ],
+    data = ["//score/kvs/tests/test_scenarios"],
+    env = {
+        "RUST_BACKTRACE": "1",
+    },
+    pytest_config = "//:pyproject.toml",
+    target_compatible_with = ["@platforms//os:linux"],
+    visibility = ["//:__pkg__"],
+    deps = all_requirements,
+)

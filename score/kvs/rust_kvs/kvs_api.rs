@@ -48,28 +48,30 @@ impl From<SnapshotId> for usize {
 
 /// Defaults handling mode.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
+#[repr(u8)]
 pub enum KvsDefaults {
-    /// Defaults are not loaded.
-    Ignored,
+    /// Defaults must be loaded.
+    Required,
 
     /// Defaults are loaded if available.
     Optional,
 
-    /// Defaults must be loaded.
-    Required,
+    /// Defaults are not loaded.
+    Ignored,
 }
 
 /// KVS load mode.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
+#[repr(u8)]
 pub enum KvsLoad {
-    /// KVS is not loaded.
-    Ignored,
+    /// KVS must be loaded.
+    Required,
 
     /// KVS is loaded if available.
     Optional,
 
-    /// KVS must be loaded.
-    Required,
+    /// KVS is not loaded.
+    Ignored,
 }
 
 pub trait KvsApi {

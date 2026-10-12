@@ -129,8 +129,8 @@ test_suite(
 test_suite(
     name = "cit_tests",
     tests = [
-        "//score/kvs/tests/test_cases:cit_cpp",
-        "//score/kvs/tests/test_cases:cit_rust",
+        "//score/kvs/rust_kvs/tests:cit_tests",
+        "//score/kvs/tests:cit_tests",
     ],
     visibility = ["//visibility:public"],
 )

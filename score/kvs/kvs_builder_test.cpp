@@ -12,6 +12,24 @@
  ********************************************************************************/
 #include "kvs_general_test.hpp"
 
+TEST(kvs_kvsbuilder, kvsbuilder_build_ignored)
+{
+    KvsBuilder builder(instance_id);
+    builder.snapshot(SnapshotId{0ul});
+    builder.need_defaults_flag(OpenNeedDefaults::Ignored);
+    builder.need_kvs_flag(OpenNeedKvs::Ignored);
+    builder.dir("./kvsbuilder/");
+    EXPECT_EQ(builder.instance_id.id, instance_id.id);
+    EXPECT_EQ(builder.snapshot_id.id, 0ul);
+    EXPECT_EQ(builder.need_defaults, OpenNeedDefaults::Ignored);
+    EXPECT_EQ(builder.need_kvs, OpenNeedKvs::Ignored);
+    EXPECT_EQ(builder.directory, "./kvsbuilder/");
+
+    auto result_build = builder.build();
+    EXPECT_TRUE(result_build);
+    EXPECT_EQ(result_build.value().filename_prefix.CStr(), "./kvsbuilder/kvs_" + std::to_string(instance_id.id));
+}
+
 TEST(kvs_kvsbuilder, kvsbuilder_build)
 {
     /* This test also checks the kvs open function with the KvsBuilder */
@@ -19,14 +37,17 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     /* Test the KvsBuilder constructor */
     KvsBuilder builder(instance_id);
     EXPECT_EQ(builder.instance_id.id, instance_id.id);
-    EXPECT_EQ(builder.need_defaults, false);
-    EXPECT_EQ(builder.need_kvs, false);
+    EXPECT_EQ(builder.snapshot_id.id, 0ul);
+    EXPECT_EQ(builder.need_defaults, OpenNeedDefaults::Optional);
+    EXPECT_EQ(builder.need_kvs, OpenNeedKvs::Optional);
 
     /* Test the KvsBuilder methods */
-    builder.need_defaults_flag(true);
-    EXPECT_EQ(builder.need_defaults, true);
-    builder.need_kvs_flag(true);
-    EXPECT_EQ(builder.need_kvs, true);
+    builder.snapshot(SnapshotId{23ul});
+    EXPECT_EQ(builder.snapshot_id.id, 23ul);
+    builder.need_defaults_flag(OpenNeedDefaults::Required);
+    EXPECT_EQ(builder.need_defaults, OpenNeedDefaults::Required);
+    builder.need_kvs_flag(OpenNeedKvs::Required);
+    EXPECT_EQ(builder.need_kvs, OpenNeedKvs::Required);
     builder.dir("./kvsbuilder/");
     EXPECT_EQ(builder.directory, "./kvsbuilder/");
 
@@ -38,13 +59,13 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     EXPECT_EQ(static_cast<ErrorCode>(*result_build.error()),
               ErrorCode::KvsFileReadError); /* This error occurs in open_json and is passed through
                                                open()*/
-    builder.need_defaults_flag(false);
+    builder.need_defaults_flag(OpenNeedDefaults::Optional);
     result_build = builder.build();
     ASSERT_FALSE(result_build);
     EXPECT_EQ(static_cast<ErrorCode>(*result_build.error()),
               ErrorCode::KvsFileReadError); /* This error occurs in open_json and is passed through
                                                open()*/
-    builder.need_kvs_flag(false);
+    builder.need_kvs_flag(OpenNeedKvs::Optional);
     result_build = builder.build();
     EXPECT_TRUE(result_build);
     EXPECT_EQ(result_build.value().filename_prefix.CStr(), "./kvsbuilder/kvs_" + std::to_string(instance_id.id));
