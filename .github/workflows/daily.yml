@@ -19,6 +19,7 @@ permissions:
   pull-requests: write
   pages: write
   id-token: write
+  actions: write # prune obsolete GitHub Actions caches
 
 on:
   # Runs every day at midnight UTC
