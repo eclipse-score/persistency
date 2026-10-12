@@ -85,6 +85,9 @@ enum class ErrorCode : score::result::ErrorCode
 
     /* Invalid value type*/
     InvalidValueType,
+
+    /* Key exceeds the maximum allowed length*/
+    KeyTooLong,
 };
 
 /**
