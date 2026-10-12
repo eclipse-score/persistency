@@ -17,13 +17,22 @@ TEST(kvs_constructor, move_constructor)
     const std::uint32_t instance_b = 5;
 
     /* create object A */
-    auto result_a =
-        Kvs::open(InstanceId(instance_b), snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result_a = Kvs::open(InstanceId(instance_b),
+                              snapshot_id,
+                              OpenNeedDefaults::Optional,
+                              OpenNeedKvs::Optional,
+                              std::string(data_dir),
+                              std::nullopt);
     ASSERT_TRUE(result_a);
     Kvs kvs_a = std::move(result_a.value());
 
     /* create object B */
-    auto result_b = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result_b = Kvs::open(instance_id,
+                              snapshot_id,
+                              OpenNeedDefaults::Optional,
+                              OpenNeedKvs::Optional,
+                              std::string(data_dir),
+                              std::nullopt);
     ASSERT_TRUE(result_b);
     Kvs kvs_b = std::move(result_b.value());
 
@@ -71,8 +80,12 @@ TEST(kvs_TEST, parse_json_data_sucess)
     /* Success */
     prepare_environment();
 
-    auto kvs =
-        Kvs::open(InstanceId(instance_id), snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     auto mock_parser = std::make_unique<score::json::IJsonParserMock>();
@@ -100,8 +113,12 @@ TEST(kvs_TEST, parse_json_data_failure)
 
     /* Json Parser Failure */
 
-    auto kvs =
-        Kvs::open(InstanceId(instance_id), snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     auto mock_parser = std::make_unique<score::json::IJsonParserMock>();
@@ -180,22 +197,24 @@ TEST(kvs_open, storage_corrupted_all_kvs_open_modes)
 
     // Required.
     {
-        auto kvs = Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Required, std::string(dir));
+        auto kvs =
+            Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Required, std::string(dir), std::nullopt);
         ASSERT_FALSE(kvs);
         ASSERT_EQ(kvs.error(), ErrorCode::ValidationFailed);
     }
 
     // Optional.
     {
-        auto kvs = Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Optional, std::string(dir));
+        auto kvs =
+            Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Optional, std::string(dir), std::nullopt);
         ASSERT_FALSE(kvs);
         ASSERT_EQ(kvs.error(), ErrorCode::ValidationFailed);
     }
 
     // Ignored.
     {
-        auto kvs = Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Ignored, std::string(dir));
-       
+        auto kvs = Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Ignored, std::string(dir), std::nullopt);
+
         // Successfully opened without loading.
         ASSERT_TRUE(kvs);
 
@@ -230,21 +249,23 @@ TEST(kvs_open, hash_missing_all_kvs_open_modes)
 
     // Required.
     {
-        auto kvs = Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Required, std::string(dir));
+        auto kvs =
+            Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Required, std::string(dir), std::nullopt);
         ASSERT_FALSE(kvs);
         ASSERT_EQ(kvs.error(), ErrorCode::KvsHashFileReadError);
     }
 
     // Optional.
     {
-        auto kvs = Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Optional, std::string(dir));
+        auto kvs =
+            Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Optional, std::string(dir), std::nullopt);
         ASSERT_FALSE(kvs);
         ASSERT_EQ(kvs.error(), ErrorCode::KvsHashFileReadError);
     }
 
     // Ignored.
     {
-        auto kvs = Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Ignored, std::string(dir));
+        auto kvs = Kvs::open(instanceId, snapshotId, defaultMode, OpenNeedKvs::Ignored, std::string(dir), std::nullopt);
         // Successfully opened without loading.
         ASSERT_TRUE(kvs);
         // `kvs` should be not present.
@@ -274,7 +295,12 @@ TEST(kvs_open, selected_snapshot)
 
     // First instance, load snapshot 0.
     {
-        auto kvs = Kvs::open(instanceId, SnapshotId{0ul}, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(dir));
+        auto kvs = Kvs::open(instanceId,
+                             SnapshotId{0ul},
+                             OpenNeedDefaults::Required,
+                             OpenNeedKvs::Required,
+                             std::string(dir),
+                             std::nullopt);
         ASSERT_TRUE(kvs);
         auto value = kvs->get_value("kvs");
         ASSERT_TRUE(value);
@@ -284,7 +310,12 @@ TEST(kvs_open, selected_snapshot)
 
     // Second instance, load snapshot 1.
     {
-        auto kvs = Kvs::open(instanceId, SnapshotId{1ul}, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(dir));
+        auto kvs = Kvs::open(instanceId,
+                             SnapshotId{1ul},
+                             OpenNeedDefaults::Required,
+                             OpenNeedKvs::Required,
+                             std::string(dir),
+                             std::nullopt);
         ASSERT_TRUE(kvs);
         auto value = kvs->get_value("kvs");
         ASSERT_TRUE(value);
@@ -299,8 +330,12 @@ TEST(kvs_open_json, open_json_success)
 {
     prepare_environment();
 
-    auto kvs =
-        Kvs::open(InstanceId(instance_id), snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     auto result = kvs->open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Required);
@@ -384,7 +419,12 @@ TEST(kvs_open_json, open_json_hash_invalid)
 TEST(kvs_reset, reset_success)
 {
     prepare_environment();
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Check Data existing */
@@ -403,7 +443,12 @@ TEST(kvs_reset, reset_failure)
     prepare_environment();
 
     /* Mutex locked */
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
@@ -418,7 +463,12 @@ TEST(kvs_get_all_keys, get_all_keys_success)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Check Data existing */
@@ -445,7 +495,12 @@ TEST(kvs_get_all_keys, get_all_keys_failure)
     prepare_environment();
 
     /* Mutex locked */
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
 
@@ -460,7 +515,12 @@ TEST(kvs_key_exists, key_exists_success)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Check Data existing */
@@ -483,7 +543,12 @@ TEST(kvs_key_exists, key_exists_failure)
     prepare_environment();
 
     /* Mutex locked */
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
@@ -498,7 +563,12 @@ TEST(kvs_get_value, get_value_success)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Check Data existing */
@@ -526,7 +596,12 @@ TEST(kvs_get_value, get_value_failure)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Check if non-existing key returns error */
@@ -535,7 +610,12 @@ TEST(kvs_get_value, get_value_failure)
     EXPECT_EQ(get_value_result.error(), ErrorCode::KeyNotFound);
 
     /* Mutex locked */
-    result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    result = Kvs::open(instance_id,
+                       snapshot_id,
+                       OpenNeedDefaults::Required,
+                       OpenNeedKvs::Required,
+                       std::string(data_dir),
+                       std::nullopt);
     ASSERT_TRUE(result);
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     get_value_result = result.value().get_value("kvs");
@@ -549,7 +629,12 @@ TEST(kvs_get_default_value, get_default_value_success)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Check Data existing */
@@ -569,7 +654,12 @@ TEST(kvs_get_default_value, get_default_value_failure)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Check if non-existing key returns error */
@@ -584,7 +674,12 @@ TEST(kvs_reset_key, reset_key_success)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
     ASSERT_TRUE(result.value().kvs.count("kvs")); /* Check Data existing */
 
@@ -609,7 +704,12 @@ TEST(kvs_reset_key, reset_key_failure)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Reset a non-existing key */
@@ -618,7 +718,12 @@ TEST(kvs_reset_key, reset_key_failure)
     EXPECT_EQ(reset_key_result.error(), ErrorCode::KeyDefaultNotFound);
 
     /* Reset a key without default value */
-    result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    result = Kvs::open(instance_id,
+                       snapshot_id,
+                       OpenNeedDefaults::Required,
+                       OpenNeedKvs::Required,
+                       std::string(data_dir),
+                       std::nullopt);
     ASSERT_TRUE(result);
     result.value().default_values.clear();  // Clear default values to ensure no default value
                                             // exists for "kvs"
@@ -627,7 +732,12 @@ TEST(kvs_reset_key, reset_key_failure)
     EXPECT_EQ(reset_key_result.error(), ErrorCode::KeyDefaultNotFound);
 
     /* Mutex locked */
-    result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    result = Kvs::open(instance_id,
+                       snapshot_id,
+                       OpenNeedDefaults::Required,
+                       OpenNeedKvs::Required,
+                       std::string(data_dir),
+                       std::nullopt);
     ASSERT_TRUE(result);
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     reset_key_result = result.value().reset_key("kvs");
@@ -641,7 +751,12 @@ TEST(kvs_is_value_default, is_value_default)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
     auto kvs{std::move(result.value())};
 
@@ -676,7 +791,12 @@ TEST(kvs_is_value_default, is_value_default)
 TEST(kvs_set_value, set_value_success)
 {
     prepare_environment();
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Set a new value */
@@ -700,7 +820,12 @@ TEST(kvs_set_value, set_value_failure)
     prepare_environment();
 
     /* Mutex locked */
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
@@ -714,7 +839,12 @@ TEST(kvs_set_value, set_value_failure)
 TEST(kvs_remove_key, remove_key_success)
 {
     prepare_environment();
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Check Data existing */
@@ -732,7 +862,12 @@ TEST(kvs_remove_key, remove_key_failure)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Remove a non-existing key */
@@ -741,7 +876,12 @@ TEST(kvs_remove_key, remove_key_failure)
     EXPECT_EQ(remove_key_result.error(), ErrorCode::KeyNotFound);
 
     /* Mutex locked */
-    result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    result = Kvs::open(instance_id,
+                       snapshot_id,
+                       OpenNeedDefaults::Required,
+                       OpenNeedKvs::Required,
+                       std::string(data_dir),
+                       std::nullopt);
     ASSERT_TRUE(result);
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
     remove_key_result = result.value().remove_key("kvs");
@@ -764,8 +904,12 @@ TEST(kvs_write_json_data, write_json_data_success)
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
 
-    auto kvs =
-        Kvs::open(InstanceId(instance_id), snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     kvs->filename_prefix = score::filesystem::Path(filename_prefix); /* Set the filename prefix to the test prefix */
@@ -800,8 +944,12 @@ TEST(kvs_write_json_data, write_json_data_filesystem_failure)
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
 
-    auto kvs =
-        Kvs::open(InstanceId(instance_id), snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* Mock Filesystem */
@@ -833,8 +981,12 @@ TEST(kvs_write_json_data, write_json_data_permissions_failure)
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
 
-    auto kvs =
-        Kvs::open(InstanceId(instance_id), snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* Test writing to a non-writable hash file */
@@ -866,7 +1018,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
@@ -896,7 +1053,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_max_snapshots)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
@@ -922,7 +1084,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_json)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
@@ -947,7 +1114,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_hash)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
@@ -971,7 +1143,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_mutex)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Mutex locked */
@@ -990,7 +1167,12 @@ TEST(kvs_flush, flush_success_data)
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     result.value().kvs.clear(); /* Clear KVS to ensure no data is written */
@@ -1016,7 +1198,12 @@ TEST(kvs_flush, flush_success_snapshot_rotate)
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
     EXPECT_FALSE(std::filesystem::exists(filename_prefix + "_1.json"));
     EXPECT_FALSE(std::filesystem::exists(filename_prefix + "_1.hash"));
@@ -1037,7 +1224,12 @@ TEST(kvs_flush, flush_failure_mutex)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
@@ -1054,8 +1246,12 @@ TEST(kvs_flush, flush_failure_rotate_snapshots)
     /* Test Folder for permission handling */
     std::string permissions_dir = data_dir + "permissions/";
     std::filesystem::create_directories(permissions_dir);
-    auto result =
-        Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(permissions_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(permissions_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     std::filesystem::permissions(
@@ -1072,7 +1268,12 @@ TEST(kvs_flush, flush_failure_kvsvalue_invalid)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     BrokenKvsValue invalid;
@@ -1089,7 +1290,12 @@ TEST(kvs_flush, flush_failure_json_writer)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     auto mock_writer = std::make_unique<score::json::IJsonWriterMock>(); /* Force error in writer.ToBuffer */
@@ -1109,7 +1315,12 @@ TEST(kvs_snapshot_count, snapshot_count_success)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
@@ -1133,7 +1344,12 @@ TEST(kvs_snapshot_count, snapshot_count_invalid)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* Mock Filesystem */
@@ -1154,7 +1370,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_success)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files -> Data received by the JsonParser should be the data listed
@@ -1194,7 +1415,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_invalid_snapshot_id)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Restore Snapshot ID 0 -> Current KVS*/
@@ -1214,7 +1440,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_open_json)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Create empty Test-Snapshot Files */
@@ -1232,7 +1463,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_mutex)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
@@ -1247,7 +1483,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_snapshot_count)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* Mock Filesystem */
@@ -1269,7 +1510,12 @@ TEST(kvs_snapshot_max_count, snapshot_max_count)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
     EXPECT_EQ(result.value().snapshot_max_count(), KVS_MAX_SNAPSHOTS);
 
@@ -1280,7 +1526,12 @@ TEST(kvs_get_filename, get_kvs_filename_success)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Generate Testfiles */
@@ -1303,7 +1554,12 @@ TEST(kvs_get_filename, get_kvs_filename_failure)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* Testfiles not available */
@@ -1331,7 +1587,12 @@ TEST(kvs_get_filename, get_hashname_success)
 {
     prepare_environment();
 
-    auto result = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt);
     ASSERT_TRUE(result);
 
     /* Generate Testfiles */
@@ -1355,7 +1616,12 @@ TEST(kvs_get_filename, get_hashname_failure)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* Testfiles not available */
@@ -1383,7 +1649,12 @@ TEST(kvs_remove_all_keys, remove_all_keys_removes_inserted_keys)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* Insert some test key-value pairs */
@@ -1412,7 +1683,12 @@ TEST(kvs_remove_all_keys, remove_all_keys_empty_kvs)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     kvs.value().kvs.clear();
@@ -1429,7 +1705,12 @@ TEST(kvs_remove_all_keys, remove_all_keys_keeps_defaults)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Required,
+                         OpenNeedKvs::Required,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     kvs.value().default_values.insert_or_assign("defaulted", KvsValue(42.0));
@@ -1455,7 +1736,12 @@ TEST(kvs_remove_all_keys, remove_all_keys_failure)
     prepare_environment();
 
     /* Mutex locked */
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Required,
+                         OpenNeedKvs::Required,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     std::unique_lock<std::mutex> lock(kvs.value().kvs_mutex);
@@ -1470,7 +1756,12 @@ TEST(kvs_discard_pending_changes, discard_reverts_to_state_at_open)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Required, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Required,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* "kvs" is loaded from the test file by prepare_environment() */
@@ -1499,7 +1790,12 @@ TEST(kvs_discard_pending_changes, discard_reverts_to_last_flush)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     ASSERT_TRUE(kvs.value().remove_all_keys());
@@ -1525,7 +1821,12 @@ TEST(kvs_discard_pending_changes, discard_without_changes_is_noop)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Required, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Required,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     const auto keys_before = kvs.value().kvs.size();
@@ -1546,7 +1847,12 @@ TEST(kvs_discard_pending_changes, discard_pending_changes_failure)
     prepare_environment();
 
     /* Mutex locked */
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Required, OpenNeedKvs::Required, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Required,
+                         OpenNeedKvs::Required,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     std::unique_lock<std::mutex> lock(kvs.value().kvs_mutex);
@@ -1565,7 +1871,12 @@ TEST(kvs_discard_pending_changes, discard_without_persisted_file_yields_empty)
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     ASSERT_TRUE(kvs.value().set_value("pending", KvsValue(1.0)));
@@ -1580,7 +1891,12 @@ TEST(kvs_discard_pending_changes, discard_reports_corrupted_storage)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Required, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Required,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* Corrupt the hash of the persisted file after opening */
@@ -1600,7 +1916,12 @@ TEST(kvs_get_storage_file_size, size_matches_files_on_disk)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Required, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Required,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     const auto expected =
@@ -1620,7 +1941,12 @@ TEST(kvs_get_storage_file_size, size_without_files_is_zero)
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     auto result = kvs.value().get_storage_file_size();
@@ -1637,7 +1963,12 @@ TEST(kvs_get_storage_file_size, size_reflects_storage_not_pending_changes)
     system(("rm -rf " + kvs_prefix + ".json").c_str());
     system(("rm -rf " + kvs_prefix + ".hash").c_str());
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* Unflushed changes are invisible to the size query */
@@ -1659,7 +1990,12 @@ TEST(kvs_get_storage_file_size, size_failure_unreadable_path)
 {
     prepare_environment();
 
-    auto kvs = Kvs::open(instance_id, snapshot_id, OpenNeedDefaults::Optional, OpenNeedKvs::Optional, std::string(data_dir));
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt);
     ASSERT_TRUE(kvs);
 
     /* A directory in place of the data file cannot be sized as a regular file */
@@ -1671,4 +2007,191 @@ TEST(kvs_get_storage_file_size, size_failure_unreadable_path)
     EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::PhysicalStorageFailure);
 
     cleanup_environment();
+}
+
+/* Storage limit used by the max-size tests. The limit is an explicit test input:
+   an unconfigured KVS enforces no limit at all. */
+constexpr size_t kTestMaxStorageBytes = 1000U;
+
+TEST(kvs_max_storage_bytes, flush_succeeds_without_configured_limit)
+{
+    /* The builder default is an unset optional, meaning no limit is enforced.
+       Data far larger than kTestMaxStorageBytes must therefore still flush. */
+    const std::string test_dir = "./kvs_no_limit_test/";
+    std::filesystem::remove_all(test_dir);
+
+    KvsBuilder builder(instance_id);
+    builder.dir(std::string(test_dir));
+    auto open_res = builder.build();
+    ASSERT_TRUE(open_res);
+    Kvs kvs = std::move(open_res.value());
+
+    const std::string large_data(kTestMaxStorageBytes * 4U, 'a');
+    auto set_res = kvs.set_value("large_data", KvsValue(large_data.c_str()));
+    ASSERT_TRUE(set_res);
+
+    auto flush_res = kvs.flush();
+    EXPECT_TRUE(flush_res);
+
+    std::filesystem::remove_all(test_dir);
+}
+
+TEST(kvs_max_storage_bytes, flush_fails_when_storage_limit_exceeded)
+{
+    const std::string test_dir = "./kvs_storage_test/";
+    std::filesystem::remove_all(test_dir);
+
+    KvsBuilder builder(instance_id);
+    builder.dir(std::string(test_dir));
+    builder.max_storage_bytes(kTestMaxStorageBytes);
+    auto open_res = builder.build();
+    ASSERT_TRUE(open_res);
+    Kvs kvs = std::move(open_res.value());
+
+    /* Add data close to the limit. There is overhead for the JSON structure (key,
+       type info, braces) and the hash file, so keep the payload below the maximum. */
+    const size_t overhead_estimate = 100U;
+    const std::string large_data(kTestMaxStorageBytes - overhead_estimate, 'a');
+
+    auto set_res1 = kvs.set_value("large_data", KvsValue(large_data.c_str()));
+    ASSERT_TRUE(set_res1);
+
+    /* The first flush still fits */
+    auto flush_res1 = kvs.flush();
+    ASSERT_TRUE(flush_res1);
+
+    /* A little more data pushes the total over the limit */
+    auto set_res2 = kvs.set_value("extra_data", KvsValue("this should not fit"));
+    ASSERT_TRUE(set_res2);
+
+    auto flush_res2 = kvs.flush();
+    ASSERT_FALSE(flush_res2);
+    EXPECT_EQ(static_cast<ErrorCode>(*flush_res2.error()), ErrorCode::OutOfStorageSpace);
+
+    std::filesystem::remove_all(test_dir);
+}
+
+TEST(kvs_check_size, check_size_within_limit_succeeds)
+{
+    const std::string test_dir = "./kvs_check_size_within_test/";
+    std::filesystem::remove_all(test_dir);
+
+    KvsBuilder builder(InstanceId(1));
+    builder.dir(std::string(test_dir));
+    builder.max_storage_bytes(kTestMaxStorageBytes);
+    auto open_res = builder.build();
+    ASSERT_TRUE(open_res);
+    Kvs kvs = std::move(open_res.value());
+
+    auto set_res = kvs.set_value("key", KvsValue("some_data"));
+    ASSERT_TRUE(set_res);
+
+    auto check_res = kvs.calculate_potential_size();
+    ASSERT_TRUE(check_res) << "calculate_potential_size should succeed for data within limits";
+    EXPECT_GT(check_res.value(), 0U);
+    EXPECT_LT(check_res.value(), kTestMaxStorageBytes);
+
+    std::filesystem::remove_all(test_dir);
+}
+
+TEST(kvs_check_size, check_size_exceeding_limit_fails)
+{
+    const std::string test_dir = "./kvs_check_size_exceeding_test/";
+    std::filesystem::remove_all(test_dir);
+
+    KvsBuilder builder(InstanceId(2));
+    builder.dir(std::string(test_dir));
+    builder.max_storage_bytes(kTestMaxStorageBytes);
+    auto open_res = builder.build();
+    ASSERT_TRUE(open_res);
+    Kvs kvs = std::move(open_res.value());
+
+    const std::string large_data(kTestMaxStorageBytes, 'x');
+    auto set_res = kvs.set_value("oversized_key", KvsValue(large_data.c_str()));
+    ASSERT_TRUE(set_res);
+
+    auto check_res = kvs.calculate_potential_size();
+    ASSERT_FALSE(check_res) << "calculate_potential_size should fail when the storage limit is exceeded";
+    EXPECT_EQ(static_cast<ErrorCode>(*check_res.error()), ErrorCode::OutOfStorageSpace);
+
+    std::filesystem::remove_all(test_dir);
+}
+
+TEST(kvs_max_storage_bytes, flush_without_limit_does_not_measure_storage)
+{
+    /* Without a configured limit, flush() must not measure the persisted files at all, so
+       a KVS that does not use the limit behaves exactly as before this feature existed.
+       A directory placed where a defaults file is expected makes any size measurement
+       fail, so a successful flush here proves that no measurement happened. */
+    const std::string test_dir = "./kvs_no_limit_no_measure_test/";
+    std::filesystem::remove_all(test_dir);
+
+    KvsBuilder builder(instance_id);
+    builder.dir(std::string(test_dir));
+    auto open_res = builder.build();
+    ASSERT_TRUE(open_res);
+    Kvs kvs = std::move(open_res.value());
+
+    /* Obstruct the measurement only after opening, so open() itself is unaffected */
+    std::filesystem::create_directories(test_dir + "kvs_" + std::to_string(instance) + "_default.hash");
+
+    auto set_res = kvs.set_value("key", KvsValue("value"));
+    ASSERT_TRUE(set_res);
+
+    auto flush_res = kvs.flush();
+    EXPECT_TRUE(flush_res);
+
+    std::filesystem::remove_all(test_dir);
+}
+
+TEST(kvs_max_storage_bytes, flush_with_limit_measures_storage)
+{
+    /* Counterpart to flush_without_limit_does_not_measure_storage. With a limit set, the
+       same obstruction makes flush() fail, which shows that the obstruction really does
+       break the measurement. Without this test, the one above could pass for the wrong
+       reason. The limit is far above the data size, so the limit itself is not reached. */
+    const std::string test_dir = "./kvs_limit_measures_test/";
+    std::filesystem::remove_all(test_dir);
+
+    KvsBuilder builder(instance_id);
+    builder.dir(std::string(test_dir));
+    builder.max_storage_bytes(kTestMaxStorageBytes * 1000U);
+    auto open_res = builder.build();
+    ASSERT_TRUE(open_res);
+    Kvs kvs = std::move(open_res.value());
+
+    std::filesystem::create_directories(test_dir + "kvs_" + std::to_string(instance) + "_default.hash");
+
+    auto set_res = kvs.set_value("key", KvsValue("value"));
+    ASSERT_TRUE(set_res);
+
+    auto flush_res = kvs.flush();
+    ASSERT_FALSE(flush_res);
+    EXPECT_EQ(static_cast<ErrorCode>(*flush_res.error()), ErrorCode::PhysicalStorageFailure);
+
+    std::filesystem::remove_all(test_dir);
+}
+
+TEST(kvs_check_size, check_size_without_limit_reports_size)
+{
+    /* calculate_potential_size() shares serialize_and_check() with flush(). Skipping the
+       measurement there when no limit is set must not stop the dry run from reporting a
+       size: without a limit it measures on its own and returns a real, non-zero size. */
+    const std::string test_dir = "./kvs_check_size_no_limit_test/";
+    std::filesystem::remove_all(test_dir);
+
+    KvsBuilder builder(InstanceId(3));
+    builder.dir(std::string(test_dir));
+    auto open_res = builder.build();
+    ASSERT_TRUE(open_res);
+    Kvs kvs = std::move(open_res.value());
+
+    auto set_res = kvs.set_value("key", KvsValue("some_data"));
+    ASSERT_TRUE(set_res);
+
+    auto check_res = kvs.calculate_potential_size();
+    ASSERT_TRUE(check_res) << "calculate_potential_size should succeed when no limit is configured";
+    EXPECT_GT(check_res.value(), 0U);
+
+    std::filesystem::remove_all(test_dir);
 }
