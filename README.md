@@ -184,7 +184,7 @@ bazel test --config=per-x86_64-linux //...
 Run Component Integration Tests (grouped into single Test Suite):
 
 ```bash
-bazel test --config=per-x86_64-linux //score/kvs/tests/test_cases:cit
+bazel test --config=per-x86_64-linux //:cit_tests
 ```
 
 ## Clippy

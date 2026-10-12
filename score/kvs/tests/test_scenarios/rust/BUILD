@@ -1,5 +1,5 @@
 # *******************************************************************************
-# Copyright (c) 2025 Contributors to the Eclipse Foundation
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
 # information regarding copyright ownership.
@@ -10,22 +10,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-load("@rules_rust//rust:defs.bzl", "rust_binary")
 
-rust_binary(
+alias(
     name = "test_scenarios",
-    srcs = glob(["**/*.rs"]),
-    crate_features = ["score_log_bridge"],
-    visibility = ["//score/kvs/tests/test_cases:__pkg__"],
-    deps =
-        [
-            "//score/kvs/rust_kvs",
-            "@score_crates//:serde",
-            "@score_crates//:serde_json",
-            "@score_crates//:tinyjson",
-            "@score_crates//:tracing",
-            "@score_crates//:tracing_subscriber",
-            "@score_logging//score/mw/log/rust/score_log_bridge",
-            "@score_test_scenarios//test_scenarios_rust",
-        ],
+    actual = "//score/kvs/rust_kvs/tests/test_scenarios",
+    deprecation = "//score/kvs/tests/test_scenarios/rust:test_scenarios has moved to //score/kvs/rust_kvs/tests/test_scenarios.",
+    visibility = ["//visibility:public"],
 )
