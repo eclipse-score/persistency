@@ -85,15 +85,15 @@ class KvsValue final
     };
 
     /* Constructors for each type*/
-    explicit KvsValue(int32_t number) : value(number), type(Type::i32) {}
-    explicit KvsValue(uint32_t number) : value(number), type(Type::u32) {}
-    explicit KvsValue(int64_t number) : value(number), type(Type::i64) {}
-    explicit KvsValue(uint64_t number) : value(number), type(Type::u64) {}
-    explicit KvsValue(double number) : value(number), type(Type::f64) {}
-    explicit KvsValue(bool boolean) : value(boolean), type(Type::Boolean) {}
-    explicit KvsValue(const char* str) : value(std::string(str)), type(Type::String) {}
-    explicit KvsValue(const std::string& str) : value(str), type(Type::String) {}
-    explicit KvsValue(std::nullptr_t) : value(nullptr), type(Type::Null) {}
+    explicit KvsValue(int32_t number) : value_(number), type_(Type::i32) {}
+    explicit KvsValue(uint32_t number) : value_(number), type_(Type::u32) {}
+    explicit KvsValue(int64_t number) : value_(number), type_(Type::i64) {}
+    explicit KvsValue(uint64_t number) : value_(number), type_(Type::u64) {}
+    explicit KvsValue(double number) : value_(number), type_(Type::f64) {}
+    explicit KvsValue(bool boolean) : value_(boolean), type_(Type::Boolean) {}
+    explicit KvsValue(const char* str) : value_(std::string(str)), type_(Type::String) {}
+    explicit KvsValue(const std::string& str) : value_(str), type_(Type::String) {}
+    explicit KvsValue(std::nullptr_t) : value_(nullptr), type_(Type::Null) {}
     explicit KvsValue(const Array& array);
     explicit KvsValue(Array&& array);
     explicit KvsValue(const Object& object);
@@ -117,22 +117,22 @@ class KvsValue final
     /* Get the type of the value*/
     Type getType() const
     {
-        return type;
+        return type_;
     }
 
     /* Access the underlying value (use std::get to retrieve the value)*/
     const std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>&
     getValue() const
     {
-        return value;
+        return value_;
     }
 
   private:
     /* The underlying value*/
-    std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object> value;
+    std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object> value_;
 
     /* The type of the value*/
-    Type type;
+    Type type_;
 };
 
 } /* namespace score::mw::per::kvs */

@@ -131,13 +131,13 @@ class KvsBuilder final
     score::Result<Kvs> build();
 
   private:
-    InstanceId instance_id;          ///< ID of the KVS instance
-    SnapshotId snapshot_id;          ///< ID of the KVS snapshot
-    OpenNeedDefaults need_defaults;  ///< Whether default values are required
-    OpenNeedKvs need_kvs;            ///< Whether an existing KVS is required
-    std::string directory;           ///< Directory where to store the KVS Files
-    std::optional<size_t> maximum_storage_bytes;  ///< Maximum total storage size in bytes; unset means no limit
-    std::size_t max_snapshots;                    ///< Maximum number of snapshots to maintain
+    InstanceId instance_id_;          ///< ID of the KVS instance
+    SnapshotId snapshot_id_;          ///< ID of the KVS snapshot
+    OpenNeedDefaults need_defaults_;  ///< Whether default values are required
+    OpenNeedKvs need_kvs_;            ///< Whether an existing KVS is required
+    std::string directory_;           ///< Directory where to store the KVS Files
+    std::optional<size_t> maximum_storage_bytes_;  ///< Maximum total storage size in bytes; unset means no limit
+    std::size_t max_snapshots_;                    ///< Maximum number of snapshots to maintain
 };
 
 } /* namespace score::mw::per::kvs */
