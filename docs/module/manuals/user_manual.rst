@@ -29,192 +29,136 @@ Persistency User Manual
 Overview
 ========
 
-This user manual describes how to integrate and use the Persistency module from the perspective of an
-application developer. The module provides the Key-Value-Storage (KVS), which stores key-value pairs persistently
-as JSON files on the file system. The KVS is available as C++ library and as Rust crate.
+This user manual guides an application developer through the integration and usage of the Persistency module.
+It does not repeat information that is maintained elsewhere. Each section refers to the single source of the
+information, either by a link or by a table that is generated from the requirements and architecture of the module.
 
-For building and testing the module itself, refer to :ref:`persistency_module_documentation`.
+* Feature and its architecture: :need:`feat__persistency`, :need:`doc__persistency_kvs_architecture`
+* Component: :need:`comp__persistency_kvs`, :need:`doc__kvs_requirements`, :need:`doc__kvs_component_architecture`
+* Building and testing the module itself: :ref:`persistency_module_documentation`
 
 Environment Needs
 =================
 
-* **C++**: C++17
-* **Rust**: edition 2021, Ferrocene toolchain of ``score_toolchains_rust``
-* **Build system**: Bazel 8.7.0 (see ``.bazelversion``)
-* **Target platforms**: x86_64 Linux (GCC 12.2.0), x86_64 QNX SDP 8.0.0, aarch64 QNX SDP 8.0.0
-  (Bazel configurations ``per-x86_64-linux``, ``per-x86_64-qnx``, ``per-arm64-qnx``)
+The supported languages and operating systems are defined by the following feature requirements:
+
+.. needtable::
+   :style: table
+   :columns: title;id;status
+   :colwidths: 50,35,15
+   :filter: id in ["feat_req__persistency__cpp_rust", "feat_req__persistency__os_agnostic"]
+
+The build environment is defined in the repository root:
+
+* `MODULE.bazel <https://github.com/eclipse-score/persistency/blob/main/MODULE.bazel>`__: dependencies,
+  toolchains and their versions
+* `.bazelversion <https://github.com/eclipse-score/persistency/blob/main/.bazelversion>`__: Bazel version
+* `.bazelrc <https://github.com/eclipse-score/persistency/blob/main/.bazelrc>`__: build flags and the target
+  platform configurations (``--config=per-...``)
 
 Dependencies
 ------------
 
-* C++ implementation: ``score_baselibs`` (filesystem, json, mw/log, result), Apache License 2.0
-* Rust implementation: ``score_baselibs`` (``score_log``), Apache License 2.0;
-  OSS crates ``tinyjson`` 2.5.1 (MIT) and ``adler32`` 1.2.0 (Zlib) via ``score_crates``
-
-The complete list of dependencies and versions is defined in ``MODULE.bazel``.
+The dependencies, their versions and licenses are listed in the software bill of materials, which is generated
+by the Bazel target ``//:sbom_product`` from ``MODULE.bazel.lock`` and ``Cargo.lock``.
 
 Module Configuration Details
 ============================
 
-A KVS instance is configured by its builder when it is opened.
+The configuration options of a KVS instance (instance ID, default values, storage directory, maximum number of
+snapshots) are set via the builder of the instance (``KvsBuilder`` in C++ and Rust). Their parameters and default
+values are documented in the API documentation (see `API Reference`_).
 
-.. list-table:: KVS instance configuration
-   :header-rows: 1
-   :widths: 20,30,30,20
+The configuration behavior is specified by the following component requirements:
 
-   * - Setting
-     - C++ (``KvsBuilder``)
-     - Rust (``KvsBuilder``)
-     - Default
-   * - Instance ID
-     - constructor ``KvsBuilder(InstanceId)``
-     - ``KvsBuilder::new(InstanceId)``
-     - mandatory
-   * - Default values
-     - ``need_defaults_flag(OpenNeedDefaults)``
-     - ``defaults(KvsDefaults)``
-     - ``Optional``
-   * - Persisted data
-     - ``need_kvs_flag(OpenNeedKvs)``
-     - ``kvs_load(KvsLoad)``
-     - ``Optional``
-   * - Storage directory
-     - ``dir(std::string)``
-     - ``JsonBackendBuilder::working_dir(PathBuf)``
-     - C++: ``./data_folder/``, Rust: current working directory
-   * - Maximum number of snapshots
-     - fixed (``KVS_MAX_SNAPSHOTS``)
-     - ``JsonBackendBuilder::snapshot_max_count(usize)``
-     - 3
+..
+   The valid component requirements are grouped by the first entry of "derived_from" (sorted alphabetically
+   by sphinx-needs). Each component requirement is shown in exactly one section of this manual. A new
+   feature requirement has to be added to the list of one of the sections.
 
-The modes for default values and persisted data are:
-
-* ``Required``: the data must exist, otherwise opening the instance fails.
-* ``Optional``: the data is loaded if it exists, otherwise the instance starts empty.
-* ``Ignored``: the data is not loaded.
+.. needextract::
+   :filter: type == "comp_req" and status == "valid" and len(derived_from) > 0 and derived_from[0].split("[")[0] in ["feat_req__persistency__cfg", "feat_req__persistency__default_values", "feat_req__persistency__default_value_get", "feat_req__persistency__reset_to_default", "feat_req__persistency__default_value_file", "feat_req__persistency__dev_mode", "feat_req__persistency__prod_mode"]
 
 Configuration Effects
 ---------------------
 
-The data of an instance is stored in the storage directory in the following files:
+Storage of the data, its integrity check and the snapshots are specified by the following component requirements:
 
-* ``kvs_<instance id>_0.json`` and ``kvs_<instance id>_0.hash``: current data and its Adler-32 checksum
-* ``kvs_<instance id>_<n>.json`` and ``kvs_<instance id>_<n>.hash``: snapshots ``1`` to the maximum number of snapshots
-* ``kvs_<instance id>_default.json`` and ``kvs_<instance id>_default.hash``: default values
+.. needextract::
+   :filter: type == "comp_req" and status == "valid" and len(derived_from) > 0 and derived_from[0].split("[")[0] in ["feat_req__persistency__store_data", "feat_req__persistency__load_data", "feat_req__persistency__integrity_check", "feat_req__persistency__versioning", "feat_req__persistency__update_mechanism", "feat_req__persistency__snapshot_create", "feat_req__persistency__snapshot_restore", "feat_req__persistency__snapshot_remove"]
 
-On opening, the checksum of the loaded files is verified. If it does not match, opening fails with
-``ValidationFailed`` and the data is not used. Changed values are held in memory and written to the files on
-``flush()``; each flush moves the previous data to the snapshots. In the Rust implementation, ``flush()`` is skipped
-if the maximum number of snapshots is set to 0. The Rust implementation provides at most
-10 instances per process; opening an instance ID again returns the already opened instance.
+The sequence of the operations (e.g. reading from and flushing to the storage, restoring a snapshot) is shown in
+the dynamic architecture of the feature:
 
-The default values file contains each value with its type and value (e.g. ``"timeout": {"t": "i32", "v": 30}``).
-The default values file and its checksum file (Adler-32 checksum of the file content, 4 bytes big-endian) are
-provided by the integrator; ``create_defaults_file`` in ``score/kvs/rust_kvs/examples/defaults.rs`` shows how both
-files are created. The command line tool ``kvs_tool`` (``score/kvs/rust_kvs_tool``) reads and modifies the data of
-KVS instance 0.
+.. needtable::
+   :style: table
+   :columns: title;id
+   :colwidths: 60,40
+   :filter: type == "feat_arc_dyn" and id.startswith("feat_arc_dyn__persistency__")
+   :sort: title
 
 Examples
 ========
 
-C++:
+The examples are maintained together with the code:
 
-.. code-block:: cpp
-
-   #include "score/kvs/kvsbuilder.hpp"
-
-   using namespace score::mw::per::kvs;
-
-   auto open_res = KvsBuilder(InstanceId(0))
-                       .need_defaults_flag(OpenNeedDefaults::Optional)
-                       .need_kvs_flag(OpenNeedKvs::Optional)
-                       .dir("/var/data/kvs/")
-                       .build();
-   if (!open_res) { /* handle open_res.error() */ }
-   Kvs kvs = std::move(open_res.value());
-
-   if (!kvs.set_value("pi", KvsValue(3.14))) { /* handle error */ }
-   auto value = kvs.get_value("pi");
-   if (!kvs.flush()) { /* handle error */ }
-
-Rust:
-
-.. code-block:: rust
-
-   use rust_kvs::prelude::*;
-   use std::path::PathBuf;
-
-   let kvs = KvsBuilder::new(InstanceId(0))
-       .defaults(KvsDefaults::Optional)
-       .kvs_load(KvsLoad::Optional)
-       .backend(Box::new(
-           JsonBackendBuilder::new().working_dir(PathBuf::from("/var/data/kvs")).build(),
-       ))
-       .build()?;
-
-   kvs.set_value("number", 123.0)?;
-   let number = kvs.get_value_as::<f64>("number")?;
-   kvs.flush()?;
-
-Executable Rust examples are located in ``score/kvs/rust_kvs/examples`` (basic operations, default values,
-snapshots, custom types, migration between backends). They are executed with
-``cargo run -p rust_kvs --example basic`` and accordingly with the other file names.
+* `examples/README.md <https://github.com/eclipse-score/persistency/blob/main/examples/README.md>`__:
+  integration into a Bazel project and usage of the C++ and Rust implementation
+* `score/kvs/rust_kvs/examples <https://github.com/eclipse-score/persistency/tree/main/score/kvs/rust_kvs/examples>`__:
+  executable Rust examples
+* `score/kvs/tests/test_scenarios <https://github.com/eclipse-score/persistency/tree/main/score/kvs/tests/test_scenarios>`__:
+  test scenarios of the C++ and Rust implementation
 
 API Reference
 =============
 
-The API is documented in the source code:
+The logical interface of the feature is :need:`logic_arc_int__persistency__interface`. The API of the
+implementations is documented in the source code:
 
-* C++: ``score/kvs/kvs.hpp``, ``score/kvs/kvsbuilder.hpp``, ``score/kvs/kvsvalue.hpp``, ``score/kvs/error.hpp``
-  (namespace ``score::mw::per::kvs``)
-* Rust: crate ``rust_kvs`` (``score/kvs/rust_kvs``), documentation generated with ``cargo doc -p rust_kvs``
+* C++: header files in `score/kvs <https://github.com/eclipse-score/persistency/tree/main/score/kvs>`__
+* Rust: crate ``rust_kvs`` in `score/kvs/rust_kvs <https://github.com/eclipse-score/persistency/tree/main/score/kvs/rust_kvs>`__,
+  documentation generated with ``cargo doc -p rust_kvs``
 
-Supported value types are signed and unsigned 32 and 64 bit integers, 64 bit floating point, boolean, string,
-null, array and object (``KvsValue``).
+Keys, values and the API are specified by the following component requirements:
+
+.. needextract::
+   :filter: type == "comp_req" and status == "valid" and len(derived_from) > 0 and derived_from[0].split("[")[0] in ["feat_req__persistency__support_datatype_keys", "feat_req__persistency__support_datatype_value", "feat_req__persistency__async_api", "feat_req__persistency__async_completion"]
 
 Performance Considerations
 ==========================
 
-No performance measurements are documented for the module yet. The following characteristics result from the
-design:
+The performance related properties are defined by the following feature requirements:
 
-* All values of an instance are held in memory; opening an instance reads the complete data file.
-* ``flush()`` writes the complete data file and its checksum and rotates the snapshot files, so its duration
-  depends on the size of the stored data and on the file system.
-* Read and write accesses to values do not access the file system.
+.. needtable::
+   :style: table
+   :columns: title;id;status
+   :colwidths: 50,35,15
+   :filter: id in ["feat_req__persistency__fast_access", "feat_req__persistency__cached_access", "feat_req__persistency__write_amplification", "feat_req__persistency__dynamic_memory_alloc"]
+
+The verification results are documented in :need:`doc__persistency_verification_report`.
 
 Integration Guidelines
 ======================
 
-Integrating with Your Project
------------------------------
+The integration into a Bazel project (module dependency, build flags and library targets) is described in
+`examples/README.md <https://github.com/eclipse-score/persistency/blob/main/examples/README.md>`__. The released
+versions of the module are listed in the
+`S-CORE Bazel registry <https://github.com/eclipse-score/bazel_registry/tree/main/modules/score_persistency>`__.
 
-1. Add the module to your Bazel module:
+Concurrent access, multiple instances and access permissions are specified by the following component
+requirements:
 
-   .. code-block:: python
+.. needextract::
+   :filter: type == "comp_req" and status == "valid" and len(derived_from) > 0 and derived_from[0].split("[")[0] in ["feat_req__persistency__concurrency", "feat_req__persistency__multiple_kvs", "feat_req__persistency__access_control"]
 
-      # In your MODULE.bazel
-      bazel_dep(name = "score_persistency", version = "0.3.5")
+The application shall fulfill the assumptions of use of the module:
 
-2. Reference the library in your build files:
-
-   .. code-block:: python
-
-      cc_library(
-          name = "my_target",
-          deps = ["@score_persistency//score/kvs"],
-      )
-
-      rust_library(
-          name = "my_rust_target",
-          deps = ["@score_persistency//score/kvs/rust_kvs"],
-      )
-
-3. Include ``score/kvs/kvsbuilder.hpp`` (C++) or use ``rust_kvs::prelude`` (Rust).
-
-The latest released version is 0.3.5 (`S-CORE Bazel registry <https://github.com/eclipse-score/bazel_registry/tree/main/modules/score_persistency>`__).
-In version 0.3.5 the C++ library is provided as ``@score_persistency//score/kvs:kvs_cpp``. On the main branch the
-target is ``@score_persistency//score/kvs``; ``kvs_cpp`` remains available as deprecated alias.
+.. needtable::
+   :style: table
+   :columns: title;id;status
+   :colwidths: 50,35,15
+   :filter: type == "aou_req" and "persistency" in tags
+   :sort: title
 
 Version History, Compatibility, and Troubleshooting
 ===================================================
@@ -233,7 +177,8 @@ Safety and Security
 License
 =======
 
-This module is licensed under the Apache License Version 2.0. See the ``LICENSE`` file in the repository.
+The license of the module is defined in the
+`LICENSE <https://github.com/eclipse-score/persistency/blob/main/LICENSE>`__ file of the repository.
 
 Feedback and Contributions
 ==========================
