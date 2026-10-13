@@ -1,0 +1,14 @@
+[package]
+name = "rust_test_utility"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "rust_test_utility"
+path = "main.rs"
+
+[dependencies]
+rust_kvs.workspace = true
+
+[lints]
+workspace = true

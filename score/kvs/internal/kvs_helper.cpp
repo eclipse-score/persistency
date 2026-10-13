@@ -11,6 +11,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 #include "kvs_helper.hpp"
+#include "score/kvs/kvs.hpp"
 
 namespace score::mw::per::kvs
 {
@@ -233,6 +234,17 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any)
                         bool error = false;
                         for (const auto& [key, valAny] : obj.value().get())
                         {
+                            auto key_sv = key.GetAsStringView();
+                            /* comp_req__kvs__key_length: a stored file must satisfy the key-length
+                               limit; an over-length key means the file is invalid/corrupted. Halt
+                               loading with an error rather than silently dropping data. */
+                            if (!is_key_length_valid(key_sv))
+                            {
+                                error = true;
+                                result = score::MakeUnexpected(ErrorCode::KeyTooLong);
+                                break;
+                            }
+
                             auto conv = any_to_kvsvalue(valAny);
                             if (!conv)
                             {
@@ -240,7 +252,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any)
                                 result = score::MakeUnexpected(ErrorCode::InvalidValueType);
                                 break;
                             }
-                            map.emplace_back(std::string(key.GetAsStringView()), std::move(conv.value()));
+                            map.emplace(std::string(key_sv), std::move(conv.value()));
                         }
                         if (!error)
                         {
@@ -264,7 +276,35 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any)
         }
         else
         {
-            result = score::MakeUnexpected(ErrorCode::InvalidValueType);
+            // If not a t-tagged object, treat as a map of key-value pairs (KvsMap).
+            KvsValue::Object map;
+            bool error = false;
+            for (const auto& [key, valAny] : objAny)
+            {
+                auto key_sv = key.GetAsStringView();
+                /* comp_req__kvs__key_length: a stored file must satisfy the key-length
+                   limit; an over-length key means the file is invalid/corrupted. Halt
+                   loading with an error rather than silently dropping data. */
+                if (!is_key_length_valid(key_sv))
+                {
+                    error = true;
+                    result = score::MakeUnexpected(ErrorCode::KeyTooLong);
+                    break;
+                }
+
+                auto conv = any_to_kvsvalue(valAny);
+                if (!conv)
+                {
+                    error = true;
+                    result = score::MakeUnexpected(ErrorCode::InvalidValueType);
+                    break;
+                }
+                map.emplace(std::string(key_sv), std::move(conv.value()));
+            }
+            if (!error)
+            {
+                result = KvsValue(std::move(map));
+            }
         }
     }
     else
@@ -387,6 +427,14 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv)
     }
 
     return result;
+}
+
+/* comp_req__kvs__key_length: single source of truth for the key-length rule,
+   shared by every path that receives a key (set_value, get_value, parse_json_data).
+   std::string_view::length() counts bytes, matching the byte-based requirement. */
+bool is_key_length_valid(std::string_view key)
+{
+    return key.length() <= KVS_MAX_KEY_LENGTH_BYTES;
 }
 
 } /* namespace score::mw::per::kvs */

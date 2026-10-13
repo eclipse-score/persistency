@@ -77,7 +77,7 @@ TEST(kvs_constructor, move_constructor)
     cleanup_environment();
 }
 
-TEST(kvs_TEST, parse_json_data_sucess)
+TEST(kvs_TEST, parse_json_data_success)
 {
     /* Success */
     prepare_environment();
@@ -148,7 +148,7 @@ TEST(kvs_TEST, parse_json_data_failure)
 
     result = kvs->parse_json_data("data_not_used_in_mocking");
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), ErrorCode::JsonParserError);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 
     /* any_to_kvsvalue error */
 

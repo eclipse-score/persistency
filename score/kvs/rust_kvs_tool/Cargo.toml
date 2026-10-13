@@ -2,6 +2,7 @@
 name = "rust_kvs_tool"
 version.workspace = true
 edition.workspace = true
+autotests = false
 
 [[bin]]
 name = "kvs_tool"
