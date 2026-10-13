@@ -47,7 +47,7 @@ setup_starpls(
 
 copyright_checker(
     name = "copyright",
-    exclusion = "//:tools/copyright_exclusions.txt",
+    exclusion = "//tools:copyright_exclusions.txt",
     visibility = ["//visibility:public"],
 )
 
