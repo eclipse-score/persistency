@@ -39,8 +39,8 @@ TEST(kvs_constructor, move_constructor)
     Kvs kvs_b = std::move(result_b.value());
 
     /* Create Test Data*/
-    kvs_b.kvs.insert({"test_kvs", KvsValue(42.0)});
-    kvs_b.default_values.insert({"test_default", KvsValue(true)});
+    kvs_b.kvs_.insert({"test_kvs", KvsValue(42.0)});
+    kvs_b.default_values_.insert({"test_default", KvsValue(true)});
 
     /* Move assignment operator */
     kvs_a = std::move(kvs_b);
@@ -58,21 +58,21 @@ TEST(kvs_constructor, move_constructor)
     /*Expectations:
     - kvs_a now contains data from the former kvs_b (default JSON data) */
 
-    EXPECT_EQ(kvs_a.filename_prefix.CStr(), data_dir + "kvs_" + std::to_string(instance));
+    EXPECT_EQ(kvs_a.filename_prefix_.CStr(), data_dir + "kvs_" + std::to_string(instance));
 
-    EXPECT_TRUE(kvs_a.kvs.count("test_kvs"));
-    EXPECT_TRUE(kvs_a.default_values.count("test_default"));
+    EXPECT_TRUE(kvs_a.kvs_.count("test_kvs"));
+    EXPECT_TRUE(kvs_a.default_values_.count("test_default"));
 
-    const auto& val = kvs_a.kvs.at("test_kvs");
+    const auto& val = kvs_a.kvs_.at("test_kvs");
     EXPECT_EQ(val.getType(), KvsValue::Type::f64);
     EXPECT_EQ(std::get<double>(val.getValue()), 42.0);
 
-    const auto& def = kvs_a.default_values.at("test_default");
+    const auto& def = kvs_a.default_values_.at("test_default");
     EXPECT_EQ(def.getType(), KvsValue::Type::Boolean);
     EXPECT_EQ(std::get<bool>(def.getValue()), true);
 
-    EXPECT_TRUE(kvs_b.kvs.empty());
-    EXPECT_TRUE(kvs_b.default_values.empty());
+    EXPECT_TRUE(kvs_b.kvs_.empty());
+    EXPECT_TRUE(kvs_b.default_values_.empty());
 
     cleanup_environment();
 }
@@ -102,7 +102,7 @@ TEST(kvs_TEST, parse_json_data_sucess)
     EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
         .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(any_obj))));
 
-    kvs->parser = std::move(mock_parser);
+    kvs->parser_ = std::move(mock_parser);
 
     auto result = kvs->parse_json_data("data_not_used_in_mocking");
     EXPECT_TRUE(result);
@@ -130,7 +130,7 @@ TEST(kvs_TEST, parse_json_data_failure)
         .WillOnce(::testing::Return(
             score::Result<score::json::Any>(score::MakeUnexpected(score::json::Error::kInvalidFilePath))));
 
-    kvs->parser = std::move(mock_parser);
+    kvs->parser_ = std::move(mock_parser);
 
     auto result = kvs->parse_json_data("data_not_used_in_mocking");
     EXPECT_FALSE(result.has_value());
@@ -144,7 +144,7 @@ TEST(kvs_TEST, parse_json_data_failure)
     EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
         .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(JsonParserReturnValue))));
 
-    kvs->parser = std::move(mock_parser);
+    kvs->parser_ = std::move(mock_parser);
 
     result = kvs->parse_json_data("data_not_used_in_mocking");
     EXPECT_FALSE(result.has_value());
@@ -163,7 +163,7 @@ TEST(kvs_TEST, parse_json_data_failure)
     EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
         .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(any_obj))));
 
-    kvs->parser = std::move(mock_parser);
+    kvs->parser_ = std::move(mock_parser);
 
     result = kvs->parse_json_data("data_not_used_in_mocking");
     EXPECT_FALSE(result.has_value());
@@ -399,7 +399,7 @@ TEST(kvs_TEST, parse_json_data_rejects_over_length_key)
     EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
         .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(any_obj))));
 
-    kvs->parser = std::move(mock_parser);
+    kvs->parser_ = std::move(mock_parser);
 
     auto result = kvs->parse_json_data("data_not_used_in_mocking");
     ASSERT_FALSE(result);
@@ -453,7 +453,7 @@ TEST(kvs_open_json, open_json_json_invalid)
     EXPECT_CALL(*mock_parser, FromBuffer(::testing::_)).WillRepeatedly([](auto) {
         return score::Result<score::json::Any>(score::MakeUnexpected(score::json::Error::kInvalidFilePath));
     });
-    kvs.parser = std::move(mock_parser);
+    kvs.parser_ = std::move(mock_parser);
 
     auto result = kvs.open_json(score::filesystem::Path(kvs_prefix), OpenJsonNeedFile::Required);
     ASSERT_FALSE(result);
@@ -512,12 +512,12 @@ TEST(kvs_reset, reset_success)
     ASSERT_TRUE(result);
 
     /* Check Data existing */
-    EXPECT_FALSE(result.value().kvs.empty());
+    EXPECT_FALSE(result.value().kvs_.empty());
 
     /* Reset KVS */
     auto reset_result = result.value().reset();
     EXPECT_TRUE(reset_result);
-    EXPECT_TRUE(result.value().kvs.empty());
+    EXPECT_TRUE(result.value().kvs_.empty());
 
     cleanup_environment();
 }
@@ -536,7 +536,7 @@ TEST(kvs_reset, reset_failure)
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
 
-    std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
     auto reset_result = result.value().reset();
     EXPECT_FALSE(reset_result);
     EXPECT_EQ(static_cast<ErrorCode>(*reset_result.error()), ErrorCode::MutexLockFailed);
@@ -558,7 +558,7 @@ TEST(kvs_get_all_keys, get_all_keys_success)
     ASSERT_TRUE(result);
 
     /* Check Data existing */
-    EXPECT_FALSE(result.value().kvs.empty());
+    EXPECT_FALSE(result.value().kvs_.empty());
 
     /* Check if all keys are returned */
     auto get_all_keys_result = result.value().get_all_keys();
@@ -569,7 +569,7 @@ TEST(kvs_get_all_keys, get_all_keys_success)
     EXPECT_TRUE(search != get_all_keys_result.value().end());
 
     /* Check if empty keys are returned */
-    result.value().kvs.clear();
+    result.value().kvs_.clear();
     get_all_keys_result = result.value().get_all_keys();
     EXPECT_TRUE(get_all_keys_result.value().empty());
 
@@ -589,7 +589,7 @@ TEST(kvs_get_all_keys, get_all_keys_failure)
                             std::nullopt,
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
-    std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
 
     auto get_all_keys_result = result.value().get_all_keys();
     EXPECT_FALSE(get_all_keys_result);
@@ -612,7 +612,7 @@ TEST(kvs_key_exists, key_exists_success)
     ASSERT_TRUE(result);
 
     /* Check Data existing */
-    EXPECT_FALSE(result.value().kvs.empty());
+    EXPECT_FALSE(result.value().kvs_.empty());
 
     /* Check if key exists */
     auto exists_result = result.value().key_exists("kvs");
@@ -640,7 +640,7 @@ TEST(kvs_key_exists, key_exists_failure)
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
 
-    std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
     auto exists_result = result.value().key_exists("kvs");
     EXPECT_FALSE(exists_result);
     EXPECT_EQ(static_cast<ErrorCode>(*exists_result.error()), ErrorCode::MutexLockFailed);
@@ -662,7 +662,7 @@ TEST(kvs_get_value, get_value_success)
     ASSERT_TRUE(result);
 
     /* Check Data existing */
-    EXPECT_FALSE(result.value().kvs.empty());
+    EXPECT_FALSE(result.value().kvs_.empty());
 
     /* Check if value is returned */
     auto get_value_result = result.value().get_value("kvs");
@@ -671,10 +671,10 @@ TEST(kvs_get_value, get_value_success)
     EXPECT_EQ(std::get<int32_t>(get_value_result.value().getValue()), 2);
 
     /* Check if default value is returned when no written key exists */
-    result.value().kvs.clear();
-    ASSERT_TRUE(result.value().kvs.empty());  // Make sure kvs is empty and it uses the default value
+    result.value().kvs_.clear();
+    ASSERT_TRUE(result.value().kvs_.empty());  // Make sure kvs is empty and it uses the default value
     int32_t default_value(42);
-    result.value().default_values.insert_or_assign("kvs", KvsValue(default_value));
+    result.value().default_values_.insert_or_assign("kvs", KvsValue(default_value));
     get_value_result = result.value().get_value("kvs");
     ASSERT_FALSE(get_value_result);
     EXPECT_EQ(get_value_result.error(), ErrorCode::KeyNotFound);
@@ -709,7 +709,7 @@ TEST(kvs_get_value, get_value_failure)
                        std::nullopt,
                        KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
-    std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
     get_value_result = result.value().get_value("kvs");
     EXPECT_FALSE(get_value_result);
     EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::MutexLockFailed);
@@ -732,7 +732,7 @@ TEST(kvs_get_default_value, get_default_value_success)
 
     /* Check Data existing */
     int32_t default_value(42);
-    result.value().default_values.insert_or_assign("kvs", KvsValue(default_value));
+    result.value().default_values_.insert_or_assign("kvs", KvsValue(default_value));
 
     /* Check if default value is returned */
     auto get_def_value_result = result.value().get_default_value("kvs");
@@ -776,19 +776,19 @@ TEST(kvs_reset_key, reset_key_success)
                             std::nullopt,
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
-    ASSERT_TRUE(result.value().kvs.count("kvs")); /* Check Data existing */
+    ASSERT_TRUE(result.value().kvs_.count("kvs")); /* Check Data existing */
 
-    result.value().default_values.insert_or_assign(/* Create default Value for "kvs"-key */
+    result.value().default_values_.insert_or_assign(/* Create default Value for "kvs"-key */
                                                    "kvs",
                                                    KvsValue(42.0));
     /* Reset a key */
     auto reset_key_result = result.value().reset_key("kvs");
     EXPECT_TRUE(reset_key_result);
-    EXPECT_FALSE(result.value().kvs.count("kvs"));
-    EXPECT_TRUE(result.value().default_values.count("kvs"));
+    EXPECT_FALSE(result.value().kvs_.count("kvs"));
+    EXPECT_TRUE(result.value().default_values_.count("kvs"));
 
     /* Reset a non written key which has default value */
-    result.value().default_values.insert_or_assign("default", KvsValue(42.0));
+    result.value().default_values_.insert_or_assign("default", KvsValue(42.0));
     reset_key_result = result.value().reset_key("default");
     EXPECT_TRUE(reset_key_result);
 
@@ -822,7 +822,7 @@ TEST(kvs_reset_key, reset_key_failure)
                        std::nullopt,
                        KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
-    result.value().default_values.clear();  // Clear default values to ensure no default value
+    result.value().default_values_.clear();  // Clear default values to ensure no default value
                                             // exists for "kvs"
     reset_key_result = result.value().reset_key("kvs");
     EXPECT_FALSE(reset_key_result);
@@ -837,7 +837,7 @@ TEST(kvs_reset_key, reset_key_failure)
                        std::nullopt,
                        KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
-    std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
     reset_key_result = result.value().reset_key("kvs");
     EXPECT_FALSE(reset_key_result);
     EXPECT_EQ(static_cast<ErrorCode>(*reset_key_result.error()), ErrorCode::MutexLockFailed);
@@ -860,8 +860,8 @@ TEST(kvs_is_value_default, is_value_default)
     auto kvs{std::move(result.value())};
 
     /* Create Test Default Data */
-    kvs.kvs.insert_or_assign("not-default", KvsValue(123.4));
-    kvs.default_values.insert_or_assign("default", KvsValue(42.0));
+    kvs.kvs_.insert_or_assign("not-default", KvsValue(123.4));
+    kvs.default_values_.insert_or_assign("default", KvsValue(42.0));
 
     /* Check non-default value */
     {
@@ -902,15 +902,15 @@ TEST(kvs_set_value, set_value_success)
     /* Set a new value */
     auto set_value_result = result.value().set_value("new_key", KvsValue(3.14));
     EXPECT_TRUE(set_value_result);
-    EXPECT_TRUE(result.value().kvs.count("new_key"));
-    EXPECT_EQ(result.value().kvs.at("new_key").getType(), KvsValue::Type::f64);
-    EXPECT_DOUBLE_EQ(std::get<double>(result.value().kvs.at("new_key").getValue()), 3.14);
+    EXPECT_TRUE(result.value().kvs_.count("new_key"));
+    EXPECT_EQ(result.value().kvs_.at("new_key").getType(), KvsValue::Type::f64);
+    EXPECT_DOUBLE_EQ(std::get<double>(result.value().kvs_.at("new_key").getValue()), 3.14);
 
     /* Set a value with an existing key */
     set_value_result = result.value().set_value("kvs", KvsValue(2.718));
     EXPECT_TRUE(set_value_result);
-    EXPECT_EQ(result.value().kvs.at("kvs").getType(), KvsValue::Type::f64);
-    EXPECT_DOUBLE_EQ(std::get<double>(result.value().kvs.at("kvs").getValue()), 2.718);
+    EXPECT_EQ(result.value().kvs_.at("kvs").getType(), KvsValue::Type::f64);
+    EXPECT_DOUBLE_EQ(std::get<double>(result.value().kvs_.at("kvs").getValue()), 2.718);
 
     cleanup_environment();
 }
@@ -984,7 +984,7 @@ TEST(kvs_set_value, set_value_failure)
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
 
-    std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
     auto set_value_result = result.value().set_value("new_key", KvsValue(3.0));
     EXPECT_FALSE(set_value_result);
     EXPECT_EQ(static_cast<ErrorCode>(*set_value_result.error()), ErrorCode::MutexLockFailed);
@@ -1005,12 +1005,12 @@ TEST(kvs_remove_key, remove_key_success)
     ASSERT_TRUE(result);
 
     /* Check Data existing */
-    EXPECT_TRUE(result.value().kvs.count("kvs"));
+    EXPECT_TRUE(result.value().kvs_.count("kvs"));
 
     /* Remove an existing key */
     auto remove_key_result = result.value().remove_key("kvs");
     EXPECT_TRUE(remove_key_result);
-    EXPECT_FALSE(result.value().kvs.count("kvs"));
+    EXPECT_FALSE(result.value().kvs_.count("kvs"));
 
     cleanup_environment();
 }
@@ -1042,7 +1042,7 @@ TEST(kvs_remove_key, remove_key_failure)
                        std::nullopt,
                        KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
-    std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
     remove_key_result = result.value().remove_key("kvs");
     EXPECT_FALSE(remove_key_result);
     EXPECT_EQ(static_cast<ErrorCode>(*remove_key_result.error()), ErrorCode::MutexLockFailed);
@@ -1072,7 +1072,7 @@ TEST(kvs_write_json_data, write_json_data_success)
                          KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(kvs);
 
-    kvs->filename_prefix = score::filesystem::Path(filename_prefix); /* Set the filename prefix to the test prefix */
+    kvs->filename_prefix_ = score::filesystem::Path(filename_prefix); /* Set the filename prefix to the test prefix */
     auto result = kvs->write_json_data(json_test_data);
     EXPECT_TRUE(result);
     EXPECT_TRUE(std::filesystem::exists(kvs_prefix + ".json"));
@@ -1120,7 +1120,7 @@ TEST(kvs_write_json_data, write_json_data_filesystem_failure)
     EXPECT_CALL(*standard_mock, CreateDirectories(::testing::_))
         .WillOnce(::testing::Return(
             score::Result<void>(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotCreateDirectory))));
-    kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
+    kvs.value().filesystem_ = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     auto result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
@@ -1128,7 +1128,7 @@ TEST(kvs_write_json_data, write_json_data_filesystem_failure)
 
     /* Test if path argument is missing parent path (will only occur if semantic errors will be done
      * in flush() )*/
-    kvs->filename_prefix = score::filesystem::Path("no_parent_path"); /* Set the filename prefix to the test prefix */
+    kvs->filename_prefix_ = score::filesystem::Path("no_parent_path"); /* Set the filename prefix to the test prefix */
     result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
@@ -1157,7 +1157,7 @@ TEST(kvs_write_json_data, write_json_data_permissions_failure)
     out_hash.close();
     std::filesystem::permissions(
         kvs_prefix + ".hash", std::filesystem::perms::owner_read, std::filesystem::perm_options::replace);
-    kvs->filename_prefix = score::filesystem::Path(filename_prefix); /* Reset the filename prefix to the test prefix */
+    kvs->filename_prefix_ = score::filesystem::Path(filename_prefix); /* Reset the filename prefix to the test prefix */
     auto result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
@@ -1168,7 +1168,7 @@ TEST(kvs_write_json_data, write_json_data_permissions_failure)
     out_json.close();
     std::filesystem::permissions(
         kvs_prefix + ".json", std::filesystem::perms::owner_read, std::filesystem::perm_options::replace);
-    kvs->filename_prefix = score::filesystem::Path(filename_prefix); /* Reset the filename prefix to the test prefix */
+    kvs->filename_prefix_ = score::filesystem::Path(filename_prefix); /* Reset the filename prefix to the test prefix */
     result = kvs->write_json_data(kvs_json);
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
@@ -1321,7 +1321,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_mutex)
     ASSERT_TRUE(result);
 
     /* Mutex locked */
-    std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
     auto rotate_result = result.value().snapshot_rotate();
     EXPECT_FALSE(rotate_result);
     EXPECT_EQ(static_cast<ErrorCode>(*rotate_result.error()), ErrorCode::MutexLockFailed);
@@ -1345,9 +1345,9 @@ TEST(kvs_flush, flush_success_data)
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
 
-    result.value().kvs.clear(); /* Clear KVS to ensure no data is written */
+    result.value().kvs_.clear(); /* Clear KVS to ensure no data is written */
     std::string value = "value1";
-    result.value().kvs.insert({"key1", KvsValue(value)});
+    result.value().kvs_.insert({"key1", KvsValue(value)});
     auto flush_result = result.value().flush();
     ASSERT_TRUE(flush_result);
 
@@ -1404,7 +1404,7 @@ TEST(kvs_flush, flush_failure_mutex)
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
 
-    std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
     auto flush_result = result.value().flush();
     EXPECT_FALSE(flush_result);
     EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::MutexLockFailed);
@@ -1451,7 +1451,7 @@ TEST(kvs_flush, flush_failure_kvsvalue_invalid)
     ASSERT_TRUE(result);
 
     BrokenKvsValue invalid;
-    result.value().kvs.insert({"invalid_key", invalid});
+    result.value().kvs_.insert({"invalid_key", invalid});
 
     auto flush_result_invalid = result.value().flush();
     EXPECT_FALSE(flush_result_invalid);
@@ -1478,7 +1478,7 @@ TEST(kvs_flush, flush_failure_json_writer)
         .WillOnce(
             ::testing::Return(score::Result<std::string>(score::MakeUnexpected(score::json::Error::kUnknownError))));
 
-    kvs->writer = std::move(mock_writer);
+    kvs->writer_ = std::move(mock_writer);
     auto result = kvs.value().flush();
     EXPECT_FALSE(result);
     EXPECT_EQ(result.error(), ErrorCode::JsonGeneratorError);
@@ -1536,7 +1536,7 @@ TEST(kvs_snapshot_count, snapshot_count_invalid)
     EXPECT_CALL(*standard_mock, Exists(::testing::_))
         .WillOnce(::testing::Return(
             score::Result<bool>(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRetrieveStatus))));
-    kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
+    kvs.value().filesystem_ = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     auto result = kvs.value().snapshot_count();
     EXPECT_FALSE(result);
@@ -1558,9 +1558,9 @@ TEST(kvs_snapshot_restore, snapshot_restore_success)
 
     /* Create empty Test-Snapshot Files -> Data received by the JsonParser should be the data listed
      * below */
-    ASSERT_FALSE(result.value().kvs.empty());
-    ASSERT_FALSE(result.value().kvs.count("key1"));
-    ASSERT_TRUE(result.value().kvs.count("kvs"));
+    ASSERT_FALSE(result.value().kvs_.empty());
+    ASSERT_FALSE(result.value().kvs_.count("key1"));
+    ASSERT_TRUE(result.value().kvs_.count("kvs"));
 
     /* Create dummy data */
     const std::string json_data = R"({
@@ -1584,7 +1584,7 @@ TEST(kvs_snapshot_restore, snapshot_restore_success)
 
     auto restore_result = result.value().snapshot_restore(1);
     EXPECT_TRUE(restore_result);
-    EXPECT_TRUE(result.value().kvs.count("kvs_old"));
+    EXPECT_TRUE(result.value().kvs_.count("kvs_old"));
 
     cleanup_environment();
 }
@@ -1652,7 +1652,7 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_mutex)
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
 
-    std::unique_lock<std::mutex> lock(result.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
     auto restore_result = result.value().snapshot_restore(1);
     EXPECT_FALSE(restore_result);
     EXPECT_EQ(static_cast<ErrorCode>(*restore_result.error()), ErrorCode::MutexLockFailed);
@@ -1680,7 +1680,7 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_snapshot_count)
     EXPECT_CALL(*standard_mock, Exists(::testing::_))
         .WillOnce(::testing::Return(
             score::Result<bool>(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRetrieveStatus))));
-    kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
+    kvs.value().filesystem_ = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     auto result = kvs.value().snapshot_restore(1);
     EXPECT_FALSE(result);
@@ -1760,7 +1760,7 @@ TEST(kvs_get_filename, get_kvs_filename_failure)
     EXPECT_CALL(*standard_mock, Exists(::testing::_))
         .WillOnce(::testing::Return(
             score::Result<bool>(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRetrieveStatus))));
-    kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
+    kvs.value().filesystem_ = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     result = kvs.value().get_kvs_filename(SnapshotId(1));
     EXPECT_FALSE(result);
@@ -1824,7 +1824,7 @@ TEST(kvs_get_filename, get_hashname_failure)
     EXPECT_CALL(*standard_mock, Exists(::testing::_))
         .WillOnce(::testing::Return(
             score::Result<bool>(score::MakeUnexpected(score::filesystem::ErrorCode::kCouldNotRetrieveStatus))));
-    kvs.value().filesystem = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
+    kvs.value().filesystem_ = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     result = kvs.value().get_hash_filename(SnapshotId(1));
     EXPECT_FALSE(result);
@@ -1880,12 +1880,12 @@ TEST(kvs_remove_all_keys, remove_all_keys_empty_kvs)
                          KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(kvs);
 
-    kvs.value().kvs.clear();
+    kvs.value().kvs_.clear();
 
     /* Removing from an already empty KVS succeeds */
     auto result = kvs.value().remove_all_keys();
     EXPECT_TRUE(result);
-    EXPECT_TRUE(kvs.value().kvs.empty());
+    EXPECT_TRUE(kvs.value().kvs_.empty());
 
     cleanup_environment();
 }
@@ -1903,7 +1903,7 @@ TEST(kvs_remove_all_keys, remove_all_keys_keeps_defaults)
                          KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(kvs);
 
-    kvs.value().default_values.insert_or_assign("defaulted", KvsValue(42.0));
+    kvs.value().default_values_.insert_or_assign("defaulted", KvsValue(42.0));
     auto set_result = kvs.value().set_value("defaulted", KvsValue(7.0));
     ASSERT_TRUE(set_result);
 
@@ -1911,8 +1911,8 @@ TEST(kvs_remove_all_keys, remove_all_keys_keeps_defaults)
     EXPECT_TRUE(result);
 
     /* Explicit values are gone, defaults are untouched and served instead */
-    EXPECT_TRUE(kvs.value().kvs.empty());
-    EXPECT_TRUE(kvs.value().default_values.count("defaulted"));
+    EXPECT_TRUE(kvs.value().kvs_.empty());
+    EXPECT_TRUE(kvs.value().default_values_.count("defaulted"));
 
     auto get_result = kvs.value().get_value("defaulted");
     ASSERT_FALSE(get_result);
@@ -1935,7 +1935,7 @@ TEST(kvs_remove_all_keys, remove_all_keys_failure)
                          KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(kvs);
 
-    std::unique_lock<std::mutex> lock(kvs.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(kvs.value().kvs_mutex_);
     auto result = kvs.value().remove_all_keys();
     EXPECT_FALSE(result);
     EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::MutexLockFailed);
@@ -1957,7 +1957,7 @@ TEST(kvs_discard_pending_changes, discard_reverts_to_state_at_open)
     ASSERT_TRUE(kvs);
 
     /* "kvs" is loaded from the test file by prepare_environment() */
-    ASSERT_TRUE(kvs.value().kvs.count("kvs"));
+    ASSERT_TRUE(kvs.value().kvs_.count("kvs"));
 
     /* Make pending changes of every kind: add, modify, remove */
     ASSERT_TRUE(kvs.value().set_value("added", KvsValue(1.0)));
@@ -1968,8 +1968,8 @@ TEST(kvs_discard_pending_changes, discard_reverts_to_state_at_open)
     EXPECT_TRUE(result);
 
     /* Back to what open() loaded */
-    EXPECT_FALSE(kvs.value().kvs.count("added"));
-    ASSERT_TRUE(kvs.value().kvs.count("kvs"));
+    EXPECT_FALSE(kvs.value().kvs_.count("added"));
+    ASSERT_TRUE(kvs.value().kvs_.count("kvs"));
     auto get_result = kvs.value().get_value("kvs");
     ASSERT_TRUE(get_result);
     EXPECT_EQ(get_result.value().getType(), KvsValue::Type::i32);
@@ -2002,7 +2002,7 @@ TEST(kvs_discard_pending_changes, discard_reverts_to_last_flush)
     auto result = kvs.value().discard_pending_changes();
     EXPECT_TRUE(result);
 
-    EXPECT_FALSE(kvs.value().kvs.count("pending"));
+    EXPECT_FALSE(kvs.value().kvs_.count("pending"));
     auto get_result = kvs.value().get_value("kept");
     ASSERT_TRUE(get_result);
     EXPECT_DOUBLE_EQ(std::get<double>(get_result.value().getValue()), 1.0);
@@ -2023,14 +2023,14 @@ TEST(kvs_discard_pending_changes, discard_without_changes_is_noop)
                          KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(kvs);
 
-    const auto keys_before = kvs.value().kvs.size();
+    const auto keys_before = kvs.value().kvs_.size();
 
     EXPECT_TRUE(kvs.value().discard_pending_changes());
-    EXPECT_EQ(kvs.value().kvs.size(), keys_before);
+    EXPECT_EQ(kvs.value().kvs_.size(), keys_before);
 
     /* Repeated calls stay stable */
     EXPECT_TRUE(kvs.value().discard_pending_changes());
-    EXPECT_EQ(kvs.value().kvs.size(), keys_before);
+    EXPECT_EQ(kvs.value().kvs_.size(), keys_before);
 
     cleanup_environment();
 }
@@ -2050,7 +2050,7 @@ TEST(kvs_discard_pending_changes, discard_pending_changes_failure)
                          KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(kvs);
 
-    std::unique_lock<std::mutex> lock(kvs.value().kvs_mutex);
+    std::unique_lock<std::mutex> lock(kvs.value().kvs_mutex_);
     auto result = kvs.value().discard_pending_changes();
     EXPECT_FALSE(result);
     EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::MutexLockFailed);
@@ -2078,7 +2078,7 @@ TEST(kvs_discard_pending_changes, discard_without_persisted_file_yields_empty)
     ASSERT_TRUE(kvs.value().set_value("pending", KvsValue(1.0)));
 
     EXPECT_TRUE(kvs.value().discard_pending_changes());
-    EXPECT_TRUE(kvs.value().kvs.empty());
+    EXPECT_TRUE(kvs.value().kvs_.empty());
 
     cleanup_environment();
 }
@@ -2519,7 +2519,7 @@ TEST(kvs_flush, flush_zero_snapshots_still_persists_current_data)
     ASSERT_TRUE(result);
 
     std::string value = "value1";
-    result.value().kvs.insert({"key1", KvsValue(value)});
+    result.value().kvs_.insert({"key1", KvsValue(value)});
 
     /* The current KVS is persisted ... */
     auto flush_result = result.value().flush();
