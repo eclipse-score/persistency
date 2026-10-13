@@ -66,6 +66,10 @@ devenv.local.nix
 .direnv
 target
 
+# Project information.
+compile_commands.json
+rust-project.json
+
 # --- keep test fixture payloads under install/ (override *.so, *.a, etc.)
 !score/kvs/tests/integration_test_scenarios/install/
 !score/kvs/tests/integration_test_scenarios/install/**
