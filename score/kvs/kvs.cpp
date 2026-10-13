@@ -46,7 +46,8 @@ bool is_key_length_valid(std::string_view key)
 
 /*********************** KVS Implementation *********************/
 Kvs::Kvs()
-    : filesystem(std::make_unique<score::filesystem::Filesystem>(
+    : max_snapshots(KVS_DEFAULT_MAX_SNAPSHOTS),
+      filesystem(std::make_unique<score::filesystem::Filesystem>(
           score::filesystem::FilesystemFactory{}.CreateInstance())) /* Create Filesystem instance, noexcept call */
       ,
       parser(std::make_unique<score::json::JsonParser>()),
@@ -57,6 +58,7 @@ Kvs::Kvs()
 
 Kvs::Kvs(Kvs&& other) noexcept
     : filename_prefix(std::move(other.filename_prefix)),
+      max_snapshots(other.max_snapshots),
       filesystem(std::move(other.filesystem)),
       parser(std::move(other.parser)) /* Not absolutely necessary, because a new JSON writer/parser
                                          object would also be okay*/
@@ -83,6 +85,7 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
         }
         default_values.clear();
         filename_prefix = std::move(other.filename_prefix);
+        max_snapshots = other.max_snapshots;
 
         {
             std::lock_guard<std::mutex> lock_other(other.kvs_mutex);
@@ -249,7 +252,8 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
                              const OpenNeedDefaults& need_defaults,
                              const OpenNeedKvs& need_kvs,
                              const std::string&& dir,
-                             const std::optional<size_t>& max_storage_bytes)
+                             const std::optional<size_t>& max_storage_bytes,
+                             std::size_t snapshot_max_count)
 {
     score::Result<Kvs> result =
         score::MakeUnexpected(ErrorCode::UnmappedError); /* Redundant initialization needed, since Resul<KVS> would call
@@ -296,9 +300,21 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
             kvs.kvs = std::move(kvs_res.value());
             kvs.default_values = std::move(default_res.value());
             kvs.filename_prefix = filename_prefix;
+
+            /* comp_req__kvs__snapshot_max_num_cfg: the maximum is limited to the range
+               0..KVS_MAX_SNAPSHOTS_UPPER_BOUND. A larger request is clamped and reported,
+               so that the caller can see the value it actually got. */
+            kvs.max_snapshots = snapshot_max_count;
+            if (snapshot_max_count > KVS_MAX_SNAPSHOTS_UPPER_BOUND)
+            {
+                kvs.logger->LogWarn() << "snapshot_max_count" << snapshot_max_count << "exceeds upper bound"
+                                      << KVS_MAX_SNAPSHOTS_UPPER_BOUND << "- clamped";
+                kvs.max_snapshots = KVS_MAX_SNAPSHOTS_UPPER_BOUND;
+            }
+
             kvs.logger->LogInfo() << "[instance=" << instance_id.id << "]"
                                   << "[snapshot=" << snapshot_id.id << "]"
-                                  << "[maxSnapshotCount=" << KVS_MAX_SNAPSHOTS << "] KVS opened";
+                                  << "[maxSnapshotCount=" << kvs.max_snapshots << "] KVS opened";
             result = std::move(kvs);
         }
     }
@@ -615,7 +631,7 @@ score::Result<size_t> Kvs::get_current_storage_size()
     }
 
     /* Add the size of current and historical snapshots that will be kept after rotation (0 to N-1) */
-    for (size_t snapshot_index = 0; snapshot_index < KVS_MAX_SNAPSHOTS; ++snapshot_index)
+    for (size_t snapshot_index = 0; snapshot_index < max_snapshots; ++snapshot_index)
     {
         const std::string snapshot_suffix = "_" + to_string(snapshot_index);
 
@@ -812,7 +828,7 @@ score::Result<size_t> Kvs::snapshot_count() const
     score::Result<size_t> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     size_t count = 0;
     bool error = false;
-    for (size_t idx = 0; idx < KVS_MAX_SNAPSHOTS; ++idx)
+    for (size_t idx = 0; idx < max_snapshots; ++idx)
     {
         const score::filesystem::Path fname = filename_prefix.Native() + "_" + to_string(idx) + ".json";
         const auto fname_exists_res = filesystem->standard->Exists(fname);
@@ -845,7 +861,7 @@ score::Result<size_t> Kvs::snapshot_count() const
 /* Retrieve the max snapshot count*/
 size_t Kvs::snapshot_max_count() const
 {
-    return KVS_MAX_SNAPSHOTS;
+    return max_snapshots;
 }
 
 /* Rotate Snapshots */
@@ -856,7 +872,7 @@ score::Result<void> Kvs::snapshot_rotate()
     if (lock.owns_lock())
     {
         bool error = false;
-        for (size_t idx = KVS_MAX_SNAPSHOTS; idx > 0; --idx)
+        for (size_t idx = max_snapshots; idx > 0; --idx)
         {
             score::filesystem::Path hash_old = filename_prefix.Native() + "_" + to_string(idx - 1) + ".hash";
             score::filesystem::Path hash_new = filename_prefix.Native() + "_" + to_string(idx) + ".hash";
