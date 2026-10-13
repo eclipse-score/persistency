@@ -52,14 +52,7 @@ Module Configuration Details
 ============================
 
 A KVS instance is configured via ``KvsBuilder`` (C++ and Rust), see `API Reference`_. The behavior of the
-component, including its configuration, is specified by the component requirements:
-
-.. needtable::
-   :style: table
-   :columns: title;id
-   :colwidths: 60,40
-   :filter: type == "comp_req" and status == "valid" and id.startswith("comp_req__kvs__")
-   :sort: id
+component, including its configuration, is specified in :need:`doc__kvs_requirements`.
 
 Configuration Effects
 ---------------------
@@ -91,14 +84,8 @@ Integration Guidelines
 
 The Bazel integration is described in
 `examples/README.md <https://github.com/eclipse-score/persistency/blob/main/examples/README.md>`__.
-The application shall fulfill the assumptions of use:
-
-.. needtable::
-   :style: table
-   :columns: title;id
-   :colwidths: 60,40
-   :filter: type == "aou_req" and "persistency" in tags
-   :sort: title
+The application shall fulfill the assumptions of use listed in :need:`doc__persistency_safety_manual` and
+:need:`doc__persistency_security_manual`.
 
 Version History, Compatibility, and Troubleshooting
 ===================================================
