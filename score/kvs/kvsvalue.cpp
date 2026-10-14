@@ -15,15 +15,15 @@
 namespace score::mw::per::kvs
 {
 
-KvsValue::KvsValue(const Array& array) : value(array), type(Type::Array) {}
+KvsValue::KvsValue(const Array& array) : value_(array), type_(Type::Array) {}
 
-KvsValue::KvsValue(Array&& array) : value(std::move(array)), type(Type::Array) {}
+KvsValue::KvsValue(Array&& array) : value_(std::move(array)), type_(Type::Array) {}
 
-KvsValue::KvsValue(const Object& object) : value(object), type(Type::Object) {}
+KvsValue::KvsValue(const Object& object) : value_(object), type_(Type::Object) {}
 
-KvsValue::KvsValue(Object&& object) : value(std::move(object)), type(Type::Object) {}
+KvsValue::KvsValue(Object&& object) : value_(std::move(object)), type_(Type::Object) {}
 
-KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) : type(Type::Object)
+KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) : type_(Type::Object)
 {
     Object entries;
     entries.reserve(object.size());
@@ -31,22 +31,22 @@ KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) : ty
     {
         entries.emplace_back(key, item);
     }
-    value = std::move(entries);
+    value_ = std::move(entries);
 }
 
 /* copy constructor */
-KvsValue::KvsValue(const KvsValue& other) : value(other.value), type(other.type) {}
+KvsValue::KvsValue(const KvsValue& other) : value_(other.value_), type_(other.type_) {}
 
 /* move constructor */
-KvsValue::KvsValue(KvsValue&& other) noexcept : value(std::move(other.value)), type(other.type) {}
+KvsValue::KvsValue(KvsValue&& other) noexcept : value_(std::move(other.value_)), type_(other.type_) {}
 
 /* copy Assignment Operator */
 KvsValue& KvsValue::operator=(const KvsValue& other)
 {
     if (this != &other)
     {
-        value = other.value;
-        type = other.type;
+        value_ = other.value_;
+        type_ = other.type_;
     }
     return *this;
 }
@@ -56,8 +56,8 @@ KvsValue& KvsValue::operator=(KvsValue&& other) noexcept
 {
     if (this != &other)
     {
-        value = std::move(other.value);
-        type = other.type;
+        value_ = std::move(other.value_);
+        type_ = other.type_;
     }
     return *this;
 }

@@ -91,7 +91,7 @@ class SupportedDatatypesKeys : public Scenario
 class SupportedDatatypesValues : public Scenario
 {
   private:
-    KvsValue value;
+    KvsValue value_;
 
     static std::string kvs_value_to_string(const KvsValue& v)
     {
@@ -171,13 +171,13 @@ class SupportedDatatypesValues : public Scenario
     }
 
   public:
-    explicit SupportedDatatypesValues(const KvsValue& v) : value(v) {}
+    explicit SupportedDatatypesValues(const KvsValue& v) : value_(v) {}
 
     ~SupportedDatatypesValues() final = default;
 
     std::string name() const final
     {
-        switch (value.getType())
+        switch (value_.getType())
         {
             case KvsValue::Type::i32:
                 return "i32";
@@ -211,7 +211,7 @@ class SupportedDatatypesValues : public Scenario
         Kvs kvs = kvs_instance(params);
 
         // Set value
-        kvs.set_value(name(), value);
+        kvs.set_value(name(), value_);
 
         // Get value
         auto kvs_value = kvs.get_value(name());

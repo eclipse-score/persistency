@@ -448,30 +448,30 @@ class Kvs final
     Kvs();
 
     /* Internal storage and configuration details.*/
-    std::mutex kvs_mutex;
-    KeyValueMap kvs;
+    std::mutex kvs_mutex_;
+    KeyValueMap kvs_;
 
     /* Optional default values */
-    KeyValueMap default_values;
+    KeyValueMap default_values_;
 
     /* Filename prefix */
-    score::filesystem::Path filename_prefix;
+    score::filesystem::Path filename_prefix_;
 
     /* comp_req__kvs__snapshot_max_num_cfg: Maximum number of snapshots maintained by this instance */
-    std::size_t max_snapshots;
+    std::size_t max_snapshots_;
 
     /* Filesystem handling */
-    std::unique_ptr<score::filesystem::Filesystem> filesystem;
+    std::unique_ptr<score::filesystem::Filesystem> filesystem_;
 
     /* Json handling */
-    std::unique_ptr<score::json::IJsonParser> parser;
-    std::unique_ptr<score::json::IJsonWriter> writer;
+    std::unique_ptr<score::json::IJsonParser> parser_;
+    std::unique_ptr<score::json::IJsonWriter> writer_;
 
     /* Logging */
-    std::unique_ptr<score::mw::log::Logger> logger;
+    std::unique_ptr<score::mw::log::Logger> logger_;
 
     /* Maximum storage limit in bytes. Unset means no limit is enforced. */
-    std::optional<size_t> max_storage_bytes;
+    std::optional<size_t> max_storage_bytes_;
 
     /* Private Methods */
     score::Result<void> snapshot_rotate();

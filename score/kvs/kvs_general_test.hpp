@@ -119,7 +119,7 @@ class BrokenKvsValue : public KvsValue
     BrokenKvsValue() : KvsValue(nullptr)
     {
         /* Intentionally break the type by assigning an invalid value */
-        *(Type*)&this->type = static_cast<Type>(999);
+        *(Type*)&this->type_ = static_cast<Type>(999);
     }
 };
 
