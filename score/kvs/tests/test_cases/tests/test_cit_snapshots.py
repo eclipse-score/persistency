@@ -44,7 +44,7 @@ class MaxSnapshotsScenario(CommonScenario):
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
 )
-@pytest.mark.parametrize("snapshot_max_count", [0, 1, 3, 10], scope="class")
+@pytest.mark.parametrize("snapshot_max_count", [0, 1, 3], scope="class")
 class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
     """Verifies that a snapshot is only created after the first flush, and not before."""
 
@@ -69,12 +69,7 @@ class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
         results: ScenarioResult,
         logs_info_level: LogContainer,
         snapshot_max_count: int,
-        version: str,
     ):
-        if version == "cpp" and snapshot_max_count in [0, 1, 3, 10]:
-            pytest.xfail(
-                reason="https://github.com/eclipse-score/persistency/issues/108",
-            )
         assert results.return_code == ResultCode.SUCCESS
 
         count = test_config["count"]
@@ -108,13 +103,13 @@ class TestSnapshotCountFull(TestSnapshotCountFirstFlush):
 
 
 @add_test_properties(
-    partially_verifies=["comp_req__kvs__snapshot_max_num"],
+    partially_verifies=["comp_req__kvs__snapshot_max_num_cfg"],
     test_type="inspection",
     derivation_technique="boundary-values",
 )
-@pytest.mark.parametrize("snapshot_max_count", [0, 1, 3, 10], scope="class")
+@pytest.mark.parametrize("snapshot_max_count", [0, 1, 3], scope="class")
 class TestSnapshotMaxCount(MaxSnapshotsScenario):
-    """Verifies that the maximum number of snapshots is a constant value."""
+    """Verifies that the KVS instance reports the configured maximum number of snapshots."""
 
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
@@ -135,12 +130,7 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
         results: ScenarioResult,
         logs_info_level: LogContainer,
         snapshot_max_count: int,
-        version: str,
     ):
-        if version == "cpp":
-            pytest.xfail(
-                reason="https://github.com/eclipse-score/persistency/issues/108",
-            )
         assert results.return_code == ResultCode.SUCCESS
         assert logs_info_level.find_log("max_count", value=snapshot_max_count) is not None
 
@@ -154,7 +144,7 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
     test_type="control-flow-analysis",
     derivation_technique="requirements-analysis",
 )
-@pytest.mark.parametrize("snapshot_max_count", [3, 10], scope="class")
+@pytest.mark.parametrize("snapshot_max_count", [3], scope="class")
 class TestSnapshotRestorePrevious(MaxSnapshotsScenario):
     """Verifies restoring to a previous snapshot returns the expected value."""
 

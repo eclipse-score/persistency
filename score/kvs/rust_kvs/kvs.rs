@@ -24,6 +24,9 @@ pub struct KvsParameters {
     /// Instance ID.
     pub instance_id: InstanceId,
 
+    /// Snapshot ID selected during instance initialization.
+    pub snapshot_id: SnapshotId,
+
     /// Defaults handling mode.
     pub defaults: KvsDefaults,
 
@@ -361,6 +364,7 @@ mod kvs_tests {
         let data = Arc::new(Mutex::new(KvsData { kvs_map, defaults_map }));
         let parameters = Arc::new(KvsParameters {
             instance_id,
+            snapshot_id: SnapshotId(0),
             defaults: KvsDefaults::Optional,
             kvs_load: KvsLoad::Optional,
             backend,
