@@ -11,7 +11,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // *******************************************************************************
 use crate::error_code::ErrorCode;
-use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
+use crate::kvs_api::{is_key_valid, InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_builder::KvsData;
 use crate::kvs_value::{KvsMap, KvsValue};
@@ -221,9 +221,17 @@ impl KvsApi for Kvs {
     /// # Return Values
     ///   * Ok: Value was assigned to key
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
+    ///   * `ErrorCode::InvalidKey`: Key is not valid
     fn set_value<S: Into<String>, V: Into<KvsValue>>(&self, key: S, value: V) -> Result<(), ErrorCode> {
+        // Validate key.
+        let key = key.into();
+        if !is_key_valid(&key) {
+            error!("Provided key is not valid: {}", key);
+            return Err(ErrorCode::InvalidKey);
+        }
+
         let mut data = self.data.lock()?;
-        data.kvs_map.insert(key.into(), value.into());
+        data.kvs_map.insert(key, value.into());
         Ok(())
     }
 
@@ -320,7 +328,7 @@ mod kvs_tests {
     use crate::error_code::ErrorCode;
     use crate::json_backend::JsonBackendBuilder;
     use crate::kvs::{Kvs, KvsParameters};
-    use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
+    use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId, KVS_MAX_KEY_LENGTH_BYTES};
     use crate::kvs_backend::KvsBackend;
     use crate::kvs_builder::KvsData;
     use crate::kvs_value::{KvsMap, KvsValue};
@@ -591,6 +599,67 @@ mod kvs_tests {
             .is_err_and(|e| e == ErrorCode::KeyNotFound));
     }
 
+    /// comp_req__kvs__key_naming: keys that must be rejected because they contain
+    /// characters outside printable ASCII (0x20 - 0x7E) (length is within limits).
+    fn invalid_character_keys() -> Vec<String> {
+        vec![
+            // Characters just outside the allowed range.
+            "\x1f".to_string(),
+            "\x7f".to_string(),
+            // Control characters inside a key.
+            "tab\tkey".to_string(),
+            "new\nline".to_string(),
+            "nul\0key".to_string(),
+            // Valid UTF-8, but not ASCII.
+            "ąę".to_string(),
+            "greek ημα".to_string(),
+            "emoji ✅".to_string(),
+            "\u{80}".to_string(),
+        ]
+    }
+
+    /// Keys that must be rejected - empty, too long or with invalid content.
+    fn invalid_keys() -> Vec<String> {
+        let mut keys = vec![String::new(), "k".repeat(KVS_MAX_KEY_LENGTH_BYTES + 1)];
+        keys.extend(invalid_character_keys());
+        keys
+    }
+
+    #[test]
+    fn test_get_value_invalid_key() {
+        let kvs = get_kvs(
+            Box::new(MockBackend),
+            KvsMap::from([("example1".to_string(), KvsValue::from("value"))]),
+            KvsMap::new(),
+        );
+
+        // Keys are validated only when set - a key that is not valid is reported as missing.
+        for key in invalid_keys() {
+            assert!(
+                kvs.get_value(&key).is_err_and(|e| e == ErrorCode::KeyNotFound),
+                "key: {key:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_get_value_as_invalid_key() {
+        let kvs = get_kvs(
+            Box::new(MockBackend),
+            KvsMap::from([("example1".to_string(), KvsValue::from("value"))]),
+            KvsMap::new(),
+        );
+
+        // Keys are validated only when set - a key that is not valid is reported as missing.
+        for key in invalid_keys() {
+            assert!(
+                kvs.get_value_as::<String>(&key)
+                    .is_err_and(|e| e == ErrorCode::KeyNotFound),
+                "key: {key:?}"
+            );
+        }
+    }
+
     #[test]
     fn test_get_default_value_found() {
         let kvs = get_kvs(
@@ -684,6 +753,70 @@ mod kvs_tests {
 
         kvs.set_value("key", "new_value").unwrap();
         assert_eq!(kvs.get_value_as::<String>("key").unwrap(), "new_value");
+    }
+
+    #[test]
+    fn test_set_value_valid_keys() {
+        let kvs = get_kvs(Box::new(MockBackend), KvsMap::new(), KvsMap::new());
+
+        // comp_req__kvs__key_naming: any key consisting of printable ASCII characters is accepted.
+        // comp_req__kvs__key_length: key of `KVS_MAX_KEY_LENGTH_BYTES` is accepted.
+        let mut valid_keys = vec![
+            "a".to_string(),
+            "Z".to_string(),
+            "0".to_string(),
+            "-".to_string(),
+            "_".to_string(),
+            "snake_case".to_string(),
+            "kebab-case".to_string(),
+            "Mixed_09-key".to_string(),
+            "with space".to_string(),
+            "dot.key".to_string(),
+            "slash/key".to_string(),
+            // Boundaries of the allowed range.
+            " ".to_string(),
+            "~".to_string(),
+            "k".repeat(KVS_MAX_KEY_LENGTH_BYTES),
+        ];
+        // Every allowed character on its own.
+        valid_keys.extend((0x20u8..=0x7E).map(|b| char::from(b).to_string()));
+        for key in valid_keys {
+            assert!(kvs.set_value(key.clone(), 123.4).is_ok(), "key: {key:?}");
+            assert!(kvs.key_exists(&key).unwrap(), "key: {key:?}");
+        }
+    }
+
+    #[test]
+    fn test_set_value_empty_key() {
+        let kvs = get_kvs(Box::new(MockBackend), KvsMap::new(), KvsMap::new());
+
+        // comp_req__kvs__key_length: an empty key is rejected.
+        assert!(kvs.set_value("", 123.4).is_err_and(|e| e == ErrorCode::InvalidKey));
+        assert!(kvs.get_all_keys().unwrap().is_empty());
+    }
+
+    #[test]
+    fn test_set_value_key_too_long() {
+        let kvs = get_kvs(Box::new(MockBackend), KvsMap::new(), KvsMap::new());
+
+        // comp_req__kvs__key_length: a key of `KVS_MAX_KEY_LENGTH_BYTES + 1` bytes is rejected.
+        let key = "k".repeat(KVS_MAX_KEY_LENGTH_BYTES + 1);
+        assert!(kvs.set_value(key, 123.4).is_err_and(|e| e == ErrorCode::InvalidKey));
+        assert!(kvs.get_all_keys().unwrap().is_empty());
+    }
+
+    #[test]
+    fn test_set_value_invalid_characters() {
+        let kvs = get_kvs(Box::new(MockBackend), KvsMap::new(), KvsMap::new());
+
+        for key in invalid_character_keys() {
+            assert!(
+                kvs.set_value(key.clone(), 123.4)
+                    .is_err_and(|e| e == ErrorCode::InvalidKey),
+                "key: {key:?}"
+            );
+        }
+        assert!(kvs.get_all_keys().unwrap().is_empty());
     }
 
     #[test]

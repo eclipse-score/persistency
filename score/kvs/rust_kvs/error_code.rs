@@ -87,6 +87,9 @@ pub enum ErrorCode {
 
     /// Instance parameters mismatch
     InstanceParametersMismatch,
+
+    /// Key is not valid
+    InvalidKey,
 }
 
 impl From<std::io::Error> for ErrorCode {

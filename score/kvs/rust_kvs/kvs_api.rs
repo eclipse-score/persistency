@@ -14,6 +14,23 @@ use crate::error_code::ErrorCode;
 use crate::kvs_value::KvsValue;
 use crate::log::ScoreDebug;
 
+/// Maximum key length in bytes.
+pub const KVS_MAX_KEY_LENGTH_BYTES: usize = 32;
+
+/// Validate that:
+/// - Key length is in valid range - (0; `KVS_MAX_KEY_LENGTH_BYTES`>.
+/// - Key consists solely of printable ASCII characters (0x20 - 0x7E).
+pub(crate) fn is_key_valid(key: &str) -> bool {
+    // comp_req__kvs__key_length: disallow empty keys and keys too long.
+    if key.is_empty() || key.len() > KVS_MAX_KEY_LENGTH_BYTES {
+        return false;
+    }
+
+    // comp_req__kvs__key_naming: check for allowed characters.
+    // comp_req__kvs__key_encoding: allowed characters enforce encoding.
+    key.bytes().all(|b| (0x20..=0x7E).contains(&b))
+}
+
 /// Instance ID
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ScoreDebug)]
 pub struct InstanceId(pub usize);
