@@ -30,6 +30,6 @@ rust_binary(
             "@score_crates//:tracing",
             "@score_crates//:tracing_subscriber",
             "@score_logging//score/mw/log/rust/score_log_bridge",
-            "@score_test_scenarios//test_scenarios_rust",
+            "@score_test_scenarios//score/test_scenarios_rust",
         ],
 )

@@ -30,6 +30,6 @@ cc_binary(
     deps = [
         "//score/kvs",
         "@score_baselibs//score/mw/log:backend_stub_testutil",
-        "@score_test_scenarios//test_scenarios_cpp",
+        "@score_test_scenarios//score/test_scenarios_cpp",
     ],
 )
