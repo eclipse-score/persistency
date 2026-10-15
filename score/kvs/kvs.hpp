@@ -298,8 +298,8 @@ class Kvs final
      *
      * @return A score::Result object that indicates the success or failure of the operation.
      *         - On success: Returns a blank score::Result.
-     *         - On failure: Returns ErrorCode::KeyTooLong if the key exceeds
-     *           KVS_MAX_KEY_LENGTH_BYTES, or another ErrorCode describing the error.
+     *         - On failure: Returns ErrorCode::InvalidKey if the key is not valid,
+     *           or another ErrorCode describing the error.
      */
     score::Result<void> set_value(const std::string_view key, const KvsValue& value);
 

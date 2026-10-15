@@ -12,8 +12,11 @@
  ********************************************************************************/
 #include "score/kvs/kvs.hpp"
 #include "internal/kvs_helper.hpp"
+#include "score/kvs/error.hpp"
 #include <unistd.h>  // fileno(), fdatasync()
-#include <cstdio>    // std::fopen, std::fwrite, std::fflush, std::fclose
+#include <algorithm>
+#include <cstdint>
+#include <cstdio>  // std::fopen, std::fwrite, std::fflush, std::fclose
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -35,13 +38,26 @@ namespace
 /* Size of a snapshot hash file in bytes (adler32 checksum) */
 constexpr size_t HASH_FILE_SIZE = 4U;
 
-/* comp_req__kvs__key_length: single source of truth for the key-length rule,
-   shared by every path that receives a key (set_value, get_value, parse_json_data).
-   std::string_view::length() counts bytes, matching the byte-based requirement. */
-bool is_key_length_valid(std::string_view key)
+/**
+ * Validate that:
+ * - Key length is in valid range - (0; KVS_MAX_KEY_LENGTH_BYTES>.
+ * - Key consists solely of printable ASCII characters (0x20 - 0x7E).
+ */
+bool is_key_valid(const std::string_view key) noexcept
 {
-    return key.length() <= KVS_MAX_KEY_LENGTH_BYTES;
+    // comp_req__kvs__key_length: disallow empty keys and keys too long.
+    if (key.empty() || key.length() > KVS_MAX_KEY_LENGTH_BYTES)
+    {
+        return false;
+    }
+
+    // comp_req__kvs__key_naming: check for allowed characters.
+    // comp_req__kvs__key_encoding: allowed characters enforce encoding.
+    return std::all_of(key.cbegin(), key.cend(), [](char c) {
+        return c >= 0x20 && c <= 0x7E;
+    });
 }
+
 } /* namespace */
 
 /*********************** KVS Implementation *********************/
@@ -128,14 +144,11 @@ score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data)
                 auto sv = element.first.GetAsStringView();
                 std::string key(sv.data(), sv.size());
 
-                /* comp_req__kvs__key_length: a stored file must satisfy the key-length
-                   limit; an over-length key means the file is invalid/corrupted. Halt
-                   loading with an error rather than silently dropping data. */
-                if (!is_key_length_valid(key))
+                // Validate key.
+                if (!is_key_valid(sv))
                 {
-                    logger_->LogError() << "Key length" << key.length() << "exceeds maximum allowed"
-                                       << KVS_MAX_KEY_LENGTH_BYTES << "bytes while loading, key:" << key;
-                    result = score::MakeUnexpected(ErrorCode::KeyTooLong);
+                    logger_->LogError() << "Provided key is not valid" << key;
+                    result = score::MakeUnexpected(ErrorCode::InvalidKey);
                     error = true;
                     break;
                 }
@@ -393,13 +406,11 @@ score::Result<bool> Kvs::key_exists(const std::string_view key)
 /* Retrieve the value associated with a key*/
 score::Result<KvsValue> Kvs::get_value(const std::string_view key)
 {
-    /* comp_req__kvs__key_length: an over-length key cannot have been stored, so
-       reporting KeyNotFound would describe a caller error as ordinary missing data. */
-    if (!is_key_length_valid(key))
+    // Validate key.
+    if (!is_key_valid(key))
     {
-        logger_->LogError() << "Key length" << key.length() << "exceeds maximum allowed" << KVS_MAX_KEY_LENGTH_BYTES
-                           << "bytes, key:" << key;
-        return score::MakeUnexpected(ErrorCode::KeyTooLong);
+        logger_->LogError() << "Provided key is not valid" << key;
+        return score::MakeUnexpected(ErrorCode::InvalidKey);
     }
 
     score::Result<KvsValue> result = score::MakeUnexpected(ErrorCode::UnmappedError);
@@ -495,12 +506,11 @@ score::Result<bool> Kvs::is_value_default(const std::string_view key) const
 /* Set the value for a key*/
 score::Result<void> Kvs::set_value(const std::string_view key, const KvsValue& value)
 {
-    /* comp_req__kvs__key_length: reject keys that exceed the maximum length. */
-    if (!is_key_length_valid(key))
+    // Validate key.
+    if (!is_key_valid(key))
     {
-        logger_->LogError() << "Key length" << key.length() << "exceeds maximum allowed" << KVS_MAX_KEY_LENGTH_BYTES
-                           << "bytes, key:" << key;
-        return score::MakeUnexpected(ErrorCode::KeyTooLong);
+        logger_->LogError() << "Provided key is not valid" << key;
+        return score::MakeUnexpected(ErrorCode::InvalidKey);
     }
 
     score::Result<void> result = score::MakeUnexpected(ErrorCode::UnmappedError);

@@ -403,7 +403,93 @@ TEST(kvs_TEST, parse_json_data_rejects_over_length_key)
 
     auto result = kvs->parse_json_data("data_not_used_in_mocking");
     ASSERT_FALSE(result);
-    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::KeyTooLong);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::InvalidKey);
+
+    cleanup_environment();
+}
+
+TEST(kvs_TEST, parse_json_data_rejects_empty_key)
+{
+    /* comp_req__kvs__key_length: an empty key found while loading means the file
+       is invalid/corrupted; loading must halt with an error. */
+    prepare_environment();
+
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt,
+                         KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(kvs);
+
+    auto mock_parser = std::make_unique<score::json::IJsonParserMock>();
+    score::json::Object obj;
+
+    score::json::Object valid_inner;
+    valid_inner.emplace("t", score::json::Any(std::string("i32")));
+    valid_inner.emplace("v", score::json::Any(42));
+    obj.emplace("valid_key", score::json::Any(std::move(valid_inner)));
+
+    score::json::Object empty_inner;
+    empty_inner.emplace("t", score::json::Any(std::string("i32")));
+    empty_inner.emplace("v", score::json::Any(7));
+    obj.emplace("", score::json::Any(std::move(empty_inner)));
+
+    score::json::Any any_obj(std::move(obj));
+    EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
+        .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(any_obj))));
+
+    kvs->parser_ = std::move(mock_parser);
+
+    auto result = kvs->parse_json_data("data_not_used_in_mocking");
+    ASSERT_FALSE(result);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::InvalidKey);
+
+    cleanup_environment();
+}
+
+TEST(kvs_TEST, parse_json_data_rejects_invalid_characters_key)
+{
+    /* comp_req__kvs__key_naming: a key that contains characters outside printable ASCII
+       found while loading means the file is invalid/corrupted. */
+    prepare_environment();
+
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt,
+                         KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(kvs);
+
+    const std::vector<std::string> invalid_keys{"\x1f", "\x7f", "tab\tkey", u8"ą", "\x80"};
+    for (const auto& invalid_key : invalid_keys)
+    {
+        auto mock_parser = std::make_unique<score::json::IJsonParserMock>();
+        score::json::Object obj;
+
+        score::json::Object valid_inner;
+        valid_inner.emplace("t", score::json::Any(std::string("i32")));
+        valid_inner.emplace("v", score::json::Any(42));
+        obj.emplace("valid_key", score::json::Any(std::move(valid_inner)));
+
+        score::json::Object invalid_inner;
+        invalid_inner.emplace("t", score::json::Any(std::string("i32")));
+        invalid_inner.emplace("v", score::json::Any(7));
+        obj.emplace(invalid_key, score::json::Any(std::move(invalid_inner)));
+
+        score::json::Any any_obj(std::move(obj));
+        EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
+            .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(any_obj))));
+
+        kvs->parser_ = std::move(mock_parser);
+
+        auto result = kvs->parse_json_data("data_not_used_in_mocking");
+        ASSERT_FALSE(result) << "key: " << invalid_key;
+        EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::InvalidKey) << "key: " << invalid_key;
+    }
 
     cleanup_environment();
 }
@@ -932,11 +1018,11 @@ TEST(kvs_set_value, set_value_key_too_long)
     auto boundary_result = result.value().set_value(boundary_key, KvsValue(3.14));
     EXPECT_TRUE(boundary_result);
 
-    /* A key of KVS_MAX_KEY_LENGTH_BYTES + 1 bytes is rejected with KeyTooLong */
+    /* A key of KVS_MAX_KEY_LENGTH_BYTES + 1 bytes is rejected with InvalidKey */
     std::string too_long_key(KVS_MAX_KEY_LENGTH_BYTES + 1U, 'k');
     auto set_value_result = result.value().set_value(too_long_key, KvsValue(3.14));
     EXPECT_FALSE(set_value_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*set_value_result.error()), ErrorCode::KeyTooLong);
+    EXPECT_EQ(static_cast<ErrorCode>(*set_value_result.error()), ErrorCode::InvalidKey);
 
     cleanup_environment();
 }
@@ -965,7 +1051,165 @@ TEST(kvs_get_value, get_value_failure_key_too_long)
     std::string too_long_key(KVS_MAX_KEY_LENGTH_BYTES + 1U, 'k');
     auto get_value_result = result.value().get_value(too_long_key);
     EXPECT_FALSE(get_value_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::KeyTooLong);
+    EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::InvalidKey);
+
+    cleanup_environment();
+}
+
+namespace
+{
+/* comp_req__kvs__key_naming: keys that must be rejected because they contain
+   characters outside printable ASCII (0x20 - 0x7E) (length is within limits). */
+std::vector<std::string> invalid_character_keys()
+{
+    return {
+        /* Characters just outside the allowed range */
+        "\x1f",
+        "\x7f",
+        /* Control characters inside a key */
+        "tab\tkey",
+        "new\nline",
+        std::string("nul\0key", 7U),
+        /* Valid UTF-8, but not ASCII */
+        u8"ąę",
+        u8"greek ημα",
+        u8"emoji ✅",
+        "\xc2\x80",
+        /* Bytes above 0x7F that are not a valid UTF-8 */
+        "\x80",
+        "\xff",
+        "ok\xc3(key",
+    };
+}
+}  // namespace
+
+TEST(kvs_set_value, set_value_valid_keys)
+{
+    prepare_environment();
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt,
+                            KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(result);
+
+    /* comp_req__kvs__key_naming: any key consisting of printable ASCII characters is accepted */
+    std::vector<std::string> valid_keys{"a",
+                                        "Z",
+                                        "0",
+                                        "-",
+                                        "_",
+                                        "snake_case",
+                                        "kebab-case",
+                                        "Mixed_09-key",
+                                        "with space",
+                                        "dot.key",
+                                        "slash/key",
+                                        /* Boundaries of the allowed range */
+                                        " ",
+                                        "~"};
+    /* Every allowed character on its own */
+    for (char c{0x20}; c <= 0x7E; ++c)
+    {
+        valid_keys.emplace_back(1U, c);
+    }
+    for (const auto& key : valid_keys)
+    {
+        auto set_value_result = result.value().set_value(key, KvsValue(3.14));
+        EXPECT_TRUE(set_value_result) << "key: " << key;
+        EXPECT_TRUE(result.value().kvs_.count(key)) << "key: " << key;
+    }
+
+    cleanup_environment();
+}
+
+TEST(kvs_set_value, set_value_empty_key)
+{
+    prepare_environment();
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt,
+                            KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(result);
+
+    /* comp_req__kvs__key_length: an empty key is rejected with InvalidKey */
+    const auto kvs_size = result.value().kvs_.size();
+    auto set_value_result = result.value().set_value("", KvsValue(3.14));
+    EXPECT_FALSE(set_value_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*set_value_result.error()), ErrorCode::InvalidKey);
+    EXPECT_EQ(result.value().kvs_.size(), kvs_size);
+
+    cleanup_environment();
+}
+
+TEST(kvs_set_value, set_value_failure_invalid_characters)
+{
+    prepare_environment();
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt,
+                            KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(result);
+
+    for (const auto& key : invalid_character_keys())
+    {
+        auto set_value_result = result.value().set_value(key, KvsValue(3.14));
+        ASSERT_FALSE(set_value_result) << "key: " << key;
+        EXPECT_EQ(static_cast<ErrorCode>(*set_value_result.error()), ErrorCode::InvalidKey) << "key: " << key;
+        EXPECT_FALSE(result.value().kvs_.count(key)) << "key: " << key;
+    }
+
+    cleanup_environment();
+}
+
+TEST(kvs_get_value, get_value_failure_empty_key)
+{
+    prepare_environment();
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt,
+                            KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(result);
+
+    /* comp_req__kvs__key_length: an empty key is an invalid request, not missing data */
+    auto get_value_result = result.value().get_value("");
+    EXPECT_FALSE(get_value_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::InvalidKey);
+
+    cleanup_environment();
+}
+
+TEST(kvs_get_value, get_value_failure_invalid_characters)
+{
+    prepare_environment();
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt,
+                            KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(result);
+
+    /* A key that contains characters outside printable ASCII can never have been stored,
+       so it is reported as InvalidKey rather than KeyNotFound */
+    for (const auto& key : invalid_character_keys())
+    {
+        auto get_value_result = result.value().get_value(key);
+        ASSERT_FALSE(get_value_result) << "key: " << key;
+        EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::InvalidKey) << "key: " << key;
+    }
 
     cleanup_environment();
 }

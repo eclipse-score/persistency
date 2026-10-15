@@ -195,7 +195,7 @@ Component Requirements
    :satisfied_by: comp__persistency_kvs[version==1]
    :tags: inspected
 
-   The component shall accept keys that consist solely of alphanumeric characters, underscores, or dashes.
+   The component shall accept keys that consist solely of printable ASCII characters (0x20 - 0x7E).
 
 .. comp_req:: Key Encoding
    :id: comp_req__kvs__key_encoding
@@ -208,7 +208,7 @@ Component Requirements
    :satisfied_by: comp__persistency_kvs[version==1]
    :tags: inspected
 
-   The component shall encode each key as valid UTF-8.
+   The component shall encode each key as valid ASCII, compatible with UTF-8.
 
 .. comp_req:: Key Uniqueness
    :id: comp_req__kvs__key_uniqueness
@@ -245,7 +245,7 @@ Component Requirements
    :satisfied_by: comp__persistency_kvs[version==1]
    :tags: inspected
 
-   The component shall limit the maximum length of a key to 32 bytes.
+   The component shall disallow empty keys and limit the maximum length of a key to 32 bytes.
 
 .. comp_req:: Key Existence Check
    :id: comp_req__kvs__key_exists_api
