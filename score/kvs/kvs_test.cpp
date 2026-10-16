@@ -12,6 +12,18 @@
  ********************************************************************************/
 #include "kvs_general_test.hpp"
 
+namespace
+{
+/* Wrap a JSON object into the type-tagged KVS root: {"t": "obj", "v": obj} */
+score::json::Any make_kvs_root(score::json::Object&& obj)
+{
+    score::json::Object root;
+    root.emplace("t", score::json::Any(std::string("obj")));
+    root.emplace("v", score::json::Any(std::move(obj)));
+    return score::json::Any(std::move(root));
+}
+} /* namespace */
+
 TEST(kvs_constructor, move_constructor)
 {
     const std::uint32_t instance_b = 5;
@@ -77,7 +89,7 @@ TEST(kvs_constructor, move_constructor)
     cleanup_environment();
 }
 
-TEST(kvs_TEST, parse_json_data_sucess)
+TEST(kvs_TEST, parse_json_data_success)
 {
     /* Success */
     prepare_environment();
@@ -97,7 +109,7 @@ TEST(kvs_TEST, parse_json_data_sucess)
     inner_obj.emplace("t", score::json::Any(std::string("i32")));
     inner_obj.emplace("v", score::json::Any(42));
     obj.emplace("kvs", score::json::Any(std::move(inner_obj)));
-    score::json::Any any_obj(std::move(obj));
+    score::json::Any any_obj = make_kvs_root(std::move(obj));
 
     EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
         .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(any_obj))));
@@ -148,7 +160,7 @@ TEST(kvs_TEST, parse_json_data_failure)
 
     result = kvs->parse_json_data("data_not_used_in_mocking");
     EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), ErrorCode::JsonParserError);
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
 
     /* any_to_kvsvalue error */
 
@@ -158,7 +170,7 @@ TEST(kvs_TEST, parse_json_data_failure)
     inner_obj.emplace("t", score::json::Any(std::string("invalid")));
     inner_obj.emplace("v", score::json::Any(42));
     obj.emplace("kvs", score::json::Any(std::move(inner_obj)));
-    score::json::Any any_obj(std::move(obj));
+    score::json::Any any_obj = make_kvs_root(std::move(obj));
 
     EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
         .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(any_obj))));
@@ -169,6 +181,23 @@ TEST(kvs_TEST, parse_json_data_failure)
     EXPECT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);  // error is passed from any_to_kvsvalue
 
+    /* Tagged root that is not an object */
+
+    mock_parser = std::make_unique<score::json::IJsonParserMock>();
+    score::json::Object non_obj_root;
+    non_obj_root.emplace("t", score::json::Any(std::string("i32")));
+    non_obj_root.emplace("v", score::json::Any(5));
+    score::json::Any any_non_obj_root(std::move(non_obj_root));
+
+    EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
+        .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(any_non_obj_root))));
+
+    kvs->parser_ = std::move(mock_parser);
+
+    result = kvs->parse_json_data("data_not_used_in_mocking");
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), ErrorCode::JsonParserError);
+
     cleanup_environment();
 }
 
@@ -177,8 +206,8 @@ TEST(kvs_open, storage_corrupted_all_kvs_open_modes)
     const OpenNeedDefaults defaultMode{OpenNeedDefaults::Required};
     const InstanceId instanceId{99ul};
     const SnapshotId snapshotId{0ul};
-    const std::string defaultData = R"({"default": {"t": "i32","v": 10}})";
-    const std::string snapshotData0 = R"({"kvs": {"t": "i32","v": 20}})";
+    const std::string defaultData = R"({"t": "obj", "v": {"default": {"t": "i32","v": 10}}})";
+    const std::string snapshotData0 = R"({"t": "obj", "v": {"kvs": {"t": "i32","v": 20}}})";
     const std::string dir{"./kvs/"};
     const std::string prefix{"kvs_"};
 
@@ -255,8 +284,8 @@ TEST(kvs_open, hash_missing_all_kvs_open_modes)
     const OpenNeedDefaults defaultMode{OpenNeedDefaults::Required};
     const InstanceId instanceId{99ul};
     const SnapshotId snapshotId{0ul};
-    const std::string defaultData = R"({"default": {"t": "i32","v": 10}})";
-    const std::string snapshotData0 = R"({"kvs": {"t": "i32","v": 20}})";
+    const std::string defaultData = R"({"t": "obj", "v": {"default": {"t": "i32","v": 10}}})";
+    const std::string snapshotData0 = R"({"t": "obj", "v": {"kvs": {"t": "i32","v": 20}}})";
     const std::string dir{"./kvs/"};
     const std::string prefix{"kvs_"};
 
@@ -318,9 +347,9 @@ TEST(kvs_open, hash_missing_all_kvs_open_modes)
 TEST(kvs_open, selected_snapshot)
 {
     const InstanceId instanceId{99ul};
-    const std::string defaultData = R"({"default": {"t": "i32","v": 10}})";
-    const std::string snapshotData0 = R"({"kvs": {"t": "i32","v": 20}})";
-    const std::string snapshotData1 = R"({"kvs": {"t": "i32","v": 30}})";
+    const std::string defaultData = R"({"t": "obj", "v": {"default": {"t": "i32","v": 10}}})";
+    const std::string snapshotData0 = R"({"t": "obj", "v": {"kvs": {"t": "i32","v": 20}}})";
+    const std::string snapshotData1 = R"({"t": "obj", "v": {"kvs": {"t": "i32","v": 30}}})";
     const std::string dir{"./kvs/"};
     const std::string prefix{"kvs_"};
 
@@ -364,6 +393,54 @@ TEST(kvs_open, selected_snapshot)
     cleanup_environment(dir);
 }
 
+TEST(kvs_open, t_and_v_keys_loaded_from_file)
+{
+    /* "t" and "v" are type tag keys only at the value level, so they are valid user keys */
+    const InstanceId instanceId{77ul};
+    const std::string defaultData =
+        R"({"t": "obj", "v": {"t": {"t": "str", "v": "default_t"}, "v": {"t": "i32", "v": 1}}})";
+    const std::string snapshotData0 = R"({"t": "obj", "v": {"t": {"t": "str", "v": "obj"}, "v": {"t": "i32", "v": 5}}})";
+    const std::string dir{"./kvs_t_v_keys_load/"};
+    const std::string prefix{"kvs_"};
+
+    prepare_environment(dir, prefix, instanceId.id, defaultData, snapshotData0);
+
+    auto kvs = Kvs::open(instanceId,
+                         SnapshotId{0ul},
+                         OpenNeedDefaults::Required,
+                         OpenNeedKvs::Required,
+                         std::string(dir),
+                         std::nullopt,
+                         KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(kvs);
+
+    auto keys = kvs->get_all_keys();
+    ASSERT_TRUE(keys);
+    EXPECT_THAT(keys.value(), ::testing::UnorderedElementsAre("t", "v"));
+
+    auto t_value = kvs->get_value("t");
+    ASSERT_TRUE(t_value);
+    ASSERT_EQ(t_value.value().getType(), KvsValue::Type::String);
+    EXPECT_EQ(std::get<std::string>(t_value.value().getValue()), "obj");
+
+    auto v_value = kvs->get_value("v");
+    ASSERT_TRUE(v_value);
+    ASSERT_EQ(v_value.value().getType(), KvsValue::Type::i32);
+    EXPECT_EQ(std::get<int32_t>(v_value.value().getValue()), 5);
+
+    auto t_default = kvs->get_default_value("t");
+    ASSERT_TRUE(t_default);
+    ASSERT_EQ(t_default.value().getType(), KvsValue::Type::String);
+    EXPECT_EQ(std::get<std::string>(t_default.value().getValue()), "default_t");
+
+    auto v_default = kvs->get_default_value("v");
+    ASSERT_TRUE(v_default);
+    ASSERT_EQ(v_default.value().getType(), KvsValue::Type::i32);
+    EXPECT_EQ(std::get<int32_t>(v_default.value().getValue()), 1);
+
+    cleanup_environment(dir);
+}
+
 TEST(kvs_TEST, parse_json_data_rejects_over_length_key)
 {
     /* comp_req__kvs__key_length: an over-length key found while loading means the file
@@ -395,7 +472,7 @@ TEST(kvs_TEST, parse_json_data_rejects_over_length_key)
     long_inner.emplace("v", score::json::Any(7));
     obj.emplace(too_long_key, score::json::Any(std::move(long_inner)));
 
-    score::json::Any any_obj(std::move(obj));
+    score::json::Any any_obj = make_kvs_root(std::move(obj));
     EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
         .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(any_obj))));
 
@@ -404,6 +481,54 @@ TEST(kvs_TEST, parse_json_data_rejects_over_length_key)
     auto result = kvs->parse_json_data("data_not_used_in_mocking");
     ASSERT_FALSE(result);
     EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::KeyTooLong);
+
+    cleanup_environment();
+}
+
+TEST(kvs_TEST, parse_json_data_accepts_over_length_nested_key)
+{
+    /* comp_req__kvs__key_length applies to root keys only; keys of nested objects are value data */
+    prepare_environment();
+
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt,
+                         KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(kvs);
+
+    const std::string long_key(KVS_MAX_KEY_LENGTH_BYTES + 1U, 'b');
+
+    auto mock_parser = std::make_unique<score::json::IJsonParserMock>();
+
+    score::json::Object long_inner;
+    long_inner.emplace("t", score::json::Any(std::string("i32")));
+    long_inner.emplace("v", score::json::Any(7));
+
+    score::json::Object nested;
+    nested.emplace(long_key, score::json::Any(std::move(long_inner)));
+
+    score::json::Object cfg;
+    cfg.emplace("t", score::json::Any(std::string("obj")));
+    cfg.emplace("v", score::json::Any(std::move(nested)));
+
+    score::json::Object obj;
+    obj.emplace("cfg", score::json::Any(std::move(cfg)));
+
+    score::json::Any any_obj = make_kvs_root(std::move(obj));
+    EXPECT_CALL(*mock_parser, FromBuffer(::testing::_))
+        .WillOnce(::testing::Return(score::Result<score::json::Any>(std::move(any_obj))));
+
+    kvs->parser_ = std::move(mock_parser);
+
+    auto result = kvs->parse_json_data("data_not_used_in_mocking");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->at("cfg").getType(), KvsValue::Type::Object);
+    const auto& cfg_obj = std::get<KvsValue::Object>(result->at("cfg").getValue());
+    ASSERT_EQ(cfg_obj.at(long_key).getType(), KvsValue::Type::i32);
+    EXPECT_EQ(std::get<int32_t>(cfg_obj.at(long_key).getValue()), 7);
 
     cleanup_environment();
 }
@@ -992,6 +1117,109 @@ TEST(kvs_set_value, set_value_failure)
     cleanup_environment();
 }
 
+TEST(kvs_set_value, t_and_v_keys_round_trip)
+{
+    /* "t" and "v" set by the user must survive flush and reload */
+    const InstanceId instanceId{78ul};
+    const std::string dir{"./kvs_t_v_keys_set/"};
+    const std::string prefix{"kvs_"};
+
+    prepare_environment(dir, prefix, instanceId.id, R"({"t": "obj", "v": {}})");
+
+    {
+        auto kvs = Kvs::open(instanceId,
+                             SnapshotId{0ul},
+                             OpenNeedDefaults::Required,
+                             OpenNeedKvs::Optional,
+                             std::string(dir),
+                             std::nullopt,
+                             KVS_DEFAULT_MAX_SNAPSHOTS);
+        ASSERT_TRUE(kvs);
+
+        EXPECT_TRUE(kvs->set_value("t", KvsValue("obj")));
+        EXPECT_TRUE(kvs->set_value("v", KvsValue(int32_t{42})));
+        KvsValue::Object nested{{"t", KvsValue("x")}, {"v", KvsValue(int32_t{7})}};
+        EXPECT_TRUE(kvs->set_value("nested", KvsValue(std::move(nested))));
+        ASSERT_TRUE(kvs->flush());
+    }
+
+    auto kvs = Kvs::open(instanceId,
+                         SnapshotId{0ul},
+                         OpenNeedDefaults::Required,
+                         OpenNeedKvs::Required,
+                         std::string(dir),
+                         std::nullopt,
+                         KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(kvs);
+
+    auto t_value = kvs->get_value("t");
+    ASSERT_TRUE(t_value);
+    ASSERT_EQ(t_value.value().getType(), KvsValue::Type::String);
+    EXPECT_EQ(std::get<std::string>(t_value.value().getValue()), "obj");
+
+    auto v_value = kvs->get_value("v");
+    ASSERT_TRUE(v_value);
+    ASSERT_EQ(v_value.value().getType(), KvsValue::Type::i32);
+    EXPECT_EQ(std::get<int32_t>(v_value.value().getValue()), 42);
+
+    auto nested_value = kvs->get_value("nested");
+    ASSERT_TRUE(nested_value);
+    ASSERT_EQ(nested_value.value().getType(), KvsValue::Type::Object);
+    const auto& nested_obj = std::get<KvsValue::Object>(nested_value.value().getValue());
+    ASSERT_EQ(nested_obj.size(), 2U);
+    ASSERT_EQ(nested_obj.at("t").getType(), KvsValue::Type::String);
+    EXPECT_EQ(std::get<std::string>(nested_obj.at("t").getValue()), "x");
+    ASSERT_EQ(nested_obj.at("v").getType(), KvsValue::Type::i32);
+    EXPECT_EQ(std::get<int32_t>(nested_obj.at("v").getValue()), 7);
+
+    cleanup_environment(dir);
+}
+
+TEST(kvs_set_value, over_length_nested_key_round_trip)
+{
+    /* comp_req__kvs__key_length applies to root keys only; a nested object with an over-length
+       key must survive flush and reload */
+    const InstanceId instanceId{79ul};
+    const std::string dir{"./kvs_long_nested_key/"};
+    const std::string prefix{"kvs_"};
+    const std::string long_key(KVS_MAX_KEY_LENGTH_BYTES + 1U, 'x');
+
+    prepare_environment(dir, prefix, instanceId.id, R"({"t": "obj", "v": {}})");
+
+    {
+        auto kvs = Kvs::open(instanceId,
+                             SnapshotId{0ul},
+                             OpenNeedDefaults::Required,
+                             OpenNeedKvs::Optional,
+                             std::string(dir),
+                             std::nullopt,
+                             KVS_DEFAULT_MAX_SNAPSHOTS);
+        ASSERT_TRUE(kvs);
+
+        KvsValue::Object cfg{{long_key, KvsValue(int32_t{1})}};
+        EXPECT_TRUE(kvs->set_value("cfg", KvsValue(std::move(cfg))));
+        ASSERT_TRUE(kvs->flush());
+    }
+
+    auto kvs = Kvs::open(instanceId,
+                         SnapshotId{0ul},
+                         OpenNeedDefaults::Required,
+                         OpenNeedKvs::Required,
+                         std::string(dir),
+                         std::nullopt,
+                         KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(kvs);
+
+    auto cfg_value = kvs->get_value("cfg");
+    ASSERT_TRUE(cfg_value);
+    ASSERT_EQ(cfg_value.value().getType(), KvsValue::Type::Object);
+    const auto& cfg_obj = std::get<KvsValue::Object>(cfg_value.value().getValue());
+    ASSERT_EQ(cfg_obj.at(long_key).getType(), KvsValue::Type::i32);
+    EXPECT_EQ(std::get<int32_t>(cfg_obj.at(long_key).getValue()), 1);
+
+    cleanup_environment(dir);
+}
+
 TEST(kvs_remove_key, remove_key_success)
 {
     prepare_environment();
@@ -1474,7 +1702,7 @@ TEST(kvs_flush, flush_failure_json_writer)
     ASSERT_TRUE(kvs);
 
     auto mock_writer = std::make_unique<score::json::IJsonWriterMock>(); /* Force error in writer.ToBuffer */
-    EXPECT_CALL(*mock_writer, ToBuffer(::testing::A<const score::json::Object&>()))
+    EXPECT_CALL(*mock_writer, ToBuffer(::testing::A<const score::json::Any&>()))
         .WillOnce(
             ::testing::Return(score::Result<std::string>(score::MakeUnexpected(score::json::Error::kUnknownError))));
 
@@ -1564,9 +1792,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_success)
 
     /* Create dummy data */
     const std::string json_data = R"({
-        "kvs_old": {
-            "t": "i32",
-            "v": 42
+        "t": "obj",
+        "v": {
+            "kvs_old": {
+                "t": "i32",
+                "v": 42
+            }
         }
     })";
     /* Create Hash Data for json_data*/
@@ -2251,7 +2482,7 @@ TEST(kvs_max_storage_bytes, flush_fails_when_storage_limit_exceeded)
 
     /* Add data close to the limit. There is overhead for the JSON structure (key,
        type info, braces) and the hash file, so keep the payload below the maximum. */
-    const size_t overhead_estimate = 100U;
+    const size_t overhead_estimate = 150U;
     const std::string large_data(kTestMaxStorageBytes - overhead_estimate, 'a');
 
     auto set_res1 = kvs.set_value("large_data", KvsValue(large_data.c_str()));

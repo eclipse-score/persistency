@@ -34,7 +34,7 @@ fn create_defaults_file(dir_path: PathBuf, instance_id: InstanceId) -> Result<()
         ("k2".to_string(), KvsValue::U64(654321u64)),
         ("k3".to_string(), KvsValue::String("example".to_string())),
     ]));
-    let json_value = JsonValue::from(kvs_value);
+    let json_value = JsonValue::try_from(kvs_value)?;
 
     // Stringify and save to file.
     let json_str = json_value.stringify()?;
