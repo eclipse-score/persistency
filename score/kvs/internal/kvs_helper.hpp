@@ -33,6 +33,7 @@ std::array<uint8_t, 4> get_hash_bytes(const std::string& data);
 bool check_hash(const std::string& data_calculate, std::istream& data_parse);
 score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any);
 score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv);
+score::Result<score::json::Any> kvsvalue_to_any(const KvsValue::Object& object);
 
 } /* namespace score::mw::per::kvs */
 

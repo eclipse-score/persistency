@@ -78,7 +78,7 @@ impl Scenario for SupportedDatatypesValues {
             .expect("Failed to set value");
 
         let kvs_value = kvs.get_value(self.name()).expect("Failed to read value");
-        let json_value = JsonValue::from(kvs_value);
+        let json_value = JsonValue::try_from(kvs_value).expect("Failed to convert to JSON value");
         let json_str = json_value.stringify().expect("Failed to stringify JSON");
 
         info!(key = self.name(), value = json_str);

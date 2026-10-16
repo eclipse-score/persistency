@@ -33,42 +33,50 @@ use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
 // }
 
 /// Backend-specific JsonValue -> KvsValue conversion.
-impl From<JsonValue> for KvsValue {
-    fn from(val: JsonValue) -> KvsValue {
-        match val {
+impl TryFrom<JsonValue> for KvsValue {
+    type Error = ErrorCode;
+
+    fn try_from(value: JsonValue) -> Result<Self, Self::Error> {
+        match value {
             JsonValue::Object(mut obj) => {
                 // Type-tagged: { "t": ..., "v": ... }
                 if let (Some(JsonValue::String(type_str)), Some(value)) = (obj.remove("t"), obj.remove("v")) {
                     return match (type_str.as_str(), value) {
-                        ("i32", JsonValue::Number(v)) => KvsValue::I32(v as i32),
-                        ("u32", JsonValue::Number(v)) => KvsValue::U32(v as u32),
-                        ("i64", JsonValue::Number(v)) => KvsValue::I64(v as i64),
-                        ("u64", JsonValue::Number(v)) => KvsValue::U64(v as u64),
-                        ("f64", JsonValue::Number(v)) => KvsValue::F64(v),
-                        ("bool", JsonValue::Boolean(v)) => KvsValue::Boolean(v),
-                        ("str", JsonValue::String(v)) => KvsValue::String(v),
-                        ("null", JsonValue::Null) => KvsValue::Null,
-                        ("arr", JsonValue::Array(v)) => KvsValue::Array(v.into_iter().map(KvsValue::from).collect()),
-                        ("obj", JsonValue::Object(v)) => {
-                            KvsValue::Object(v.into_iter().map(|(k, v)| (k, KvsValue::from(v))).collect())
+                        ("i32", JsonValue::Number(v)) => Ok(KvsValue::I32(v as i32)),
+                        ("u32", JsonValue::Number(v)) => Ok(KvsValue::U32(v as u32)),
+                        ("i64", JsonValue::Number(v)) => Ok(KvsValue::I64(v as i64)),
+                        ("u64", JsonValue::Number(v)) => Ok(KvsValue::U64(v as u64)),
+                        ("f64", JsonValue::Number(v)) => Ok(KvsValue::F64(v)),
+                        ("bool", JsonValue::Boolean(v)) => Ok(KvsValue::Boolean(v)),
+                        ("str", JsonValue::String(v)) => Ok(KvsValue::String(v)),
+                        ("null", JsonValue::Null) => Ok(KvsValue::Null),
+                        ("arr", JsonValue::Array(v)) => {
+                            let converted_result = v.into_iter().map(KvsValue::try_from).collect::<Result<Vec<_>, _>>();
+                            Ok(KvsValue::Array(converted_result?))
                         },
-                        // Remaining types can be handled with Null.
-                        _ => KvsValue::Null,
+                        ("obj", JsonValue::Object(v)) => {
+                            let converted_result = v
+                                .into_iter()
+                                .map(|(k, v)| KvsValue::try_from(v).map(|v| (k, v)))
+                                .collect::<Result<KvsMap, _>>();
+                            Ok(KvsValue::Object(converted_result?))
+                        },
+                        _ => Err(ErrorCode::InvalidValueType),
                     };
+                } else {
+                    Err(ErrorCode::ConversionFailed)
                 }
-                // If not a t-tagged object, treat as a map of key-value pairs (KvsMap)
-                let map: KvsMap = obj.into_iter().map(|(k, v)| (k, KvsValue::from(v))).collect();
-                KvsValue::Object(map)
             },
-            // Remaining types can be handled with Null.
-            _ => KvsValue::Null,
+            _ => Err(ErrorCode::ConversionFailed),
         }
     }
 }
 
 /// Backend-specific KvsValue -> JsonValue conversion.
-impl From<KvsValue> for JsonValue {
-    fn from(val: KvsValue) -> JsonValue {
+impl TryFrom<KvsValue> for JsonValue {
+    type Error = ErrorCode;
+
+    fn try_from(val: KvsValue) -> Result<Self, Self::Error> {
         let mut obj = HashMap::new();
         match val {
             KvsValue::I32(n) => {
@@ -105,20 +113,23 @@ impl From<KvsValue> for JsonValue {
             },
             KvsValue::Array(arr) => {
                 obj.insert("t".to_string(), JsonValue::String("arr".to_string()));
-                obj.insert(
-                    "v".to_string(),
-                    JsonValue::Array(arr.into_iter().map(JsonValue::from).collect()),
-                );
+                obj.insert("v".to_string(), {
+                    let converted_result = arr.into_iter().map(JsonValue::try_from).collect::<Result<Vec<_>, _>>();
+                    JsonValue::Array(converted_result?)
+                });
             },
             KvsValue::Object(map) => {
                 obj.insert("t".to_string(), JsonValue::String("obj".to_string()));
-                obj.insert(
-                    "v".to_string(),
-                    JsonValue::Object(map.into_iter().map(|(k, v)| (k, JsonValue::from(v))).collect()),
-                );
+                obj.insert("v".to_string(), {
+                    let converted_result = map
+                        .into_iter()
+                        .map(|(k, v)| JsonValue::try_from(v).map(|v| (k, v)))
+                        .collect::<Result<HashMap<_, _>, _>>();
+                    JsonValue::Object(converted_result?)
+                });
             },
         }
-        JsonValue::Object(obj)
+        Ok(JsonValue::Object(obj))
     }
 }
 
@@ -317,7 +328,7 @@ impl JsonBackend {
 
         // Cast from `JsonValue` to `KvsValue`.
         debug!("Converting JSON values to KVS values");
-        let kvs_value = KvsValue::from(json_value);
+        let kvs_value = KvsValue::try_from(json_value)?;
         if let KvsValue::Object(kvs_map) = kvs_value {
             Ok(kvs_map)
         } else {
@@ -332,7 +343,7 @@ impl JsonBackend {
         // Cast from `KvsValue` to `JsonValue`.
         debug!("Converting KVS values to JSON values");
         let kvs_value = KvsValue::Object(kvs_map.clone());
-        let json_value = JsonValue::from(kvs_value);
+        let json_value = JsonValue::try_from(kvs_value)?;
 
         // Stringify `JsonValue` and save to KVS file.
         debug!("Stringifying KVS file: {:?}", kvs_path);
@@ -472,6 +483,7 @@ impl KvsBackend for JsonBackend {
 
 #[cfg(test)]
 mod json_value_to_kvs_value_conversion_tests {
+    use crate::error_code::ErrorCode;
     use crate::kvs_value::{KvsMap, KvsValue};
     use std::collections::HashMap;
     use tinyjson::JsonValue;
@@ -482,7 +494,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("i32".to_string())),
             ("v".to_string(), JsonValue::Number(-123.0)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::I32(-123));
     }
 
@@ -492,8 +504,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("i32".to_string())),
             ("v".to_string(), JsonValue::String("-123.0".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -502,7 +513,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("u32".to_string())),
             ("v".to_string(), JsonValue::Number(123.0)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::U32(123));
     }
 
@@ -512,8 +523,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("u32".to_string())),
             ("v".to_string(), JsonValue::String("123.0".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -522,7 +532,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("i64".to_string())),
             ("v".to_string(), JsonValue::Number(-123.0)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::I64(-123));
     }
 
@@ -532,8 +542,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("i64".to_string())),
             ("v".to_string(), JsonValue::String("-123.0".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -542,7 +551,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("u64".to_string())),
             ("v".to_string(), JsonValue::Number(123.0)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::U64(123));
     }
 
@@ -552,8 +561,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("u64".to_string())),
             ("v".to_string(), JsonValue::String("123.0".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -562,7 +570,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("f64".to_string())),
             ("v".to_string(), JsonValue::Number(-432.1)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::F64(-432.1));
     }
 
@@ -572,8 +580,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("f64".to_string())),
             ("v".to_string(), JsonValue::String("-432.1".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -582,7 +589,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("bool".to_string())),
             ("v".to_string(), JsonValue::Boolean(true)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::Boolean(true));
     }
 
@@ -592,8 +599,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("bool".to_string())),
             ("v".to_string(), JsonValue::String("true".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -602,7 +608,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("str".to_string())),
             ("v".to_string(), JsonValue::String("example".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::String("example".to_string()));
     }
 
@@ -612,8 +618,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("str".to_string())),
             ("v".to_string(), JsonValue::Number(123.4)),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -622,7 +627,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("null".to_string())),
             ("v".to_string(), JsonValue::Null),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::Null);
     }
 
@@ -632,8 +637,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("null".to_string())),
             ("v".to_string(), JsonValue::Number(123.4)),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -650,7 +654,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("arr".to_string())),
             ("v".to_string(), JsonValue::Array(vec![entry1, entry2])),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::Array(vec![KvsValue::I32(-123), KvsValue::F64(555.5)]));
     }
 
@@ -660,8 +664,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("arr".to_string())),
             ("v".to_string(), JsonValue::String("example".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -684,12 +687,47 @@ mod json_value_to_kvs_value_conversion_tests {
                 ])),
             ),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(
             kv,
             KvsValue::Object(KvsMap::from([
-                ("entry1".to_string(), KvsValue::from(entry1)),
-                ("entry2".to_string(), KvsValue::from(entry2))
+                ("entry1".to_string(), KvsValue::try_from(entry1).unwrap()),
+                ("entry2".to_string(), KvsValue::try_from(entry2).unwrap())
+            ]))
+        );
+    }
+
+    #[test]
+    fn test_object_with_t_v_keys() {
+        // "t" and "v" are valid user keys inside a type-tagged object.
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("obj".to_string())),
+            (
+                "v".to_string(),
+                JsonValue::Object(HashMap::from([
+                    (
+                        "t".to_string(),
+                        JsonValue::from(HashMap::from([
+                            ("t".to_string(), JsonValue::String("str".to_string())),
+                            ("v".to_string(), JsonValue::String("obj".to_string())),
+                        ])),
+                    ),
+                    (
+                        "v".to_string(),
+                        JsonValue::from(HashMap::from([
+                            ("t".to_string(), JsonValue::String("i32".to_string())),
+                            ("v".to_string(), JsonValue::Number(5.0)),
+                        ])),
+                    ),
+                ])),
+            ),
+        ]));
+        let kv = KvsValue::try_from(jv).unwrap();
+        assert_eq!(
+            kv,
+            KvsValue::Object(KvsMap::from([
+                ("t".to_string(), KvsValue::String("obj".to_string())),
+                ("v".to_string(), KvsValue::I32(5)),
             ]))
         );
     }
@@ -700,15 +738,139 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("obj".to_string())),
             ("v".to_string(), JsonValue::String("example".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
+    }
+
+    #[test]
+    fn test_array_empty_ok() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("arr".to_string())),
+            ("v".to_string(), JsonValue::Array(vec![])),
+        ]));
+        let kv = KvsValue::try_from(jv).unwrap();
+        assert_eq!(kv, KvsValue::Array(vec![]));
+    }
+
+    #[test]
+    fn test_array_invalid_element() {
+        let entry1 = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("i32".to_string())),
+            ("v".to_string(), JsonValue::Number(-123.0)),
+        ]));
+        let entry2 = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("i32".to_string())),
+            ("v".to_string(), JsonValue::String("example".to_string())),
+        ]));
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("arr".to_string())),
+            ("v".to_string(), JsonValue::Array(vec![entry1, entry2])),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
+    }
+
+    #[test]
+    fn test_array_untagged_element() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("arr".to_string())),
+            ("v".to_string(), JsonValue::Array(vec![JsonValue::Number(123.0)])),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_object_empty_ok() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("obj".to_string())),
+            ("v".to_string(), JsonValue::Object(HashMap::new())),
+        ]));
+        let kv = KvsValue::try_from(jv).unwrap();
+        assert_eq!(kv, KvsValue::Object(KvsMap::new()));
+    }
+
+    #[test]
+    fn test_object_invalid_entry() {
+        let entry = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("bool".to_string())),
+            ("v".to_string(), JsonValue::Number(1.0)),
+        ]));
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("obj".to_string())),
+            (
+                "v".to_string(),
+                JsonValue::Object(HashMap::from([("entry".to_string(), entry)])),
+            ),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
+    }
+
+    #[test]
+    fn test_object_untagged_entry() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("obj".to_string())),
+            (
+                "v".to_string(),
+                JsonValue::Object(HashMap::from([(
+                    "entry".to_string(),
+                    JsonValue::String("example".to_string()),
+                )])),
+            ),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_unknown_type_tag() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("xyz".to_string())),
+            ("v".to_string(), JsonValue::Number(1.0)),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
+    }
+
+    #[test]
+    fn test_type_tag_not_string() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::Number(5.0)),
+            ("v".to_string(), JsonValue::Number(1.0)),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_missing_type_tag() {
+        let jv = JsonValue::from(HashMap::from([("v".to_string(), JsonValue::Number(1.0))]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_missing_value() {
+        let jv = JsonValue::from(HashMap::from([("t".to_string(), JsonValue::String("i32".to_string()))]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_untagged_object() {
+        // Plain key-value maps are no longer accepted, values must be type-tagged.
+        let entry = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("i32".to_string())),
+            ("v".to_string(), JsonValue::Number(1.0)),
+        ]));
+        let jv = JsonValue::from(HashMap::from([("k1".to_string(), entry)]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
     }
 
     #[test]
     fn test_non_json_value_object() {
-        let jv = JsonValue::Number(123.0);
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        let values = [
+            JsonValue::Number(123.0),
+            JsonValue::String("example".to_string()),
+            JsonValue::Boolean(true),
+            JsonValue::Null,
+            JsonValue::Array(vec![JsonValue::Number(123.0)]),
+        ];
+        for jv in values {
+            assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+        }
     }
 }
 
@@ -721,7 +883,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_i32_ok() {
         let kv = KvsValue::I32(-123);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -735,7 +897,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_u32_ok() {
         let kv = KvsValue::U32(123);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -749,7 +911,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_i64_ok() {
         let kv = KvsValue::I64(-123);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -763,7 +925,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_u64_ok() {
         let kv = KvsValue::U64(123);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -777,7 +939,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_f64_ok() {
         let kv = KvsValue::F64(-432.1);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -791,7 +953,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_bool_ok() {
         let kv = KvsValue::Boolean(true);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -805,7 +967,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_string_ok() {
         let kv = KvsValue::String("example".to_string());
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -819,7 +981,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_null_ok() {
         let kv = KvsValue::Null;
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -833,7 +995,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_array_ok() {
         let kv = KvsValue::Array(vec![KvsValue::I32(-123), KvsValue::F64(555.5)]);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         let exp_entry1 = JsonValue::from(HashMap::from([
             ("t".to_string(), JsonValue::String("i32".to_string())),
@@ -862,10 +1024,10 @@ mod kvs_value_to_json_value_conversion_tests {
         ]));
 
         let kv = KvsValue::Object(KvsMap::from([
-            ("entry1".to_string(), KvsValue::from(entry1.clone())),
-            ("entry2".to_string(), KvsValue::from(entry2.clone())),
+            ("entry1".to_string(), KvsValue::try_from(entry1.clone()).unwrap()),
+            ("entry2".to_string(), KvsValue::try_from(entry2.clone()).unwrap()),
         ]));
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         let exp_jv = JsonValue::from(HashMap::from([
             ("t".to_string(), JsonValue::String("obj".to_string())),
@@ -878,6 +1040,60 @@ mod kvs_value_to_json_value_conversion_tests {
             ),
         ]));
         assert_eq!(jv, exp_jv);
+    }
+
+    #[test]
+    fn test_array_empty_ok() {
+        let kv = KvsValue::Array(vec![]);
+        let jv = JsonValue::try_from(kv).unwrap();
+
+        assert_eq!(
+            jv,
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String("arr".to_string())),
+                ("v".to_string(), JsonValue::Array(vec![])),
+            ]))
+        );
+    }
+
+    #[test]
+    fn test_object_empty_ok() {
+        let kv = KvsValue::Object(KvsMap::new());
+        let jv = JsonValue::try_from(kv).unwrap();
+
+        assert_eq!(
+            jv,
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String("obj".to_string())),
+                ("v".to_string(), JsonValue::Object(HashMap::new())),
+            ]))
+        );
+    }
+
+    #[test]
+    fn test_round_trip() {
+        let nested = KvsMap::from([
+            ("t".to_string(), KvsValue::String("obj".to_string())),
+            ("v".to_string(), KvsValue::I32(5)),
+        ]);
+        let kv = KvsValue::Object(KvsMap::from([
+            ("i32".to_string(), KvsValue::I32(-123)),
+            ("u32".to_string(), KvsValue::U32(123)),
+            ("i64".to_string(), KvsValue::I64(-456)),
+            ("u64".to_string(), KvsValue::U64(456)),
+            ("f64".to_string(), KvsValue::F64(-432.1)),
+            ("bool".to_string(), KvsValue::Boolean(true)),
+            ("str".to_string(), KvsValue::String("example".to_string())),
+            ("null".to_string(), KvsValue::Null),
+            (
+                "arr".to_string(),
+                KvsValue::Array(vec![KvsValue::I32(1), KvsValue::Array(vec![KvsValue::Null])]),
+            ),
+            ("obj".to_string(), KvsValue::Object(nested)),
+        ]));
+
+        let jv = JsonValue::try_from(kv.clone()).unwrap();
+        assert_eq!(KvsValue::try_from(jv).unwrap(), kv);
     }
 }
 
@@ -1055,6 +1271,29 @@ mod json_backend_tests {
     }
 
     #[test]
+    fn test_load_t_v_keys() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let kvs_path = dir_path.join("kvs.json");
+        let hash_path = dir_path.join("kvs.hash");
+
+        // "t" and "v" are valid user keys inside the type-tagged root object.
+        let contents = r#"{"t":"obj","v":{"t":{"t":"str","v":"obj"},"v":{"t":"i32","v":5}}}"#;
+        let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
+        std::fs::write(kvs_path.clone(), contents).unwrap();
+        std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
+
+        let kvs_map = JsonBackend::load(&kvs_path, &hash_path).unwrap();
+        assert_eq!(
+            kvs_map,
+            KvsMap::from([
+                ("t".to_string(), KvsValue::String("obj".to_string())),
+                ("v".to_string(), KvsValue::I32(5)),
+            ])
+        );
+    }
+
+    #[test]
     fn test_load_malformed_json() {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
@@ -1081,7 +1320,69 @@ mod json_backend_tests {
         std::fs::write(kvs_path.clone(), contents).unwrap();
         std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
 
+        assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_load_empty_ok() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let kvs_path = dir_path.join("kvs.json");
+        let hash_path = dir_path.join("kvs.hash");
+
+        let contents = r#"{"t":"obj","v":{}}"#;
+        let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
+        std::fs::write(kvs_path.clone(), contents).unwrap();
+        std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
+
+        let kvs_map = JsonBackend::load(&kvs_path, &hash_path).unwrap();
+        assert_eq!(kvs_map, KvsMap::new());
+    }
+
+    #[test]
+    fn test_load_untagged_root() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let kvs_path = dir_path.join("kvs.json");
+        let hash_path = dir_path.join("kvs.hash");
+
+        // Root object without type tag is no longer accepted.
+        let contents = r#"{"k1":{"t":"str","v":"v1"}}"#;
+        let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
+        std::fs::write(kvs_path.clone(), contents).unwrap();
+        std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
+
+        assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_load_tagged_non_object_root() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let kvs_path = dir_path.join("kvs.json");
+        let hash_path = dir_path.join("kvs.hash");
+
+        let contents = r#"{"t":"i32","v":5}"#;
+        let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
+        std::fs::write(kvs_path.clone(), contents).unwrap();
+        std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
+
         assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::JsonParserError));
+    }
+
+    #[test]
+    fn test_load_invalid_value_type() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let kvs_path = dir_path.join("kvs.json");
+        let hash_path = dir_path.join("kvs.hash");
+
+        let contents = r#"{"t":"obj","v":{"k1":{"t":"i32","v":"x"}}}"#;
+        let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
+        std::fs::write(kvs_path.clone(), contents).unwrap();
+        std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
+
+        assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]

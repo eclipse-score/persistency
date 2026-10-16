@@ -240,7 +240,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any)
                                 result = score::MakeUnexpected(ErrorCode::InvalidValueType);
                                 break;
                             }
-                            map.emplace_back(std::string(key.GetAsStringView()), std::move(conv.value()));
+                            map.emplace(std::string(key.GetAsStringView()), std::move(conv.value()));
                         }
                         if (!error)
                         {
@@ -280,6 +280,7 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv)
 {
     score::Result<score::json::Any> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     bool error = false;
+    bool result_set = false;
     score::json::Object obj;
     switch (kv.getType())
     {
@@ -354,23 +355,8 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv)
         }
         case KvsValue::Type::Object:
         {
-            obj.emplace("t", score::json::Any(std::string("obj")));
-            score::json::Object inner_obj;
-            for (const auto& [key, value] : std::get<KvsValue::Object>(kv.getValue()))
-            {
-                auto conv = kvsvalue_to_any(value);
-                if (!conv)
-                {
-                    result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    error = true;
-                    break;
-                }
-                inner_obj.emplace(key, std::move(conv.value()));
-            }
-            if (!error)
-            {
-                obj.emplace("v", score::json::Any(std::move(inner_obj)));
-            }
+            result = kvsvalue_to_any(std::get<KvsValue::Object>(kv.getValue()));
+            result_set = true;
             break;
         }
         default:
@@ -381,8 +367,37 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv)
         }
     }
 
+    if (!error && !result_set)
+    {
+        result = score::json::Any(std::move(obj));
+    }
+
+    return result;
+}
+
+/* Helper Function for KVSValue::Object -> Any conversion, avoids wrapping a map in a KvsValue */
+score::Result<score::json::Any> kvsvalue_to_any(const KvsValue::Object& object)
+{
+    score::Result<score::json::Any> result = score::MakeUnexpected(ErrorCode::UnmappedError);
+    bool error = false;
+    score::json::Object inner_obj;
+    for (const auto& [key, value] : object)
+    {
+        auto conv = kvsvalue_to_any(value);
+        if (!conv)
+        {
+            result = score::MakeUnexpected(ErrorCode::InvalidValueType);
+            error = true;
+            break;
+        }
+        inner_obj.emplace(key, std::move(conv.value()));
+    }
+
     if (!error)
     {
+        score::json::Object obj;
+        obj.emplace("t", score::json::Any(std::string("obj")));
+        obj.emplace("v", score::json::Any(std::move(inner_obj)));
         result = score::json::Any(std::move(obj));
     }
 
