@@ -258,6 +258,7 @@ impl KvsApi for Kvs {
     ///   * `ErrorCode::MutexLockFailed`: Mutex locking failed
     ///   * `ErrorCode::JsonGeneratorError`: Failed to serialize to JSON
     ///   * `ErrorCode::ConversionFailed`: JSON could not serialize into String
+    ///   * `ErrorCode::PhysicalStorageFailure`: Writing files to storage failed
     ///   * `ErrorCode::UnmappedError`: Unmapped error
     fn flush(&self) -> Result<(), ErrorCode> {
         if self.snapshot_max_count() == 0 {

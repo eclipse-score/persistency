@@ -11,6 +11,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 #include "kvs_general_test.hpp"
+#include "score/os/ObjectSeam.h"
+#include "score/os/mocklib/fcntl_mock.h"
+#include "score/os/mocklib/stat_mock.h"
+#include "score/os/stat.h"
 
 TEST(kvs_constructor, move_constructor)
 {
@@ -1135,12 +1139,196 @@ TEST(kvs_write_json_data, write_json_data_filesystem_failure)
 
     cleanup_environment();
 }
-TEST(kvs_write_json_data, write_json_data_permissions_failure)
+namespace
+{
+using score::filesystem::Perms;
+
+/* Expected permissions of KVS JSON and hash files: 0640 */
+constexpr Perms expected_file_perms{Perms::kReadUser | Perms::kWriteUser | Perms::kReadGroup};
+
+/* JSON data different from the data stored by prepare_environment() */
+const std::string new_kvs_json = R"({"new_key": {"t": "i32", "v": 1}})";
+
+score::filesystem::Filesystem real_filesystem()
+{
+    return score::filesystem::FilesystemFactory{}.CreateInstance();
+}
+
+/* Read permissions of a file as integer (readable on failure), returns kUnknown if status could not be retrieved */
+std::uint32_t file_perms(const score::filesystem::Path& path)
+{
+    const auto status = real_filesystem().standard->Status(path);
+    return static_cast<std::uint32_t>(status.has_value() ? status.value().Permissions() : Perms::kUnknown);
+}
+
+bool file_exists(const score::filesystem::Path& path)
+{
+    const auto exists = real_filesystem().standard->Exists(path);
+    return exists.has_value() && exists.value();
+}
+
+std::string file_content(const score::filesystem::Path& path)
+{
+    std::ifstream file(path.Native(), std::ios::binary);
+    return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+}
+
+Kvs open_test_kvs()
+{
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt,
+                         KVS_DEFAULT_MAX_SNAPSHOTS);
+    EXPECT_TRUE(kvs);
+    kvs->filename_prefix_ = score::filesystem::Path(filename_prefix); /* Set the filename prefix to the test prefix */
+    return std::move(kvs.value());
+}
+}  // namespace
+
+TEST(kvs_write_json_data, write_json_data_open_failure)
 {
     prepare_environment();
-    /* Test CreateDirectories fails */
-    system(("rm -rf " + kvs_prefix + ".json").c_str());
-    system(("rm -rf " + kvs_prefix + ".hash").c_str());
+    /* Test failing to open a temporary file fails the write and keeps the previous files */
+    const score::filesystem::Path json_path{kvs_prefix + ".json"};
+    const score::filesystem::Path hash_path{kvs_prefix + ".hash"};
+    const std::string previous_hash = file_content(hash_path);
+    auto kvs = open_test_kvs();
+
+    {
+        score::os::MockGuard<::testing::NiceMock<score::os::FcntlMock>> fcntl_mock;
+        EXPECT_CALL(*fcntl_mock, open(::testing::StrEq(kvs_prefix + ".json.tmp"), ::testing::_, ::testing::_))
+            .WillOnce(::testing::Return(score::cpp::make_unexpected(score::os::Error::createFromErrno(EACCES))));
+        auto result = kvs.write_json_data(new_kvs_json);
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
+    }
+
+    EXPECT_EQ(file_content(json_path), kvs_json);
+    EXPECT_EQ(file_content(hash_path), previous_hash);
+    EXPECT_FALSE(file_exists(score::filesystem::Path{kvs_prefix + ".json.tmp"}));
+
+    cleanup_environment();
+}
+
+TEST(kvs_write_json_data, write_json_data_set_permissions_failure)
+{
+    prepare_environment();
+    /* Test setting permissions of a written file fails and keeps the previous files */
+    const score::filesystem::Path json_path{kvs_prefix + ".json"};
+    const score::filesystem::Path hash_path{kvs_prefix + ".hash"};
+    const std::string previous_hash = file_content(hash_path);
+    auto kvs = open_test_kvs();
+
+    {
+        score::os::MockGuard<::testing::NiceMock<score::os::StatMock>> stat_mock;
+        EXPECT_CALL(*stat_mock, fchmod(::testing::_, score::os::Stat::Mode::kReadUser | score::os::Stat::Mode::kWriteUser |
+                                                       score::os::Stat::Mode::kReadGroup))
+            .WillOnce(::testing::Return(score::cpp::make_unexpected(score::os::Error::createFromErrno(EPERM))));
+        auto result = kvs.write_json_data(new_kvs_json);
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
+    }
+
+    EXPECT_EQ(file_content(json_path), kvs_json);
+    EXPECT_EQ(file_content(hash_path), previous_hash);
+    EXPECT_FALSE(file_exists(score::filesystem::Path{kvs_prefix + ".json.tmp"}));
+
+    cleanup_environment();
+}
+
+TEST(kvs_write_json_data, write_json_data_staging_failure_keeps_previous_file)
+{
+    prepare_environment();
+    /* Test a temporary file that cannot be removed or created fails the write and keeps the previous files */
+    const score::filesystem::Path json_path{kvs_prefix + ".json"};
+    const score::filesystem::Path hash_path{kvs_prefix + ".hash"};
+    const score::filesystem::Path json_tmp_path{kvs_prefix + ".json.tmp"};
+    const std::string previous_hash = file_content(hash_path);
+    const auto fs{real_filesystem()};
+    ASSERT_TRUE(fs.standard->CreateDirectory(json_tmp_path));
+    std::ofstream{json_tmp_path.Native() + "/file"} << "data";
+    auto kvs = open_test_kvs();
+
+    auto result = kvs.write_json_data(new_kvs_json);
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
+    EXPECT_EQ(file_content(json_path), kvs_json);
+    EXPECT_EQ(file_content(hash_path), previous_hash);
+    EXPECT_FALSE(file_exists(score::filesystem::Path{kvs_prefix + ".hash.tmp"}));
+
+    cleanup_environment();
+}
+
+TEST(kvs_write_json_data, write_json_data_replaces_stale_temp_file)
+{
+    prepare_environment();
+    /* Test a temporary file left behind by an interrupted write is replaced */
+    const score::filesystem::Path json_path{kvs_prefix + ".json"};
+    const score::filesystem::Path json_tmp_path{kvs_prefix + ".json.tmp"};
+    const auto fs{real_filesystem()};
+    std::ofstream{json_tmp_path.Native()} << "stale";
+    constexpr Perms all_perms{Perms::kReadWriteExecUser | Perms::kReadWriteExecGroup | Perms::kReadWriteExecOthers};
+    ASSERT_TRUE(fs.standard->Permissions(json_tmp_path, all_perms));
+    auto kvs = open_test_kvs();
+
+    ASSERT_TRUE(kvs.write_json_data(new_kvs_json));
+    EXPECT_FALSE(file_exists(json_tmp_path));
+    EXPECT_EQ(file_content(json_path), new_kvs_json);
+    EXPECT_EQ(file_perms(json_path), static_cast<std::uint32_t>(expected_file_perms));
+
+    cleanup_environment();
+}
+
+TEST(kvs_write_json_data, write_json_data_leaves_no_temp_files)
+{
+    prepare_environment();
+    /* Test temporary files are renamed to the JSON and hash files */
+    auto kvs = open_test_kvs();
+
+    ASSERT_TRUE(kvs.write_json_data(new_kvs_json));
+    EXPECT_EQ(file_content(score::filesystem::Path{kvs_prefix + ".json"}), new_kvs_json);
+    EXPECT_FALSE(file_exists(score::filesystem::Path{kvs_prefix + ".json.tmp"}));
+    EXPECT_FALSE(file_exists(score::filesystem::Path{kvs_prefix + ".hash.tmp"}));
+
+    cleanup_environment();
+}
+
+TEST(kvs_write_json_data, write_json_data_permissions_ignore_umask)
+{
+    prepare_environment();
+    /* Test JSON and hash files have 0640 permissions regardless of umask */
+    const score::filesystem::Path json_path{kvs_prefix + ".json"};
+    const score::filesystem::Path hash_path{kvs_prefix + ".hash"};
+    auto kvs = open_test_kvs();
+
+    using Mode = score::os::Stat::Mode;
+    for (const Mode umask : {Mode::kReadWriteExecGroup | Mode::kReadWriteExecOthers, Mode::kNone})
+    {
+        const auto previous_umask = score::os::Stat::instance().umask(umask);
+        ASSERT_TRUE(previous_umask.has_value());
+        const auto result = kvs.write_json_data(new_kvs_json);
+        (void)score::os::Stat::instance().umask(previous_umask.value());
+
+        ASSERT_TRUE(result);
+        EXPECT_EQ(file_perms(json_path), static_cast<std::uint32_t>(expected_file_perms));
+        EXPECT_EQ(file_perms(hash_path), static_cast<std::uint32_t>(expected_file_perms));
+    }
+
+    cleanup_environment();
+}
+
+TEST(kvs_write_json_data, write_json_data_sets_file_permissions)
+{
+    prepare_environment();
+    /* Test newly created JSON and hash files have 0640 permissions */
+    const score::filesystem::Path json_path{kvs_prefix + ".json"};
+    const score::filesystem::Path hash_path{kvs_prefix + ".hash"};
+    const auto fs{real_filesystem()};
+    ASSERT_TRUE(fs.standard->Remove(json_path));
+    ASSERT_TRUE(fs.standard->Remove(hash_path));
 
     auto kvs = Kvs::open(InstanceId(instance_id),
                          snapshot_id,
@@ -1151,27 +1339,40 @@ TEST(kvs_write_json_data, write_json_data_permissions_failure)
                          KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(kvs);
 
-    /* Test writing to a non-writable hash file */
-    std::ofstream out_hash(kvs_prefix + ".hash");
-    out_hash << "data";
-    out_hash.close();
-    std::filesystem::permissions(
-        kvs_prefix + ".hash", std::filesystem::perms::owner_read, std::filesystem::perm_options::replace);
-    kvs->filename_prefix_ = score::filesystem::Path(filename_prefix); /* Reset the filename prefix to the test prefix */
-    auto result = kvs->write_json_data(kvs_json);
-    EXPECT_FALSE(result);
-    EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
+    kvs->filename_prefix_ = score::filesystem::Path(filename_prefix); /* Set the filename prefix to the test prefix */
+    ASSERT_TRUE(kvs->write_json_data(kvs_json));
+    EXPECT_EQ(file_perms(json_path), static_cast<std::uint32_t>(expected_file_perms));
+    EXPECT_EQ(file_perms(hash_path), static_cast<std::uint32_t>(expected_file_perms));
 
-    /* Test writing to a non-writable kvs file */
-    std::ofstream out_json(kvs_prefix + ".json");
-    out_json << "data";
-    out_json.close();
-    std::filesystem::permissions(
-        kvs_prefix + ".json", std::filesystem::perms::owner_read, std::filesystem::perm_options::replace);
-    kvs->filename_prefix_ = score::filesystem::Path(filename_prefix); /* Reset the filename prefix to the test prefix */
-    result = kvs->write_json_data(kvs_json);
-    EXPECT_FALSE(result);
-    EXPECT_EQ(result.error(), ErrorCode::PhysicalStorageFailure);
+    cleanup_environment();
+}
+
+TEST(kvs_write_json_data, write_json_data_overrides_existing_file_permissions)
+{
+    prepare_environment();
+    /* Test existing JSON and hash files with wider permissions are narrowed to 0640 */
+    const score::filesystem::Path json_path{kvs_prefix + ".json"};
+    const score::filesystem::Path hash_path{kvs_prefix + ".hash"};
+    const auto fs{real_filesystem()};
+    constexpr Perms all_perms{Perms::kReadWriteExecUser | Perms::kReadWriteExecGroup | Perms::kReadWriteExecOthers};
+    ASSERT_TRUE(fs.standard->Permissions(json_path, all_perms));
+    ASSERT_TRUE(fs.standard->Permissions(hash_path, all_perms));
+    ASSERT_EQ(file_perms(json_path), static_cast<std::uint32_t>(all_perms));
+    ASSERT_EQ(file_perms(hash_path), static_cast<std::uint32_t>(all_perms));
+
+    auto kvs = Kvs::open(InstanceId(instance_id),
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt,
+                         KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(kvs);
+
+    kvs->filename_prefix_ = score::filesystem::Path(filename_prefix); /* Set the filename prefix to the test prefix */
+    ASSERT_TRUE(kvs->write_json_data(kvs_json));
+    EXPECT_EQ(file_perms(json_path), static_cast<std::uint32_t>(expected_file_perms));
+    EXPECT_EQ(file_perms(hash_path), static_cast<std::uint32_t>(expected_file_perms));
 
     cleanup_environment();
 }
@@ -1387,6 +1588,34 @@ TEST(kvs_flush, flush_success_snapshot_rotate)
     ASSERT_TRUE(flush_result);
     EXPECT_TRUE(std::filesystem::exists(filename_prefix + "_1.json"));
     EXPECT_TRUE(std::filesystem::exists(filename_prefix + "_1.hash"));
+
+    cleanup_environment();
+}
+
+TEST(kvs_flush, flush_sets_file_permissions)
+{
+    prepare_environment();
+    /* Test flush creates JSON and hash files with 0640 permissions */
+    const score::filesystem::Path json_path{kvs_prefix + ".json"};
+    const score::filesystem::Path hash_path{kvs_prefix + ".hash"};
+    const auto fs{real_filesystem()};
+    ASSERT_TRUE(fs.standard->Remove(json_path));
+    ASSERT_TRUE(fs.standard->Remove(hash_path));
+
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Optional,
+                            OpenNeedKvs::Optional,
+                            std::string(data_dir),
+                            std::nullopt,
+                            KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(result);
+
+    std::string value = "value1";
+    result.value().kvs_.insert({"key1", KvsValue(value)});
+    ASSERT_TRUE(result.value().flush());
+    EXPECT_EQ(file_perms(json_path), static_cast<std::uint32_t>(expected_file_perms));
+    EXPECT_EQ(file_perms(hash_path), static_cast<std::uint32_t>(expected_file_perms));
 
     cleanup_environment();
 }
