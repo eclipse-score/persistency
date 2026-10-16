@@ -1158,8 +1158,6 @@
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_sbom/0.1.1/MODULE.bazel": "f399cccb3e0a2f413d265f642fda2490f001f5a5ab83fe10acd1d0840f7d4b1c",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_sbom/0.1.1/source.json": "aba932cfdf7a6cc2882fe8cf8cdb2f92ff9b3bbbd8933ba1677c28e548618170",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_starpls_lsp/0.1.0/MODULE.bazel": "b2f8c4c8d8e851706255ff9002b448bff6e040b8f0c6adedbde2a09375aa16cc",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_test_scenarios/0.4.1/MODULE.bazel": "69478ff7f59d1a4f0d96e8e303a17ce904848fea7ffd1fc3030406aa68dcfeae",
-    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_test_scenarios/0.4.1/source.json": "9e0591cb24f7ec25f6f5987883b368eac439c41b6b52b65eed1121750335b0f5",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_rust/0.10.0/MODULE.bazel": "535296e6cdef55a506c580ca2ce541aa9ddefb354de1a24ab2bd4addc939282b",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_toolchains_rust/0.10.0/source.json": "8bda773be264da16d2a82a03ebb737421dd4a35855f1e9a5d03d9722d84c1df5",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_tooling/1.0.2/MODULE.bazel": "e70f396375b9d612b4f41ebceff7f18f68ab423b14625c138a354cc01bc62a10",

@@ -51,6 +51,13 @@ git_override(
     remote = "https://github.com/eclipse-score/tools",
 )
 
+# Pinned past v0.4.1 for the `score/` path layout introduced in eclipse-score/testing_tools#31.
+git_override(
+    module_name = "score_test_scenarios",
+    commit = "c16400a3f7c71ca26b67965c5e7469560b6de496",
+    remote = "https://github.com/eclipse-score/testing_tools",
+)
+
 # Python toolchain configuration
 PYTHON_VERSION = "3.12"
 
