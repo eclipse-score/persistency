@@ -49,6 +49,11 @@ cc_library(
         "@score_baselibs//score/json",
         "@score_baselibs//score/language/futurecpp",
         "@score_baselibs//score/mw/log",
+        "@score_baselibs//score/os:errno",
+        "@score_baselibs//score/os:fcntl",
+        "@score_baselibs//score/os:stat",
+        "@score_baselibs//score/os:stdio",
+        "@score_baselibs//score/os:unistd",
         "@score_baselibs//score/result",
     ],
 )
@@ -80,6 +85,10 @@ cc_test(
         "@score_baselibs//score/filesystem:mock",
         "@score_baselibs//score/json:mock",
         "@score_baselibs//score/mw/log:backend_stub_testutil",
+        "@score_baselibs//score/os:object_seam",
+        "@score_baselibs//score/os:stat",
+        "@score_baselibs//score/os/mocklib:fcntl_mock",
+        "@score_baselibs//score/os/mocklib:stat_mock",
         "@score_baselibs//score/result",
     ],
 )

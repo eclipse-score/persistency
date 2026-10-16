@@ -18,6 +18,7 @@ use crate::log::{debug, error, trace, ScoreDebug};
 use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
+use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
 
@@ -332,6 +333,97 @@ impl JsonBackend {
         }
     }
 
+    /// Get path of the temporary file a KVS file is written to before it replaces the KVS file.
+    fn temp_file_path(path: &Path) -> PathBuf {
+        let mut tmp_path = path.as_os_str().to_owned();
+        tmp_path.push(".tmp");
+        PathBuf::from(tmp_path)
+    }
+
+    /// Write data to the temporary file of `path`, set its permissions to 640 and request the OS to commit it to physical storage.
+    /// File at `path` is not modified, it is replaced by `commit_temp_file`.
+    fn write_temp_file(path: &Path, data: &[u8]) -> Result<PathBuf, ErrorCode> {
+        const KVS_FILE_MODE: u32 = 0o640;
+        let tmp_path = Self::temp_file_path(path);
+
+        // Remove temporary file left behind by an interrupted write.
+        if let Err(e) = fs::remove_file(&tmp_path) {
+            if e.kind() != std::io::ErrorKind::NotFound {
+                error!(
+                    "Failed to remove stale temporary file: {:?}, error: {:?}",
+                    tmp_path,
+                    e.to_string()
+                );
+                return Err(ErrorCode::PhysicalStorageFailure);
+            }
+        }
+
+        // Create new file.
+        // Mode is applied on creation and file planted at the path is never opened.
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(KVS_FILE_MODE)
+            .open(&tmp_path)
+            .map_err(|e| {
+                error!("Failed to open file: {:?}, error: {:?}", tmp_path, e.to_string());
+                ErrorCode::PhysicalStorageFailure
+            })?;
+
+        let result = (|| {
+            // Set permissions on a file already opened, mode provided on creation is restricted by umask.
+            // `fchmod` is not supported by Miri.
+            #[cfg(not(miri))]
+            file.set_permissions(fs::Permissions::from_mode(KVS_FILE_MODE))
+                .map_err(|_| {
+                    error!("Failed to set file permissions: {:?}", tmp_path);
+                    ErrorCode::PhysicalStorageFailure
+                })?;
+
+            file.write_all(data).map_err(|e| {
+                error!("Failed to write to file: {:?}, error: {:?}", tmp_path, e.to_string());
+                ErrorCode::PhysicalStorageFailure
+            })?;
+            file.sync_data().map_err(|e| {
+                error!("Failed to sync file: {:?}, error: {:?}", tmp_path, e.to_string());
+                ErrorCode::PhysicalStorageFailure
+            })
+        })();
+        drop(file);
+
+        // Remove temporary file on failure.
+        if let Err(e) = result {
+            let _ = fs::remove_file(&tmp_path);
+            return Err(e);
+        }
+
+        Ok(tmp_path)
+    }
+
+    /// Replace file at `path` with its temporary file.
+    /// Rename is atomic - file is either old or new.
+    fn commit_temp_file(tmp_path: &Path, path: &Path) -> Result<(), ErrorCode> {
+        fs::rename(tmp_path, path).map_err(|e| {
+            error!("Failed to replace file: {:?}, error: {:?}", path, e.to_string());
+            let _ = fs::remove_file(tmp_path);
+            ErrorCode::PhysicalStorageFailure
+        })
+    }
+
+    /// Request the OS to commit entries of the directory containing `path` to physical storage.
+    fn sync_parent_dir(path: &Path) -> Result<(), ErrorCode> {
+        let dir = match path.parent() {
+            Some(dir) if !dir.as_os_str().is_empty() => dir,
+            _ => Path::new("."),
+        };
+        fs::File::open(dir)
+            .and_then(|dir_file| dir_file.sync_all())
+            .map_err(|e| {
+                error!("Failed to sync directory: {:?}, error: {:?}", dir, e.to_string());
+                ErrorCode::PhysicalStorageFailure
+            })
+    }
+
     pub(super) fn save(kvs_map: &KvsMap, kvs_path: &Path, hash_path: &Path) -> Result<(), ErrorCode> {
         Self::check_path_extensions(kvs_path, hash_path)?;
 
@@ -340,35 +432,34 @@ impl JsonBackend {
         let kvs_value = KvsValue::Object(kvs_map.clone());
         let json_value = JsonValue::from(kvs_value);
 
-        // Stringify `JsonValue` and save to KVS file.
+        // Stringify `JsonValue` and save to temporary KVS file.
         debug!("Stringifying KVS file: {:?}", kvs_path);
         let json_str = Self::stringify(&json_value).inspect_err(|_| {
             error!("Failed to stringify KVS file content: {:?}", kvs_path);
         })?;
 
         debug!("Saving KVS file: {:?}", kvs_path);
-        Self::write_synced(kvs_path, json_str.as_bytes()).inspect_err(|_| {
+        let kvs_tmp_path = Self::write_temp_file(kvs_path, json_str.as_bytes()).inspect_err(|_| {
             error!("Failed to save KVS file: {:?}", kvs_path);
         })?;
 
-        // Generate hash and save to hash file.
+        // Generate hash and save to temporary hash file.
         debug!(
             "Generating KVS hash, KVS file: {:?}, hash file: {:?}",
             kvs_path, hash_path
         );
         let hash = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
-        Self::write_synced(hash_path, &hash.to_be_bytes()).inspect_err(|_| {
+        let hash_tmp_path = Self::write_temp_file(hash_path, &hash.to_be_bytes()).inspect_err(|_| {
             error!("Failed to save hash file: {:?}", hash_path);
+            let _ = fs::remove_file(&kvs_tmp_path);
         })?;
 
-        Ok(())
-    }
-
-    /// Write `data` to `path` and request the OS to commit it to physical storage.
-    fn write_synced(path: &Path, data: &[u8]) -> std::io::Result<()> {
-        let mut file = fs::File::create(path)?;
-        file.write_all(data)?;
-        file.sync_data()
+        // Replace KVS and hash files with temporary files.
+        Self::commit_temp_file(&kvs_tmp_path, kvs_path).inspect_err(|_| {
+            let _ = fs::remove_file(&hash_tmp_path);
+        })?;
+        Self::commit_temp_file(&hash_tmp_path, hash_path)?;
+        Self::sync_parent_dir(kvs_path)
     }
 
     /// Get KVS file name.
@@ -995,8 +1086,16 @@ mod json_backend_tests {
     use crate::json_backend::{JsonBackend, JsonBackendBuilder};
     use crate::kvs_api::{InstanceId, SnapshotId, KVS_MAX_KEY_LENGTH_BYTES};
     use crate::kvs_value::{KvsMap, KvsValue};
+    use std::os::unix::fs::PermissionsExt;
     use std::path::{Path, PathBuf};
     use tempfile::tempdir;
+
+    /// Expected permissions of KVS JSON and hash files: 0640.
+    const EXPECTED_FILE_MODE: u32 = 0o640;
+
+    fn file_mode(path: &Path) -> u32 {
+        std::fs::metadata(path).unwrap().permissions().mode() & 0o777
+    }
 
     fn create_kvs_files(working_dir: &Path) -> (PathBuf, PathBuf) {
         let kvs_map = KvsMap::from([
@@ -1160,6 +1259,118 @@ mod json_backend_tests {
         assert!(kvs_path.exists());
     }
 
+    #[cfg_attr(miri, ignore)]
+    #[test]
+    fn test_save_sets_file_permissions() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+
+        assert_eq!(file_mode(&kvs_path), EXPECTED_FILE_MODE);
+        assert_eq!(file_mode(&hash_path), EXPECTED_FILE_MODE);
+    }
+
+    #[cfg_attr(miri, ignore)]
+    #[test]
+    fn test_save_overrides_existing_file_permissions() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+
+        // Widen permissions of existing files.
+        let all_perms = 0o777;
+        std::fs::set_permissions(&kvs_path, std::fs::Permissions::from_mode(all_perms)).unwrap();
+        std::fs::set_permissions(&hash_path, std::fs::Permissions::from_mode(all_perms)).unwrap();
+        assert_eq!(file_mode(&kvs_path), all_perms);
+        assert_eq!(file_mode(&hash_path), all_perms);
+
+        // Save again.
+        let kvs_map = KvsMap::from([("k1".to_string(), KvsValue::from("v1"))]);
+        JsonBackend::save(&kvs_map, &kvs_path, &hash_path).unwrap();
+
+        assert_eq!(file_mode(&kvs_path), EXPECTED_FILE_MODE);
+        assert_eq!(file_mode(&hash_path), EXPECTED_FILE_MODE);
+    }
+
+    #[cfg_attr(miri, ignore)]
+    #[test]
+    fn test_save_replaces_stale_temp_file() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let kvs_path = dir_path.join("kvs.json");
+        let hash_path = dir_path.join("kvs.hash");
+
+        // Create temporary file left behind by an interrupted write.
+        let kvs_tmp_path = dir_path.join("kvs.json.tmp");
+        std::fs::write(&kvs_tmp_path, "stale").unwrap();
+        std::fs::set_permissions(&kvs_tmp_path, std::fs::Permissions::from_mode(0o777)).unwrap();
+
+        let kvs_map = KvsMap::from([("k1".to_string(), KvsValue::from("v1"))]);
+        JsonBackend::save(&kvs_map, &kvs_path, &hash_path).unwrap();
+
+        assert!(!kvs_tmp_path.exists());
+        assert_eq!(JsonBackend::load(&kvs_path, &hash_path).unwrap(), kvs_map);
+        assert_eq!(file_mode(&kvs_path), EXPECTED_FILE_MODE);
+    }
+
+    #[test]
+    fn test_save_leaves_no_temp_files() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        create_kvs_files(&dir_path);
+
+        assert!(!dir_path.join("kvs.json.tmp").exists());
+        assert!(!dir_path.join("kvs.hash.tmp").exists());
+    }
+
+    #[test]
+    fn test_save_staging_failure_keeps_previous_file() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        let previous_kvs = std::fs::read(&kvs_path).unwrap();
+        let previous_hash = std::fs::read(&hash_path).unwrap();
+
+        // Temporary file path is occupied by a non-empty directory - it cannot be removed or created.
+        let kvs_tmp_path = dir_path.join("kvs.json.tmp");
+        std::fs::create_dir(&kvs_tmp_path).unwrap();
+        std::fs::write(kvs_tmp_path.join("file"), "data").unwrap();
+
+        let kvs_map = KvsMap::from([("k1".to_string(), KvsValue::from("v1"))]);
+        assert!(
+            JsonBackend::save(&kvs_map, &kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::PhysicalStorageFailure)
+        );
+
+        assert_eq!(std::fs::read(&kvs_path).unwrap(), previous_kvs);
+        assert_eq!(std::fs::read(&hash_path).unwrap(), previous_hash);
+        assert!(!dir_path.join("kvs.hash.tmp").exists());
+    }
+
+    #[cfg_attr(miri, ignore)]
+    #[test]
+    fn test_save_read_only_dir_physical_storage_failure() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        let previous_kvs = std::fs::read(&kvs_path).unwrap();
+        let previous_hash = std::fs::read(&hash_path).unwrap();
+
+        std::fs::set_permissions(&dir_path, std::fs::Permissions::from_mode(0o500)).unwrap();
+        // Directory mode is ignored by privileged users (root, `CAP_DAC_OVERRIDE`) - test is not applicable.
+        if std::fs::File::create(dir_path.join("probe")).is_ok() {
+            std::fs::set_permissions(&dir_path, std::fs::Permissions::from_mode(0o700)).unwrap();
+            return;
+        }
+
+        let kvs_map = KvsMap::from([("k1".to_string(), KvsValue::from("v1"))]);
+        let result = JsonBackend::save(&kvs_map, &kvs_path, &hash_path);
+        std::fs::set_permissions(&dir_path, std::fs::Permissions::from_mode(0o700)).unwrap();
+
+        assert!(result.is_err_and(|e| e == ErrorCode::PhysicalStorageFailure));
+        assert_eq!(std::fs::read(&kvs_path).unwrap(), previous_kvs);
+        assert_eq!(std::fs::read(&hash_path).unwrap(), previous_hash);
+    }
+
     #[test]
     fn test_save_overwrite_round_trip() {
         let dir = tempdir().unwrap();
@@ -1184,7 +1395,7 @@ mod json_backend_tests {
         let hash_path = dir_path.join("kvs.hash");
 
         let result = JsonBackend::save(&KvsMap::new(), &kvs_path, &hash_path);
-        assert!(result.is_err_and(|e| e == ErrorCode::FileNotFound));
+        assert!(result.is_err_and(|e| e == ErrorCode::PhysicalStorageFailure));
     }
 
     #[test]
@@ -1315,7 +1526,16 @@ mod kvs_backend_tests {
     use crate::kvs_backend::KvsBackend;
     use crate::kvs_value::{KvsMap, KvsValue};
     use std::fs;
+    use std::os::unix::fs::PermissionsExt;
+    use std::path::Path;
     use tempfile::tempdir;
+
+    /// Expected permissions of KVS JSON and hash files: 0640.
+    const EXPECTED_FILE_MODE: u32 = 0o640;
+
+    fn file_mode(path: &Path) -> u32 {
+        fs::metadata(path).unwrap().permissions().mode() & 0o777
+    }
 
     fn create_kvs_files(backend: &JsonBackend, instance_id: InstanceId, snapshot_id: SnapshotId) {
         let kvs_map = KvsMap::from([
@@ -1382,6 +1602,26 @@ mod kvs_backend_tests {
         let hash_path = backend.hash_file_path(instance_id, snapshot_id);
         assert!(kvs_path.exists());
         assert!(hash_path.exists());
+    }
+
+    #[cfg_attr(miri, ignore)]
+    #[test]
+    fn test_flush_sets_file_permissions() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let backend = JsonBackendBuilder::new().working_dir(dir_path).build();
+        let instance_id = InstanceId(1);
+
+        // Flush.
+        let kvs_map = KvsMap::from([("key".to_string(), KvsValue::from("value"))]);
+        backend.flush(instance_id, &kvs_map).unwrap();
+
+        // Check permissions.
+        let snapshot_id = SnapshotId(0);
+        let kvs_path = backend.kvs_file_path(instance_id, snapshot_id);
+        let hash_path = backend.hash_file_path(instance_id, snapshot_id);
+        assert_eq!(file_mode(&kvs_path), EXPECTED_FILE_MODE);
+        assert_eq!(file_mode(&hash_path), EXPECTED_FILE_MODE);
     }
 
     #[test]

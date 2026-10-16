@@ -13,9 +13,13 @@
 #include "score/kvs/kvs.hpp"
 #include "internal/kvs_helper.hpp"
 #include "score/kvs/error.hpp"
-#include <unistd.h>  // fileno(), fdatasync()
+#include "score/os/errno.h"
+#include "score/os/fcntl.h"
+#include "score/os/stat.h"
+#include "score/os/stdio.h"
+#include "score/os/unistd.h"
 #include <algorithm>
-#include <cstdio>  // std::fopen, std::fwrite, std::fflush, std::fclose
+#include <cstdio>  // std::rename
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -57,6 +61,22 @@ bool is_key_valid(const std::string_view key) noexcept
     });
 }
 
+/* Permissions of KVS JSON and hash files: 0640 */
+constexpr score::os::Stat::Mode KVS_FILE_MODE{score::os::Stat::Mode::kReadUser | score::os::Stat::Mode::kWriteUser |
+                                              score::os::Stat::Mode::kReadGroup};
+
+/* Path of the temporary file a KVS file is written to before it replaces the KVS file */
+score::filesystem::Path temp_file_path(const score::filesystem::Path& path) noexcept
+{
+    return score::filesystem::Path{path.Native() + ".tmp"};
+}
+
+/* Remove a file, a missing file is not an error */
+bool remove_if_exists(const score::filesystem::Path& path) noexcept
+{
+    const auto result = score::os::Unistd::instance().unlink(path.CStr());
+    return result.has_value() || (result.error() == score::os::Error::Code::kNoSuchFileOrDirectory);
+}
 } /* namespace */
 
 /*********************** KVS Implementation *********************/
@@ -514,40 +534,87 @@ score::Result<size_t> Kvs::get_current_storage_size() noexcept
     return total_size;
 }
 
-/* Helper: write data to a file and ensure it reaches physical storage.*/
-score::Result<void> Kvs::write_and_sync(const std::string& path, const void* data, std::size_t size) noexcept
+/* Helper: write data to the temporary file of a KVS file and ensure it reaches physical storage.
+   The live file is not touched, it is replaced by commit_temp_file() once the data is on storage. */
+score::Result<void> Kvs::write_temp_file(const score::filesystem::Path& path, const void* data, std::size_t size) noexcept
 {
-    auto file_deleter = [](std::FILE* f) {
-        if (f != nullptr)
-        {
-            (void)std::fclose(f);
-        }
+    const score::os::Unistd& unistd = score::os::Unistd::instance();
+    const score::filesystem::Path tmp_path = temp_file_path(path);
+
+    /* Remove a temporary file left behind by an interrupted write */
+    if (!remove_if_exists(tmp_path))
+    {
+        logger_->LogError() << "Failed to remove stale temporary file" << tmp_path;
+        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+    }
+
+    /* Create a new file: the mode is applied on creation and a file planted at the path is never opened */
+    using Open = score::os::Fcntl::Open;
+    const auto open_result = score::os::Fcntl::instance().open(
+        tmp_path.CStr(), Open::kWriteOnly | Open::kCreate | Open::kExclusive | Open::kCloseOnExec, KVS_FILE_MODE);
+    if (!open_result.has_value())
+    {
+        logger_->LogError() << "Failed to open file" << tmp_path;
+        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+    }
+    const std::int32_t fd = open_result.value();
+
+    /* Close and remove the temporary file on failure */
+    const auto discard = [&unistd, &tmp_path, fd]() {
+        score::cpp::ignore = unistd.close(fd);
+        score::cpp::ignore = unistd.unlink(tmp_path.CStr());
+        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
     };
-    std::unique_ptr<std::FILE, decltype(file_deleter)> file{std::fopen(path.c_str(), "wb"), file_deleter};
 
-    if (file == nullptr)
+    /* Set the mode on the open file, the mode given on creation is restricted by umask */
+    if (!score::os::Stat::instance().fchmod(fd, KVS_FILE_MODE).has_value())
     {
-        logger_->LogError() << "Failed to open file" << path;
-        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+        logger_->LogError() << "Failed to set file permissions" << tmp_path;
+        return discard();
     }
 
-    if (std::fwrite(data, sizeof(char), size, file.get()) != size)
+    const auto* bytes = static_cast<const std::uint8_t*>(data);
+    std::size_t written = 0U;
+    while (written < size)
     {
-        logger_->LogError() << "Failed to write to file" << path;
-        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
-    }
-
-    /* Flush the buffer to the OS. */
-    if (std::fflush(file.get()) != 0)
-    {
-        logger_->LogError() << "Failed to flush file" << path;
-        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+        const auto write_result = unistd.write(fd, bytes + written, size - written);
+        if (write_result.has_value() && (write_result.value() > 0))
+        {
+            written += static_cast<std::size_t>(write_result.value());
+        }
+        else if (write_result.has_value() ||
+                 (write_result.error() != score::os::Error::Code::kOperationWasInterruptedBySignal))
+        {
+            logger_->LogError() << "Failed to write to file" << tmp_path;
+            return discard();
+        }
     }
 
     /* Request the OS to commit the data from its buffers to physical storage */
-    if (::fdatasync(::fileno(file.get())) != 0)
+    if (!unistd.fdatasync(fd).has_value())
     {
-        logger_->LogError() << "Failed to sync file" << path;
+        logger_->LogError() << "Failed to sync file" << tmp_path;
+        return discard();
+    }
+
+    if (!unistd.close(fd).has_value())
+    {
+        logger_->LogError() << "Failed to close file" << tmp_path;
+        score::cpp::ignore = unistd.unlink(tmp_path.CStr());
+        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+    }
+
+    return {};
+}
+
+/* Helper: replace a KVS file with its temporary file. The rename is atomic, the file is either old or new. */
+score::Result<void> Kvs::commit_temp_file(const score::filesystem::Path& path) noexcept
+{
+    const score::filesystem::Path tmp_path = temp_file_path(path);
+    if (!score::os::Stdio::instance().rename(tmp_path.CStr(), path.CStr()).has_value())
+    {
+        logger_->LogError() << "Failed to replace file" << path;
+        score::cpp::ignore = remove_if_exists(tmp_path);
         return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
     }
 
@@ -558,6 +625,7 @@ score::Result<void> Kvs::write_and_sync(const std::string& path, const void* dat
 score::Result<void> Kvs::write_json_data(const std::string& buf) noexcept
 {
     score::filesystem::Path json_path{filename_prefix_.Native() + "_0.json"};
+    score::filesystem::Path hash_path{filename_prefix_.Native() + "_0.hash"};
     score::filesystem::Path dir = json_path.ParentPath();
     if (dir.Empty())
     {
@@ -572,18 +640,43 @@ score::Result<void> Kvs::write_json_data(const std::string& buf) noexcept
         return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
     }
 
-    /* Write JSON file */
-    auto json_res = write_and_sync(json_path.Native(), buf.data(), buf.size());
+    /* Write JSON and hash files to temporary files, the live files stay untouched */
+    auto json_res = write_temp_file(json_path, buf.data(), buf.size());
     if (!json_res.has_value())
     {
         return json_res;
     }
 
-    /* Write Hash File */
     std::array<uint8_t, 4> hash_bytes = get_hash_bytes(buf);
-    score::filesystem::Path fn_hash = filename_prefix_.Native() + "_0.hash";
+    auto hash_res = write_temp_file(hash_path, hash_bytes.data(), hash_bytes.size());
+    if (!hash_res.has_value())
+    {
+        score::cpp::ignore = remove_if_exists(temp_file_path(json_path));
+        return hash_res;
+    }
 
-    return write_and_sync(fn_hash.Native(), hash_bytes.data(), hash_bytes.size());
+    /* Replace live files with temporary files */
+    auto json_commit_res = commit_temp_file(json_path);
+    if (!json_commit_res.has_value())
+    {
+        score::cpp::ignore = remove_if_exists(temp_file_path(hash_path));
+        return json_commit_res;
+    }
+
+    auto hash_commit_res = commit_temp_file(hash_path);
+    if (!hash_commit_res.has_value())
+    {
+        return hash_commit_res;
+    }
+
+    /* Request the OS to commit the renames to physical storage */
+    if (!filesystem_->utils->SyncDirectory(dir).has_value())
+    {
+        logger_->LogError() << "Failed to sync directory" << dir;
+        return score::MakeUnexpected(ErrorCode::PhysicalStorageFailure);
+    }
+
+    return {};
 }
 
 /* Serialize the KVS and check the projected total against the storage limit */

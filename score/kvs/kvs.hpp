@@ -479,7 +479,10 @@ class Kvs final
     score::Result<KeyValueMap> open_json(const score::filesystem::Path& prefix,
                                          const OpenJsonNeedFile need_file) noexcept;
     score::Result<void> write_json_data(const std::string& buf) noexcept;
-    score::Result<void> write_and_sync(const std::string& path, const void* data, std::size_t size) noexcept;
+    score::Result<void> write_temp_file(const score::filesystem::Path& path,
+                                        const void* data,
+                                        std::size_t size) noexcept;
+    score::Result<void> commit_temp_file(const score::filesystem::Path& path) noexcept;
 
     score::Result<std::string> serialize_and_check() noexcept;
     score::Result<size_t> get_file_size(const score::filesystem::Path& file_path) noexcept;
