@@ -15,7 +15,6 @@
 #include "score/kvs/error.hpp"
 #include <unistd.h>  // fileno(), fdatasync()
 #include <algorithm>
-#include <cstdint>
 #include <cstdio>  // std::fopen, std::fwrite, std::fflush, std::fclose
 #include <filesystem>
 #include <fstream>
@@ -406,13 +405,6 @@ score::Result<bool> Kvs::key_exists(const std::string_view key)
 /* Retrieve the value associated with a key*/
 score::Result<KvsValue> Kvs::get_value(const std::string_view key)
 {
-    // Validate key.
-    if (!is_key_valid(key))
-    {
-        logger_->LogError() << "Provided key is not valid" << key;
-        return score::MakeUnexpected(ErrorCode::InvalidKey);
-    }
-
     score::Result<KvsValue> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     std::unique_lock<std::mutex> lock_kvs(kvs_mutex_, std::try_to_lock);
     if (lock_kvs.owns_lock())

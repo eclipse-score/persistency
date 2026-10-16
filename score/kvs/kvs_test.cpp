@@ -1039,19 +1039,17 @@ TEST(kvs_get_value, get_value_failure_key_too_long)
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
 
-    /* comp_req__kvs__key_length: a key of exactly KVS_MAX_KEY_LENGTH_BYTES stays a
-       normal lookup, so an over-length key is the only case that changes */
+    /* Keys are validated only when set, so lookups of keys at and above
+       KVS_MAX_KEY_LENGTH_BYTES are both ordinary lookups of missing keys */
     std::string boundary_key(KVS_MAX_KEY_LENGTH_BYTES, 'k');
     auto boundary_result = result.value().get_value(boundary_key);
     EXPECT_FALSE(boundary_result);
     EXPECT_EQ(static_cast<ErrorCode>(*boundary_result.error()), ErrorCode::KeyNotFound);
 
-    /* An over-length key can never have been stored, so reporting KeyNotFound would
-       describe it as ordinary missing data instead of an invalid request */
     std::string too_long_key(KVS_MAX_KEY_LENGTH_BYTES + 1U, 'k');
     auto get_value_result = result.value().get_value(too_long_key);
     EXPECT_FALSE(get_value_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::InvalidKey);
+    EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::KeyNotFound);
 
     cleanup_environment();
 }
@@ -1182,10 +1180,10 @@ TEST(kvs_get_value, get_value_failure_empty_key)
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
 
-    /* comp_req__kvs__key_length: an empty key is an invalid request, not missing data */
+    /* Keys are validated only when set, so an empty key is reported as missing */
     auto get_value_result = result.value().get_value("");
     EXPECT_FALSE(get_value_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::InvalidKey);
+    EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::KeyNotFound);
 
     cleanup_environment();
 }
@@ -1202,13 +1200,13 @@ TEST(kvs_get_value, get_value_failure_invalid_characters)
                             KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
 
-    /* A key that contains characters outside printable ASCII can never have been stored,
-       so it is reported as InvalidKey rather than KeyNotFound */
+    /* Keys are validated only when set, so a key that contains characters outside
+       printable ASCII is reported as missing */
     for (const auto& key : invalid_character_keys())
     {
         auto get_value_result = result.value().get_value(key);
         ASSERT_FALSE(get_value_result) << "key: " << key;
-        EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::InvalidKey) << "key: " << key;
+        EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::KeyNotFound) << "key: " << key;
     }
 
     cleanup_environment();
