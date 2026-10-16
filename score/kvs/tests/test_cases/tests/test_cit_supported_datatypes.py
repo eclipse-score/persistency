@@ -84,16 +84,7 @@ class TestSupportedDatatypesKeys(CommonScenario):
         stored_keys = self._stored_keys(logs_info_level)
         assert stored_keys >= self.VALID_KEYS
 
-    def test_invalid_keys_rejected(
-        self,
-        request: pytest.FixtureRequest,
-        version: str,
-        results: ScenarioResult,
-        logs_info_level: LogContainer,
-    ) -> None:
-        if version == "rust":
-            request.applymarker(pytest.mark.xfail(reason="Rust KVS does not validate keys yet", strict=True))
-
+    def test_invalid_keys_rejected(self, results: ScenarioResult, logs_info_level: LogContainer) -> None:
         assert results.return_code == ResultCode.SUCCESS
 
         set_results = self._set_results(logs_info_level)

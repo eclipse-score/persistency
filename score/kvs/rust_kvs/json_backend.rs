@@ -11,7 +11,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // *******************************************************************************
 use crate::error_code::ErrorCode;
-use crate::kvs_api::{InstanceId, SnapshotId};
+use crate::kvs_api::{is_key_valid, InstanceId, SnapshotId};
 use crate::kvs_backend::KvsBackend;
 use crate::kvs_value::{KvsMap, KvsValue};
 use crate::log::{debug, error, trace, ScoreDebug};
@@ -319,6 +319,12 @@ impl JsonBackend {
         debug!("Converting JSON values to KVS values");
         let kvs_value = KvsValue::from(json_value);
         if let KvsValue::Object(kvs_map) = kvs_value {
+            // Validate keys.
+            if let Some(key) = kvs_map.keys().find(|key| !is_key_valid(key)) {
+                error!("Provided key is not valid: {}", key);
+                return Err(ErrorCode::InvalidKey);
+            }
+
             Ok(kvs_map)
         } else {
             error!("Conversion from JSON to KVS failed");
@@ -987,7 +993,7 @@ mod json_backend_builder_tests {
 mod json_backend_tests {
     use crate::error_code::ErrorCode;
     use crate::json_backend::{JsonBackend, JsonBackendBuilder};
-    use crate::kvs_api::{InstanceId, SnapshotId};
+    use crate::kvs_api::{InstanceId, SnapshotId, KVS_MAX_KEY_LENGTH_BYTES};
     use crate::kvs_value::{KvsMap, KvsValue};
     use std::path::{Path, PathBuf};
     use tempfile::tempdir;
@@ -1082,6 +1088,39 @@ mod json_backend_tests {
         std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
 
         assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::JsonParserError));
+    }
+
+    #[test]
+    fn test_load_invalid_key() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let kvs_path = dir_path.join("kvs.json");
+        let hash_path = dir_path.join("kvs.hash");
+
+        // Key that is not valid found while loading means the file is invalid/corrupted.
+        // Keys are placed in JSON as-is - control characters must be escaped.
+        let invalid_keys = vec![
+            String::new(),
+            "k".repeat(KVS_MAX_KEY_LENGTH_BYTES + 1),
+            "\\u001f".to_string(),
+            "\\u007f".to_string(),
+            "tab\\tkey".to_string(),
+            "ą".to_string(),
+            "\\u0080".to_string(),
+        ];
+        for invalid_key in invalid_keys {
+            let contents = format!(
+                "{{\"valid_key\": {{\"t\": \"i32\", \"v\": 42}}, \"{invalid_key}\": {{\"t\": \"i32\", \"v\": 7}}}}"
+            );
+            let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
+            std::fs::write(kvs_path.clone(), contents).unwrap();
+            std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
+
+            assert!(
+                JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::InvalidKey),
+                "key: {invalid_key:?}"
+            );
+        }
     }
 
     #[test]
