@@ -11,19 +11,26 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 #include "kvsvalue.hpp"
+#include "score/assert.hpp"
 
 namespace score::mw::per::kvs
 {
 
-KvsValue::KvsValue(const Array& array) : value_(array), type_(Type::Array) {}
+KvsValue::KvsValue(const char* str) noexcept : value_(nullptr), type_(Type::String)
+{
+    SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE(str != nullptr, "KvsValue: str must not be null");
+    value_ = std::string(str);
+}
 
-KvsValue::KvsValue(Array&& array) : value_(std::move(array)), type_(Type::Array) {}
+KvsValue::KvsValue(const Array& array) noexcept : value_(array), type_(Type::Array) {}
 
-KvsValue::KvsValue(const Object& object) : value_(object), type_(Type::Object) {}
+KvsValue::KvsValue(Array&& array) noexcept : value_(std::move(array)), type_(Type::Array) {}
 
-KvsValue::KvsValue(Object&& object) : value_(std::move(object)), type_(Type::Object) {}
+KvsValue::KvsValue(const Object& object) noexcept : value_(object), type_(Type::Object) {}
 
-KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) : type_(Type::Object)
+KvsValue::KvsValue(Object&& object) noexcept : value_(std::move(object)), type_(Type::Object) {}
+
+KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) noexcept : type_(Type::Object)
 {
     Object entries;
     entries.reserve(object.size());
@@ -35,13 +42,13 @@ KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) : ty
 }
 
 /* copy constructor */
-KvsValue::KvsValue(const KvsValue& other) : value_(other.value_), type_(other.type_) {}
+KvsValue::KvsValue(const KvsValue& other) noexcept : value_(other.value_), type_(other.type_) {}
 
 /* move constructor */
 KvsValue::KvsValue(KvsValue&& other) noexcept : value_(std::move(other.value_)), type_(other.type_) {}
 
 /* copy Assignment Operator */
-KvsValue& KvsValue::operator=(const KvsValue& other)
+KvsValue& KvsValue::operator=(const KvsValue& other) noexcept
 {
     if (this != &other)
     {
@@ -62,6 +69,6 @@ KvsValue& KvsValue::operator=(KvsValue&& other) noexcept
     return *this;
 }
 
-KvsValue::~KvsValue() = default;
+KvsValue::~KvsValue() noexcept = default;
 
 } /* end namespace score::mw::per::kvs */

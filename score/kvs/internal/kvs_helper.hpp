@@ -26,13 +26,13 @@
 namespace score::mw::per::kvs
 {
 
-uint32_t parse_hash_adler32(std::istream& in);
-uint32_t calculate_hash_adler32(const std::string& data);
-std::array<uint8_t, 4> get_hash_bytes_adler32(uint32_t hash);
-std::array<uint8_t, 4> get_hash_bytes(const std::string& data);
-bool check_hash(const std::string& data_calculate, std::istream& data_parse);
-score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any);
-score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv);
+uint32_t parse_hash_adler32(std::istream& in) noexcept;
+uint32_t calculate_hash_adler32(const std::string& data) noexcept;
+std::array<uint8_t, 4> get_hash_bytes_adler32(uint32_t hash) noexcept;
+std::array<uint8_t, 4> get_hash_bytes(const std::string& data) noexcept;
+bool check_hash(const std::string& data_calculate, std::istream& data_parse) noexcept;
+score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept;
+score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) noexcept;
 
 } /* namespace score::mw::per::kvs */
 

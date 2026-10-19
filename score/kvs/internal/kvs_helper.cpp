@@ -18,7 +18,7 @@ namespace score::mw::per::kvs
 /*********************** Hash Functions *********************/
 /*Adler 32 checksum algorithm*/
 // Optimized version: processes data in blocks to reduce modulo operations
-uint32_t calculate_hash_adler32(const std::string& data)
+uint32_t calculate_hash_adler32(const std::string& data) noexcept
 {
     constexpr size_t ADLER32_NMAX = 5552;
     constexpr uint32_t ADLER32_BASE = 65521;
@@ -43,7 +43,7 @@ uint32_t calculate_hash_adler32(const std::string& data)
 }
 
 /*Parse Adler32 checksum Byte-Array to uint32 */
-uint32_t parse_hash_adler32(std::istream& in)
+uint32_t parse_hash_adler32(std::istream& in) noexcept
 {
     std::array<uint8_t, 4> buf{};
     in.read(reinterpret_cast<char*>(buf.data()), buf.size());
@@ -53,7 +53,7 @@ uint32_t parse_hash_adler32(std::istream& in)
 }
 
 /* Split uint32 checksum in bytes for writing*/
-std::array<uint8_t, 4> get_hash_bytes_adler32(uint32_t hash)
+std::array<uint8_t, 4> get_hash_bytes_adler32(uint32_t hash) noexcept
 {
     std::array<uint8_t, 4> value = {uint8_t((hash >> 24) & 0xFF),
                                     uint8_t((hash >> 16) & 0xFF),
@@ -67,7 +67,7 @@ std::array<uint8_t, 4> get_hash_bytes_adler32(uint32_t hash)
  * replaced*/
 
 /* Wrapper Function to get checksum in bytes*/
-std::array<uint8_t, 4> get_hash_bytes(const std::string& data)
+std::array<uint8_t, 4> get_hash_bytes(const std::string& data) noexcept
 {
     uint32_t hash = calculate_hash_adler32(data);
     std::array<uint8_t, 4> value = get_hash_bytes_adler32(hash);
@@ -75,7 +75,7 @@ std::array<uint8_t, 4> get_hash_bytes(const std::string& data)
 }
 
 /* Wrapper Function to check, if Hash is valid*/
-bool check_hash(const std::string& data_calculate, std::istream& data_parse)
+bool check_hash(const std::string& data_calculate, std::istream& data_parse) noexcept
 {
     bool result;
     uint32_t calculated_hash = calculate_hash_adler32(data_calculate);
@@ -95,7 +95,7 @@ bool check_hash(const std::string& data_calculate, std::istream& data_parse)
 /*********************** Standalone Helper Functions *********************/
 
 /* Helper Function for Any -> KVSValue conversion */
-score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any)
+score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
 {
     score::Result<KvsValue> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     if (auto o = any.As<score::json::Object>(); o.has_value())
@@ -276,7 +276,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any)
 }
 
 /* Helper Function for KVSValue -> Any conversion */
-score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv)
+score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) noexcept
 {
     score::Result<score::json::Any> result = score::MakeUnexpected(ErrorCode::UnmappedError);
     bool error = false;

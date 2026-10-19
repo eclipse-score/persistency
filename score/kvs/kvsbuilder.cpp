@@ -16,7 +16,7 @@ namespace score::mw::per::kvs
 {
 
 /*********************** KVS Builder Implementation *********************/
-KvsBuilder::KvsBuilder(const InstanceId& instance_id)
+KvsBuilder::KvsBuilder(const InstanceId& instance_id) noexcept
     : instance_id_(instance_id),
       snapshot_id_(SnapshotId{0}),
       need_defaults_(OpenNeedDefaults::Optional),
@@ -27,43 +27,43 @@ KvsBuilder::KvsBuilder(const InstanceId& instance_id)
 {
 }
 
-KvsBuilder& KvsBuilder::snapshot(const SnapshotId& snapshot_id)
+KvsBuilder& KvsBuilder::snapshot(const SnapshotId& snapshot_id) noexcept
 {
     this->snapshot_id_ = snapshot_id;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::need_defaults_flag(const OpenNeedDefaults& flag)
+KvsBuilder& KvsBuilder::need_defaults_flag(const OpenNeedDefaults& flag) noexcept
 {
     need_defaults_ = flag;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::need_kvs_flag(const OpenNeedKvs& flag)
+KvsBuilder& KvsBuilder::need_kvs_flag(const OpenNeedKvs& flag) noexcept
 {
     need_kvs_ = flag;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::dir(std::string&& dir_path)
+KvsBuilder& KvsBuilder::dir(std::string&& dir_path) noexcept
 {
     this->directory_ = std::move(dir_path);
     return *this;
 }
 
-KvsBuilder& KvsBuilder::max_storage_bytes(const std::optional<size_t>& max_storage_bytes)
+KvsBuilder& KvsBuilder::max_storage_bytes(const std::optional<size_t>& max_storage_bytes) noexcept
 {
     this->maximum_storage_bytes_ = max_storage_bytes;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::snapshot_max_count(std::size_t max_count)
+KvsBuilder& KvsBuilder::snapshot_max_count(std::size_t max_count) noexcept
 {
     this->max_snapshots_ = max_count;
     return *this;
 }
 
-score::Result<Kvs> KvsBuilder::build()
+score::Result<Kvs> KvsBuilder::build() noexcept
 {
     score::Result<Kvs> result = score::MakeUnexpected(ErrorCode::UnmappedError);
 

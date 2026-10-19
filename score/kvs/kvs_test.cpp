@@ -2918,3 +2918,10 @@ TEST(kvs_max_storage_bytes, storage_size_counts_only_configured_snapshots)
 
     std::filesystem::remove_all(test_dir);
 }
+
+TEST(kvs_kvsvalue, const_char_ptr_nullptr_precondition)
+{
+    /* A null C string violates the precondition and must abort through the S-CORE assertion handler */
+    const char* null_str = nullptr;
+    EXPECT_DEATH(KvsValue{null_str}, "");
+}

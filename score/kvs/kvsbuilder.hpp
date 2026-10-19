@@ -65,28 +65,28 @@ class KvsBuilder final
      * @brief Constructs a KvsBuilder for the given KVS instance.
      * @param instance_id Unique identifier for the KVS instance.
      */
-    explicit KvsBuilder(const InstanceId& instance_id);
+    explicit KvsBuilder(const InstanceId& instance_id) noexcept;
 
     /**
      * @brief Specify the snapshot identifier to be loaded.
      * @param snapshot_id Unique identifier for the KVS snapshot.
      * @return Reference to this builder (for chaining).
      */
-    KvsBuilder& snapshot(const SnapshotId& snapshot_id);
+    KvsBuilder& snapshot(const SnapshotId& snapshot_id) noexcept;
 
     /**
      * @brief Specify whether default values must be loaded.
      * @param flag True to require default values; false to make them optional.
      * @return Reference to this builder (for chaining).
      */
-    KvsBuilder& need_defaults_flag(const OpenNeedDefaults& flag);
+    KvsBuilder& need_defaults_flag(const OpenNeedDefaults& flag) noexcept;
 
     /**
      * @brief Configure if KVS must exist when opening the KVS.
      * @param flag True to require an existing store; false to allow starting empty.
      * @return Reference to this builder (for chaining).
      */
-    KvsBuilder& need_kvs_flag(const OpenNeedKvs& flag);
+    KvsBuilder& need_kvs_flag(const OpenNeedKvs& flag) noexcept;
 
     /**
      * @brief Specify the directory where KVS files are stored.
@@ -95,7 +95,7 @@ class KvsBuilder final
      *
      * @return Reference to this builder (for chaining).
      */
-    KvsBuilder& dir(std::string&& dir_path);
+    KvsBuilder& dir(std::string&& dir_path) noexcept;
 
     /**
      * @brief Configure the maximum storage size for the KVS in bytes.
@@ -103,7 +103,7 @@ class KvsBuilder final
      *                          option is not used, no storage limit is enforced.
      * @return Reference to this builder (for chaining).
      */
-    KvsBuilder& max_storage_bytes(const std::optional<size_t>& max_storage_bytes);
+    KvsBuilder& max_storage_bytes(const std::optional<size_t>& max_storage_bytes) noexcept;
 
     /**
      * @brief Specify the maximum number of snapshots the KVS maintains.
@@ -119,7 +119,7 @@ class KvsBuilder final
      *
      * @return Reference to this builder (for chaining).
      */
-    KvsBuilder& snapshot_max_count(std::size_t max_count);
+    KvsBuilder& snapshot_max_count(std::size_t max_count) noexcept;
 
     /**
      * @brief Builds and opens the Kvs instance with the configured options.
@@ -128,7 +128,7 @@ class KvsBuilder final
      *
      * @return A score::Result<Kvs> containing the opened store or an ErrorCode.
      */
-    score::Result<Kvs> build();
+    score::Result<Kvs> build() noexcept;
 
   private:
     InstanceId instance_id_;          ///< ID of the KVS instance

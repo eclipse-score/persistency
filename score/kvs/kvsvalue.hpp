@@ -85,26 +85,26 @@ class KvsValue final
     };
 
     /* Constructors for each type*/
-    explicit KvsValue(int32_t number) : value_(number), type_(Type::i32) {}
-    explicit KvsValue(uint32_t number) : value_(number), type_(Type::u32) {}
-    explicit KvsValue(int64_t number) : value_(number), type_(Type::i64) {}
-    explicit KvsValue(uint64_t number) : value_(number), type_(Type::u64) {}
-    explicit KvsValue(double number) : value_(number), type_(Type::f64) {}
-    explicit KvsValue(bool boolean) : value_(boolean), type_(Type::Boolean) {}
-    explicit KvsValue(const char* str) : value_(std::string(str)), type_(Type::String) {}
-    explicit KvsValue(const std::string& str) : value_(str), type_(Type::String) {}
-    explicit KvsValue(std::nullptr_t) : value_(nullptr), type_(Type::Null) {}
-    explicit KvsValue(const Array& array);
-    explicit KvsValue(Array&& array);
-    explicit KvsValue(const Object& object);
-    explicit KvsValue(Object&& object);
-    explicit KvsValue(const std::unordered_map<std::string, KvsValue>& object);
+    explicit KvsValue(int32_t number) noexcept : value_(number), type_(Type::i32) {}
+    explicit KvsValue(uint32_t number) noexcept : value_(number), type_(Type::u32) {}
+    explicit KvsValue(int64_t number) noexcept : value_(number), type_(Type::i64) {}
+    explicit KvsValue(uint64_t number) noexcept : value_(number), type_(Type::u64) {}
+    explicit KvsValue(double number) noexcept : value_(number), type_(Type::f64) {}
+    explicit KvsValue(bool boolean) noexcept : value_(boolean), type_(Type::Boolean) {}
+    explicit KvsValue(const char* str) noexcept;
+    explicit KvsValue(const std::string& str) noexcept : value_(str), type_(Type::String) {}
+    explicit KvsValue(std::nullptr_t) noexcept : value_(nullptr), type_(Type::Null) {}
+    explicit KvsValue(const Array& array) noexcept;
+    explicit KvsValue(Array&& array) noexcept;
+    explicit KvsValue(const Object& object) noexcept;
+    explicit KvsValue(Object&& object) noexcept;
+    explicit KvsValue(const std::unordered_map<std::string, KvsValue>& object) noexcept;
 
     /* Copy constructor */
-    KvsValue(const KvsValue& other);
+    KvsValue(const KvsValue& other) noexcept;
 
     /* copy assignment operator */
-    KvsValue& operator=(const KvsValue& other);
+    KvsValue& operator=(const KvsValue& other) noexcept;
 
     /* Move constructor */
     KvsValue(KvsValue&& other) noexcept;
@@ -112,17 +112,17 @@ class KvsValue final
     /* move assignment operator */
     KvsValue& operator=(KvsValue&& other) noexcept;
 
-    ~KvsValue();
+    ~KvsValue() noexcept;
 
     /* Get the type of the value*/
-    Type getType() const
+    Type getType() const noexcept
     {
         return type_;
     }
 
     /* Access the underlying value (use std::get to retrieve the value)*/
     const std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>&
-    getValue() const
+    getValue() const noexcept
     {
         return value_;
     }

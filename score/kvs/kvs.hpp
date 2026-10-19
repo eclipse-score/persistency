@@ -50,7 +50,7 @@ struct InstanceId
     /* Constructor to initialize 'id' */
     /* Not explicit to allow implicit construction e.g. function(0) instead function(InstanceId(0))
      */
-    InstanceId(size_t id)
+    InstanceId(size_t id) noexcept
     {
         this->id = id;
     }
@@ -63,7 +63,7 @@ struct SnapshotId
     /* Constructor to initialize 'id'*/
     /* Not explicit to allow implicit construction e.g. function(0) instead function(SnapshotId(0))
      */
-    SnapshotId(size_t id)
+    SnapshotId(size_t id) noexcept
     {
         this->id = id;
     }
@@ -198,13 +198,13 @@ class Kvs final
                                    const OpenNeedKvs& need_kvs,
                                    const std::string&& dir,
                                    const std::optional<size_t>& max_storage_bytes,
-                                   std::size_t snapshot_max_count);
+                                   std::size_t snapshot_max_count) noexcept;
 
     /**
      * @brief Resets a key-value-storage to its initial state
      *
      */
-    score::Result<void> reset();
+    score::Result<void> reset() noexcept;
 
     /**
      * @brief Retrieves all keys stored in the key-value store.
@@ -214,7 +214,7 @@ class Kvs final
      *         A score::Result object containing a vector of all written keys on success,
      *         or an Errorcode on failure.
      */
-    score::Result<std::vector<std::string>> get_all_keys();
+    score::Result<std::vector<std::string>> get_all_keys() noexcept;
 
     /**
      * @brief Checks if a key exists in the key-value store. If the key was never written it will
@@ -226,7 +226,7 @@ class Kvs final
      * does not.
      *         - On failure: A score::Result containing an appropriate ErrorCode.
      */
-    score::Result<bool> key_exists(const std::string_view key);
+    score::Result<bool> key_exists(const std::string_view key) noexcept;
 
     /**
      * @brief Retrieves the value associated with the specified key from the key-value store.
@@ -237,7 +237,7 @@ class Kvs final
      * @return A score::Result object containing either the retrieved value (KvsValue) or an
      * ErrorCode if the operation fails.
      */
-    score::Result<KvsValue> get_value(const std::string_view key);
+    score::Result<KvsValue> get_value(const std::string_view key) noexcept;
 
     /**
      * @brief Retrieves the default value associated with the specified key.
@@ -253,7 +253,7 @@ class Kvs final
      *         the operation is successful, or an ErrorCode indicating the error
      *         if the operation fails.
      */
-    score::Result<KvsValue> get_default_value(const std::string_view key);
+    score::Result<KvsValue> get_default_value(const std::string_view key) noexcept;
 
     /**
      * @brief Resets a specified key to its default value.
@@ -269,7 +269,7 @@ class Kvs final
      *         - On success: Returns a blank score::Result.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::Result<void> reset_key(const std::string_view key);
+    score::Result<void> reset_key(const std::string_view key) noexcept;
 
     /**
      * @brief Checks if the specified key wasn't set yet and uses its default value.
@@ -283,7 +283,7 @@ class Kvs final
      * exists.
      *         - On failure: Returns a score::Result containing an appropriate ErrorCode.
      */
-    score::Result<bool> is_value_default(const std::string_view key) const;
+    score::Result<bool> is_value_default(const std::string_view key) const noexcept;
 
     /**
      * @brief Stores a key-value pair in the key-value store.
@@ -301,7 +301,7 @@ class Kvs final
      *         - On failure: Returns ErrorCode::InvalidKey if the key is not valid,
      *           or another ErrorCode describing the error.
      */
-    score::Result<void> set_value(const std::string_view key, const KvsValue& value);
+    score::Result<void> set_value(const std::string_view key, const KvsValue& value) noexcept;
 
     /**
      * @brief Removes a key-value pair from the store based on the specified key.
@@ -312,7 +312,7 @@ class Kvs final
      *         - On success: Returns a blank score::Result.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::Result<void> remove_key(const std::string_view key);
+    score::Result<void> remove_key(const std::string_view key) noexcept;
 
     /**
      * @brief Removes all key-value pairs from the store.
@@ -321,7 +321,7 @@ class Kvs final
      *         - On success: Returns a blank score::Result.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::Result<void> remove_all_keys();
+    score::Result<void> remove_all_keys() noexcept;
 
     /**
      * @brief Discards all pending changes to the key-value store.
@@ -338,7 +338,7 @@ class Kvs final
      *           is re-read, this includes storage errors such as `KvsHashFileReadError`,
      *           `ValidationFailed` and `JsonParserError`.
      */
-    score::Result<void> discard_pending_changes();
+    score::Result<void> discard_pending_changes() noexcept;
 
     /**
      * @brief Flushes the key-value store, ensuring that all pending changes
@@ -348,7 +348,7 @@ class Kvs final
      *         - On success: Returns a blank score::Result.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::Result<void> flush();
+    score::Result<void> flush() noexcept;
 
     /**
      * @brief Retrieves the number of snapshots currently stored in the key-value store.
@@ -357,7 +357,7 @@ class Kvs final
      *         - On success: The total count of snapshots as a size_t value.
      *         - On failure: Returns an ErrorCode describing the error.
      */
-    score::Result<size_t> snapshot_count() const;
+    score::Result<size_t> snapshot_count() const noexcept;
 
     /**
      * @brief Retrieves the maximum number of snapshots that can be stored.
@@ -369,7 +369,7 @@ class Kvs final
      *
      * @return The maximum count of snapshots as a size_t value.
      */
-    size_t snapshot_max_count() const;
+    size_t snapshot_max_count() const noexcept;
 
     /**
      * @brief Restores the state of the key-value store from a specified snapshot.
@@ -383,7 +383,7 @@ class Kvs final
      *         - On success: An empty score::Result indicating the restoration was successful.
      *         - On failure: An error code describing the reason for the failure.
      */
-    score::Result<void> snapshot_restore(const SnapshotId& snapshot_id);
+    score::Result<void> snapshot_restore(const SnapshotId& snapshot_id) noexcept;
 
     /**
      * @brief Retrieves the filename associated with a given snapshot ID in the key-value store.
@@ -394,7 +394,7 @@ class Kvs final
      * snapshot ID.
      *         - On failure: An error code describing the reason for the failure.
      */
-    score::Result<score::filesystem::Path> get_kvs_filename(const SnapshotId& snapshot_id) const;
+    score::Result<score::filesystem::Path> get_kvs_filename(const SnapshotId& snapshot_id) const noexcept;
 
     /**
      * @brief Retrieves the filename of the hash file associated with a given snapshot ID.
@@ -409,7 +409,7 @@ class Kvs final
      * associated with the snapshot ID.
      *         - On failure: An error code describing the reason for the failure.
      */
-    score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const;
+    score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const noexcept;
 
     /**
      * @brief Retrieves the size of the persisted key-value store on disk.
@@ -426,7 +426,7 @@ class Kvs final
      *         - On failure: `ErrorCode::PhysicalStorageFailure` if a file exists but its size
      *           cannot be determined.
      */
-    score::Result<size_t> get_storage_file_size() const;
+    score::Result<size_t> get_storage_file_size() const noexcept;
 
     /**
      * @brief Performs a 'dry run' to check if the current in-memory store would
@@ -441,11 +441,11 @@ class Kvs final
      *         - On failure: An `OutOfStorageSpace` error if the limit would be exceeded,
      *           or another ErrorCode for other failures (e.g., serialization).
      */
-    score::Result<size_t> calculate_potential_size();
+    score::Result<size_t> calculate_potential_size() noexcept;
 
   private:
     /* Private constructor to prevent direct instantiation */
-    Kvs();
+    Kvs() noexcept;
 
     /* Internal storage and configuration details.*/
     std::mutex kvs_mutex_;
@@ -474,16 +474,16 @@ class Kvs final
     std::optional<size_t> max_storage_bytes_;
 
     /* Private Methods */
-    score::Result<void> snapshot_rotate();
-    score::Result<KeyValueMap> parse_json_data(const std::string& data);
+    score::Result<void> snapshot_rotate() noexcept;
+    score::Result<KeyValueMap> parse_json_data(const std::string& data) noexcept;
     score::Result<KeyValueMap> open_json(const score::filesystem::Path& prefix,
-                                         const OpenJsonNeedFile need_file);
-    score::Result<void> write_json_data(const std::string& buf);
-    score::Result<void> write_and_sync(const std::string& path, const void* data, std::size_t size);
+                                         const OpenJsonNeedFile need_file) noexcept;
+    score::Result<void> write_json_data(const std::string& buf) noexcept;
+    score::Result<void> write_and_sync(const std::string& path, const void* data, std::size_t size) noexcept;
 
-    score::Result<std::string> serialize_and_check();
-    score::Result<size_t> get_file_size(const score::filesystem::Path& file_path);
-    score::Result<size_t> get_current_storage_size();
+    score::Result<std::string> serialize_and_check() noexcept;
+    score::Result<size_t> get_file_size(const score::filesystem::Path& file_path) noexcept;
+    score::Result<size_t> get_current_storage_size() noexcept;
 };
 
 } /* namespace score::mw::per::kvs */
