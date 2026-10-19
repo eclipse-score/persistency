@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+
 #include "test_basic.hpp"
 
 #include "score/kvs/kvs.hpp"
@@ -51,7 +52,6 @@ void BasicScenario::run(const std::string& input) const
     {
         builder = builder.need_kvs_flag(*params.need_kvs);
     }
-    // TODO: handle dir?
 
     // Create KVS.
     Kvs kvs{*builder.build()};

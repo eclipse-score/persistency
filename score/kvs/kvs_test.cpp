@@ -10,11 +10,13 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+
 #include "kvs_general_test.hpp"
 #include "score/os/ObjectSeam.h"
 #include "score/os/mocklib/fcntl_mock.h"
 #include "score/os/mocklib/stat_mock.h"
 #include "score/os/stat.h"
+#include "score/utility.hpp"
 
 TEST(kvs_constructor, move_constructor)
 {
@@ -346,7 +348,7 @@ TEST(kvs_open, selected_snapshot)
         auto value = kvs->get_value("kvs");
         ASSERT_TRUE(value);
         EXPECT_EQ(value.value().getType(), KvsValue::Type::i32);
-        EXPECT_EQ(std::get<int32_t>(value.value().getValue()), 20u); // 20
+        EXPECT_EQ(std::get<int32_t>(value.value().getValue()), 20u);  // 20
     }
 
     // Second instance, load snapshot 1.
@@ -362,7 +364,7 @@ TEST(kvs_open, selected_snapshot)
         auto value = kvs->get_value("kvs");
         ASSERT_TRUE(value);
         EXPECT_EQ(value.value().getType(), KvsValue::Type::i32);
-        EXPECT_EQ(std::get<int32_t>(value.value().getValue()), 30u); // 30
+        EXPECT_EQ(std::get<int32_t>(value.value().getValue()), 30u);  // 30
     }
 
     cleanup_environment(dir);
@@ -869,8 +871,8 @@ TEST(kvs_reset_key, reset_key_success)
     ASSERT_TRUE(result.value().kvs_.count("kvs")); /* Check Data existing */
 
     result.value().default_values_.insert_or_assign(/* Create default Value for "kvs"-key */
-                                                   "kvs",
-                                                   KvsValue(42.0));
+                                                    "kvs",
+                                                    KvsValue(42.0));
     /* Reset a key */
     auto reset_key_result = result.value().reset_key("kvs");
     EXPECT_TRUE(reset_key_result);
@@ -913,7 +915,7 @@ TEST(kvs_reset_key, reset_key_failure)
                        KVS_DEFAULT_MAX_SNAPSHOTS);
     ASSERT_TRUE(result);
     result.value().default_values_.clear();  // Clear default values to ensure no default value
-                                            // exists for "kvs"
+                                             // exists for "kvs"
     reset_key_result = result.value().reset_key("kvs");
     EXPECT_FALSE(reset_key_result);
     EXPECT_EQ(reset_key_result.error(), ErrorCode::KeyDefaultNotFound);
@@ -1552,7 +1554,7 @@ TEST(kvs_write_json_data, write_json_data_permissions_ignore_umask)
         const auto previous_umask = score::os::Stat::instance().umask(umask);
         ASSERT_TRUE(previous_umask.has_value());
         const auto result = kvs.write_json_data(new_kvs_json);
-        (void)score::os::Stat::instance().umask(previous_umask.value());
+        score::cpp::ignore = score::os::Stat::instance().umask(previous_umask.value());
 
         ASSERT_TRUE(result);
         EXPECT_EQ(file_perms(json_path), static_cast<std::uint32_t>(expected_file_perms));
@@ -1637,7 +1639,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success)
     {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count().value(), i+1);
+        EXPECT_EQ(result.value().snapshot_count().value(), i + 1);
     }
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_DEFAULT_MAX_SNAPSHOTS) + ".json"));
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_DEFAULT_MAX_SNAPSHOTS) + ".hash"));
@@ -1673,7 +1675,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_max_snapshots)
     {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count().value(), i+1);
+        EXPECT_EQ(result.value().snapshot_count().value(), i + 1);
     }
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_DEFAULT_MAX_SNAPSHOTS) + ".json"));
     ASSERT_FALSE(std::filesystem::exists(filename_prefix + "_" + std::to_string(KVS_DEFAULT_MAX_SNAPSHOTS) + ".hash"));
@@ -1707,7 +1709,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_json)
     {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count().value(), i+1);
+        EXPECT_EQ(result.value().snapshot_count().value(), i + 1);
     }
 
     /* Snapshot (JSON) Renaming failed (Create directorys instead of json files to trigger rename
@@ -1738,7 +1740,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_hash)
     {
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".hash") << "{}";
-        EXPECT_EQ(result.value().snapshot_count().value(), i+1);
+        EXPECT_EQ(result.value().snapshot_count().value(), i + 1);
     }
 
     /* Hash Renaming failed (Create directorys instead of json files to trigger rename error)*/
@@ -1822,7 +1824,7 @@ TEST(kvs_flush, flush_success_snapshot_rotate)
     EXPECT_FALSE(std::filesystem::exists(filename_prefix + "_1.json"));
     EXPECT_FALSE(std::filesystem::exists(filename_prefix + "_1.hash"));
 
-    result.value().flush(); /* Initial Flush -> SnapshotID 0 */
+    score::cpp::ignore = result.value().flush(); /* Initial Flush -> SnapshotID 0 */
 
     /* Check if snapshot_rotate was triggered on second flush --> one snapshot should be available
      * afterwards */
@@ -1976,7 +1978,7 @@ TEST(kvs_snapshot_count, snapshot_count_success)
         std::ofstream(filename_prefix + "_" + std::to_string(i) + ".json") << "{}";
         auto count = result.value().snapshot_count();
         EXPECT_TRUE(count);
-        EXPECT_EQ(count.value(), i+1);
+        EXPECT_EQ(count.value(), i + 1);
     }
     /* Test maximum capacity */
     std::ofstream(filename_prefix + "_" + std::to_string(KVS_DEFAULT_MAX_SNAPSHOTS + 1) + ".json") << "{}";
@@ -2505,7 +2507,6 @@ TEST(kvs_discard_pending_changes, discard_without_changes_is_noop)
 
     cleanup_environment();
 }
-
 
 TEST(kvs_discard_pending_changes, discard_pending_changes_failure)
 {

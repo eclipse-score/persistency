@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+
 #include "kvs_general_test.hpp"
 
 TEST(kvs_kvsbuilder, kvsbuilder_build_ignored)

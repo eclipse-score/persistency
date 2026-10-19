@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+
 #include "kvs_general_test.hpp"
 
 TEST(kvs_calculate_hash_adler32, calculate_hash_adler32)

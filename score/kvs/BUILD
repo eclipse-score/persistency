@@ -84,6 +84,7 @@ cc_test(
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/filesystem:mock",
         "@score_baselibs//score/json:mock",
+        "@score_baselibs//score/language/futurecpp",
         "@score_baselibs//score/mw/log:backend_stub_testutil",
         "@score_baselibs//score/os:object_seam",
         "@score_baselibs//score/os:stat",

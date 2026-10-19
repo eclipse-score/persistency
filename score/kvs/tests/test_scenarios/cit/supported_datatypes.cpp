@@ -17,6 +17,7 @@
 #include "helpers/kvs_parameters.hpp"
 #include "tracing.hpp"
 
+#include "score/utility.hpp"
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -52,7 +53,7 @@ void info_log(const std::string& key,
 }
 }  // namespace
 
-class SupportedDatatypesKeys : public Scenario
+class SupportedDatatypesKeys final : public Scenario
 {
   public:
     ~SupportedDatatypesKeys() final = default;
@@ -111,7 +112,7 @@ class SupportedDatatypesKeys : public Scenario
     }
 };
 
-class SupportedDatatypesValues : public Scenario
+class SupportedDatatypesValues final : public Scenario
 {
   private:
     KvsValue value_;
@@ -234,7 +235,7 @@ class SupportedDatatypesValues : public Scenario
         Kvs kvs = kvs_instance(params);
 
         // Set value
-        kvs.set_value(name(), value_);
+        score::cpp::ignore = kvs.set_value(name(), value_);
 
         // Get value
         auto kvs_value = kvs.get_value(name());

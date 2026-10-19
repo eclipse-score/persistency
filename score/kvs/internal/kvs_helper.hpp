@@ -15,8 +15,8 @@
 
 #include "score/kvs/error.hpp"
 #include "score/kvs/kvsvalue.hpp"
-#include "score/json/json_parser.h" /* For JSON Any Type */
-#include <sstream>
+#include "score/json/json_parser.h"
+#include <istream>
 #include <string>
 
 /*

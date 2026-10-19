@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+
 #include "score/kvs/kvs.hpp"
 #include "internal/kvs_helper.hpp"
 #include "score/kvs/error.hpp"
@@ -18,20 +19,13 @@
 #include "score/os/stat.h"
 #include "score/os/stdio.h"
 #include "score/os/unistd.h"
+#include "score/utility.hpp"
 #include <algorithm>
-#include <cstdio>  // std::rename
+#include <cstdio>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
+#include <memory>
 #include <sstream>
-
-// TODO Default Value Handling TBD
-// TODO Add Score Logging
-// TODO Replace std libs with baselibs
-// TODO String Handling in set_value TBD: (e.g. set_value("key", "value") is not correct, since
-// KvsValue() expects a string ptr and not a string)
-
-using namespace std;
 
 namespace score::mw::per::kvs
 {
@@ -183,7 +177,7 @@ score::Result<Kvs::KeyValueMap> Kvs::open_json(const score::filesystem::Path& pr
     score::filesystem::Path hash_file = prefix.Native() + ".hash";
 
     /* Read JSON file */
-    ifstream in(json_file.CStr());
+    std::ifstream in(json_file.CStr());
     if (!in)
     {
         if (need_file == OpenJsonNeedFile::Required)
@@ -198,12 +192,12 @@ score::Result<Kvs::KeyValueMap> Kvs::open_json(const score::filesystem::Path& pr
         }
     }
 
-    ostringstream ss;
+    std::ostringstream ss;
     ss << in.rdbuf();
     const std::string data = ss.str();
 
     /* Verify JSON Hash */
-    ifstream hin(hash_file.CStr(), ios::binary);
+    std::ifstream hin(hash_file.CStr(), std::ios::binary);
     if (!hin)
     {
         logger_->LogError() << "error: hash file" << hash_file << "could not be read";
@@ -379,7 +373,7 @@ score::Result<void> Kvs::reset_key(const std::string_view key) noexcept
         return score::MakeUnexpected(ErrorCode::KeyDefaultNotFound);
     }
 
-    (void)kvs_.erase(std::string(key)); /* Return value ignored: a key that was never written needs no reset */
+    score::cpp::ignore = kvs_.erase(std::string(key)); /* Return value ignored: a key that was never written needs no reset */
     return {};
 }
 
@@ -518,7 +512,7 @@ score::Result<size_t> Kvs::get_current_storage_size() noexcept
     /* Add the size of current and historical snapshots that will be kept after rotation (0 to N-1) */
     for (size_t snapshot_index = 0; snapshot_index < max_snapshots_; ++snapshot_index)
     {
-        const std::string snapshot_suffix = "_" + to_string(snapshot_index);
+        const std::string snapshot_suffix = "_" + std::to_string(snapshot_index);
 
         for (const char* extension : file_extensions)
         {
@@ -780,7 +774,7 @@ score::Result<size_t> Kvs::snapshot_count() const noexcept
     size_t count = 0;
     for (size_t idx = 0; idx < max_snapshots_; ++idx)
     {
-        const score::filesystem::Path fname = filename_prefix_.Native() + "_" + to_string(idx) + ".json";
+        const score::filesystem::Path fname = filename_prefix_.Native() + "_" + std::to_string(idx) + ".json";
         const auto fname_exists_res = filesystem_->standard->Exists(fname);
         if (!fname_exists_res)
         {
@@ -813,10 +807,10 @@ score::Result<void> Kvs::snapshot_rotate() noexcept
 
     for (size_t idx = max_snapshots_; idx > 0; --idx)
     {
-        score::filesystem::Path hash_old = filename_prefix_.Native() + "_" + to_string(idx - 1) + ".hash";
-        score::filesystem::Path hash_new = filename_prefix_.Native() + "_" + to_string(idx) + ".hash";
-        score::filesystem::Path snap_old = filename_prefix_.Native() + "_" + to_string(idx - 1) + ".json";
-        score::filesystem::Path snap_new = filename_prefix_.Native() + "_" + to_string(idx) + ".json";
+        score::filesystem::Path hash_old = filename_prefix_.Native() + "_" + std::to_string(idx - 1) + ".hash";
+        score::filesystem::Path hash_new = filename_prefix_.Native() + "_" + std::to_string(idx) + ".hash";
+        score::filesystem::Path snap_old = filename_prefix_.Native() + "_" + std::to_string(idx - 1) + ".json";
+        score::filesystem::Path snap_new = filename_prefix_.Native() + "_" + std::to_string(idx) + ".json";
 
         logger_->LogInfo() << "rotating:" << snap_old << "->" << snap_new;
         /* Rename hash */
@@ -860,7 +854,7 @@ score::Result<void> Kvs::snapshot_restore(const SnapshotId& snapshot_id) noexcep
         return score::MakeUnexpected(ErrorCode::InvalidSnapshotId);
     }
 
-    score::filesystem::Path restore_path = filename_prefix_.Native() + "_" + to_string(snapshot_id.id);
+    score::filesystem::Path restore_path = filename_prefix_.Native() + "_" + std::to_string(snapshot_id.id);
     auto data_res = open_json(restore_path, OpenJsonNeedFile::Required);
     if (!data_res)
     {
