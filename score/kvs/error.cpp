@@ -18,81 +18,55 @@ namespace score::mw::per::kvs
 /*********************** Error Implementation *********************/
 std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code) const noexcept
 {
-    std::string_view msg;
     switch (static_cast<ErrorCode>(code))
     {
         case ErrorCode::UnmappedError:
-            msg = "Error that was not yet mapped";
-            break;
+            return "Error that was not yet mapped";
         case ErrorCode::FileNotFound:
-            msg = "File not found";
-            break;
+            return "File not found";
         case ErrorCode::KvsFileReadError:
-            msg = "KVS file read error";
-            break;
+            return "KVS file read error";
         case ErrorCode::KvsHashFileReadError:
-            msg = "KVS hash file read error";
-            break;
+            return "KVS hash file read error";
         case ErrorCode::JsonParserError:
-            msg = "JSON parser error";
-            break;
+            return "JSON parser error";
         case ErrorCode::JsonGeneratorError:
-            msg = "JSON generator error";
-            break;
+            return "JSON generator error";
         case ErrorCode::PhysicalStorageFailure:
-            msg = "Physical storage failure";
-            break;
+            return "Physical storage failure";
         case ErrorCode::IntegrityCorrupted:
-            msg = "Integrity corrupted";
-            break;
+            return "Integrity corrupted";
         case ErrorCode::ValidationFailed:
-            msg = "Validation failed";
-            break;
+            return "Validation failed";
         case ErrorCode::EncryptionFailed:
-            msg = "Encryption failed";
-            break;
+            return "Encryption failed";
         case ErrorCode::ResourceBusy:
-            msg = "Resource is busy";
-            break;
+            return "Resource is busy";
         case ErrorCode::OutOfStorageSpace:
-            msg = "Out of storage space";
-            break;
+            return "Out of storage space";
         case ErrorCode::QuotaExceeded:
-            msg = "Quota exceeded";
-            break;
+            return "Quota exceeded";
         case ErrorCode::AuthenticationFailed:
-            msg = "Authentication failed";
-            break;
+            return "Authentication failed";
         case ErrorCode::KeyNotFound:
-            msg = "Key not found";
-            break;
+            return "Key not found";
         case ErrorCode::KeyDefaultNotFound:
-            msg = "Key default value not found";
-            break;
+            return "Key default value not found";
         case ErrorCode::SerializationFailed:
-            msg = "Serialization failed";
-            break;
+            return "Serialization failed";
         case ErrorCode::InvalidSnapshotId:
-            msg = "Invalid snapshot ID";
-            break;
+            return "Invalid snapshot ID";
         case ErrorCode::ConversionFailed:
-            msg = "Conversion failed";
-            break;
+            return "Conversion failed";
         case ErrorCode::MutexLockFailed:
-            msg = "Mutex failed";
-            break;
+            return "Mutex failed";
         case ErrorCode::InvalidValueType:
-            msg = "Invalid value type";
-            break;
+            return "Invalid value type";
         case ErrorCode::InvalidKey:
-            msg = "Key is not valid";
-            break;
+            return "Key is not valid";
         default:
-            msg = "Unknown Error!";
-            break;
+            return "Unknown Error!";
     }
-
-    return msg;
 }
 
 namespace

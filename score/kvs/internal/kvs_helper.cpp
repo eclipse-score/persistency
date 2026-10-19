@@ -77,19 +77,9 @@ std::array<uint8_t, 4> get_hash_bytes(const std::string& data)
 /* Wrapper Function to check, if Hash is valid*/
 bool check_hash(const std::string& data_calculate, std::istream& data_parse)
 {
-    bool result;
     uint32_t calculated_hash = calculate_hash_adler32(data_calculate);
     uint32_t parsed_hash = parse_hash_adler32(data_parse);
-    if (calculated_hash == parsed_hash)
-    {
-        result = true;
-    }
-    else
-    {
-        result = false;
-    }
-
-    return result;
+    return calculated_hash == parsed_hash;
 }
 
 /*********************** Standalone Helper Functions *********************/
@@ -97,189 +87,147 @@ bool check_hash(const std::string& data_calculate, std::istream& data_parse)
 /* Helper Function for Any -> KVSValue conversion */
 score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any)
 {
-    score::Result<KvsValue> result = score::MakeUnexpected(ErrorCode::UnmappedError);
-    if (auto o = any.As<score::json::Object>(); o.has_value())
+    auto o = any.As<score::json::Object>();
+    if (!o.has_value())
     {
-        const auto& objAny = o.value().get();
-        auto type = objAny.find("t");
-        auto value = objAny.find("v");
-        if (type != objAny.end() && value != objAny.end())
-        {
-            if (auto typeStr = type->second.As<std::string>(); typeStr.has_value())
-            {
-                const std::string_view typeStrV = typeStr.value().get();
-                const score::json::Any& valueAny = value->second;
+        return score::MakeUnexpected(ErrorCode::InvalidValueType);
+    }
 
-                if (typeStrV == "i32")
-                {
-                    if (auto n = valueAny.As<int32_t>(); n.has_value())
-                    {
-                        result = KvsValue(static_cast<int32_t>(n.value()));
-                    }
-                    else
-                    {
-                        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    }
-                }
-                else if (typeStrV == "u32")
-                {
-                    if (auto n = valueAny.As<uint32_t>(); n.has_value())
-                    {
-                        result = KvsValue(static_cast<uint32_t>(n.value()));
-                    }
-                    else
-                    {
-                        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    }
-                }
-                else if (typeStrV == "i64")
-                {
-                    if (auto n = valueAny.As<int64_t>(); n.has_value())
-                    {
-                        result = KvsValue(static_cast<int64_t>(n.value()));
-                    }
-                    else
-                    {
-                        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    }
-                }
-                else if (typeStrV == "u64")
-                {
-                    if (auto n = valueAny.As<uint64_t>(); n.has_value())
-                    {
-                        result = KvsValue(static_cast<uint64_t>(n.value()));
-                    }
-                    else
-                    {
-                        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    }
-                }
-                else if (typeStrV == "f64")
-                {
-                    if (auto n = valueAny.As<double>(); n.has_value())
-                    {
-                        result = KvsValue(n.value());
-                    }
-                    else
-                    {
-                        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    }
-                }
-                else if (typeStrV == "bool")
-                {
-                    if (auto b = valueAny.As<bool>(); b.has_value())
-                    {
-                        result = KvsValue(b.value());
-                    }
-                    else
-                    {
-                        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    }
-                }
-                else if (typeStrV == "str")
-                {
-                    if (auto s = valueAny.As<std::string>(); s.has_value())
-                    {
-                        result = KvsValue(s.value().get());
-                    }
-                    else
-                    {
-                        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    }
-                }
-                else if (typeStrV == "null")
-                {
-                    if (valueAny.As<score::json::Null>().has_value())
-                    {
-                        result = KvsValue(nullptr);
-                    }
-                    else
-                    {
-                        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    }
-                }
-                else if (typeStrV == "arr")
-                {
-                    if (auto l = valueAny.As<score::json::List>(); l.has_value())
-                    {
-                        KvsValue::Array arr;
-                        bool error = false;
-                        for (const auto& elem : l.value().get())
-                        {
-                            auto conv = any_to_kvsvalue(elem);
-                            if (!conv)
-                            {
-                                error = true;
-                                result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                                break;
-                            }
-                            arr.emplace_back(std::move(conv.value()));
-                        }
-                        if (!error)
-                        {
-                            result = KvsValue(std::move(arr));
-                        }
-                    }
-                    else
-                    {
-                        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    }
-                }
-                else if (typeStrV == "obj")
-                {
-                    if (auto obj = valueAny.As<score::json::Object>(); obj.has_value())
-                    {
-                        KvsValue::Object map;
-                        bool error = false;
-                        for (const auto& [key, valAny] : obj.value().get())
-                        {
-                            auto conv = any_to_kvsvalue(valAny);
-                            if (!conv)
-                            {
-                                error = true;
-                                result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                                break;
-                            }
-                            map.emplace_back(std::string(key.GetAsStringView()), std::move(conv.value()));
-                        }
-                        if (!error)
-                        {
-                            result = KvsValue(std::move(map));
-                        }
-                    }
-                    else
-                    {
-                        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    }
-                }
-                else
-                {
-                    result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                }
-            }
-            else
-            {
-                result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-            }
-        }
-        else
+    const auto& objAny = o.value().get();
+    auto type = objAny.find("t");
+    auto value = objAny.find("v");
+    if (type == objAny.end() || value == objAny.end())
+    {
+        return score::MakeUnexpected(ErrorCode::InvalidValueType);
+    }
+
+    auto typeStr = type->second.As<std::string>();
+    if (!typeStr.has_value())
+    {
+        return score::MakeUnexpected(ErrorCode::InvalidValueType);
+    }
+
+    const std::string_view typeStrV = typeStr.value().get();
+    const score::json::Any& valueAny = value->second;
+
+    if (typeStrV == "i32")
+    {
+        auto n = valueAny.As<int32_t>();
+        if (!n.has_value())
         {
-            result = score::MakeUnexpected(ErrorCode::InvalidValueType);
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
         }
+        return KvsValue(static_cast<int32_t>(n.value()));
+    }
+    else if (typeStrV == "u32")
+    {
+        auto n = valueAny.As<uint32_t>();
+        if (!n.has_value())
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+        return KvsValue(static_cast<uint32_t>(n.value()));
+    }
+    else if (typeStrV == "i64")
+    {
+        auto n = valueAny.As<int64_t>();
+        if (!n.has_value())
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+        return KvsValue(static_cast<int64_t>(n.value()));
+    }
+    else if (typeStrV == "u64")
+    {
+        auto n = valueAny.As<uint64_t>();
+        if (!n.has_value())
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+        return KvsValue(static_cast<uint64_t>(n.value()));
+    }
+    else if (typeStrV == "f64")
+    {
+        auto n = valueAny.As<double>();
+        if (!n.has_value())
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+        return KvsValue(n.value());
+    }
+    else if (typeStrV == "bool")
+    {
+        auto b = valueAny.As<bool>();
+        if (!b.has_value())
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+        return KvsValue(b.value());
+    }
+    else if (typeStrV == "str")
+    {
+        auto s = valueAny.As<std::string>();
+        if (!s.has_value())
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+        return KvsValue(s.value().get());
+    }
+    else if (typeStrV == "null")
+    {
+        if (!valueAny.As<score::json::Null>().has_value())
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+        return KvsValue(nullptr);
+    }
+    else if (typeStrV == "arr")
+    {
+        auto l = valueAny.As<score::json::List>();
+        if (!l.has_value())
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+        KvsValue::Array arr;
+        for (const auto& elem : l.value().get())
+        {
+            auto conv = any_to_kvsvalue(elem);
+            if (!conv)
+            {
+                return score::MakeUnexpected(ErrorCode::InvalidValueType);
+            }
+            arr.emplace_back(std::move(conv.value()));
+        }
+        return KvsValue(std::move(arr));
+    }
+    else if (typeStrV == "obj")
+    {
+        auto obj = valueAny.As<score::json::Object>();
+        if (!obj.has_value())
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+        KvsValue::Object map;
+        for (const auto& [key, valAny] : obj.value().get())
+        {
+            auto conv = any_to_kvsvalue(valAny);
+            if (!conv)
+            {
+                return score::MakeUnexpected(ErrorCode::InvalidValueType);
+            }
+            map.emplace_back(std::string(key.GetAsStringView()), std::move(conv.value()));
+        }
+        return KvsValue(std::move(map));
     }
     else
     {
-        result = score::MakeUnexpected(ErrorCode::InvalidValueType);
+        return score::MakeUnexpected(ErrorCode::InvalidValueType);
     }
-
-    return result;
 }
 
 /* Helper Function for KVSValue -> Any conversion */
 score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv)
 {
-    score::Result<score::json::Any> result = score::MakeUnexpected(ErrorCode::UnmappedError);
-    bool error = false;
     score::json::Object obj;
     switch (kv.getType())
     {
@@ -340,16 +288,11 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv)
                 auto conv = kvsvalue_to_any(elem);
                 if (!conv)
                 {
-                    result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    error = true;
-                    break;
+                    return score::MakeUnexpected(ErrorCode::InvalidValueType);
                 }
                 list.push_back(std::move(conv.value()));
             }
-            if (!error)
-            {
-                obj.emplace("v", score::json::Any(std::move(list)));
-            }
+            obj.emplace("v", score::json::Any(std::move(list)));
             break;
         }
         case KvsValue::Type::Object:
@@ -361,32 +304,20 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv)
                 auto conv = kvsvalue_to_any(value);
                 if (!conv)
                 {
-                    result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-                    error = true;
-                    break;
+                    return score::MakeUnexpected(ErrorCode::InvalidValueType);
                 }
                 inner_obj.emplace(key, std::move(conv.value()));
             }
-            if (!error)
-            {
-                obj.emplace("v", score::json::Any(std::move(inner_obj)));
-            }
+            obj.emplace("v", score::json::Any(std::move(inner_obj)));
             break;
         }
         default:
         {
-            result = score::MakeUnexpected(ErrorCode::InvalidValueType);
-            error = true;
-            break;
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
         }
     }
 
-    if (!error)
-    {
-        result = score::json::Any(std::move(obj));
-    }
-
-    return result;
+    return score::json::Any(std::move(obj));
 }
 
 } /* namespace score::mw::per::kvs */
