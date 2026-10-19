@@ -27,11 +27,16 @@ defaults:
 
 jobs:
   cargo-build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.runner_labels_ghub_standard_x64 && fromJSON(vars.runner_labels_ghub_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-latest' }}
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
 
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch (2026-10-16)
         with:
           toolchain: 1.90.0
           components: clippy, rustfmt
@@ -41,11 +46,16 @@ jobs:
           cargo build
 
   cargo-coverage:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.runner_labels_ghub_standard_x64 && fromJSON(vars.runner_labels_ghub_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-latest' }}
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
 
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch (2026-10-16)
         with:
           toolchain: nightly-2025-12-15
           components: llvm-tools-preview, rust-src
@@ -59,17 +69,22 @@ jobs:
           cargo +nightly-2025-12-15 llvm-cov --branch --tests --lib
 
   rust-bazel:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.runner_labels_ghub_standard_x64 && fromJSON(vars.runner_labels_ghub_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-latest' }}
+    permissions:
+      contents: read
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Bazel with shared caching
-        uses: bazel-contrib/setup-bazel@0.14.0
+        uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
         with:
-          disk-cache: true
-          repository-cache: true
-          bazelisk-cache: true
+          disk-cache-key: ${{ github.job }}
+
+      # Needs bazel on PATH: the action resolves `bazel info install_base`.
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@63c3e9c93df76d76a1baca18e407745ddaeb2fca # main branch (2026-10-12)
 
       - name: Bazel Build
         run: |
@@ -87,17 +102,22 @@ jobs:
           bazel test --lockfile_mode=error --config=per-x86_64-linux //score/kvs/rust_kvs:unit_tests_miri --test_output=all
 
   cpp-bazel:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.runner_labels_ghub_standard_x64 && fromJSON(vars.runner_labels_ghub_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-latest' }}
+    permissions:
+      contents: read
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Bazel with shared caching
-        uses: bazel-contrib/setup-bazel@0.14.0
+        uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
         with:
-          disk-cache: true
-          repository-cache: true
-          bazelisk-cache: true
+          disk-cache-key: ${{ github.job }}
+
+      # Needs bazel on PATH: the action resolves `bazel info install_base`.
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@63c3e9c93df76d76a1baca18e407745ddaeb2fca # main branch (2026-10-12)
 
       - name: Bazel Build
         run: bazel build --lockfile_mode=error --config=per-x86_64-linux //score/kvs
@@ -127,7 +147,7 @@ jobs:
             --filter branch
         shell: bash
       - name: Upload Coverage Artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ github.event.repository.name }}_cpp_coverage_report
           path: cpp_coverage/
