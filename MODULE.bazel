@@ -31,7 +31,7 @@ bazel_dep(name = "score_tooling", version = "2.3.1")
 
 # LLVM source-based coverage pipeline (C++ + Rust): the qualified S-CORE
 # coverage tool, successor of @score_tooling//coverage. See quality/coverage/.
-bazel_dep(name = "score_coverage", version = "0.4.1", dev_dependency = True)
+bazel_dep(name = "score_coverage", version = "0.4.2", dev_dependency = True)
 
 # Development dependencies (alphabetically sorted)
 bazel_dep(name = "aspect_rules_lint", version = "2.7.2", dev_dependency = True)
