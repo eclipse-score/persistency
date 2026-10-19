@@ -67,16 +67,17 @@ bazel run //:help
 Build selected target:
 
 ```bash
-bazel build --config=per-x86_64-linux -- <TARGET_NAME>
+bazel build --config=score-linux-x86_64 -- <TARGET_NAME>
 ```
 
 Build all targets:
 
 ```bash
-bazel build --config=per-x86_64-linux -- //...
+bazel build --config=score-linux-x86_64 -- //...
 ```
 
-> Building without an explicit `--config` (e.g. `per-x86_64-linux`, `per-x86_64-qnx`, `per-arm64-qnx`) is not supported.
+> Building without an explicit `--config` (e.g. `score-linux-x86_64`, `score-qnx-x86_64`, `score-qnx-aarch64`) is not supported.
+> The old names `per-x86_64-linux`, `per-x86_64-qnx` and `per-arm64-qnx` still work as deprecated aliases.
 
 ## Run
 
@@ -89,13 +90,13 @@ bazel query 'kind(".*_binary rule", //...)'
 Run selected target:
 
 ```bash
-bazel run --config=per-x86_64-linux <TARGET_NAME>
+bazel run --config=score-linux-x86_64 <TARGET_NAME>
 ```
 
 ### Run CLI tool
 
 ```bash
-bazel run --config=per-x86_64-linux //score/kvs/rust_kvs_tool:kvs_tool -- --help
+bazel run --config=score-linux-x86_64 //score/kvs/rust_kvs_tool:kvs_tool -- --help
 ```
 
 ```text
@@ -172,19 +173,19 @@ bazel query 'tests(//...)'
 Run selected test target:
 
 ```bash
-bazel test --config=per-x86_64-linux <TARGET_NAME>
+bazel test --config=score-linux-x86_64 <TARGET_NAME>
 ```
 
 Run all tests:
 
 ```bash
-bazel test --config=per-x86_64-linux //...
+bazel test --config=score-linux-x86_64 //...
 ```
 
 Run Component Integration Tests (grouped into single Test Suite):
 
 ```bash
-bazel test --config=per-x86_64-linux //:cit_tests
+bazel test --config=score-linux-x86_64 //:cit_tests
 ```
 
 ## Clippy

@@ -33,13 +33,12 @@ jobs:
       pull-requests: read
     strategy:
       matrix:
-        config: ['per-x86_64-qnx', 'per-arm64-qnx']
+        config: ['score-qnx-x86_64', 'score-qnx-aarch64']
     with:
       bazel-target: >-
         //score/kvs //score/kvs/rust_kvs:rust_kvs //score/kvs/rust_kvs_tool:kvs_tool
       bazel-config: ${{ matrix.config }}
       extra-bazel-flags: '--lockfile_mode=error'
-      credential-helper: 'tools/qnx_credential_helper.py'
       environment-name: 'workflow-approval'
     secrets:
       score-qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}

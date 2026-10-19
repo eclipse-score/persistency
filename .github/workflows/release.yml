@@ -143,14 +143,14 @@ jobs:
       - name: Build via Bazel
         run: |
           set -euo pipefail
-          echo "Running: bazel build --lockfile_mode=error --config=per-x86_64-linux //score/..."
-          bazel build --lockfile_mode=error --config=per-x86_64-linux //score/...
+          echo "Running: bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/..."
+          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/...
 
       - name: Run Unit Tests via Bazel
         run: |
           set -euo pipefail
-          echo "Running: bazel test --lockfile_mode=error --config=per-x86_64-linux //:unit_tests"
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //:unit_tests
+          echo "Running: bazel test --lockfile_mode=error --config=score-linux-x86_64 //:unit_tests"
+          bazel test --lockfile_mode=error --config=score-linux-x86_64 //:unit_tests
 
       - name: Run unified Rust + C++ coverage
         run: |

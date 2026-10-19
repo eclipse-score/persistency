@@ -16,7 +16,7 @@
 # ============================================================================
 # Use with: bazel coverage --config=llvm_cov //score/... --build_tests_only
 #
-# IMPORTANT: do NOT combine with --config=per-x86_64-linux. That config appends
+# IMPORTANT: do NOT combine with --config=score-linux-x86_64. That config appends
 # the GCC --extra_toolchains AFTER the LLVM one and GCC would win toolchain
 # resolution, producing no covmap data. The llvm_cov config runs on the plain
 # host platform with the hermetic Clang toolchain below.

@@ -89,17 +89,17 @@ jobs:
       - name: Bazel Build
         run: |
           bazel build --lockfile_mode=error \
-            --config=per-x86_64-linux \
+            --config=score-linux-x86_64 \
             //score/kvs/rust_kvs:rust_kvs \
             //score/kvs/rust_kvs_tool:kvs_tool
 
       - name: Bazel Unit Tests
         run: |
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //score/kvs/rust_kvs:unit_tests
+          bazel test --lockfile_mode=error --config=score-linux-x86_64 //score/kvs/rust_kvs:unit_tests
 
       - name: Bazel Miri Tests
         run: |
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //score/kvs/rust_kvs:unit_tests_miri --test_output=all
+          bazel test --lockfile_mode=error --config=score-linux-x86_64 //score/kvs/rust_kvs:unit_tests_miri --test_output=all
 
   cpp-bazel:
     runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
@@ -120,11 +120,11 @@ jobs:
       - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@63c3e9c93df76d76a1baca18e407745ddaeb2fca # main branch (2026-10-12)
 
       - name: Bazel Build
-        run: bazel build --lockfile_mode=error --config=per-x86_64-linux //score/kvs
+        run: bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/kvs
 
       - name: Bazel Unit Test with Coverage
         run: |
-          bazel coverage --lockfile_mode=error --config=per-x86_64-linux //score/kvs:unit_tests \
+          bazel coverage --lockfile_mode=error --config=score-linux-x86_64 //score/kvs:unit_tests \
             --collect_code_coverage \
             --combined_report=lcov \
             --experimental_generate_llvm_lcov \

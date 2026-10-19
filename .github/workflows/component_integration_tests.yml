@@ -60,11 +60,11 @@ jobs:
 
       - name: Build C++ test scenarios with Bazel
         run: |
-          bazel build --lockfile_mode=error --config=per-x86_64-linux //score/kvs/tests/test_scenarios
+          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/kvs/tests/test_scenarios
 
       - name: Build Rust test scenarios with Bazel
         run: |
-          bazel build --lockfile_mode=error --config=per-x86_64-linux //score/kvs/rust_kvs/tests/test_scenarios
+          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/kvs/rust_kvs/tests/test_scenarios
 
       - name: Set up Python 3
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
@@ -84,7 +84,7 @@ jobs:
 
       - name: Run Python tests with bazel
         run: |
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //:cit_tests
+          bazel test --lockfile_mode=error --config=score-linux-x86_64 //:cit_tests
 
       - name: Prepare test reports
         if: always()

@@ -28,5 +28,6 @@ jobs:
       contents: read
     with:
       bazel-targets: "//score/kvs/rust_kvs/... //score/kvs/rust_kvs_tool/..."
-      bazel-config: "lint"
+      # TODO: switch back to "lint" once score.bazelrc/score_lint.bazelrc defines a real lint config.
+      bazel-config: "score-linux-x86_64"
       bazel-args: "--lockfile_mode=error"
