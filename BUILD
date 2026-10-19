@@ -124,6 +124,12 @@ sbom(
     visibility = ["//visibility:public"],
 )
 
+# Lint configs, consumed by //tools/lint:linters.bzl.
+exports_files([
+    ".clang-tidy",
+    "ruff.toml",
+])
+
 exports_files(
     [
         # Used by the @score_tooling coverage reporter to locate the workspace root.

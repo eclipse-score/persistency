@@ -182,6 +182,10 @@ Run Component Integration Tests (grouped into single Test Suite):
 bazel test --config=score-linux-x86_64 //:cit_tests
 ```
 
-## Clippy
+## Lint
 
-Clippy is currently disabled in `.bazelrc` because the upstream lint toolchain resolves an APE-hosted binary URL that returns HTTP 403 and breaks unrelated Bazel commands.
+Run clang-tidy, Clippy and Ruff, as CI does in `.github/workflows/lint.yml`:
+
+```bash
+bazel build --config=lint //...
+```
