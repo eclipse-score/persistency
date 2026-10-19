@@ -20,15 +20,32 @@ on:
 jobs:
   lint-commits:
     name: check-commit-messages
-    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    permissions:
+      contents: read
     steps:
+      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      - name: Run Gitlint Action
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: ./.github/actions/gitlint
-        with:
-          pr-number: ${{ github.event.number }}
-          base-branch: ${{ github.event.pull_request.base.ref }}
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+
+      - name: Run gitlint
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          set -euo pipefail
+          # Upstream S-CORE commit message rules.
+          git clone --depth 1 https://github.com/eclipse-score/score.git "${RUNNER_TEMP}/score-gitlint"
+          if ! uvx --from gitlint==0.19.1 gitlint --config "${RUNNER_TEMP}/score-gitlint/.gitlint" --commits "origin/${BASE_REF}..HEAD"; then
+            echo
+            echo "WARNING: Your commit message does not follow the required format."
+            echo "Formatting rules: https://eclipse-score.github.io/score/main/contribute/general/git.html#commit-message-format"
+            echo "To fix it, run 'git commit --amend', fix the gitlint warnings and push with 'git push --force-with-lease'."
+            exit 1
+          fi
