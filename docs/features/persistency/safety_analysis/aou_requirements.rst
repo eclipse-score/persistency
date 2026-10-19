@@ -24,7 +24,8 @@ Persistency Assumptions of Use
    :realizes: wp__requirements_feat_aou[version==1]
    :tags: persistency
 
-Assumptions of use of the feature, resulting from :need:`doc__persistency_fmea` and :need:`doc__persistency_dfa`.
+Assumptions of use resulting from :need:`doc__persistency_fmea`, :need:`doc__persistency_dfa`, :need:`doc__kvs_fmea`
+and :need:`doc__kvs_dfa`.
 
 AoU
 ---
@@ -55,3 +56,39 @@ AoU
    shall not be modified by other software elements.
 
    Note: Within one process, the same instance ID gives access to the same data.
+
+.. aou_req:: Start without Persisted Data
+   :id: aou_req__persistency__start_without_data
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :tags: persistency
+
+   The application shall either require existing persisted data when opening a KVS instance, or handle that the
+   KVS instance provides only default values because no persisted data is available.
+
+.. aou_req:: Flush of Safety Relevant Changes
+   :id: aou_req__persistency__flush
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :tags: persistency
+
+   The application shall flush changes which shall survive a reset and shall consider changes as persisted only
+   after the flush has returned without error.
+
+.. aou_req:: Completion Callback Restrictions
+   :id: aou_req__persistency__callback
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :tags: persistency
+
+   The application code executed on a completion signal of the persistency shall not call the KVS instance which
+   issued the signal and shall not wait for resources held by the caller of the persistency.

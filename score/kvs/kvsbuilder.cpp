@@ -17,49 +17,49 @@ namespace score::mw::per::kvs
 
 /*********************** KVS Builder Implementation *********************/
 KvsBuilder::KvsBuilder(const InstanceId& instance_id)
-    : instance_id(instance_id),
-      snapshot_id(SnapshotId{0}),
-      need_defaults(OpenNeedDefaults::Optional),
-      need_kvs(OpenNeedKvs::Optional),
-      directory("./data_folder/"),         /* Default Directory */
-      maximum_storage_bytes(std::nullopt), /* No storage limit by default */
-      max_snapshots(KVS_DEFAULT_MAX_SNAPSHOTS)
+    : instance_id_(instance_id),
+      snapshot_id_(SnapshotId{0}),
+      need_defaults_(OpenNeedDefaults::Optional),
+      need_kvs_(OpenNeedKvs::Optional),
+      directory_("./data_folder/"),         /* Default Directory */
+      maximum_storage_bytes_(std::nullopt), /* No storage limit by default */
+      max_snapshots_(KVS_DEFAULT_MAX_SNAPSHOTS)
 {
 }
 
 KvsBuilder& KvsBuilder::snapshot(const SnapshotId& snapshot_id)
 {
-    this->snapshot_id = snapshot_id;
+    this->snapshot_id_ = snapshot_id;
     return *this;
 }
 
 KvsBuilder& KvsBuilder::need_defaults_flag(const OpenNeedDefaults& flag)
 {
-    need_defaults = flag;
+    need_defaults_ = flag;
     return *this;
 }
 
 KvsBuilder& KvsBuilder::need_kvs_flag(const OpenNeedKvs& flag)
 {
-    need_kvs = flag;
+    need_kvs_ = flag;
     return *this;
 }
 
 KvsBuilder& KvsBuilder::dir(std::string&& dir_path)
 {
-    this->directory = std::move(dir_path);
+    this->directory_ = std::move(dir_path);
     return *this;
 }
 
 KvsBuilder& KvsBuilder::max_storage_bytes(const std::optional<size_t>& max_storage_bytes)
 {
-    this->maximum_storage_bytes = max_storage_bytes;
+    this->maximum_storage_bytes_ = max_storage_bytes;
     return *this;
 }
 
 KvsBuilder& KvsBuilder::snapshot_max_count(std::size_t max_count)
 {
-    this->max_snapshots = max_count;
+    this->max_snapshots_ = max_count;
     return *this;
 }
 
@@ -68,13 +68,18 @@ score::Result<Kvs> KvsBuilder::build()
     score::Result<Kvs> result = score::MakeUnexpected(ErrorCode::UnmappedError);
 
     /* Use current directory if empty */
-    if ("" == directory)
+    if ("" == directory_)
     {
-        directory = "./";
+        directory_ = "./";
     }
 
-    result = Kvs::open(
-        instance_id, snapshot_id, need_defaults, need_kvs, std::move(directory), maximum_storage_bytes, max_snapshots);
+    result = Kvs::open(instance_id_,
+                       snapshot_id_,
+                       need_defaults_,
+                       need_kvs_,
+                       std::move(directory_),
+                       maximum_storage_bytes_,
+                       max_snapshots_);
 
     return result;
 }

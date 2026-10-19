@@ -29,20 +29,38 @@ impl Scenario for SupportedDatatypesKeys {
         let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         let kvs = kvs_instance(params).expect("Failed to create KVS instance");
 
-        // Set key-value pairs. Unit type is used for value - only key is used later on.
+        // Try to set valid and invalid keys. Unit type is used for value - only key is used later on.
         let keys_to_check = vec![
+            // Valid keys.
             String::from("example"),
+            String::from("snake_case_key"),
+            String::from("kebab-case-key"),
+            String::from("MixedCase0123"),
+            String::from("a"),
+            "k".repeat(32),
+            String::from("with space"),
+            String::from("dot.key"),
+            String::from("slash/key"),
+            // Invalid keys.
+            String::new(),
+            "k".repeat(33),
             String::from("emoji ✅❗😀"),
             String::from("greek ημα"),
+            "ą".repeat(16),
         ];
         for key in keys_to_check {
-            kvs.set_value(key, ()).expect("Failed to set value");
+            let set_ok = if kvs.set_value(key.clone(), ()).is_ok() {
+                "true"
+            } else {
+                "false"
+            };
+            info!(key, set_ok);
         }
 
         // Get and print all keys.
         let keys_in_kvs = kvs.get_all_keys().expect("Failed to read all keys");
-        for key in keys_in_kvs {
-            info!(key);
+        for stored_key in keys_in_kvs {
+            info!(stored_key);
         }
 
         Ok(())

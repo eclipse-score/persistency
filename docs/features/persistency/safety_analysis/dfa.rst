@@ -28,6 +28,8 @@ DFA (Dependent Failure Analysis)
 The DFA applies the dependent failure initiators of :need:`gd_guidl__dfa_failure_initiators` to the static view of
 :need:`doc__persistency_kvs_architecture`.
 
+Mechanisms inside the KVS component are analysed in :need:`doc__kvs_dfa`.
+
 Dependent Failure Initiators
 ----------------------------
 
@@ -137,8 +139,8 @@ Unintended impacts to function due to various failures.
     - Rust bounds checking, C++ standard containers. Overflows by others: platform DFA.
   * - UI_01_04
     - Deadlocks
-    - no
-    - One mutex per instance (Rust additionally one for the instance pool in the builder); never more than one lock is held at a time. Rust waits for the lock; C++ does not wait and returns MutexLockFailed.
+    - yes
+    - :need:`feat_saf_dfa__persistency__callback_deadlock`
   * - UI_01_05
     - Livelocks
     - no
@@ -201,10 +203,7 @@ DFA
    :status: valid
    :version: 1
 
-   Causes: storage medium, interrupted write, other software writing the files. Detected by the hash check
-   (:need:`feat_req__persistency__integrity_check`), writes are reset resistant
-   (:need:`feat_req__persistency__reset_resistant`), access by others is prevented by
-   :need:`feat_req__persistency__access_control`. Reported errors: :need:`aou_req__persistency__error_handling`.
+   Causes: storage medium, interrupted write, other software writing the files.
 
 .. feat_saf_dfa:: Shared KVS instance within a process
    :violates: feat_arc_sta__persistency__static
@@ -217,8 +216,7 @@ DFA
    :status: valid
    :version: 1
 
-   Within a process, the same instance ID gives access to the same data. Mitigated by
-   :need:`aou_req__persistency__instance_separation`.
+   Within a process, the same instance ID gives access to the same data.
 
 .. feat_saf_dfa:: Access to a KVS instance from multiple processes
    :violates: feat_arc_sta__persistency__static
@@ -231,10 +229,7 @@ DFA
    :status: valid
    :version: 1
 
-   Synchronization covers threads of one process only. Access from multiple processes is prevented by
-   :need:`feat_req__persistency__multiple_app`.
-
-   Note: Not yet implemented (only in-process mutexes; component level).
+   Refined in :need:`comp_saf_dfa__kvs__multi_process`.
 
 .. feat_saf_dfa:: Memory depletion by the kvs
    :violates: feat_arc_sta__persistency__static
@@ -247,7 +242,18 @@ DFA
    :status: valid
    :version: 1
 
-   All memory shall be allocated at initialization (:need:`feat_req__persistency__dynamic_memory_alloc`),
-   bounded by the configured storage and key size (:need:`feat_req__persistency__cfg`).
+   Refined in :need:`comp_saf_dfa__kvs__memory_depletion`.
 
-   Note: The implementations still allocate at runtime (component level).
+.. feat_saf_dfa:: Deadlock by completion callback
+   :violates: feat_arc_sta__persistency__static
+   :id: feat_saf_dfa__persistency__callback_deadlock
+   :failure_id: UI_01_04
+   :failure_effect: The application and the persistency block each other, persistency and the calling application are not available.
+   :safety_relevant: yes
+   :mitigated_by: feat_req__persistency__concurrency, aou_req__persistency__callback
+   :sufficient: yes
+   :status: valid
+   :version: 1
+
+   Application code executed on the completion signal (:need:`feat_req__persistency__async_completion`) calls the
+   same instance or waits for a resource held by the caller. Refined in :need:`comp_saf_dfa__kvs__callback_deadlock`.

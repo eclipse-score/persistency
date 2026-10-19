@@ -17,6 +17,7 @@ use crate::kvs_value::{KvsMap, KvsValue};
 use crate::log::{debug, error, trace, ScoreDebug};
 use std::collections::HashMap;
 use std::fs;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
 
@@ -340,7 +341,7 @@ impl JsonBackend {
         })?;
 
         debug!("Saving KVS file: {:?}", kvs_path);
-        fs::write(kvs_path, &json_str).inspect_err(|_| {
+        Self::write_synced(kvs_path, json_str.as_bytes()).inspect_err(|_| {
             error!("Failed to save KVS file: {:?}", kvs_path);
         })?;
 
@@ -350,11 +351,18 @@ impl JsonBackend {
             kvs_path, hash_path
         );
         let hash = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
-        fs::write(hash_path, hash.to_be_bytes()).inspect_err(|_| {
+        Self::write_synced(hash_path, &hash.to_be_bytes()).inspect_err(|_| {
             error!("Failed to save hash file: {:?}", hash_path);
         })?;
 
         Ok(())
+    }
+
+    /// Write `data` to `path` and request the OS to commit it to physical storage.
+    fn write_synced(path: &Path, data: &[u8]) -> std::io::Result<()> {
+        let mut file = fs::File::create(path)?;
+        file.write_all(data)?;
+        file.sync_data()
     }
 
     /// Get KVS file name.
@@ -1111,6 +1119,33 @@ mod json_backend_tests {
         JsonBackend::save(&kvs_map, &kvs_path, &hash_path).unwrap();
 
         assert!(kvs_path.exists());
+    }
+
+    #[test]
+    fn test_save_overwrite_round_trip() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let kvs_path = dir_path.join("kvs.json");
+        let hash_path = dir_path.join("kvs.hash");
+
+        let first = KvsMap::from([("k1".to_string(), KvsValue::from("a much longer first value"))]);
+        JsonBackend::save(&first, &kvs_path, &hash_path).unwrap();
+        let second = KvsMap::from([("k1".to_string(), KvsValue::from("v2"))]);
+        JsonBackend::save(&second, &kvs_path, &hash_path).unwrap();
+
+        let loaded = JsonBackend::load(&kvs_path, &hash_path).unwrap();
+        assert_eq!(loaded, second);
+    }
+
+    #[test]
+    fn test_save_missing_dir() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().join("missing");
+        let kvs_path = dir_path.join("kvs.json");
+        let hash_path = dir_path.join("kvs.hash");
+
+        let result = JsonBackend::save(&KvsMap::new(), &kvs_path, &hash_path);
+        assert!(result.is_err_and(|e| e == ErrorCode::FileNotFound));
     }
 
     #[test]

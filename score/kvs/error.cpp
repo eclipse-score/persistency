@@ -84,8 +84,8 @@ std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code
         case ErrorCode::InvalidValueType:
             msg = "Invalid value type";
             break;
-        case ErrorCode::KeyTooLong:
-            msg = "Key exceeds the maximum allowed length";
+        case ErrorCode::InvalidKey:
+            msg = "Key is not valid";
             break;
         default:
             msg = "Unknown Error!";

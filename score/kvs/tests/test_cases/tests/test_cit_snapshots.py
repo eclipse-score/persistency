@@ -40,7 +40,7 @@ class MaxSnapshotsScenario(CommonScenario):
 
 
 @add_test_properties(
-    partially_verifies=["comp_req__kvs__snapshot_creation"],
+    partially_verifies=["comp_req__kvs__snapshot_create_api"],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
 )
@@ -83,7 +83,7 @@ class TestSnapshotCountFirstFlush(MaxSnapshotsScenario):
 
 
 @add_test_properties(
-    partially_verifies=["comp_req__kvs__snapshot_creation"],
+    partially_verifies=["comp_req__kvs__snapshot_create_api"],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
 )
@@ -136,10 +136,10 @@ class TestSnapshotMaxCount(MaxSnapshotsScenario):
 
 
 @add_test_properties(
-    fully_verifies=["comp_req__kvs__snapshot_restore"],
+    fully_verifies=["comp_req__kvs__snapshot_restore_api"],
     partially_verifies=[
-        "comp_req__kvs__snapshot_creation",
-        "comp_req__kvs__snapshot_rotate",
+        "comp_req__kvs__snapshot_create_api",
+        "comp_req__kvs__snapshot_overwrite",
     ],
     test_type="control-flow-analysis",
     derivation_technique="requirements-analysis",
@@ -181,7 +181,7 @@ class TestSnapshotRestorePrevious(MaxSnapshotsScenario):
 
 
 @add_test_properties(
-    partially_verifies=["comp_req__kvs__snapshot_creation"],
+    partially_verifies=["comp_req__kvs__snapshot_create_api"],
     test_type="fault-injection",
     derivation_technique="requirements-analysis",
 )
@@ -218,8 +218,8 @@ class TestSnapshotRestoreCurrent(CommonScenario):
 
 @add_test_properties(
     partially_verifies=[
-        "comp_req__kvs__snapshot_creation",
-        "comp_req__kvs__snapshot_restore",
+        "comp_req__kvs__snapshot_create_api",
+        "comp_req__kvs__snapshot_restore_api",
     ],
     test_type="fault-injection",
     derivation_technique="requirements-analysis",
@@ -251,7 +251,7 @@ class TestSnapshotRestoreNonexistent(CommonScenario):
 
 
 @add_test_properties(
-    partially_verifies=["comp_req__kvs__snapshot_creation"],
+    partially_verifies=["comp_req__kvs__snapshot_create_api"],
     test_type="interface-test",
     derivation_technique="requirements-analysis",
 )
@@ -287,7 +287,7 @@ class TestSnapshotPathsExist(CommonScenario):
 
 
 @add_test_properties(
-    partially_verifies=["comp_req__kvs__snapshot_creation"],
+    partially_verifies=["comp_req__kvs__snapshot_create_api"],
     test_type="fault-injection",
     derivation_technique="requirements-analysis",
 )

@@ -15,7 +15,7 @@
 
 .. document:: KVS Requirements Inspection Checklist
    :id: doc__kvs_req_inspection
-   :status: valid
+   :status: invalid
    :version: 1
    :safety: ASIL_B
    :security: YES
@@ -69,14 +69,13 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
       - - Several requirements use the term "snapshot" which is not explained.
         - In :need:`comp_req__kvs__default_value_types` it is unclear what is the meaning of "only permitted"
         - In :need:`comp_req__kvs__pers_data_schema` it is not clear what downgrade means (it is also not required from the feature req). And it seems that really the application/user is responsible for thee versioning?
-        - In :need:`comp_req__kvs__field_mode` - access to what?
       - https://github.com/eclipse-score/persistency/issues/297
     * - REQ_02_02
       - Is the requirement description *unambiguous* ?
       - Especially search for "weak words" like "about", "etc.", "relevant" and others (see the internet documentation on this). This check shall be supported by tooling.
-      - NO
-      - :need:`comp_req__kvs__field_mode` uses hard to verify term "as much as possible"
-      - https://github.com/eclipse-score/persistency/issues/297
+      - YES
+      -
+      -
     * - REQ_02_03
       - Is the requirement description *atomic* ?
       - A good way to think about this is to consider if the requirement may be tested by one (positive) test case or needs more of these. The requirement formulation template should also avoid being non-atomic already. Note that there are cases where also non-atomic requirements are the better ones, for example if those are better understandable.
@@ -142,7 +141,6 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
       - Reqs either already have a testlink or seem to easily testable. With the following exceptions (which need to be verified according to REQ_08_02):
 
         - :need:`comp_req__kvs__pers_data_version` - absence of a feature cannot be tested
-        - :need:`comp_req__kvs__field_mode` - as much as possible?
         - :need:`comp_req__kvs__permission_control` - non-implementation of a feature cannot be tested
       -
     * - REQ_08_02

@@ -22,16 +22,16 @@ bazel_dep(name = "platforms", version = "1.1.0")
 bazel_dep(name = "score_bazel_platforms", version = "1.1.0")
 bazel_dep(name = "score_baselibs", version = "0.2.13")
 bazel_dep(name = "score_crates", version = "0.0.13")
-bazel_dep(name = "score_docs_as_code", version = "8.3.0")
+bazel_dep(name = "score_docs_as_code", version = "8.4.0")
 bazel_dep(name = "score_logging", version = "0.2.4")
-bazel_dep(name = "score_platform", version = "0.7.2")
+bazel_dep(name = "score_platform", version = "0.7.3")
 bazel_dep(name = "score_process_description", version = "2.1.2")
 bazel_dep(name = "score_test_scenarios", version = "0.4.1")
 bazel_dep(name = "score_tooling", version = "2.3.1")
 
 # LLVM source-based coverage pipeline (C++ + Rust): the qualified S-CORE
 # coverage tool, successor of @score_tooling//coverage. See quality/coverage/.
-bazel_dep(name = "score_coverage", version = "0.3.1", dev_dependency = True)
+bazel_dep(name = "score_coverage", version = "0.4.1", dev_dependency = True)
 
 # Development dependencies (alphabetically sorted)
 bazel_dep(name = "aspect_rules_lint", version = "2.7.2", dev_dependency = True)
@@ -51,11 +51,11 @@ git_override(
     remote = "https://github.com/eclipse-score/tools",
 )
 
-# Pinned past v8.3.0 for the FMEA attribute failure_root_cause (#916).
+# Pinned past v0.4.1 for the `score/` path layout introduced in eclipse-score/testing_tools#31.
 git_override(
-    module_name = "score_docs_as_code",
-    commit = "3893e35942e95d949a668fff93f05a2ca11c7687",
-    remote = "https://github.com/eclipse-score/docs-as-code",
+    module_name = "score_test_scenarios",
+    commit = "c16400a3f7c71ca26b67965c5e7469560b6de496",
+    remote = "https://github.com/eclipse-score/testing_tools",
 )
 
 # Python toolchain configuration

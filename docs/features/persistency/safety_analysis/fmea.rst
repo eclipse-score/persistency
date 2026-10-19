@@ -28,6 +28,8 @@ Persistency Failure Modes and Effects Analysis
 The FMEA applies the fault models of :need:`gd_guidl__fault_models` to the dynamic views of
 :need:`doc__persistency_kvs_architecture`.
 
+Mechanisms inside the KVS component are analysed in :need:`doc__kvs_fmea`.
+
 Failure Mode List
 -----------------
 
@@ -77,8 +79,8 @@ Failure Mode List
       - :need:`feat_saf_fmea__persistency__constraint_max`
     * - EX_01_01
       - Process calculates wrong result(s) (is a subset/more precise description of MF_01_05 or MF_01_04). This failure mode is related to the analysis if e.g. internal safety mechanisms are required (level 2 function, plausibility check of the output, …) because of the size / complexity of the feature.
-      - no
-      - No calculations on values, only storing and (de)serialization. Systematic faults are addressed by ASIL B development and verification; corruption is covered by MF_01_05.
+      - yes
+      - :need:`feat_saf_fmea__persistency__wrong_data`
     * - EX_01_02
       - processing too slow (only relevant if timing is considered)
       - yes
@@ -113,7 +115,7 @@ FMEA
     :mitigated_by: aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
-    :version: 2
+    :version: 1
 
     Applies to all messages between user and kvs and to the responses of json and filesystem. The effect is
     an unavailability of the persistency (call does not return), which the application detects and handles
@@ -129,7 +131,7 @@ FMEA
     :mitigated_by: aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
-    :version: 2
+    :version: 1
 
     Relevant for operations accessing the file system (load, flush, snapshot restore). Same effect as
     MF_01_01, handled by :need:`aou_req__persistency__error_handling`. :need:`feat_req__persistency__async_api`
@@ -145,7 +147,7 @@ FMEA
     :mitigated_by: aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
-    :version: 2
+    :version: 1
 
     The messages are function calls within the same process. Corruption is only possible by random HW faults
     (environment assumptions) or memory corruption by other software elements (:need:`doc__persistency_dfa`).
@@ -161,7 +163,7 @@ FMEA
     :mitigated_by: feat_req__persistency__integrity_check, feat_req__persistency__snapshot_restore, aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
-    :version: 2
+    :version: 1
 
     The kvs checks the hash before parsing (:need:`feat_req__persistency__integrity_check`) and reports
     Validation-Failed-Error; invalid JSON is reported as JSON-Parser-Error. Corrupted data is never provided.
@@ -178,7 +180,7 @@ FMEA
     :mitigated_by: feat_req__persistency__reset_resistant, feat_req__persistency__recovery_from_reset, feat_req__persistency__integrity_check, aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
-    :version: 2
+    :version: 1
 
     Write operations are reset resistant (:need:`feat_req__persistency__reset_resistant`,
     :need:`feat_req__persistency__recovery_from_reset`). An inconsistent data/hash pair is detected at the next load
@@ -194,7 +196,7 @@ FMEA
     :mitigated_by: aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
-    :version: 2
+    :version: 1
 
     Same effect as :need:`feat_saf_fmea__persistency__msg_not_received`. A missing write in the flush view is
     reported as Physical-Storage-Failure.
@@ -209,13 +211,25 @@ FMEA
     :mitigated_by: feat_req__persistency__cfg, aou_req__persistency__error_handling
     :sufficient: yes
     :status: valid
-    :version: 2
+    :version: 1
 
-    Limits are configured according to :need:`feat_req__persistency__cfg`. Exceeding the storage results in
-    Physical-Storage-Failure; persisted data and snapshots remain unchanged.
+    Exceeding the storage results in Physical-Storage-Failure; persisted data and snapshots remain unchanged.
+    Refined in :need:`comp_saf_fmea__kvs__constraint_exceeded`.
 
-    Note: :need:`comp_req__kvs__key_length` and :need:`comp_req__kvs__value_length` are not yet enforced by the
-    implementation (component level).
+.. feat_saf_fmea:: Wrong data provided after opening
+    :violates: feat_arc_dyn__persistency__read_from_storage, feat_arc_dyn__persistency__read_key, feat_arc_dyn__persistency__check_key_default
+    :id: feat_saf_fmea__persistency__wrong_data
+    :fault_id: EX_01_01
+    :failure_effect: The application reads values which do not reflect the last persisted state, without an error being reported.
+    :failure_root_cause: Persisted data is missing and the kvs starts with empty data and default values, or persisted data of an older data version is converted incorrectly.
+    :safety_relevant: yes
+    :mitigated_by: feat_req__persistency__integrity_check, feat_req__persistency__versioning, feat_req__persistency__update_mechanism, aou_req__persistency__start_without_data
+    :sufficient: no
+    :status: valid
+    :version: 1
+
+    Not sufficient: the hash does not cover the correctness of the conversion, see
+    :need:`comp_saf_fmea__kvs__migration_wrong`. Missing data: :need:`comp_saf_fmea__kvs__empty_storage_used`.
 
 .. feat_saf_fmea:: Loss of execution
     :violates: feat_arc_dyn__persistency__check_key_default, feat_arc_dyn__persistency__delete_key, feat_arc_dyn__persistency__flush, feat_arc_dyn__persistency__read_key, feat_arc_dyn__persistency__read_from_storage, feat_arc_dyn__persistency__write_key, feat_arc_dyn__persistency__snapshot_restore
@@ -224,11 +238,11 @@ FMEA
     :failure_effect: The persistency is not available.
     :failure_root_cause: Termination of the calling thread or process.
     :safety_relevant: yes
-    :mitigated_by: aou_req__persistency__error_handling
+    :mitigated_by: aou_req__persistency__error_handling, aou_req__persistency__flush
     :sufficient: yes
     :status: valid
-    :version: 2
+    :version: 1
 
-    The kvs runs in the calling context, so a loss of execution stops the application itself. An interrupted
-    flush is covered by :need:`feat_saf_fmea__persistency__corrupt_store`. Handled by
-    :need:`aou_req__persistency__error_handling`.
+    The kvs runs in the calling context, so a loss of execution stops the application itself. Interrupted flush:
+    :need:`feat_saf_fmea__persistency__corrupt_store`. Changes not flushed are lost:
+    :need:`comp_saf_fmea__kvs__unflushed_lost`.

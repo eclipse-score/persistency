@@ -48,7 +48,7 @@ Security Management Roles
           - Karthik Vanka
 
         * - Module Project Manager (= Feature team lead)
-          - TBD
+          - Uwe Maucher
 
 Tailoring
 =========
@@ -103,8 +103,8 @@ Security Module Workproducts
           - :need:`gd_guidl__security_analysis`
           - :ndf:`copy('status', need_id='gd_guidl__security_analysis')`
           - <Link to issue>
-          - <Link to WP>
-          - <automated>
+          - Not yet available
+          - n/a
 
         * - :need:`wp__audit_report_security`
           - performed by external experts
@@ -135,14 +135,14 @@ Security Module Workproducts
           - :ndf:`copy('status', need_id='doc__persistency_release_note')`
 
         * - :need:`wp__sw_module_sbom`
-          - template not yet created
-          - not started
+          - :need:`wf__cr_mt_security_sbom`
+          - :ndf:`copy('status', need_id='wf__cr_mt_security_sbom')`
           - <Link to issue>
-          - <Link to WP>
-          - <automated>
+          - Bazel target ``//:sbom_product`` (product SBOM of ``//score/kvs:kvs`` and ``//score/kvs/rust_kvs:rust_kvs``)
+          - Generated with ``bazel build //:sbom_product``, not yet part of the release workflow
 
 
-.. list-table:: Component Workproducts
+.. list-table:: Component KVS Work products
         :header-rows: 1
 
         * - Workproduct Id
@@ -157,72 +157,67 @@ Security Module Workproducts
           - :ndf:`copy('status', need_id='gd_temp__req_comp_req')`
           - <Link to issue>
           - :need:`doc__kvs_requirements`
-          - <automated>
+          - :ndf:`copy('status', need_id='doc__kvs_requirements')`
 
         * - :need:`wp__requirements_comp_aou`
           - :need:`gd_temp__req_aou_req`
           - :ndf:`copy('status', need_id='gd_temp__req_aou_req')`
           - <Link to issue>
           - :need:`doc__kvs_requirements`
-          - <automated>
+          - :ndf:`copy('status', need_id='doc__kvs_requirements')`
 
         * - :need:`wp__requirements_inspect`
           - :need:`gd_chklst__req_inspection`
           - :ndf:`copy('status', need_id='gd_chklst__req_inspection')`
-          - n/a
-          - Checklist used in Pull Request Review
-          - n/a
+          - <Link to issue>
+          - :need:`doc__kvs_req_inspection`
+          - :ndf:`copy('status', need_id='doc__kvs_req_inspection')`
 
         * - :need:`wp__component_arch`
           - :need:`gd_temp__arch_comp`
           - :ndf:`copy('status', need_id='gd_temp__arch_comp')`
           - <Link to issue>
-          - :need:`doc__kvs_architecture`
-          - <automated>
+          - :need:`doc__kvs_component_architecture`
+          - :ndf:`copy('status', need_id='doc__kvs_component_architecture')`
 
         * - :need:`wp__sw_component_security_analysis`
-          - :need:`wp__sw_component_security_analysis`
-          - :ndf:`copy('status', need_id='wp__sw_component_security_analysis')`
+          - :need:`gd_guidl__security_analysis`
+          - :ndf:`copy('status', need_id='gd_guidl__security_analysis')`
           - <Link to issue>
-          - <Link to WP>
-          - <automated>
+          - Not yet available
+          - n/a
 
         * - :need:`wp__sw_arch_verification`
           - :need:`gd_chklst__arch_inspection_checklist`
           - :ndf:`copy('status', need_id='gd_chklst__arch_inspection_checklist')`
           - <Link to issue>
-          - Checklist used in Pull Request Review
-          - <automated>
+          - :need:`doc__kvs_arc_inspection`
+          - :ndf:`copy('status', need_id='doc__kvs_arc_inspection')`
 
         * - :need:`wp__sw_implementation`
           - :need:`gd_guidl__implementation`
           - :ndf:`copy('status', need_id='gd_guidl__implementation')`
           - <Link to issue>
-          - <Link to WP>
-          - <automated>
+          - :need:`doc__kvs_detailed_design` & `source code <https://github.com/eclipse-score/persistency/tree/main/score/kvs>`__
+          - :ndf:`copy('status', need_id='doc__kvs_detailed_design')`
 
         * - :need:`wp__verification_sw_unit_test`
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
           - <Link to issue>
-          - <Link to WP>
-          - <automated>
+          - Bazel test suites ``//score/kvs:unit_tests`` and ``//score/kvs/rust_kvs:unit_tests``, results in :need:`doc__persistency_verification_report`
+          - :ndf:`copy('status', need_id='doc__persistency_verification_report')`
 
         * - :need:`wp__sw_implementation_inspection`
           - :need:`gd_chklst__impl_inspection_checklist`
           - :ndf:`copy('status', need_id='gd_chklst__impl_inspection_checklist')`
           - <Link to issue>
-          - Checklist used in Pull Request Review
-          - <automated>
+          - :need:`doc__kvs_impl_inspection`
+          - :ndf:`copy('status', need_id='doc__kvs_impl_inspection')`
 
         * - :need:`wp__verification_comp_int_test`
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
           - <Link to issue>
-          - <Link to WP>
-          - <automated>
-
-Special Note
-============
-
-Module security plan template will be refined and existing content will be synchronized as per new template.
+          - Bazel test suites ``//score/kvs/tests/test_cases:cit_cpp`` and ``//score/kvs/tests/test_cases:cit_rust``, results in :need:`doc__persistency_verification_report`
+          - :ndf:`copy('status', need_id='doc__persistency_verification_report')`

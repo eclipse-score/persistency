@@ -28,9 +28,15 @@ namespace
 {
 const std::string kTargetName{"cpp_test_scenarios::supported_datatypes"};
 
-void info_log(const std::string& keyname)
+void info_log_set_result(const std::string& keyname, bool set_ok)
 {
-    TRACING_INFO(kTargetName, std::make_pair(std::string("key"), keyname));
+    TRACING_INFO(kTargetName,
+                 std::make_pair(std::string("key"), keyname),
+                 std::make_pair(std::string("set_ok"), std::string(set_ok ? "true" : "false")));
+}
+void info_log_stored_key(const std::string& keyname)
+{
+    TRACING_INFO(kTargetName, std::make_pair(std::string("stored_key"), keyname));
 }
 void info_log(const std::string& name, const std::string& value)
 {
@@ -62,22 +68,39 @@ class SupportedDatatypesKeys : public Scenario
         KvsParameters params{KvsParameters::from_json(input)};
         Kvs kvs = kvs_instance(params);
 
+        // Try to set valid and invalid keys.
+        // Null value is used - only key is used later on.
         std::vector<std::string> keys_to_check = {
+            // Valid keys.
             "example",
-            u8"emoji ✅❗😀",  // UTF-8 encoded string literal
-            u8"greek ημα"      // UTF-8 encoded string literal
+            "snake_case_key",
+            "kebab-case-key",
+            "MixedCase0123",
+            "a",
+            std::string(32, 'k'),
+            "with space",
+            "dot.key",
+            "slash/key",
+            // Invalid keys.
+            "",
+            std::string(33, 'k'),
+            u8"emoji ✅❗😀",      // Non-ASCII characters
+            u8"greek ημα",         // Non-ASCII characters
+            u8"ąąąąąąąąąąąąąąąą",  // Non-ASCII characters, 32 bytes
         };
         for (const auto& s : keys_to_check)
         {
-            kvs.set_value(s, KvsValue(nullptr));
+            auto set_result = kvs.set_value(s, KvsValue(nullptr));
+            info_log_set_result(s, set_result.has_value());
         }
 
+        // Log all keys stored in KVS.
         auto keys_in_kvs = kvs.get_all_keys();
         if (keys_in_kvs.has_value())
         {
             for (const auto& s : keys_in_kvs.value())
             {
-                info_log(s);
+                info_log_stored_key(s);
             }
         }
         else
@@ -91,7 +114,7 @@ class SupportedDatatypesKeys : public Scenario
 class SupportedDatatypesValues : public Scenario
 {
   private:
-    KvsValue value;
+    KvsValue value_;
 
     static std::string kvs_value_to_string(const KvsValue& v)
     {
@@ -171,13 +194,13 @@ class SupportedDatatypesValues : public Scenario
     }
 
   public:
-    explicit SupportedDatatypesValues(const KvsValue& v) : value(v) {}
+    explicit SupportedDatatypesValues(const KvsValue& v) : value_(v) {}
 
     ~SupportedDatatypesValues() final = default;
 
     std::string name() const final
     {
-        switch (value.getType())
+        switch (value_.getType())
         {
             case KvsValue::Type::i32:
                 return "i32";
@@ -211,7 +234,7 @@ class SupportedDatatypesValues : public Scenario
         Kvs kvs = kvs_instance(params);
 
         // Set value
-        kvs.set_value(name(), value);
+        kvs.set_value(name(), value_);
 
         // Get value
         auto kvs_value = kvs.get_value(name());

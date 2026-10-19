@@ -23,7 +23,7 @@ on:
 
 jobs:
   bazel-clippy:
-    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@d31fdc0ba74985a71acbfa1e994fd45e2bbc5fad # v0.0.3-26-gd31fdc0
+    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@77760ad7cdb83fbb157dffa3ba30cc60fe0e141e # v0.0.3-28-g77760ad
     with:
       bazel-targets: "//score/kvs/rust_kvs/... //score/kvs/rust_kvs_tool/..."
       bazel-config: "lint"
