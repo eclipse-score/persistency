@@ -96,6 +96,12 @@ coverage:llvm_cov --@rules_rust//rust/settings:extra_rustc_flag=-Clink-dead-code
 # until branch coverage stabilizes.
 coverage:llvm_cov --@rules_rust//rust/settings:extra_rustc_flag=-Zcoverage-options=branch
 
+# The @score_cpp_policies warning flags are GCC-only and Clang 22 warns where GCC 12 does not,
+# so drop warning enforcement from the coverage-only build. --host_features covers exec-config
+# builds of scope deps.
+coverage:llvm_cov --features=-strict_warnings --features=-warnings_as_errors
+coverage:llvm_cov --host_features=-strict_warnings --host_features=-warnings_as_errors
+
 # Disable warnings-as-errors for coverage builds. External deps (score_baselibs)
 # request the treat_warnings_as_errors feature, which the LLVM toolchain expands
 # to -Werror; Clang 22 emits warnings (e.g. -Wdeprecated-declarations) that the

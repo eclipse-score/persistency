@@ -1070,6 +1070,8 @@
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_communication/0.4.0/source.json": "a3378155debe445305828cfa94464ad5f53d5b7e27488b3c053b02e49801aaeb",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_coverage/0.4.2/MODULE.bazel": "32ad2d21a7f0e62b2a7367c67623c69be72cf3fb80561560c1ec95cd59d00160",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_coverage/0.4.2/source.json": "e46af7a986d5e85fa557491994fb9ab630323810e1d7605cdccb70bcd9c3b8aa",
+    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_cpp_policies/0.1.1/MODULE.bazel": "62968745a2fe77c449d4e11447b50918c58f870eeac72f0f3198c63617a2f8a2",
+    "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_cpp_policies/0.1.1/source.json": "29d45fbd6f3fae0a21487f5d652dfa0796bd2095d2a19732a5456e5b232754a9",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_crates/0.0.10/MODULE.bazel": "80599c71cfc5827a189ab40fe2f320c8f52e0fca5bcc7c8bf8bfbdead7f97a74",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_crates/0.0.11/MODULE.bazel": "ef4590c417955837ce12549c6de26e008cb2957fe481844a45ae5f3d66e21211",
     "https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/modules/score_crates/0.0.13/MODULE.bazel": "199eb0e80b9665032eec1d1f8d663621a7a1f695a3e5cbc47c54aa1adfbae870",
@@ -11045,7 +11047,7 @@
     "@@score_bazel_cpp_toolchains+//extensions:gcc.bzl%gcc": {
       "general": {
         "bzlTransitiveDigest": "w+3nI76XENP/NdzSkBG5LURTQOmoWml9BWNMKzRVJco=",
-        "usagesDigest": "fFTkrbjwOpfw/XP37mSi6evPwzPzjgW07FXjOWmrOMQ=",
+        "usagesDigest": "e4UHDgYe7Ll54w6m97cBhxffXwAZa9XTf2m3wYDOa00=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -11078,24 +11080,24 @@
             "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
             "attributes": {
               "urls": [
-                "https://www.qnx.com/download/download/79858/installation.tgz"
+                "https://www.qnx.com/download/download/88447/installation_qnx_804_260520.tar.xz"
               ],
               "build_file": "@@score_bazel_cpp_toolchains+//packages/qnx/x86_64/sdp/8.0.0:sdp.BUILD",
               "patch_cmds": [],
-              "sha256": "f2e0cb21c6baddbcb65f6a70610ce498e7685de8ea2e0f1648f01b327f6bac63",
-              "strip_prefix": "installation"
+              "sha256": "146312c0bf22aab66e8294a06403f2ec6cfeeb074d8fa11549faffd84b7fe778",
+              "strip_prefix": ""
             }
           },
           "score_qcc_aarch64_toolchain_pkg": {
             "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
             "attributes": {
               "urls": [
-                "https://www.qnx.com/download/download/79858/installation.tgz"
+                "https://www.qnx.com/download/download/88447/installation_qnx_804_260520.tar.xz"
               ],
               "build_file": "@@score_bazel_cpp_toolchains+//packages/qnx/aarch64/sdp/8.0.0:sdp.BUILD",
               "patch_cmds": [],
-              "sha256": "f2e0cb21c6baddbcb65f6a70610ce498e7685de8ea2e0f1648f01b327f6bac63",
-              "strip_prefix": "installation"
+              "sha256": "146312c0bf22aab66e8294a06403f2ec6cfeeb074d8fa11549faffd84b7fe778",
+              "strip_prefix": ""
             }
           },
           "score_gcc_x86_64_toolchain": {
@@ -11104,7 +11106,18 @@
               "extra_compile_flags": [],
               "extra_c_compile_flags": [],
               "extra_cxx_compile_flags": [],
-              "extra_known_features": [],
+              "extra_known_features": [
+                "@@score_cpp_policies+//warnings/gcc/features:minimal_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:strict_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:all_wall_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:warnings_as_errors",
+                "@@score_cpp_policies+//sanitizers/features:debug_symbols",
+                "@@score_cpp_policies+//sanitizers/features:asan",
+                "@@score_cpp_policies+//sanitizers/features:ubsan_base",
+                "@@score_cpp_policies+//sanitizers/features:lsan",
+                "@@score_cpp_policies+//sanitizers/features:tsan",
+                "@@score_cpp_policies+//sanitizers/features:ubsan_gcc"
+              ],
               "extra_enabled_features": [],
               "extra_link_flags": [],
               "license_info_variable": "",
@@ -11131,7 +11144,18 @@
               "extra_compile_flags": [],
               "extra_c_compile_flags": [],
               "extra_cxx_compile_flags": [],
-              "extra_known_features": [],
+              "extra_known_features": [
+                "@@score_cpp_policies+//warnings/gcc/features:minimal_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:strict_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:all_wall_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:warnings_as_errors",
+                "@@score_cpp_policies+//sanitizers/features:debug_symbols",
+                "@@score_cpp_policies+//sanitizers/features:asan",
+                "@@score_cpp_policies+//sanitizers/features:ubsan_base",
+                "@@score_cpp_policies+//sanitizers/features:lsan",
+                "@@score_cpp_policies+//sanitizers/features:tsan",
+                "@@score_cpp_policies+//sanitizers/features:ubsan_gcc"
+              ],
               "extra_enabled_features": [],
               "extra_link_flags": [],
               "license_info_variable": "",
@@ -11158,14 +11182,25 @@
               "extra_compile_flags": [],
               "extra_c_compile_flags": [],
               "extra_cxx_compile_flags": [],
-              "extra_known_features": [],
+              "extra_known_features": [
+                "@@score_cpp_policies+//warnings/gcc/features:minimal_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:strict_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:all_wall_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:warnings_as_errors",
+                "@@score_cpp_policies+//sanitizers/features:debug_symbols",
+                "@@score_cpp_policies+//sanitizers/features:asan",
+                "@@score_cpp_policies+//sanitizers/features:ubsan_base",
+                "@@score_cpp_policies+//sanitizers/features:lsan",
+                "@@score_cpp_policies+//sanitizers/features:tsan",
+                "@@score_cpp_policies+//sanitizers/features:ubsan_gcc"
+              ],
               "extra_enabled_features": [],
               "extra_link_flags": [],
               "license_info_variable": "",
               "license_info_value": "",
               "license_path": "/opt/score_qnx/license/licenses",
               "sdk_version": "",
-              "sdp_version": "8.0.0",
+              "sdp_version": "8.0.4",
               "tc_compiler_library_search_paths": [],
               "tc_cpu": "x86_64",
               "tc_identifier": "sdp_8.0.0",
@@ -11185,14 +11220,25 @@
               "extra_compile_flags": [],
               "extra_c_compile_flags": [],
               "extra_cxx_compile_flags": [],
-              "extra_known_features": [],
+              "extra_known_features": [
+                "@@score_cpp_policies+//warnings/gcc/features:minimal_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:strict_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:all_wall_warnings",
+                "@@score_cpp_policies+//warnings/gcc/features:warnings_as_errors",
+                "@@score_cpp_policies+//sanitizers/features:debug_symbols",
+                "@@score_cpp_policies+//sanitizers/features:asan",
+                "@@score_cpp_policies+//sanitizers/features:ubsan_base",
+                "@@score_cpp_policies+//sanitizers/features:lsan",
+                "@@score_cpp_policies+//sanitizers/features:tsan",
+                "@@score_cpp_policies+//sanitizers/features:ubsan_gcc"
+              ],
               "extra_enabled_features": [],
               "extra_link_flags": [],
               "license_info_variable": "",
               "license_info_value": "",
               "license_path": "/opt/score_qnx/license/licenses",
               "sdk_version": "",
-              "sdp_version": "8.0.0",
+              "sdp_version": "8.0.4",
               "tc_compiler_library_search_paths": [],
               "tc_cpu": "aarch64",
               "tc_identifier": "sdp_8.0.0",
@@ -11208,6 +11254,11 @@
           }
         },
         "recordedRepoMappingEntries": [
+          [
+            "",
+            "score_cpp_policies",
+            "score_cpp_policies+"
+          ],
           [
             "bazel_tools",
             "rules_cc",

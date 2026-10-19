@@ -27,6 +27,10 @@ build --java_language_version=17
 build --tool_java_language_version=17
 build --java_runtime_version=remotejdk_17
 build --tool_java_runtime_version=remotejdk_17
+# Warning features come from @score_cpp_policies, injected in MODULE.bazel. The levels are
+# enabled in REPO.bazel; `warnings_as_errors` is enabled here, because an rc file is read for
+# the root module only and so keeps `-Werror` out of the builds of consumers of this module.
+build --features=warnings_as_errors
 build --incompatible_strict_action_env
 
 # Persistency-specific settings
