@@ -29,6 +29,7 @@
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
 #include "score/kvs/internal/kvs_helper.h"
+#include "score/kvs/internal/kvs_instance_state.hpp"
 #include "score/kvs/kvs_builder.h"
 using namespace score::kvs;
 
@@ -83,7 +84,7 @@ inline void PrepareEnvironment(const std::string& dir,
 
 // Default data used in unit tests.
 
-const std::uint32_t kInstance{123U};
+const std::uint32_t kInstance{3u};
 const InstanceId kInstanceId{kInstance};
 const SnapshotId kSnapshotId{0ul};
 
