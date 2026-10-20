@@ -88,6 +88,12 @@ enum class ErrorCode : score::result::ErrorCode
 
     /* Key is not valid */
     InvalidKey,
+
+    /* The params of an existing instance do not match */
+    InstanceParametersMismatch,
+  
+    /* Instance creation failed. */
+    InstanceCreationFailed,
 };
 
 /**

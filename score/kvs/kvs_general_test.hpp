@@ -29,6 +29,8 @@
 #define private public
 #define final
 #include "score/kvs/kvsbuilder.hpp"
+#include "score/kvs/internal/kvs_instance_state.hpp"
+#include "score/kvs/internal/kvs_instance_state_registry.hpp"
 #undef private
 #undef final
 #include "score/kvs/internal/kvs_helper.hpp"
