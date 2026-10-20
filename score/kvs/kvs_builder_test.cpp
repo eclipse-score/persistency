@@ -27,7 +27,9 @@ TEST(kvs_kvsbuilder, kvsbuilder_build_ignored)
 
     auto result_build = builder.build();
     EXPECT_TRUE(result_build);
-    EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvsbuilder/kvs_" + std::to_string(instance_id.id));
+    EXPECT_EQ(result_build.value().state_->filename_prefix_.CStr(), "./kvsbuilder/kvs_" + std::to_string(instance_id.id));
+
+    cleanup_environment();
 }
 
 TEST(kvs_kvsbuilder, kvsbuilder_build)
@@ -68,7 +70,9 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     builder.need_kvs_flag(OpenNeedKvs::Optional);
     result_build = builder.build();
     EXPECT_TRUE(result_build);
-    EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvsbuilder/kvs_" + std::to_string(instance_id.id));
+    EXPECT_EQ(result_build.value().state_->filename_prefix_.CStr(), "./kvsbuilder/kvs_" + std::to_string(instance_id.id));
+
+    cleanup_environment();
 }
 
 TEST(kvs_kvsbuilder, kvsbuilder_directory_check)
@@ -78,17 +82,19 @@ TEST(kvs_kvsbuilder, kvsbuilder_directory_check)
     builder.dir("");
     auto result_build = builder.build();
     EXPECT_TRUE(result_build);
-    EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvs_" + std::to_string(instance_id.id));
+    EXPECT_EQ(result_build.value().state_->filename_prefix_.CStr(), "./kvs_" + std::to_string(instance_id.id));
 
     builder.dir("./");
     result_build = builder.build();
     EXPECT_TRUE(result_build);
-    EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvs_" + std::to_string(instance_id.id));
+    EXPECT_EQ(result_build.value().state_->filename_prefix_.CStr(), "./kvs_" + std::to_string(instance_id.id));
 
     builder.dir(".");
     result_build = builder.build();
     EXPECT_TRUE(result_build);
-    EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvs_" + std::to_string(instance_id.id));
+    EXPECT_EQ(result_build.value().state_->filename_prefix_.CStr(), "./kvs_" + std::to_string(instance_id.id));
+
+    cleanup_environment();
 }
 
 TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_default)

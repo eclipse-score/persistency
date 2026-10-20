@@ -30,6 +30,7 @@
 
 namespace score::mw::per::kvs
 {
+class KvsInstanceState;
 
 /* comp_req__kvs__key_length: Maximum allowed key length in bytes. */
 constexpr std::size_t KVS_MAX_KEY_LENGTH_BYTES = 32U;
@@ -379,7 +380,7 @@ class Kvs final
      * restoration process fails, an appropriate error code is returned.
      *
      * @param snapshot_id The identifier of the snapshot to restore from.
-    * @return score::Result<void>
+     * @return score::Result<void>
      *         - On success: An empty score::Result indicating the restoration was successful.
      *         - On failure: An error code describing the reason for the failure.
      */
@@ -389,7 +390,7 @@ class Kvs final
      * @brief Retrieves the filename associated with a given snapshot ID in the key-value store.
      *
      * @param snapshot_id The identifier of the snapshot for which the filename is to be retrieved.
-    * @return score::Result<score::filesystem::Path>
+     * @return score::Result<score::filesystem::Path>
      *         - On success: A score::filesystem::Path with the filename (path) associated with the
      * snapshot ID.
      *         - On failure: An error code describing the reason for the failure.
@@ -404,7 +405,7 @@ class Kvs final
      * store metadata or integrity information for the snapshot.
      *
      * @param snapshot_id The identifier of the snapshot for which the hash filename is requested.
-    * @return score::Result<score::filesystem::Path>
+     * @return score::Result<score::filesystem::Path>
      *         - On success: A score::filesystem::Path with the filename (path) of the hash file
      * associated with the snapshot ID.
      *         - On failure: An error code describing the reason for the failure.
@@ -446,19 +447,7 @@ class Kvs final
   private:
     /* Private constructor to prevent direct instantiation */
     Kvs() noexcept;
-
-    /* Internal storage and configuration details.*/
-    std::mutex kvs_mutex_;
-    KeyValueMap kvs_;
-
-    /* Optional default values */
-    KeyValueMap default_values_;
-
-    /* Filename prefix */
-    score::filesystem::Path filename_prefix_;
-
-    /* comp_req__kvs__snapshot_max_num_cfg: Maximum number of snapshots maintained by this instance */
-    std::size_t max_snapshots_;
+    std::shared_ptr<KvsInstanceState> state_;
 
     /* Filesystem handling */
     std::unique_ptr<score::filesystem::Filesystem> filesystem_;
@@ -469,9 +458,6 @@ class Kvs final
 
     /* Logging */
     std::unique_ptr<score::mw::log::Logger> logger_;
-
-    /* Maximum storage limit in bytes. Unset means no limit is enforced. */
-    std::optional<size_t> max_storage_bytes_;
 
     /* Private Methods */
     score::Result<void> snapshot_rotate() noexcept;
