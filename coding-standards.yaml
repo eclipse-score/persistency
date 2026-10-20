@@ -49,6 +49,13 @@ deviations:
       - "score/kvs"
 
   # Code-identifier deviations: only the lines after a marker are covered.
+  - rule-id: "RULE-6-7-1"
+    query-id: "cpp/misra/local-variable-static-storage-duration"
+    code-identifier: "kvs-instance-registry"
+    scope: "The function-local registry instance in KvsInstanceRegistry::GetInstance in score/kvs/internal/kvs_instance_registry.cpp."
+    justification: >-
+      The registry is process-wide so its state is shared by all KVS callers and initialized once.
+      Function-local static initialization is thread-safe, and the registry must remain alive for the process lifetime.
   - rule-id: "RULE-8-2-10"
     query-id: "cpp/misra/functions-call-themselves-either-directly-or-indirectly"
     code-identifier: "kvs-recursive-value"
@@ -76,21 +83,15 @@ deviations:
   - rule-id: "RULE-15-1-3"
     query-id: "cpp/misra/non-explicit-conversion-member"
     code-identifier: "kvs-id-implicit-ctor"
-    scope: "The InstanceId and SnapshotId constructors in score/kvs/kvs.h."
+    scope: "The InstanceId and SnapshotId constructors in score/kvs/kvs_types.h."
     justification: >-
-      The constructors are implicit by design and the public API documents it.
-      Callers write `Open(0, ...)` instead of `Open(InstanceId(0), ...)`, and making them explicit would break existing callers.
-      Both types only wrap a size_t, so the conversion loses nothing.
+      The constructors are intentionally implicit so numeric IDs can be passed to APIs that accept these types.
   - rule-id: "RULE-15-0-1"
     query-id: "cpp/misra/improperly-provided-special-member-functions"
     code-identifier: "kvs-special-members"
-    scope: "The classes Kvs, KvsValue, InstanceId, SnapshotId and KvsErrorDomain in score/kvs/kvs.h, score/kvs/kvs_value.h and score/kvs/error.h."
+    scope: "The classes KvsValue, InstanceId, SnapshotId and KvsErrorDomain in score/kvs/kvs_value.h, score/kvs/kvs_types.h and score/kvs/error.h."
     justification: >-
-      Kvs customizes its move operations only to lock the source's mutex, and KvsValue customizes copy and move only to declare them noexcept.
-      C++17 does not allow defaulting them with a different exception specification.
-      Neither class owns a resource, so the defaulted destructor is correct.
-      A customized destructor would need an empty body, which clang-tidy's modernize-use-equals-default rejects.
-      For InstanceId, SnapshotId and KvsErrorDomain the audit query only reports that it cannot see their implicit destructors in the database.
+      KvsValue declares its copy and move operations noexcept. The audit also flags implicit destructors for these types, which do not need custom implementations.
   - rule-id: "RULE-8-2-6"
     query-id: "cpp/misra/int-to-pointer-cast-prohibited"
     code-identifier: "kvs-write-byte-pointer"
@@ -113,13 +114,6 @@ deviations:
     scope: "The SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE call in score/kvs/kvs_value.cpp."
     justification: >-
       The identifier `__PRETTY_FUNCTION__` comes from the expansion of the baselibs precondition macro, not from KVS code.
-  - rule-id: "RULE-0-1-1"
-    query-id: "cpp/misra/unnecessary-write-to-local-object"
-    code-identifier: "kvs-raii-lock-guard"
-    scope: "The std::scoped_lock in Kvs::operator=(Kvs&&) in score/kvs/kvs.cpp."
-    justification: >-
-      The lock is an RAII guard that holds both mutexes for its scope.
-      It is never read by design.
 
 # Guideline recategorizations: the rule is not checked anywhere in the repo.
 guideline-recategorizations:

@@ -53,8 +53,8 @@ Receiving function is affected by information that is false, lost, sent multiple
     - Rationale
   * - CO_01_01
     - Information passed via argument through a function call, or via writing/reading a variable being global to the two software functions (data flow)
-    - no
-    - Function arguments only; no global data (:need:`comp_req__kvs__multi_instance`).
+    - yes
+    - :need:`comp_saf_dfa__kvs__instance_registry`
   * - CO_01_02
     - Data or message corruption / repetition / loss / delay / masquerading or incorrect addressing of information
     - no
@@ -100,8 +100,8 @@ Same information input used by multiple functions.
     - :need:`comp_saf_fmea__kvs__constraint_cfg_wrong`
   * - SI_01_03
     - Constants, or variables, being global to the two software functions
-    - no
-    - Data per instance (:need:`comp_req__kvs__multi_instance`); shared instance: :need:`feat_saf_dfa__persistency__shared_instance`.
+    - yes
+    - :need:`comp_saf_dfa__kvs__shared_instance_state`; use of one instance by two software elements: :need:`feat_saf_dfa__persistency__shared_instance`.
   * - SI_01_04
     - Basic software passes data (read from hardware register and converted into logical information) to two applications software functions
     - no
@@ -192,6 +192,32 @@ DFA
    Modifications by the kvs tool carry a valid checksum: :need:`comp_saf_fmea__kvs__tool_wrong_output`.
 
    Implementation: the file permissions are not set.
+
+.. comp_saf_dfa:: Process-wide instance registry
+   :violates: comp_arc_sta__persistency_kvs__sv
+   :id: comp_saf_dfa__kvs__instance_registry
+   :failure_id: CO_01_01
+   :failure_effect: Concurrent builds access the process-wide instance registry inconsistently.
+   :safety_relevant: yes
+   :mitigated_by: comp_req__kvs__concurrency, comp_req__kvs__multi_instance
+   :sufficient: yes
+   :status: valid
+   :version: 1
+
+   All builds share a process-wide registry of instance states, protected by a mutex.
+
+.. comp_saf_dfa:: Instance state shared by handles
+   :violates: comp_arc_sta__persistency_kvs__sv
+   :id: comp_saf_dfa__kvs__shared_instance_state
+   :failure_id: SI_01_03
+   :failure_effect: Concurrent access through handles of the same instance corrupts the shared instance state.
+   :safety_relevant: yes
+   :mitigated_by: comp_req__kvs__concurrency
+   :sufficient: yes
+   :status: valid
+   :version: 1
+
+   All handles of one instance share its state, protected by the instance mutex.
 
 .. comp_saf_dfa:: Deadlock by callback
    :violates: comp_arc_sta__persistency_kvs__sv

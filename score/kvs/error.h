@@ -83,6 +83,12 @@ enum class ErrorCode : score::result::ErrorCode
     /// Key is not valid.
     kInvalidKey = 21,
 
+    /// The params of an existing instance do not match.
+    kInstanceParametersMismatch = 22,
+
+    /// Invalid Instance ID.
+    kInvalidInstanceId = 23,
+
     // Deprecated enumerators.
     // Each one is an alias of its k-prefixed replacement and is removed in a future release.
     UnmappedError [[deprecated("Use kUnmappedError instead. This name is removed in a future release.")]] =

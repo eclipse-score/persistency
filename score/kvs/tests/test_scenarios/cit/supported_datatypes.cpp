@@ -67,7 +67,8 @@ class SupportedDatatypesKeys final : public Scenario
     {
         // Create KVS instance with provided params.
         KvsParameters params{KvsParameters::FromJson(input)};
-        Kvs kvs{KvsInstance(params)};
+        auto kvs_handle{KvsInstance(params)};
+        auto& kvs{*kvs_handle};
 
         // Try to set valid and invalid keys.
         // Null value is used - only key is used later on.
@@ -109,7 +110,7 @@ class SupportedDatatypesKeys final : public Scenario
         else
         {
             InfoLog("get_all_keys_error", std::string(keys_in_kvs.error().Message()));
-            throw score::result::Error(keys_in_kvs.error());
+            throw std::runtime_error{"Failed to get all keys"};
         }
     }
 };
@@ -154,7 +155,8 @@ class SupportedDatatypesValues final : public Scenario
     {
         // Create KVS instance with provided params.
         KvsParameters params{KvsParameters::FromJson(input)};
-        Kvs kvs{KvsInstance(params)};
+        auto kvs_handle{KvsInstance(params)};
+        auto& kvs{*kvs_handle};
 
         // Set value.
         score::cpp::ignore = kvs.SetValue(name(), value_);
