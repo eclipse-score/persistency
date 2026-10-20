@@ -15,12 +15,14 @@
 Verification Report
 ===================
 
-.. document:: Persistency Module Verification Report
-   :id: doc__persistency_verification_report
+.. mod_ver_report:: Persistency Module Verification Report
+   :id: mod_vrep__persistency__report
    :post_template: module_verification_report
    :status: valid
    :safety: ASIL_B
    :security: NO
+   :verification_method: test_and_inspection
+   :belongs_to: mod__persistency
    :realizes: wp__verification_module_ver_report
-   :report_version: v1.0
+   :applies_to_module_version: v1.0
    :version: 1

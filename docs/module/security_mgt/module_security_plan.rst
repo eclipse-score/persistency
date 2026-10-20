@@ -124,8 +124,8 @@ Security Module Workproducts
           - :need:`gd_temp__mod_ver_report`
           - :ndf:`copy('status', need_id='gd_temp__mod_ver_report')`
           - <Link to issue>
-          - :need:`doc__persistency_verification_report`
-          - :ndf:`copy('status', need_id='doc__persistency_verification_report')`
+          - :need:`mod_vrep__persistency__report`
+          - :ndf:`copy('status', need_id='mod_vrep__persistency__report')`
 
         * - :need:`wp__module_sw_release_note`
           - :need:`gd_temp__rel_mod_rel_note`
@@ -205,8 +205,8 @@ Security Module Workproducts
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
           - <Link to issue>
-          - Bazel test suites ``//score/kvs:unit_tests`` and ``//score/kvs/rust_kvs:unit_tests``, results in :need:`doc__persistency_verification_report`
-          - :ndf:`copy('status', need_id='doc__persistency_verification_report')`
+          - Bazel test suites ``//score/kvs:unit_tests`` and ``//score/kvs/rust_kvs:unit_tests``, results in :need:`mod_vrep__persistency__report`
+          - :ndf:`copy('status', need_id='mod_vrep__persistency__report')`
 
         * - :need:`wp__sw_implementation_inspection`
           - :need:`gd_chklst__impl_inspection_checklist`
@@ -219,5 +219,5 @@ Security Module Workproducts
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
           - <Link to issue>
-          - Bazel test suites ``//score/kvs/tests/test_cases:cit_cpp`` and ``//score/kvs/tests/test_cases:cit_rust``, results in :need:`doc__persistency_verification_report`
-          - :ndf:`copy('status', need_id='doc__persistency_verification_report')`
+          - Bazel test suites ``//score/kvs/tests/test_cases:cit_cpp`` and ``//score/kvs/tests/test_cases:cit_rust``, results in :need:`mod_vrep__persistency__report`
+          - :ndf:`copy('status', need_id='mod_vrep__persistency__report')`

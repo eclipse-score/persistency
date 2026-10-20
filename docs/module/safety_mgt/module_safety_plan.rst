@@ -123,7 +123,7 @@ Module Work products List
         * - :need:`wp__verification_module_ver_report`
           - :need:`gd_temp__mod_ver_report`
           - :ndf:`copy('status', need_id='gd_temp__mod_ver_report')`
-          - :need:`doc__persistency_verification_report`
+          - :need:`mod_vrep__persistency__report`
 
         * - :need:`wp__module_sw_release_note`
           - :need:`gd_temp__rel_mod_rel_note`
@@ -186,7 +186,7 @@ Component KVS Work products List
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
           - Bazel test suites ``//score/kvs:unit_tests`` (C++) and ``//score/kvs/rust_kvs:unit_tests`` (Rust),
-            results in :need:`doc__persistency_verification_report`
+            results in :need:`mod_vrep__persistency__report`
 
         * - :need:`wp__sw_implementation_inspection`
           - :need:`gd_chklst__impl_inspection_checklist`
@@ -197,7 +197,7 @@ Component KVS Work products List
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
           - Bazel test suites ``//score/kvs/tests/test_cases:cit_cpp`` and ``//score/kvs/tests/test_cases:cit_rust``,
-            results in :need:`doc__persistency_verification_report`
+            results in :need:`mod_vrep__persistency__report`
 
 The KVS component is a new development, so no :need:`wp__sw_component_class` is planned for it.
 

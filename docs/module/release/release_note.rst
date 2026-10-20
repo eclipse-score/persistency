@@ -84,7 +84,7 @@ Performed Verification
 ^^^^^^^^^^^^^^^^^^^^^^
 
 This release note is based on the verification as documented in module verification report
-:need:`doc__persistency_verification_report`.
+:need:`mod_vrep__persistency__report`.
 
 Known Issues
 ------------

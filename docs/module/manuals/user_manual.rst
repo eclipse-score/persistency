@@ -77,7 +77,7 @@ Performance Considerations
 
 Performance properties are defined by :need:`feat_req__persistency__fast_access`,
 :need:`feat_req__persistency__cached_access` and :need:`feat_req__persistency__write_amplification`;
-verification results are documented in :need:`doc__persistency_verification_report`.
+verification results are documented in :need:`mod_vrep__persistency__report`.
 
 Integration Guidelines
 ======================
