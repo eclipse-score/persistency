@@ -14,52 +14,22 @@
 #define SCORE_KVS_KVS_BUILDER_H
 
 #include "score/kvs/kvs.h"
+#include "score/mw/log/logging.h"
+#include <memory>
 #include <optional>
 #include <string>
 
 namespace score::kvs
 {
 
-/// @brief Builder for opening a KVS object.
-///
-/// This class configures the options for opening a KVS instance.
-/// For example, whether default values are required or whether the KVS data must already exist.
-///
-/// @note You don't need to include any other header files to use the KVS.
-/// For documentation of the KVS functions, refer to the kvs.h documentation.
-///
-/// Example usage:
-/// @code
-/// #include <iostream>
-/// #include "score/kvs/kvs_builder.h"
-///
-/// using namespace score::kvs;
-///
-/// int main() {
-///   // Open kvs
-///   auto open_result = KvsBuilder(0)
-///                       .Defaults(KvsDefaults::kRequired)
-///                       .KvsLoad(KvsLoad::kRequired)
-///                       .Build();
-///   if (!open_result) return 1;
-///   Kvs kvs = std::move(open_result.value());
-///
-///   // Set and get a value
-///   kvs.SetValue("pi", KvsValue(3.14));
-///   auto get_result = kvs.GetValue("pi");
-///
-///   // Delete a key
-///   kvs.RemoveKey("pi");
-///   std::cout << "has pi? " << (kvs.KeyExists("pi").value_or(false) ? "yes" : "no") << "\n";
-///
-///   return 0;
-/// }
-/// @endcode
+score::mw::log::LogStream& operator<<(score::mw::log::LogStream& stream, const KvsOpenParameters& params);
+
+/// @brief Configures the open options of a KVS instance and builds a shared pointer to it.
 class KvsBuilder final
 {
   public:
     /// @brief Constructs a KvsBuilder for the given KVS instance.
-    /// @param instance_id Unique identifier for the KVS instance.
+    /// @param instance_id Unique identifier for the KVS instance, in the range 0..kMaxInstanceCount - 1.
     explicit KvsBuilder(const InstanceId& instance_id) noexcept;
 
     /// @brief Specifies the snapshot identifier to be loaded.
@@ -85,6 +55,7 @@ class KvsBuilder final
 
     /// @brief Specifies the maximum storage size for the KVS in bytes.
     /// @param max_storage_bytes The maximum allowed total storage size in bytes.
+    /// The limit applies to the files of this KVS instance only, not to other instances.
     /// When this option is not used, no storage limit is enforced.
     /// @return Reference to this builder (for chaining).
     KvsBuilder& MaxStorageBytes(const std::optional<size_t>& max_storage_bytes) noexcept;
@@ -96,7 +67,7 @@ class KvsBuilder final
     /// @note comp_req__kvs__snapshot_max_num_cfg
     ///
     /// @param max_count Maximum number of snapshots.
-    /// Values above kMaxSnapshotsUpperBound are clamped to it when the KVS is built.
+    /// Values above kMaxSnapshotsUpperBound are clamped to it by this call, which logs a warning.
     /// A value of 0 disables snapshot operations.
     /// Flush() still persists the current KVS data.
     /// @return Reference to this builder (for chaining).
@@ -104,10 +75,19 @@ class KvsBuilder final
 
     /// @brief Builds and opens the Kvs instance with the configured options.
     ///
-    /// Internally calls Kvs::Open() with the selected flags and directory.
+    /// Builds for the same instance ID and options return the same object retained by the registry.
+    /// After `Unregister()`, a later build creates a new object; see `Unregister()` for details.
     ///
-    /// @return The opened store on success, or an ErrorCode on failure.
-    score::Result<Kvs> Build() const noexcept;
+    /// @return The opened store on success, or an ErrorCode on failure:
+    /// - `kInvalidInstanceId` if the instance ID is not below `kMaxInstanceCount`.
+    /// - `kInstanceParametersMismatch` if the instance is already open with different parameters.
+    /// - `kKvsFileReadError` if a required defaults or KVS file cannot be read.
+    /// - `kKvsHashFileReadError` if the hash file of an existing defaults or KVS file cannot be read.
+    /// - `kValidationFailed` if a defaults or KVS file does not match its hash.
+    /// - `kJsonParserError` if a defaults or KVS file is not a valid JSON object.
+    /// - `kInvalidKey` if a defaults or KVS file contains an invalid key.
+    /// - `kInvalidValueType` if a defaults or KVS file contains a value of an unsupported type.
+    score::Result<std::shared_ptr<Kvs>> Build() const noexcept;
 
     // Deprecated snake_case API.
     // Each entry forwards to its PascalCase replacement and is removed in a future release.
@@ -156,34 +136,35 @@ class KvsBuilder final
 
     /// @deprecated Use `Build()` instead.
     [[deprecated("Use Build() instead. This name is removed in a future release.")]]
-    score::Result<Kvs> build() const noexcept
+    score::Result<std::shared_ptr<Kvs>> build() const noexcept
     {
         return Build();
     }
 
   private:
-    /// ID of the KVS instance.
-    InstanceId instance_id_;
-
-    /// ID of the KVS snapshot.
-    SnapshotId snapshot_id_;
-
-    /// Whether default values are required.
-    KvsDefaults defaults_;
-
-    /// Whether an existing KVS is required.
-    score::kvs::KvsLoad kvs_load_;
-
-    /// Directory where the KVS files are stored.
-    std::string working_dir_;
-
-    /// Maximum total storage size in bytes.
-    /// Unset means no limit.
-    std::optional<size_t> maximum_storage_bytes_;
-
-    /// Maximum number of snapshots to maintain.
-    std::size_t max_snapshots_;
+    /// Open options.
+    KvsOpenParameters params_;
 };
+
+/// @brief Removes the instance registered under the given ID from the registry.
+///
+/// Existing pointers remain valid and retain their in-memory data. A later build creates a new instance and
+/// reloads its data according to the requested options. No pending changes are flushed or discarded.
+/// Old and new instances are not synchronized with each other and may access the same files independently;
+/// callers must coordinate their use to avoid conflicting writes.
+///
+/// @warning Experimental: the signature, semantics and location of this function may change or be removed
+/// in a future release without a deprecation period.
+/// Open points:
+/// - Any caller can unregister an instance shared with other users of the same ID.
+/// - Whether old and new instances should be coordinated instead of leaving it to callers.
+/// - Whether pending changes should be flushed or discarded implicitly.
+/// - Final placement (free function, builder or a future public KVS interface).
+/// - Rust counterpart.
+///
+/// @param instance_id Identifier of the instance to remove.
+/// @return Nothing on success, or `kInvalidInstanceId` if the ID is out of range or no instance is registered under it.
+score::Result<void> Unregister(const InstanceId& instance_id) noexcept;
 
 }  // namespace score::kvs
 

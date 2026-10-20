@@ -47,6 +47,8 @@ TEST(kvs_MessageFor, MessageFor)
         {ErrorCode::kConversionFailed, "Conversion failed"},
         {ErrorCode::kInvalidValueType, "Invalid value type"},
         {ErrorCode::kInvalidKey, "Key is not valid"},
+        {ErrorCode::kInstanceParametersMismatch, "Instance exists with different parameters"},
+        {ErrorCode::kInvalidInstanceId, "Invalid Instance ID"},
     };
     for (const auto& test : test_cases)
     {

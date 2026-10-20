@@ -109,6 +109,8 @@ uint32_t Adler32(const std::string& data)
 /// @brief Creates the test environment with default data, which is needed in most test cases.
 void PrepareEnvironment()
 {
+    KvsInstanceRegistry::GetInstance().Reset();
+
     // Prepare the test environment.
     mkdir(kDataDir.c_str(), 0777);
 
@@ -128,6 +130,8 @@ void CleanupEnvironment()
 
 void CleanupEnvironment(const std::string& dir)
 {
+    KvsInstanceRegistry::GetInstance().Reset();
+
     // Cleanup the test environment.
     const score::filesystem::Path path{dir};
     const auto filesystem{RealFilesystem()};

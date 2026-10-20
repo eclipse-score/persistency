@@ -13,6 +13,7 @@
 
 alias(
     name = "test_scenarios",
+    testonly = True,
     actual = "//score/kvs/tests/test_scenarios",
     deprecation = "//score/kvs/tests/test_scenarios/cpp:test_scenarios has moved to //score/kvs/tests/test_scenarios.",
     visibility = ["//visibility:public"],

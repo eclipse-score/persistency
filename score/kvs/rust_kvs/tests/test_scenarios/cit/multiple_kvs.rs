@@ -136,6 +136,10 @@ impl Scenario for SameInstanceIdDifferentValue {
             kvs1.set_value(&keyname, value1).expect("Failed to set value");
             kvs2.set_value(&keyname, value2).expect("Failed to set value");
 
+            // Both handles share one in-memory state, so the first sees the second's write before any flush.
+            let shared_value = kvs1.get_value_as::<f64>(&keyname).expect("Failed to read value");
+            info!(instance = "kvs1_before_flush", key = keyname, value = shared_value);
+
             // Flush KVS.
             kvs1.flush().expect("Failed to flush first instance");
             kvs2.flush().expect("Failed to flush second instance");

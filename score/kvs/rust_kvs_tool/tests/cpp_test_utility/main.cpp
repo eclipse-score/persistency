@@ -122,7 +122,7 @@ void StoreScenario(const std::string& working_dir)
         std::cerr << "failed to build KVS" << '\n';
         std::abort();
     }
-    auto kvs{std::move(*build_result)};
+    auto& kvs{**build_result};
 
     ExpectValue(IsF64(GetOrAbort(kvs, "number"), 123.0), "number");
     ExpectValue(IsBool(GetOrAbort(kvs, "bool"), true), "bool");
@@ -160,7 +160,7 @@ void LoadScenario(const std::string& working_dir)
         std::cerr << "failed to build KVS" << '\n';
         std::abort();
     }
-    auto kvs{std::move(*build_result)};
+    auto& kvs{**build_result};
 
     SetOrAbort(kvs, "i32", KvsValue{static_cast<int32_t>(-123)});
     SetOrAbort(kvs, "u32", KvsValue{static_cast<uint32_t>(123)});

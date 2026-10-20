@@ -20,7 +20,7 @@
 
 using namespace score::kvs;
 
-Kvs KvsInstance(const KvsParameters& params)
+std::shared_ptr<Kvs> KvsInstance(const KvsParameters& params)
 {
     InstanceId instance_id{params.instance_id};
     KvsBuilder builder{instance_id};
