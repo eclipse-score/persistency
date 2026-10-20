@@ -55,9 +55,21 @@ Assumed Platform Safety Requirements
 Assumptions of Use
 ------------------
 
+Assumptions on the Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+| Generally the assumption of the S-CORE platform SEooC is that it is integrated in a safe system, i.e. the POSIX OS it runs on is qualified and also the HW related failures are taken into account by the system integrator, if not otherwise stated in the module's safety concept.
+| The module expects the following OS services to be safe:
+| - file system access: open, read, write, flush and sync to the storage (``fdatasync``), rename and remove of files. The C++ implementation uses them via ``score::filesystem`` of the baselibs and the C standard library, the Rust implementation via the Rust standard library (``std::fs``);
+| - thread synchronization (mutex);
+| - heap memory allocation.
+| Beyond these OS services the module has no specific AoUs on its environment (OS, C/C++ standard library, HW).
 
-AoU Requirements
-################
+Assumptions on the User
+^^^^^^^^^^^^^^^^^^^^^^^
+| As there is no assumption on which specific OS and HW is used, the integration testing of the stakeholder and feature requirements is expected to be performed by the user of the platform SEooC. Tests covering all stakeholder and feature requirements performed on a reference platform (tbd link to reference platform specification), reviewed and passed are included in the platform SEooC safety package.
+| Additionally the components of the platform may have additional specific assumptions how they are used. These are part of every module documentation: :ref:`persistency_module_documentation`. Assumptions from components to their users can be fulfilled in two ways:
+| 1. There are assumption which need to be fulfilled by all SW components, e.g. "every user of an IPC mechanism needs to make sure that he provides correct data (including appropriate ASIL level)" - in this case the AoU is marked as "platform".
+| 2. There are assumption which can be fulfilled by a safety mechanism realized by some other S-CORE platform component and are therefore not relevant for an user who uses the whole platform. But those are relevant if you chose to use the module SEooC stand-alone - in this case the AoU is marked as "module". An example would be the "JSON read" which requires "The user shall provide a string as input which is not corrupted due to HW or QM SW errors." - which is covered when using together with safe S-CORE platform persistency feature.
 
 .. aou_req:: Persistency Error handling
    :id: aou_req__persistency__error_handling
@@ -66,41 +78,11 @@ AoU Requirements
    :safety: ASIL_B
    :status: valid
    :version: 2
-   :tags: persistency, environment
+   :tags: persistency
 
    The application shall detect and handle the unavailability of the feature persistency.
    Unavailability covers errors reported by the persistency API as well as persistency calls which do
    not return or return too late (e.g. caused by blocked or delayed execution of the calling context).
-
-Assumptions on the Environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-| Generally the assumption of the S-CORE platform SEooC is that it is integrated in a safe system, i.e. the POSIX OS it runs on is qualified and also the HW related failures are taken into account by the system integrator, if not otherwise stated in the module's safety concept.
-| The module expects the following OS services to be safe:
-| - file system access: open, read, write, flush and sync to the storage (``fdatasync``), rename and remove of files. The C++ implementation uses them via ``score::filesystem`` of the baselibs and the C standard library, the Rust implementation via the Rust standard library (``std::fs``);
-| - thread synchronization (mutex);
-| - heap memory allocation.
-
-List of AoUs expected from the environment the module runs on:
-
-.. needtable::
-   :style: table
-   :columns: title;id;status
-   :colwidths: 25,25,25
-   :sort: title
-
-   results = []
-
-   for need in needs.filter_types(["aou_req"]):
-      if need and "persistency" in need["tags"]:
-         if need and "environment" in need["tags"]:
-                results.append(need)
-
-Assumptions on the User
-^^^^^^^^^^^^^^^^^^^^^^^
-| As there is no assumption on which specific OS and HW is used, the integration testing of the stakeholder and feature requirements is expected to be performed by the user of the platform SEooC. Tests covering all stakeholder and feature requirements performed on a reference platform (tbd link to reference platform specification), reviewed and passed are included in the platform SEooC safety package.
-| Additionally the components of the platform may have additional specific assumptions how they are used. These are part of every module documentation: :ref:`persistency_module_documentation`. Assumptions from components to their users can be fulfilled in two ways:
-| 1. There are assumption which need to be fulfilled by all SW components, e.g. "every user of an IPC mechanism needs to make sure that he provides correct data (including appropriate ASIL level)" - in this case the AoU is marked as "platform".
-| 2. There are assumption which can be fulfilled by a safety mechanism realized by some other S-CORE platform component and are therefore not relevant for an user who uses the whole platform. But those are relevant if you chose to use the module SEooC stand-alone - in this case the AoU is marked as "module". An example would be the "JSON read" which requires "The user shall provide a string as input which is not corrupted due to HW or QM SW errors." - which is covered when using together with safe S-CORE platform persistency feature.
 
 List of AoUs on the user of the platform features or the module of this safety manual:
 
