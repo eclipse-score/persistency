@@ -25,9 +25,9 @@ build:clang-tidy --copt=-ffp-exception-behavior=strict
 build:clang-tidy --copt=-frounding-math
 
 # Clippy linting for Rust
-build:clippy --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
-build:clippy --output_groups=+clippy_checks
-build:clippy --@rules_rust//rust/settings:clippy.toml=@score_rust_policies//clippy/strict:clippy.toml
+build:clippy --aspects=@score_rust_policies//clippy:linters.bzl%clippy_strict
+build:clippy --output_groups=+rules_lint_human
+build:clippy --@aspect_rules_lint//lint:fail_on_violation=true
 
 # Ruff linting for Python
 build:ruff --aspects=//tools/lint:linters.bzl%ruff_aspect
