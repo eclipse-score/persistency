@@ -867,7 +867,18 @@ Component Requirements
 Assumption of Use Requirements
 ------------------------------
 
-none
+.. aou_req:: Persistency Error handling
+   :id: aou_req__persistency__error_handling
+   :reqtype: Functional
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 2
+   :tags: persistency
+
+   The application shall detect and handle the unavailability of the feature persistency.
+   Unavailability covers errors reported by the persistency API as well as persistency calls which do
+   not return or return too late (e.g. caused by blocked or delayed execution of the calling context).
 
 Environmental Requirements
 --------------------------
