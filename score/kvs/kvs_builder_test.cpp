@@ -13,6 +13,10 @@
 
 #include "score/kvs/kvs_general_test.h"
 
+#include <chrono>
+#include <future>
+#include <mutex>
+
 using namespace score::kvs;
 
 namespace
@@ -42,7 +46,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_build_ignored)
     ASSERT_TRUE(keys);
     EXPECT_TRUE(keys.value().empty());
 
-    // The file name after Flush() shows the instance ID and the directory that reached Open().
+    // The file name after Flush() shows the instance ID and directory used to build the KVS.
     ASSERT_TRUE(kvs.SetValue("k", KvsValue(1)));
     ASSERT_TRUE(kvs.Flush());
     auto filename{kvs.KvsFilePath(SnapshotId{0ul})};
@@ -54,7 +58,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_build_ignored)
 
 TEST(kvs_kvsbuilder, kvsbuilder_build)
 {
-    // This test also checks the kvs Open function with the KvsBuilder.
+    // This test also checks KVS loading through KvsBuilder.
     KvsBuilder builder{kInstanceId};
     builder.Snapshot(SnapshotId{23ul});
     builder.Defaults(KvsDefaults::kRequired);
@@ -65,7 +69,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     // Build() should return an error, since the files are not available.
     auto result_build{builder.Build()};
     ASSERT_FALSE(result_build);
-    // This error occurs in OpenJson() and is passed through Open().
+    // This error occurs in OpenJson() and is passed through Build().
     EXPECT_EQ(static_cast<ErrorCode>(*result_build.error()), ErrorCode::kKvsFileReadError);
 
     // Now the missing KVS file causes the error.
@@ -77,6 +81,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     builder.KvsLoad(KvsLoad::kOptional);
     result_build = builder.Build();
     EXPECT_TRUE(result_build);
+    CleanupEnvironment();
 
     // Snapshot 23 only loads if the builder passes the snapshot ID on.
     const std::string snapshot_prefix{"./kvsbuilder/kvs_" + std::to_string(kInstance) + "_23"};
@@ -91,7 +96,9 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     ASSERT_TRUE(snapshot_value);
     ASSERT_EQ(snapshot_value.value().GetType(), KvsValue::Type::kI32);
     EXPECT_EQ(std::get<int32_t>(snapshot_value.value().GetValue()), 23);
+    CleanupEnvironment();
 
+    PrepareEnvironment("./kvsbuilder/", "kvs_", kInstance, kDefaultJson, kKvsJson, kKvsJson);
     // A builder with default settings loads snapshot 0.
     KvsBuilder default_builder{kInstanceId};
     default_builder.WorkingDir("./kvsbuilder/");
@@ -111,6 +118,8 @@ TEST(kvs_kvsbuilder, kvsbuilder_directory_check)
     const std::string expected_prefix{"./kvs_" + std::to_string(kInstanceId.id) + "_0"};
     for (const char* dir : {"", "./", "."})
     {
+        CleanupEnvironment();
+
         SCOPED_TRACE(dir);
         KvsBuilder builder{kInstanceId};
         builder.WorkingDir(dir);
@@ -128,10 +137,14 @@ TEST(kvs_kvsbuilder, kvsbuilder_directory_check)
         ASSERT_TRUE(filename);
         EXPECT_EQ(filename.value().CStr(), expected_prefix + ".json");
     }
+
+    CleanupEnvironment();
 }
 
 TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_default)
 {
+    PrepareEnvironment();
+
     // comp_req__kvs__snapshot_max_num_cfg: an unconfigured builder must keep the compile-time default.
     // Existing users then observe no behavior change.
     KvsBuilder builder{kInstanceId};
@@ -145,8 +158,10 @@ TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_default)
 
 TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_configured)
 {
+    PrepareEnvironment();
+
     // comp_req__kvs__snapshot_max_num_cfg: the configured value must reach the built KVS instance.
-    // Without the plumbing through Build()/Open() the setter would be silently ignored.
+    // Without the plumbing through Build() the setter would be silently ignored.
     // Inside the allowed range, and not the default.
     const std::size_t configured_max{2U};
 
@@ -160,6 +175,260 @@ TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_configured)
     auto result_build{builder.Build()};
     ASSERT_TRUE(result_build);
     EXPECT_EQ(result_build.value().SnapshotMaxCount(), configured_max);
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_kvsbuilder, kvsbuilder_out_of_range_instance_id)
+{
+    PrepareEnvironment();
+
+    // Instance IDs are indexed into the registry array, so the first invalid ID is kMaxInstanceCount.
+    auto result_build{KvsBuilder{InstanceId{kMaxInstanceCount}}.WorkingDir(std::string(kDataDir)).Build()};
+    ASSERT_FALSE(result_build);
+    EXPECT_EQ(result_build.error(), ErrorCode::kInvalidInstanceId);
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_kvsbuilder, kvsbuilder_mismatch_snapshot_id)
+{
+    PrepareEnvironment();
+
+    auto first{KvsBuilder{kInstanceId}
+                   .Snapshot(SnapshotId{0ul})
+                   .Defaults(KvsDefaults::kIgnored)
+                   .KvsLoad(KvsLoad::kIgnored)
+                   .WorkingDir(std::string(kDataDir))
+                   .Build()};
+    ASSERT_TRUE(first);
+
+    // Same instance, different snapshot ID: the existing entry must not be silently reused.
+    auto second{KvsBuilder{kInstanceId}
+                    .Snapshot(SnapshotId{1ul})
+                    .Defaults(KvsDefaults::kIgnored)
+                    .KvsLoad(KvsLoad::kIgnored)
+                    .WorkingDir(std::string(kDataDir))
+                    .Build()};
+    ASSERT_FALSE(second);
+    EXPECT_EQ(second.error(), ErrorCode::kInstanceParametersMismatch);
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_kvsbuilder, kvsbuilder_mismatch_max_storage_bytes)
+{
+    PrepareEnvironment();
+
+    auto first{KvsBuilder{kInstanceId}
+                   .Defaults(KvsDefaults::kIgnored)
+                   .KvsLoad(KvsLoad::kIgnored)
+                   .WorkingDir(std::string(kDataDir))
+                   .MaxStorageBytes(std::optional<std::size_t>{1024U})
+                   .Build()};
+    ASSERT_TRUE(first);
+
+    // Identical storage limit: reuse the existing entry.
+    auto same{KvsBuilder{kInstanceId}
+                  .Defaults(KvsDefaults::kIgnored)
+                  .KvsLoad(KvsLoad::kIgnored)
+                  .WorkingDir(std::string(kDataDir))
+                  .MaxStorageBytes(std::optional<std::size_t>{1024U})
+                  .Build()};
+    EXPECT_TRUE(same);
+
+    // Different storage limit, including removing the limit entirely: must be rejected.
+    auto different{KvsBuilder{kInstanceId}
+                       .Defaults(KvsDefaults::kIgnored)
+                       .KvsLoad(KvsLoad::kIgnored)
+                       .WorkingDir(std::string(kDataDir))
+                       .MaxStorageBytes(std::optional<std::size_t>{2048U})
+                       .Build()};
+    ASSERT_FALSE(different);
+    EXPECT_EQ(different.error(), ErrorCode::kInstanceParametersMismatch);
+
+    auto unlimited{KvsBuilder{kInstanceId}
+                       .Defaults(KvsDefaults::kIgnored)
+                       .KvsLoad(KvsLoad::kIgnored)
+                       .WorkingDir(std::string(kDataDir))
+                       .MaxStorageBytes(std::nullopt)
+                       .Build()};
+    ASSERT_FALSE(unlimited);
+    EXPECT_EQ(unlimited.error(), ErrorCode::kInstanceParametersMismatch);
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_kvsbuilder, kvsbuilder_mismatch_working_dir)
+{
+    PrepareEnvironment();
+
+    auto first{KvsBuilder{kInstanceId}
+                   .Defaults(KvsDefaults::kIgnored)
+                   .KvsLoad(KvsLoad::kIgnored)
+                   .WorkingDir(std::string(kDataDir))
+                   .Build()};
+    ASSERT_TRUE(first);
+
+    // Same instance ID resolves to a different filename prefix: must be rejected.
+    auto other_dir{KvsBuilder{kInstanceId}
+                       .Defaults(KvsDefaults::kIgnored)
+                       .KvsLoad(KvsLoad::kIgnored)
+                       .WorkingDir(std::string(kDataDir) + "_other")
+                       .Build()};
+    ASSERT_FALSE(other_dir);
+    EXPECT_EQ(other_dir.error(), ErrorCode::kInstanceParametersMismatch);
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_kvsbuilder, kvsbuilder_clamped_max_count_matches_existing_entry)
+{
+    PrepareEnvironment();
+
+    // A request above the upper bound is stored clamped to kMaxSnapshotsUpperBound.
+    auto first{KvsBuilder{kInstanceId}
+                   .Defaults(KvsDefaults::kIgnored)
+                   .KvsLoad(KvsLoad::kIgnored)
+                   .WorkingDir(std::string(kDataDir))
+                   .SnapshotMaxCount(100U)
+                   .Build()};
+    ASSERT_TRUE(first);
+    EXPECT_EQ(first.value().SnapshotMaxCount(), kMaxSnapshotsUpperBound);
+
+    // Comparing against the clamped value, not the raw request: rebuilding with the bound must match.
+    auto at_bound{KvsBuilder{kInstanceId}
+                      .Defaults(KvsDefaults::kIgnored)
+                      .KvsLoad(KvsLoad::kIgnored)
+                      .WorkingDir(std::string(kDataDir))
+                      .SnapshotMaxCount(kMaxSnapshotsUpperBound)
+                      .Build()};
+    ASSERT_TRUE(at_bound);
+    EXPECT_EQ(at_bound.value().SnapshotMaxCount(), kMaxSnapshotsUpperBound);
+
+    // A genuinely different count is still a mismatch.
+    auto below_bound{KvsBuilder{kInstanceId}
+                         .Defaults(KvsDefaults::kIgnored)
+                         .KvsLoad(KvsLoad::kIgnored)
+                         .WorkingDir(std::string(kDataDir))
+                         .SnapshotMaxCount(kMaxSnapshotsUpperBound - 1U)
+                         .Build()};
+    ASSERT_FALSE(below_bound);
+    EXPECT_EQ(below_bound.error(), ErrorCode::kInstanceParametersMismatch);
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_kvsbuilder, kvsbuilder_last_valid_instance_id)
+{
+    PrepareEnvironment();
+
+    auto result_build{KvsBuilder{InstanceId{kMaxInstanceCount - 1U}}
+                          .Defaults(KvsDefaults::kIgnored)
+                          .KvsLoad(KvsLoad::kIgnored)
+                          .WorkingDir(std::string(kDataDir))
+                          .Build()};
+    EXPECT_TRUE(result_build);
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_kvsbuilder, kvsbuilder_failed_build_leaves_no_entry)
+{
+    const std::string dir{"./kvsbuilder_failed_build/"};
+    CleanupEnvironment(dir);
+
+    // The required defaults file is missing, so the first build fails.
+    auto failed{
+        KvsBuilder{kInstanceId}.Defaults(KvsDefaults::kRequired).KvsLoad(KvsLoad::kIgnored).WorkingDir(dir).Build()};
+    ASSERT_FALSE(failed);
+    EXPECT_EQ(KvsInstanceStateRegistry::GetInstance().array.at(kInstance), nullptr);
+
+    // A leftover entry would reject different options with kInstanceParametersMismatch.
+    auto retried{
+        KvsBuilder{kInstanceId}.Defaults(KvsDefaults::kIgnored).KvsLoad(KvsLoad::kIgnored).WorkingDir(dir).Build()};
+    EXPECT_TRUE(retried);
+
+    CleanupEnvironment(dir);
+}
+
+TEST(kvs_kvsbuilder, kvsbuilder_mismatch_load_policy)
+{
+    PrepareEnvironment();
+
+    auto first{KvsBuilder{kInstanceId}
+                   .Defaults(KvsDefaults::kIgnored)
+                   .KvsLoad(KvsLoad::kIgnored)
+                   .WorkingDir(std::string(kDataDir))
+                   .Build()};
+    ASSERT_TRUE(first);
+
+    // The shared state was built without loading any file, so a later build must not report the files as loaded.
+    auto required_defaults{KvsBuilder{kInstanceId}
+                               .Defaults(KvsDefaults::kRequired)
+                               .KvsLoad(KvsLoad::kIgnored)
+                               .WorkingDir(std::string(kDataDir))
+                               .Build()};
+    ASSERT_FALSE(required_defaults);
+    EXPECT_EQ(required_defaults.error(), ErrorCode::kInstanceParametersMismatch);
+
+    auto required_kvs{KvsBuilder{kInstanceId}
+                          .Defaults(KvsDefaults::kIgnored)
+                          .KvsLoad(KvsLoad::kRequired)
+                          .WorkingDir(std::string(kDataDir))
+                          .Build()};
+    ASSERT_FALSE(required_kvs);
+    EXPECT_EQ(required_kvs.error(), ErrorCode::kInstanceParametersMismatch);
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_kvsbuilder, kvsbuilder_concurrent_build_shares_state)
+{
+    PrepareEnvironment();
+
+    const auto build = []() {
+        return KvsBuilder{kInstanceId}
+            .Defaults(KvsDefaults::kRequired)
+            .KvsLoad(KvsLoad::kRequired)
+            .WorkingDir(std::string(kDataDir))
+            .Build();
+    };
+
+    auto& registry{KvsInstanceStateRegistry::GetInstance()};
+    std::future<score::Result<Kvs>> first;
+    std::future<score::Result<Kvs>> second;
+    {
+        // Holding the registry lock forces both builds to start together once it is released.
+        // Without that, they would race for the empty slot only by chance.
+        std::unique_lock<std::mutex> registry_lock{registry.mutex};
+        first = std::async(std::launch::async, build);
+        second = std::async(std::launch::async, build);
+
+        // Each Build() must wait for the registry lock before it loads files or touches the slot.
+        EXPECT_EQ(first.wait_for(std::chrono::milliseconds{200}), std::future_status::timeout);
+        EXPECT_EQ(second.wait_for(std::chrono::milliseconds{0}), std::future_status::timeout);
+        EXPECT_EQ(registry.array.at(kInstance), nullptr);
+    }
+
+    auto first_result{first.get()};
+    auto second_result{second.get()};
+    ASSERT_TRUE(first_result);
+    ASSERT_TRUE(second_result);
+
+    // A single load means the registry entry is owned by the registry and both handles.
+    // If both threads loaded, the later one overwrites the entry and each handle keeps its own state.
+    {
+        std::unique_lock<std::mutex> registry_lock{registry.mutex};
+        EXPECT_EQ(registry.array.at(kInstance).use_count(), 3);
+    }
+
+    // Both handles see one state: a change through one is visible through the other.
+    ASSERT_TRUE(first_result.value().SetValue("concurrent", KvsValue(int32_t{7})));
+    auto value{second_result.value().GetValue("concurrent")};
+    ASSERT_TRUE(value);
+    ASSERT_EQ(value.value().GetType(), KvsValue::Type::kI32);
+    EXPECT_EQ(std::get<int32_t>(value.value().GetValue()), 7);
 
     CleanupEnvironment();
 }

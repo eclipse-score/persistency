@@ -14,52 +14,40 @@
 #define SCORE_KVS_KVS_BUILDER_H
 
 #include "score/kvs/kvs.h"
+#include "score/mw/log/logging.h"
 #include <optional>
 #include <string>
 
 namespace score::kvs
 {
 
-/// @brief Builder for opening a KVS object.
-///
-/// This class configures the options for opening a KVS instance.
-/// For example, whether default values are required or whether the KVS data must already exist.
-///
-/// @note You don't need to include any other header files to use the KVS.
-/// For documentation of the KVS functions, refer to the kvs.h documentation.
-///
-/// Example usage:
-/// @code
-/// #include <iostream>
-/// #include "score/kvs/kvs_builder.h"
-///
-/// using namespace score::kvs;
-///
-/// int main() {
-///   // Open kvs
-///   auto open_result = KvsBuilder(0)
-///                       .Defaults(KvsDefaults::kRequired)
-///                       .KvsLoad(KvsLoad::kRequired)
-///                       .Build();
-///   if (!open_result) return 1;
-///   Kvs kvs = std::move(open_result.value());
-///
-///   // Set and get a value
-///   kvs.SetValue("pi", KvsValue(3.14));
-///   auto get_result = kvs.GetValue("pi");
-///
-///   // Delete a key
-///   kvs.RemoveKey("pi");
-///   std::cout << "has pi? " << (kvs.KeyExists("pi").value_or(false) ? "yes" : "no") << "\n";
-///
-///   return 0;
-/// }
-/// @endcode
+/// @brief Open parameters.
+struct KvsOpenParameters final
+{
+    /// KVS instance identifier, in the range 0..kMaxInstanceCount - 1.
+    std::size_t instance_id;
+    /// Identifier of the snapshot to load on open (0 is the current KVS data).
+    std::size_t snapshot_id;
+    /// Whether KVS data is required, optional or ignored when opening.
+    KvsLoad current_load_policy;
+    /// Whether default values are required, optional or ignored when opening.
+    KvsDefaults default_load_policy;
+    /// Directory where KVS files are stored ("" or "." for the current directory).
+    std::string working_dir;
+    /// Maximum total size of this instance's files in bytes; std::nullopt means unlimited.
+    std::optional<size_t> storage_quota;
+    /// Maximum number of snapshots kept, in the range 0..kMaxSnapshotsUpperBound; 0 disables snapshots.
+    std::size_t snapshot_count_limit;
+};
+
+score::mw::log::LogStream& operator<<(score::mw::log::LogStream& stream, const KvsOpenParameters& params);
+
+/// @brief Configures the open options of a KVS instance and builds a `Kvs` handle to it.
 class KvsBuilder final
 {
   public:
     /// @brief Constructs a KvsBuilder for the given KVS instance.
-    /// @param instance_id Unique identifier for the KVS instance.
+    /// @param instance_id Unique identifier for the KVS instance, in the range 0..kMaxInstanceCount - 1.
     explicit KvsBuilder(const InstanceId& instance_id) noexcept;
 
     /// @brief Specifies the snapshot identifier to be loaded.
@@ -85,6 +73,7 @@ class KvsBuilder final
 
     /// @brief Specifies the maximum storage size for the KVS in bytes.
     /// @param max_storage_bytes The maximum allowed total storage size in bytes.
+    /// The limit applies to the files of this KVS instance only, not to other instances.
     /// When this option is not used, no storage limit is enforced.
     /// @return Reference to this builder (for chaining).
     KvsBuilder& MaxStorageBytes(const std::optional<size_t>& max_storage_bytes) noexcept;
@@ -96,7 +85,7 @@ class KvsBuilder final
     /// @note comp_req__kvs__snapshot_max_num_cfg
     ///
     /// @param max_count Maximum number of snapshots.
-    /// Values above kMaxSnapshotsUpperBound are clamped to it when the KVS is built.
+    /// Values above kMaxSnapshotsUpperBound are clamped to it by this call, which logs a warning.
     /// A value of 0 disables snapshot operations.
     /// Flush() still persists the current KVS data.
     /// @return Reference to this builder (for chaining).
@@ -104,9 +93,17 @@ class KvsBuilder final
 
     /// @brief Builds and opens the Kvs instance with the configured options.
     ///
-    /// Internally calls Kvs::Open() with the selected flags and directory.
+    /// Handles built for the same instance ID share one state; see `Kvs` for details.
     ///
-    /// @return The opened store on success, or an ErrorCode on failure.
+    /// @return The opened store on success, or an ErrorCode on failure:
+    /// - `kInvalidInstanceId` if the instance ID is not below `kMaxInstanceCount`.
+    /// - `kInstanceParametersMismatch` if the instance is already open with different parameters.
+    /// - `kKvsFileReadError` if a required defaults or KVS file cannot be read.
+    /// - `kKvsHashFileReadError` if the hash file of an existing defaults or KVS file cannot be read.
+    /// - `kValidationFailed` if a defaults or KVS file does not match its hash.
+    /// - `kJsonParserError` if a defaults or KVS file is not a valid JSON object.
+    /// - `kInvalidKey` if a defaults or KVS file contains an invalid key.
+    /// - `kInvalidValueType` if a defaults or KVS file contains a value of an unsupported type.
     score::Result<Kvs> Build() const noexcept;
 
     // Deprecated snake_case API.
@@ -162,27 +159,8 @@ class KvsBuilder final
     }
 
   private:
-    /// ID of the KVS instance.
-    InstanceId instance_id_;
-
-    /// ID of the KVS snapshot.
-    SnapshotId snapshot_id_;
-
-    /// Whether default values are required.
-    KvsDefaults defaults_;
-
-    /// Whether an existing KVS is required.
-    score::kvs::KvsLoad kvs_load_;
-
-    /// Directory where the KVS files are stored.
-    std::string working_dir_;
-
-    /// Maximum total storage size in bytes.
-    /// Unset means no limit.
-    std::optional<size_t> maximum_storage_bytes_;
-
-    /// Maximum number of snapshots to maintain.
-    std::size_t max_snapshots_;
+    /// Open options.
+    KvsOpenParameters params_;
 };
 
 }  // namespace score::kvs

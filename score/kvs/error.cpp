@@ -65,6 +65,10 @@ std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code
             return "Invalid value type";
         case ErrorCode::kInvalidKey:
             return "Key is not valid";
+        case ErrorCode::kInstanceParametersMismatch:
+            return "Instance exists with different parameters";
+        case ErrorCode::kInvalidInstanceId:
+            return "Invalid Instance ID";
         default:
             return "Unknown Error!";
     }

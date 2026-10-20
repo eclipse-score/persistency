@@ -29,8 +29,11 @@ cc_library(
     name = "kvs",
     srcs = [
         "error.cpp",
+        "internal/kvs_constants.h",
         "internal/kvs_helper.cpp",
         "internal/kvs_helper.h",
+        "internal/kvs_instance_state.cpp",
+        "internal/kvs_instance_state.h",
         "internal/logger.h",
         "kvs.cpp",
         "kvs_builder.cpp",
@@ -74,6 +77,16 @@ alias(
     visibility = ["//visibility:public"],
 )
 
+# Test-only hooks into the KVS internals, e.g. to simulate a process restart.
+cc_library(
+    name = "test_support",
+    testonly = True,
+    srcs = ["test_support/test_support.cpp"],
+    hdrs = ["test_support/test_support.h"],
+    visibility = ["//score/kvs/tests:__subpackages__"],
+    deps = [":kvs"],
+)
+
 cc_test(
     name = "unit_tests",
     size = "small",
@@ -92,7 +105,6 @@ cc_test(
         ":kvs",
         "@googletest//:gtest_main",
         "@score_baselibs//score/filesystem",
-        "@score_baselibs//score/filesystem:mock",
         "@score_baselibs//score/json:mock",
         "@score_baselibs//score/language/futurecpp",
         "@score_baselibs//score/mw/log:backend_stub_testutil",
