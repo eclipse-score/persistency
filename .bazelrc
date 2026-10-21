@@ -17,13 +17,6 @@ build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 common --registry=https://raw.githubusercontent.com/eclipse-score/bazel_registry/main/
 common --registry=https://bcr.bazel.build
 
-# Overcome stability issues when downloading external dependencies on GH Runners
-common --experimental_repository_downloader_retries=10
-common --experimental_scale_timeouts=2.0
-common --http_connector_attempts=10
-common --http_connector_retry_max_timeout=30s
-common --http_timeout_scaling=2.0
-
 # Credentials for the QNX SDP downloads.
 # `common` (not `build`) makes query and mod authenticate too.
 # The helper logs in to qnx.com, which can take longer than the 10s default timeout.
