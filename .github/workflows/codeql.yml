@@ -26,6 +26,8 @@ on:
 
 jobs:
   # C++: MISRA C++:2023 query pack via the shared S-CORE workflow.
+  # The hermetic S-CORE GCC is statically linked and cannot be traced by CodeQL (LD_PRELOAD).
+  # A platform without the gcc_12.2.0 constraint makes Bazel fall back to the runner's GCC.
   # Local spawn strategy and no action cache, so that CodeQL traces every compiler call.
   codeql-cpp:
     uses: eclipse-score/cicd-workflows/.github/workflows/codeql.yml@8ab73967470fa41977dd1c1102d03719b2e2c7e2 # v0.0.3-32-g8ab7396
@@ -35,10 +37,14 @@ jobs:
       actions: read
       contents: read
     with:
-      build-script: >-
-        bazel build --config=per-x86_64-linux --lockfile_mode=error
-        --spawn_strategy=local --nouse_action_cache --noremote_accept_cached
-        //score/kvs:kvs
+      build-script: |
+        bazel build --lockfile_mode=error \
+          --platforms=@score_bazel_platforms//:x86_64-linux \
+          --host_platform=@score_bazel_platforms//:x86_64-linux \
+          --incompatible_strict_action_env \
+          --spawn_strategy=local --nouse_action_cache \
+          --noremote_accept_cached --noremote_upload_local_results \
+          //score/kvs:kvs
 
   # Rust: CodeQL default code scanning suite, extracted from the Cargo workspace without a build.
   codeql-rust:
