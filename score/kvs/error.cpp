@@ -16,7 +16,6 @@
 namespace score::mw::per::kvs
 {
 
-/*********************** Error Implementation *********************/
 std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code) const noexcept
 {
     switch (static_cast<ErrorCode>(code))
@@ -80,4 +79,4 @@ score::result::Error MakeError(const ErrorCode code, const std::string_view user
     return {static_cast<score::result::ErrorCode>(code), kvs_error_domain, user_message};
 }
 
-} /* namespace score::mw::per::kvs */
+}  // namespace score::mw::per::kvs

@@ -19,21 +19,53 @@
 #include <istream>
 #include <string>
 
-/*
- * This header defines helper functions used internally by the Key-Value Store (KVS) implementation.
- * It exists to allow unit tests to access these internal functions.
- */
+// This header defines helper functions used internally by the Key-Value Store (KVS) implementation.
+// It exists to allow unit tests to access these internal functions.
 namespace score::mw::per::kvs
 {
 
+/// @brief Parses an Adler-32 checksum from its big-endian byte representation.
+/// @param in Stream to read the 4 checksum bytes from.
+/// @return The parsed checksum.
 uint32_t parse_hash_adler32(std::istream& in) noexcept;
+
+/// @brief Calculates the Adler-32 checksum of the data.
+/// @param data Data to calculate the checksum of.
+/// @return The calculated checksum.
 uint32_t calculate_hash_adler32(const std::string& data) noexcept;
+
+/// @brief Splits an Adler-32 checksum into its big-endian bytes for writing.
+/// @param hash The checksum to split.
+/// @return The checksum bytes.
 std::array<uint8_t, 4> get_hash_bytes_adler32(uint32_t hash) noexcept;
+
+/// @brief Calculates the checksum of the data and returns it as bytes for writing.
+///
+/// Wraps the hash algorithm, so that the algorithm can be replaced more easily.
+///
+/// @param data Data to calculate the checksum of.
+/// @return The checksum bytes.
 std::array<uint8_t, 4> get_hash_bytes(const std::string& data) noexcept;
+
+/// @brief Checks if the checksum read from a stream matches the data.
+///
+/// Wraps the hash algorithm, so that the algorithm can be replaced more easily.
+///
+/// @param data_calculate Data to calculate the checksum of.
+/// @param data_parse Stream to read the expected checksum from.
+/// @return `true` if the checksums match.
 bool check_hash(const std::string& data_calculate, std::istream& data_parse) noexcept;
+
+/// @brief Converts a JSON value in the KVS file format (`{"t": <type>, "v": <value>}`) to a KvsValue.
+/// @param any The JSON value to convert.
+/// @return The converted value on success, or ErrorCode::InvalidValueType on failure.
 score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept;
+
+/// @brief Converts a KvsValue to a JSON value in the KVS file format (`{"t": <type>, "v": <value>}`).
+/// @param kv The value to convert.
+/// @return The converted JSON value on success, or ErrorCode::InvalidValueType on failure.
 score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) noexcept;
 
-} /* namespace score::mw::per::kvs */
+}  // namespace score::mw::per::kvs
 
 #endif  // SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP

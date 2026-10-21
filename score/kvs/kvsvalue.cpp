@@ -42,13 +42,10 @@ KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) noex
     value_ = std::move(entries);
 }
 
-/* copy constructor */
 KvsValue::KvsValue(const KvsValue& other) noexcept : value_(other.value_), type_(other.type_) {}
 
-/* move constructor */
 KvsValue::KvsValue(KvsValue&& other) noexcept : value_(std::move(other.value_)), type_(other.type_) {}
 
-/* copy Assignment Operator */
 KvsValue& KvsValue::operator=(const KvsValue& other) noexcept
 {
     if (this != &other)
@@ -59,7 +56,6 @@ KvsValue& KvsValue::operator=(const KvsValue& other) noexcept
     return *this;
 }
 
-/* move Assignment Operator */
 KvsValue& KvsValue::operator=(KvsValue&& other) noexcept
 {
     if (this != &other)
@@ -72,4 +68,4 @@ KvsValue& KvsValue::operator=(KvsValue&& other) noexcept
 
 KvsValue::~KvsValue() noexcept = default;
 
-} /* end namespace score::mw::per::kvs */
+}  // namespace score::mw::per::kvs
