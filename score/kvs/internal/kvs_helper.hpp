@@ -37,7 +37,7 @@ uint32_t calculate_hash_adler32(const std::string& data) noexcept;
 /// @brief Splits an Adler-32 checksum into its big-endian bytes for writing.
 /// @param hash The checksum to split.
 /// @return The checksum bytes.
-std::array<uint8_t, 4> get_hash_bytes_adler32(uint32_t hash) noexcept;
+std::array<uint8_t, 4> get_hash_bytes_adler32(const uint32_t hash) noexcept;
 
 /// @brief Calculates the checksum of the data and returns it as bytes for writing.
 ///

@@ -987,6 +987,28 @@ TEST(kvs_is_value_default, is_value_default)
     cleanup_environment();
 }
 
+TEST(kvs_is_value_default, is_value_default_failure)
+{
+    prepare_environment();
+
+    /* Mutex locked */
+    auto result = Kvs::open(instance_id,
+                            snapshot_id,
+                            OpenNeedDefaults::Required,
+                            OpenNeedKvs::Required,
+                            std::string(data_dir),
+                            std::nullopt,
+                            KVS_DEFAULT_MAX_SNAPSHOTS);
+    ASSERT_TRUE(result);
+
+    std::unique_lock<std::mutex> lock(result.value().kvs_mutex_);
+    auto default_result = result.value().is_value_default("default");
+    EXPECT_FALSE(default_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*default_result.error()), ErrorCode::MutexLockFailed);
+
+    cleanup_environment();
+}
+
 TEST(kvs_set_value, set_value_success)
 {
     prepare_environment();

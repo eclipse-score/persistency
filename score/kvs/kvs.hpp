@@ -159,9 +159,9 @@ class Kvs final
                                    const SnapshotId& snapshot_id,
                                    const OpenNeedDefaults& need_defaults,
                                    const OpenNeedKvs& need_kvs,
-                                   const std::string&& dir,
+                                   const std::string& dir,
                                    const std::optional<size_t>& max_storage_bytes,
-                                   std::size_t snapshot_max_count) noexcept;
+                                   const std::size_t snapshot_max_count) noexcept;
 
     /// @brief Resets the key-value store to its initial state.
     /// @return Nothing on success, or an ErrorCode on failure.
@@ -172,7 +172,7 @@ class Kvs final
     /// It only retrieves the written keys, no default keys are returned.
     ///
     /// @return All written keys on success, or an ErrorCode on failure.
-    score::Result<std::vector<std::string>> get_all_keys() noexcept;
+    score::Result<std::vector<std::string>> get_all_keys() const noexcept;
 
     /// @brief Checks if a key exists in the key-value store.
     ///
@@ -180,12 +180,12 @@ class Kvs final
     ///
     /// @param key The key to check for existence.
     /// @return `true` if the key exists and `false` if it does not on success, or an ErrorCode on failure.
-    score::Result<bool> key_exists(const std::string_view key) noexcept;
+    score::Result<bool> key_exists(const std::string_view key) const noexcept;
 
     /// @brief Retrieves the value associated with the specified key from the key-value store.
     /// @param key The key for which the value is to be retrieved.
     /// @return The retrieved value on success, or an ErrorCode on failure.
-    score::Result<KvsValue> get_value(const std::string_view key) noexcept;
+    score::Result<KvsValue> get_value(const std::string_view key) const noexcept;
 
     /// @brief Retrieves the default value associated with the specified key.
     ///
@@ -194,7 +194,7 @@ class Kvs final
     ///
     /// @param key The key for which the default value is to be retrieved.
     /// @return The default value on success, or an ErrorCode on failure.
-    score::Result<KvsValue> get_default_value(const std::string_view key) noexcept;
+    score::Result<KvsValue> get_default_value(const std::string_view key) const noexcept;
 
     /// @brief Resets a specified key to its default value.
     ///
@@ -294,7 +294,7 @@ class Kvs final
     /// @return The estimated total size that the KVS would occupy after a flush on success.
     /// `OutOfStorageSpace` if the limit would be exceeded.
     /// Another ErrorCode for other failures (e.g. serialization).
-    score::Result<size_t> calculate_potential_size() noexcept;
+    score::Result<size_t> calculate_potential_size() const noexcept;
 
   private:
     /// @brief Constructs an empty KVS.
@@ -303,7 +303,7 @@ class Kvs final
     Kvs() noexcept;
 
     /// Mutex guarding `kvs_`.
-    std::mutex kvs_mutex_;
+    mutable std::mutex kvs_mutex_;
 
     /// Written key-value pairs.
     KeyValueMap kvs_;
@@ -335,40 +335,40 @@ class Kvs final
     std::optional<size_t> max_storage_bytes_;
 
     /// @brief Rotates the snapshots, ensuring that the maximum count is maintained.
-    score::Result<void> snapshot_rotate() noexcept;
+    score::Result<void> snapshot_rotate() const noexcept;
 
     /// @brief Parses JSON data into a map of key-value pairs.
-    score::Result<KeyValueMap> parse_json_data(const std::string& data) noexcept;
+    score::Result<KeyValueMap> parse_json_data(const std::string& data) const noexcept;
 
     /// @brief Opens a JSON file, verifies its hash and returns its contents as a map of key-value pairs.
     score::Result<KeyValueMap> open_json(const score::filesystem::Path& prefix,
-                                         const OpenJsonNeedFile need_file) noexcept;
+                                         const OpenJsonNeedFile need_file) const noexcept;
 
     /// @brief Writes the provided data to the current JSON file and its hash file.
-    score::Result<void> write_json_data(const std::string& buf) noexcept;
+    score::Result<void> write_json_data(const std::string& buf) const noexcept;
 
     /// @brief Writes data to the temporary file of a KVS file and ensures it reaches physical storage.
     ///
     /// The live file is not touched, it is replaced by commit_temp_file() once the data is on storage.
     score::Result<void> write_temp_file(const score::filesystem::Path& path,
                                         const void* data,
-                                        std::size_t size) noexcept;
+                                        const std::size_t size) const noexcept;
 
     /// @brief Replaces a KVS file with its temporary file.
     ///
     /// The rename is atomic, the file is either old or new.
-    score::Result<void> commit_temp_file(const score::filesystem::Path& path) noexcept;
+    score::Result<void> commit_temp_file(const score::filesystem::Path& path) const noexcept;
 
     /// @brief Serializes the KVS and checks the projected total size against the storage limit.
-    score::Result<std::string> serialize_and_check() noexcept;
+    score::Result<std::string> serialize_and_check() const noexcept;
 
     /// @brief Retrieves the size of one file in bytes.
     ///
     /// A missing file counts as 0 bytes.
-    score::Result<size_t> get_file_size(const score::filesystem::Path& file_path) noexcept;
+    score::Result<size_t> get_file_size(const score::filesystem::Path& file_path) const noexcept;
 
     /// @brief Retrieves the current storage size of all persisted files (defaults and snapshots).
-    score::Result<size_t> get_current_storage_size() noexcept;
+    score::Result<size_t> get_current_storage_size() const noexcept;
 };
 
 }  // namespace score::mw::per::kvs

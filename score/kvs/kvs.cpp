@@ -125,7 +125,7 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
     return *this;
 }
 
-score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data) noexcept
+score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data) const noexcept
 {
     auto any_res = parser_->FromBuffer(data);
     if (!any_res)
@@ -134,7 +134,7 @@ score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data) no
     }
 
     score::json::Any root = std::move(any_res).value();
-    auto obj = root.As<score::json::Object>();
+    const auto obj = root.As<score::json::Object>();
     if (!obj.has_value())
     {
         return score::MakeUnexpected(ErrorCode::JsonParserError);
@@ -143,7 +143,7 @@ score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data) no
     KeyValueMap result_value;
     for (const auto& element : obj.value().get())
     {
-        auto sv = element.first.GetAsStringView();
+        const auto sv = element.first.GetAsStringView();
         std::string key(sv.data(), sv.size());
 
         // Validate key.
@@ -165,10 +165,10 @@ score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data) no
 }
 
 score::Result<Kvs::KeyValueMap> Kvs::open_json(const score::filesystem::Path& prefix,
-                                               const OpenJsonNeedFile need_file) noexcept
+                                               const OpenJsonNeedFile need_file) const noexcept
 {
-    score::filesystem::Path json_file = prefix.Native() + ".json";
-    score::filesystem::Path hash_file = prefix.Native() + ".hash";
+    const score::filesystem::Path json_file = prefix.Native() + ".json";
+    const score::filesystem::Path hash_file = prefix.Native() + ".hash";
 
     // Read JSON file.
     std::ifstream in(json_file.CStr());
@@ -219,12 +219,12 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
                              const SnapshotId& snapshot_id,
                              const OpenNeedDefaults& need_defaults,
                              const OpenNeedKvs& need_kvs,
-                             const std::string&& dir,
+                             const std::string& dir,
                              const std::optional<size_t>& max_storage_bytes,
-                             std::size_t snapshot_max_count) noexcept
+                             const std::size_t snapshot_max_count) noexcept
 {
-    score::filesystem::Path base_path(dir);
-    score::filesystem::Path filename_prefix = base_path / ("kvs_" + std::to_string(instance_id.id));
+    const score::filesystem::Path base_path(dir);
+    const score::filesystem::Path filename_prefix = base_path / ("kvs_" + std::to_string(instance_id.id));
     const score::filesystem::Path filename_default = filename_prefix.Native() + "_default";
     const score::filesystem::Path filename_kvs = filename_prefix.Native() + "_" + std::to_string(snapshot_id.id);
 
@@ -290,7 +290,7 @@ score::Result<void> Kvs::reset() noexcept
     return {};
 }
 
-score::Result<std::vector<std::string>> Kvs::get_all_keys() noexcept
+score::Result<std::vector<std::string>> Kvs::get_all_keys() const noexcept
 {
     std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
     if (!lock.owns_lock())
@@ -307,7 +307,7 @@ score::Result<std::vector<std::string>> Kvs::get_all_keys() noexcept
     return keys;
 }
 
-score::Result<bool> Kvs::key_exists(const std::string_view key) noexcept
+score::Result<bool> Kvs::key_exists(const std::string_view key) const noexcept
 {
     std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
     if (!lock.owns_lock())
@@ -320,7 +320,7 @@ score::Result<bool> Kvs::key_exists(const std::string_view key) noexcept
     return kvs_.find(std::string(key)) != kvs_.end();
 }
 
-score::Result<KvsValue> Kvs::get_value(const std::string_view key) noexcept
+score::Result<KvsValue> Kvs::get_value(const std::string_view key) const noexcept
 {
     std::unique_lock<std::mutex> lock_kvs(kvs_mutex_, std::try_to_lock);
     if (!lock_kvs.owns_lock())
@@ -328,7 +328,7 @@ score::Result<KvsValue> Kvs::get_value(const std::string_view key) noexcept
         return score::MakeUnexpected(ErrorCode::MutexLockFailed);
     }
 
-    auto search_kvs = kvs_.find(std::string(key));
+    const auto search_kvs = kvs_.find(std::string(key));
     if (search_kvs == kvs_.end())
     {
         return score::MakeUnexpected(ErrorCode::KeyNotFound);
@@ -336,9 +336,9 @@ score::Result<KvsValue> Kvs::get_value(const std::string_view key) noexcept
     return search_kvs->second;
 }
 
-score::Result<KvsValue> Kvs::get_default_value(const std::string_view key) noexcept
+score::Result<KvsValue> Kvs::get_default_value(const std::string_view key) const noexcept
 {
-    auto search = default_values_.find(std::string(key));
+    const auto search = default_values_.find(std::string(key));
     if (search == default_values_.end())
     {
         return score::MakeUnexpected(ErrorCode::KeyNotFound);
@@ -366,7 +366,13 @@ score::Result<void> Kvs::reset_key(const std::string_view key) noexcept
 
 score::Result<bool> Kvs::is_value_default(const std::string_view key) const noexcept
 {
-    std::string key_str{key};
+    std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
+    if (!lock.owns_lock())
+    {
+        return score::MakeUnexpected(ErrorCode::MutexLockFailed);
+    }
+
+    const std::string key_str{key};
     if (kvs_.find(key_str) != kvs_.end())
     {
         return false;
@@ -449,7 +455,7 @@ score::Result<void> Kvs::discard_pending_changes() noexcept
     return {};
 }
 
-score::Result<size_t> Kvs::get_file_size(const score::filesystem::Path& file_path) noexcept
+score::Result<size_t> Kvs::get_file_size(const score::filesystem::Path& file_path) const noexcept
 {
     std::error_code ec;
     const auto size = std::filesystem::file_size(file_path.CStr(), ec);
@@ -473,7 +479,7 @@ score::Result<size_t> Kvs::get_file_size(const score::filesystem::Path& file_pat
     return size;
 }
 
-score::Result<size_t> Kvs::get_current_storage_size() noexcept
+score::Result<size_t> Kvs::get_current_storage_size() const noexcept
 {
     size_t total_size = 0;
     const std::array<const char*, 2> file_extensions = {".json", ".hash"};
@@ -512,7 +518,7 @@ score::Result<size_t> Kvs::get_current_storage_size() noexcept
 
 score::Result<void> Kvs::write_temp_file(const score::filesystem::Path& path,
                                          const void* data,
-                                         std::size_t size) noexcept
+                                         const std::size_t size) const noexcept
 {
     const score::os::Unistd& unistd = score::os::Unistd::instance();
     const score::filesystem::Path tmp_path = temp_file_path(path);
@@ -583,7 +589,7 @@ score::Result<void> Kvs::write_temp_file(const score::filesystem::Path& path,
     return {};
 }
 
-score::Result<void> Kvs::commit_temp_file(const score::filesystem::Path& path) noexcept
+score::Result<void> Kvs::commit_temp_file(const score::filesystem::Path& path) const noexcept
 {
     const score::filesystem::Path tmp_path = temp_file_path(path);
     if (!score::os::Stdio::instance().rename(tmp_path.CStr(), path.CStr()).has_value())
@@ -596,11 +602,11 @@ score::Result<void> Kvs::commit_temp_file(const score::filesystem::Path& path) n
     return {};
 }
 
-score::Result<void> Kvs::write_json_data(const std::string& buf) noexcept
+score::Result<void> Kvs::write_json_data(const std::string& buf) const noexcept
 {
-    score::filesystem::Path json_path{filename_prefix_.Native() + "_0.json"};
-    score::filesystem::Path hash_path{filename_prefix_.Native() + "_0.hash"};
-    score::filesystem::Path dir = json_path.ParentPath();
+    const score::filesystem::Path json_path{filename_prefix_.Native() + "_0.json"};
+    const score::filesystem::Path hash_path{filename_prefix_.Native() + "_0.hash"};
+    const score::filesystem::Path dir = json_path.ParentPath();
     if (dir.Empty())
     {
         logger_->LogError() << "Provided directory path is empty" << json_path;
@@ -621,7 +627,7 @@ score::Result<void> Kvs::write_json_data(const std::string& buf) noexcept
         return json_res;
     }
 
-    std::array<uint8_t, 4> hash_bytes = get_hash_bytes(buf);
+    const std::array<uint8_t, 4> hash_bytes = get_hash_bytes(buf);
     auto hash_res = write_temp_file(hash_path, hash_bytes.data(), hash_bytes.size());
     if (!hash_res.has_value())
     {
@@ -653,7 +659,7 @@ score::Result<void> Kvs::write_json_data(const std::string& buf) noexcept
     return {};
 }
 
-score::Result<std::string> Kvs::serialize_and_check() noexcept
+score::Result<std::string> Kvs::serialize_and_check() const noexcept
 {
     score::json::Object root_obj;
 
@@ -687,7 +693,7 @@ score::Result<std::string> Kvs::serialize_and_check() noexcept
     if (max_storage_bytes_.has_value())
     {
         // 2. Size of all other persisted files.
-        auto current_size_res = get_current_storage_size();
+        const auto current_size_res = get_current_storage_size();
         if (!current_size_res)
         {
             return score::MakeUnexpected<std::string>(current_size_res.error());
@@ -725,7 +731,7 @@ score::Result<void> Kvs::flush() noexcept
     return write_json_data(result.value());
 }
 
-score::Result<size_t> Kvs::calculate_potential_size() noexcept
+score::Result<size_t> Kvs::calculate_potential_size() const noexcept
 {
     auto result = serialize_and_check();
     if (!result)
@@ -735,7 +741,7 @@ score::Result<size_t> Kvs::calculate_potential_size() noexcept
 
     // Re-calculate the size to return it, as serialize_and_check() only returns the buffer.
     const std::string& buf = result.value();
-    auto current_size_res = get_current_storage_size();
+    const auto current_size_res = get_current_storage_size();
     if (!current_size_res)
     {
         return score::MakeUnexpected<size_t>(current_size_res.error());
@@ -770,7 +776,7 @@ size_t Kvs::snapshot_max_count() const noexcept
     return max_snapshots_;
 }
 
-score::Result<void> Kvs::snapshot_rotate() noexcept
+score::Result<void> Kvs::snapshot_rotate() const noexcept
 {
     std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
     if (!lock.owns_lock())
@@ -780,14 +786,14 @@ score::Result<void> Kvs::snapshot_rotate() noexcept
 
     for (size_t idx = max_snapshots_; idx > 0; --idx)
     {
-        score::filesystem::Path hash_old = filename_prefix_.Native() + "_" + std::to_string(idx - 1) + ".hash";
-        score::filesystem::Path hash_new = filename_prefix_.Native() + "_" + std::to_string(idx) + ".hash";
-        score::filesystem::Path snap_old = filename_prefix_.Native() + "_" + std::to_string(idx - 1) + ".json";
-        score::filesystem::Path snap_new = filename_prefix_.Native() + "_" + std::to_string(idx) + ".json";
+        const score::filesystem::Path hash_old = filename_prefix_.Native() + "_" + std::to_string(idx - 1) + ".hash";
+        const score::filesystem::Path hash_new = filename_prefix_.Native() + "_" + std::to_string(idx) + ".hash";
+        const score::filesystem::Path snap_old = filename_prefix_.Native() + "_" + std::to_string(idx - 1) + ".json";
+        const score::filesystem::Path snap_new = filename_prefix_.Native() + "_" + std::to_string(idx) + ".json";
 
         logger_->LogInfo() << "rotating:" << snap_old << "->" << snap_new;
         // Rename hash.
-        int32_t hash_rename = std::rename(hash_old.CStr(), hash_new.CStr());
+        const int32_t hash_rename = std::rename(hash_old.CStr(), hash_new.CStr());
         if ((0 != hash_rename) && (errno != ENOENT))
         {
             logger_->LogError() << "error: could not rename hash file" << snap_old << "- Rename Errorcode" << errno;
@@ -795,7 +801,7 @@ score::Result<void> Kvs::snapshot_rotate() noexcept
         }
 
         // Rename snapshot.
-        int32_t snap_rename = std::rename(snap_old.CStr(), snap_new.CStr());
+        const int32_t snap_rename = std::rename(snap_old.CStr(), snap_new.CStr());
         if ((0 != snap_rename) && (errno != ENOENT))
         {
             logger_->LogError() << "error: could not rename snapshot file" << snap_old << "- Rename Errorcode" << errno;
@@ -814,7 +820,7 @@ score::Result<void> Kvs::snapshot_restore(const SnapshotId& snapshot_id) noexcep
         return score::MakeUnexpected(ErrorCode::MutexLockFailed);
     }
 
-    auto snapshot_count_res = snapshot_count();
+    const auto snapshot_count_res = snapshot_count();
     if (!snapshot_count_res)
     {
         return score::MakeUnexpected(static_cast<ErrorCode>(*snapshot_count_res.error()));
@@ -826,7 +832,7 @@ score::Result<void> Kvs::snapshot_restore(const SnapshotId& snapshot_id) noexcep
         return score::MakeUnexpected(ErrorCode::InvalidSnapshotId);
     }
 
-    score::filesystem::Path restore_path = filename_prefix_.Native() + "_" + std::to_string(snapshot_id.id);
+    const score::filesystem::Path restore_path = filename_prefix_.Native() + "_" + std::to_string(snapshot_id.id);
     auto data_res = open_json(restore_path, OpenJsonNeedFile::Required);
     if (!data_res)
     {

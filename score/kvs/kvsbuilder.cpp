@@ -45,9 +45,9 @@ KvsBuilder& KvsBuilder::need_kvs_flag(const OpenNeedKvs& flag) noexcept
     return *this;
 }
 
-KvsBuilder& KvsBuilder::dir(std::string&& dir_path) noexcept
+KvsBuilder& KvsBuilder::dir(const std::string& dir_path) noexcept
 {
-    this->directory_ = std::move(dir_path);
+    this->directory_ = dir_path;
     return *this;
 }
 
@@ -57,27 +57,19 @@ KvsBuilder& KvsBuilder::max_storage_bytes(const std::optional<size_t>& max_stora
     return *this;
 }
 
-KvsBuilder& KvsBuilder::snapshot_max_count(std::size_t max_count) noexcept
+KvsBuilder& KvsBuilder::snapshot_max_count(const std::size_t max_count) noexcept
 {
     this->max_snapshots_ = max_count;
     return *this;
 }
 
-score::Result<Kvs> KvsBuilder::build() noexcept
+score::Result<Kvs> KvsBuilder::build() const noexcept
 {
     // Use current directory if empty.
-    if ("" == directory_)
-    {
-        directory_ = "./";
-    }
+    const std::string directory = directory_.empty() ? std::string{"./"} : directory_;
 
-    return Kvs::open(instance_id_,
-                     snapshot_id_,
-                     need_defaults_,
-                     need_kvs_,
-                     std::move(directory_),
-                     maximum_storage_bytes_,
-                     max_snapshots_);
+    return Kvs::open(
+        instance_id_, snapshot_id_, need_defaults_, need_kvs_, directory, maximum_storage_bytes_, max_snapshots_);
 }
 
 }  // namespace score::mw::per::kvs

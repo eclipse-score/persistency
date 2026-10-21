@@ -29,7 +29,7 @@ uint32_t calculate_hash_adler32(const std::string& data) noexcept
     // Process in blocks of 5552 bytes (as recommended for Adler-32).
     while (len > 0)
     {
-        size_t tlen = len > ADLER32_NMAX ? ADLER32_NMAX : len;
+        const size_t tlen = len > ADLER32_NMAX ? ADLER32_NMAX : len;
         len -= tlen;
         for (size_t j = 0; j < tlen; ++j, ++i)
         {
@@ -47,12 +47,12 @@ uint32_t parse_hash_adler32(std::istream& in) noexcept
     std::array<uint8_t, 4> buf{};
     in.read(reinterpret_cast<char*>(buf.data()), buf.size());
 
-    uint32_t value = (static_cast<uint32_t>(buf[0]) << 24) | (static_cast<uint32_t>(buf[1]) << 16) |
-                     (static_cast<uint32_t>(buf[2]) << 8) | static_cast<uint32_t>(buf[3]);
+    const uint32_t value = (static_cast<uint32_t>(buf[0]) << 24) | (static_cast<uint32_t>(buf[1]) << 16) |
+                           (static_cast<uint32_t>(buf[2]) << 8) | static_cast<uint32_t>(buf[3]);
     return value;
 }
 
-std::array<uint8_t, 4> get_hash_bytes_adler32(uint32_t hash) noexcept
+std::array<uint8_t, 4> get_hash_bytes_adler32(const uint32_t hash) noexcept
 {
     std::array<uint8_t, 4> value = {static_cast<uint8_t>((hash >> 24) & 0xFF),
                                     static_cast<uint8_t>((hash >> 16) & 0xFF),
@@ -63,35 +63,35 @@ std::array<uint8_t, 4> get_hash_bytes_adler32(uint32_t hash) noexcept
 
 std::array<uint8_t, 4> get_hash_bytes(const std::string& data) noexcept
 {
-    uint32_t hash = calculate_hash_adler32(data);
+    const uint32_t hash = calculate_hash_adler32(data);
     std::array<uint8_t, 4> value = get_hash_bytes_adler32(hash);
     return value;
 }
 
 bool check_hash(const std::string& data_calculate, std::istream& data_parse) noexcept
 {
-    uint32_t calculated_hash = calculate_hash_adler32(data_calculate);
-    uint32_t parsed_hash = parse_hash_adler32(data_parse);
+    const uint32_t calculated_hash = calculate_hash_adler32(data_calculate);
+    const uint32_t parsed_hash = parse_hash_adler32(data_parse);
     return calculated_hash == parsed_hash;
 }
 
 score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
 {
-    auto o = any.As<score::json::Object>();
+    const auto o = any.As<score::json::Object>();
     if (!o.has_value())
     {
         return score::MakeUnexpected(ErrorCode::InvalidValueType);
     }
 
     const auto& objAny = o.value().get();
-    auto type = objAny.find("t");
-    auto value = objAny.find("v");
+    const auto type = objAny.find("t");
+    const auto value = objAny.find("v");
     if (type == objAny.end() || value == objAny.end())
     {
         return score::MakeUnexpected(ErrorCode::InvalidValueType);
     }
 
-    auto typeStr = type->second.As<std::string>();
+    const auto typeStr = type->second.As<std::string>();
     if (!typeStr.has_value())
     {
         return score::MakeUnexpected(ErrorCode::InvalidValueType);
@@ -102,7 +102,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
 
     if (typeStrV == "i32")
     {
-        auto n = valueAny.As<int32_t>();
+        const auto n = valueAny.As<int32_t>();
         if (!n.has_value())
         {
             return score::MakeUnexpected(ErrorCode::InvalidValueType);
@@ -111,7 +111,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
     }
     else if (typeStrV == "u32")
     {
-        auto n = valueAny.As<uint32_t>();
+        const auto n = valueAny.As<uint32_t>();
         if (!n.has_value())
         {
             return score::MakeUnexpected(ErrorCode::InvalidValueType);
@@ -120,7 +120,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
     }
     else if (typeStrV == "i64")
     {
-        auto n = valueAny.As<int64_t>();
+        const auto n = valueAny.As<int64_t>();
         if (!n.has_value())
         {
             return score::MakeUnexpected(ErrorCode::InvalidValueType);
@@ -129,7 +129,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
     }
     else if (typeStrV == "u64")
     {
-        auto n = valueAny.As<uint64_t>();
+        const auto n = valueAny.As<uint64_t>();
         if (!n.has_value())
         {
             return score::MakeUnexpected(ErrorCode::InvalidValueType);
@@ -138,7 +138,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
     }
     else if (typeStrV == "f64")
     {
-        auto n = valueAny.As<double>();
+        const auto n = valueAny.As<double>();
         if (!n.has_value())
         {
             return score::MakeUnexpected(ErrorCode::InvalidValueType);
@@ -147,7 +147,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
     }
     else if (typeStrV == "bool")
     {
-        auto b = valueAny.As<bool>();
+        const auto b = valueAny.As<bool>();
         if (!b.has_value())
         {
             return score::MakeUnexpected(ErrorCode::InvalidValueType);
@@ -156,7 +156,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
     }
     else if (typeStrV == "str")
     {
-        auto s = valueAny.As<std::string>();
+        const auto s = valueAny.As<std::string>();
         if (!s.has_value())
         {
             return score::MakeUnexpected(ErrorCode::InvalidValueType);
@@ -173,7 +173,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
     }
     else if (typeStrV == "arr")
     {
-        auto l = valueAny.As<score::json::List>();
+        const auto l = valueAny.As<score::json::List>();
         if (!l.has_value())
         {
             return score::MakeUnexpected(ErrorCode::InvalidValueType);
@@ -192,7 +192,7 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept
     }
     else if (typeStrV == "obj")
     {
-        auto obj = valueAny.As<score::json::Object>();
+        const auto obj = valueAny.As<score::json::Object>();
         if (!obj.has_value())
         {
             return score::MakeUnexpected(ErrorCode::InvalidValueType);
