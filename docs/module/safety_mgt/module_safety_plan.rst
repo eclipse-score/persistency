@@ -130,6 +130,11 @@ Module Work products List
           - :ndf:`copy('status', need_id='gd_temp__rel_mod_rel_note')`
           - :need:`doc__persistency_release_note`
 
+        * - :need:`wp__module_user_manual`
+          - :need:`gd_temp__rel_mod_user_manual`
+          - :ndf:`copy('status', need_id='gd_temp__rel_mod_user_manual')`
+          - :need:`doc__persistency_user_manual`
+
 
 Component KVS Work products List
 --------------------------------
