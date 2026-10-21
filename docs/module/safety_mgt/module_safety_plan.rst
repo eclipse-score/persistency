@@ -113,7 +113,7 @@ Module Work products List
         * - :need:`wp__audit_report`
           - performed by external experts
           - n/a
-          - Planned with the next S-CORE safety audit, see :ref:`persistency_safety_package_deviations`
+          - n/a
 
         * - :need:`wp__module_safety_manual`
           - :need:`gd_temp__safety_manual`
@@ -292,8 +292,5 @@ safety anomalies in the sense of known bugs in the software are reported in the 
             classification of Tiny JSON was removed with the change of the architecture to the baselibs JSON interface.
           - Classify the crates or replace them by the baselibs interfaces in the Rust implementation.
 
-        * - :need:`wp__audit_report`
-          - The safety audit of the module is not yet performed.
-          - Perform the safety audit with the next S-CORE safety audit.
 
 
