@@ -1,0 +1,110 @@
+/********************************************************************************
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ********************************************************************************/
+#ifndef SCORE_KVS_ERROR_H
+#define SCORE_KVS_ERROR_H
+
+#include "score/result/result.h"
+#include <string_view>
+
+namespace score::mw::per::kvs
+{
+
+/// @brief Error codes reported by the `kvs` API.
+enum class ErrorCode : score::result::ErrorCode
+{
+    /// Error that was not yet mapped.
+    UnmappedError,
+
+    /// File not found.
+    FileNotFound,
+
+    /// KVS file read error.
+    KvsFileReadError,
+
+    /// KVS hash file read error.
+    KvsHashFileReadError,
+
+    /// JSON parser error.
+    JsonParserError,
+
+    /// JSON generator error.
+    JsonGeneratorError,
+
+    /// Physical storage failure.
+    PhysicalStorageFailure,
+
+    /// Integrity corrupted.
+    IntegrityCorrupted,
+
+    /// Validation failed.
+    ValidationFailed,
+
+    /// Encryption failed.
+    EncryptionFailed,
+
+    /// Resource is busy.
+    ResourceBusy,
+
+    /// Out of storage space.
+    OutOfStorageSpace,
+
+    /// Quota exceeded.
+    QuotaExceeded,
+
+    /// Authentication failed.
+    AuthenticationFailed,
+
+    /// Key not found.
+    KeyNotFound,
+
+    /// Key default value not found.
+    KeyDefaultNotFound,
+
+    /// Serialization failed.
+    SerializationFailed,
+
+    /// Invalid snapshot ID.
+    InvalidSnapshotId,
+
+    /// Conversion failed.
+    ConversionFailed,
+
+    /// Mutex failed.
+    MutexLockFailed,
+
+    /// Invalid value type.
+    InvalidValueType,
+
+    /// Key is not valid.
+    InvalidKey,
+};
+
+/// @brief Error domain translating `ErrorCode` codes to human-readable messages.
+class KvsErrorDomain final : public score::result::ErrorDomain
+{
+  public:
+    /// @brief Returns the human-readable message for an error code.
+    /// @param code The error code to translate.
+    /// @return The message for `code`.
+    std::string_view MessageFor(const score::result::ErrorCode& code) const noexcept override;
+};
+
+/// @brief Creates an error in the KVS error domain.
+/// @param code The error code.
+/// @param user_message Optional message with additional context.
+/// @return The created error.
+score::result::Error MakeError(const ErrorCode code, const std::string_view user_message = "") noexcept;
+
+}  // namespace score::mw::per::kvs
+
+#endif  // SCORE_KVS_ERROR_H

@@ -10,9 +10,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_INSTANCE_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_INSTANCE_H
 
-#include <scenario.hpp>
+#include "helpers/kvs_parameters.h"
 
-/// @brief Creates a group containing scenarios for CITs.
-ScenarioGroup::Ptr cit_scenario_group();
+score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params);
+
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_INSTANCE_H

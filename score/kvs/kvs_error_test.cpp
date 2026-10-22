@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "kvs_general_test.hpp"
+#include "score/kvs/kvs_general_test.h"
 
 namespace {
     constexpr score::mw::per::kvs::KvsErrorDomain kvs_error_domain;

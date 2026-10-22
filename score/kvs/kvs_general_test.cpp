@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "kvs_general_test.hpp"
+#include "score/kvs/kvs_general_test.h"
 
 /// @brief Independent Adler-32 implementation to check the KVS hash against.
 uint32_t adler32(const std::string& data)

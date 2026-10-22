@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "kvs_general_test.hpp"
+#include "score/kvs/kvs_general_test.h"
 #include "score/os/ObjectSeam.h"
 #include "score/os/mocklib/fcntl_mock.h"
 #include "score/os/mocklib/stat_mock.h"

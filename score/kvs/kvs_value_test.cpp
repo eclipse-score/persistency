@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "score/kvs/kvsvalue.hpp"
+#include "score/kvs/kvs_value.h"
 
 #include <gtest/gtest.h>
 

@@ -11,9 +11,9 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "score/kvs/kvs.hpp"
-#include "internal/kvs_helper.hpp"
-#include "score/kvs/error.hpp"
+#include "score/kvs/kvs.h"
+
+#include "score/kvs/internal/kvs_helper.h"
 #include "score/os/errno.h"
 #include "score/os/fcntl.h"
 #include "score/os/stat.h"
@@ -21,11 +21,15 @@
 #include "score/os/unistd.h"
 #include "score/utility.hpp"
 #include <algorithm>
+#include <array>
+#include <cerrno>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <memory>
 #include <sstream>
+#include <string>
+#include <system_error>
 
 namespace score::mw::per::kvs
 {
