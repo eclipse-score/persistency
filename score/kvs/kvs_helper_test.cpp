@@ -573,29 +573,3 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_object)
     EXPECT_EQ(count_entry.at("t").As<std::string>().value().get(), "f64");
     EXPECT_EQ(count_entry.at("v").As<double>().value(), 42.0);
 }
-
-TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_invalid)
-{
-    // InvalidType.
-    BrokenKvsValue invalid;
-    auto result = kvsvalue_to_any(invalid);
-    EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
-
-    // Invalid values in array and object.
-    KvsValue::Array array;
-    array.push_back(KvsValue(42.0));
-    array.push_back(invalid);
-    KvsValue array_invalid(array);
-    result = kvsvalue_to_any(array_invalid);
-    EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
-
-    KvsValue::Object obj;
-    obj.emplace_back("valid", KvsValue(42.0));
-    obj.emplace_back("invalid", invalid);
-    KvsValue obj_invalid(obj);
-    result = kvsvalue_to_any(obj_invalid);
-    EXPECT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
-}

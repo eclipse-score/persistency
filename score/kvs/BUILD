@@ -76,6 +76,7 @@ cc_test(
         "kvs_general_test.hpp",
         "kvs_helper_test.cpp",
         "kvs_test.cpp",
+        "kvs_value_test.cpp",
     ],
     visibility = ["//:__pkg__"],
     deps = [

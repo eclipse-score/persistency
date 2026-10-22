@@ -101,14 +101,3 @@ const std::string kvs_json = R"({
         "v": 2
     }
 })";
-
-/// @brief KvsValue with an invalid type, for testing kvsvalue_to_any().
-class BrokenKvsValue : public KvsValue
-{
-  public:
-    BrokenKvsValue() : KvsValue(nullptr)
-    {
-        // Intentionally break the type by assigning an invalid value.
-        *(Type*)&this->type_ = static_cast<Type>(999);
-    }
-};

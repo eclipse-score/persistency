@@ -1918,29 +1918,6 @@ TEST(kvs_flush, flush_failure_rotate_snapshots)
     cleanup_environment();
 }
 
-TEST(kvs_flush, flush_failure_kvsvalue_invalid)
-{
-    prepare_environment();
-
-    auto result = Kvs::open(instance_id,
-                            snapshot_id,
-                            OpenNeedDefaults::Optional,
-                            OpenNeedKvs::Optional,
-                            std::string(data_dir),
-                            std::nullopt,
-                            KVS_DEFAULT_MAX_SNAPSHOTS);
-    ASSERT_TRUE(result);
-
-    BrokenKvsValue invalid;
-    result.value().kvs_.insert({"invalid_key", invalid});
-
-    auto flush_result_invalid = result.value().flush();
-    EXPECT_FALSE(flush_result_invalid);
-    EXPECT_EQ(flush_result_invalid.error(), ErrorCode::InvalidValueType);
-
-    cleanup_environment();
-}
-
 TEST(kvs_flush, flush_failure_json_writer)
 {
     prepare_environment();
