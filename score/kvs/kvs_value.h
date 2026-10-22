@@ -29,17 +29,17 @@ namespace score::mw::per::kvs
 ///
 /// The KvsValue class provides a type-safe way to store and retrieve values of different types.
 /// It uses a std::variant to hold the underlying value and an enum to track the type of the value.
-/// Access the underlying value using getValue() and `std::get`.
+/// Access the underlying value using GetValue() and `std::get`.
 ///
 /// Example:
 /// @code
-/// KvsValue numberValue(42.0);
-/// KvsValue stringValue("Hello, World!");
-/// KvsValue arrayValue(KvsValue::Array{numberValue, stringValue});
-/// KvsValue objectValue(KvsValue::Object{{"number", numberValue}, {"text", stringValue}});
+/// KvsValue number_value(42.0);
+/// KvsValue string_value("Hello, World!");
+/// KvsValue array_value(KvsValue::Array{number_value, string_value});
+/// KvsValue object_value(KvsValue::Object{{"number", number_value}, {"text", string_value}});
 ///
-/// if (numberValue.getType() == KvsValue::Type::f64) {
-///     double number = std::get<double>(numberValue.getValue());
+/// if (number_value.GetType() == KvsValue::Type::kF64) {
+///     double number = std::get<double>(number_value.GetValue());
 /// }
 /// @endcode
 class KvsValue final
@@ -58,76 +58,89 @@ class KvsValue final
     enum class Type
     {
         /// `int32_t`
-        i32,
+        kI32,
         /// `uint32_t`
-        u32,
+        kU32,
         /// `int64_t`
-        i64,
+        kI64,
         /// `uint64_t`
-        u64,
+        kU64,
         /// `double`
-        f64,
+        kF64,
         /// `bool`
-        Boolean,
+        kBoolean,
         /// `std::string`
-        String,
+        kString,
         /// `std::nullptr_t`
-        Null,
+        kNull,
         /// KvsValue::Array
-        Array,
+        kArray,
         /// KvsValue::Object
-        Object
+        kObject,
+
+        // Deprecated enumerators.
+        // Each one is an alias of its k-prefixed replacement and is removed in a future release.
+        i32 [[deprecated("Use kI32 instead. The snake_case API is removed in a future release.")]] = kI32,
+        u32 [[deprecated("Use kU32 instead. The snake_case API is removed in a future release.")]] = kU32,
+        i64 [[deprecated("Use kI64 instead. The snake_case API is removed in a future release.")]] = kI64,
+        u64 [[deprecated("Use kU64 instead. The snake_case API is removed in a future release.")]] = kU64,
+        f64 [[deprecated("Use kF64 instead. The snake_case API is removed in a future release.")]] = kF64,
+        Boolean [[deprecated("Use kBoolean instead. The snake_case API is removed in a future release.")]] = kBoolean,
+        String [[deprecated("Use kString instead. The snake_case API is removed in a future release.")]] = kString,
+        Null [[deprecated("Use kNull instead. The snake_case API is removed in a future release.")]] = kNull,
+        Array [[deprecated("Use kArray instead. The snake_case API is removed in a future release.")]] = kArray,
+        Object [[deprecated("Use kObject instead. The snake_case API is removed in a future release.")]] = kObject,
     };
 
     using ValueVariant =
         std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>;
 
     /// @brief The Type enumerators must match the order of the variant alternatives.
-    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::i32), ValueVariant>, int32_t>);
-    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::u32), ValueVariant>, uint32_t>);
-    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::i64), ValueVariant>, int64_t>);
-    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::u64), ValueVariant>, uint64_t>);
-    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::f64), ValueVariant>, double>);
-    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::Boolean), ValueVariant>, bool>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kI32), ValueVariant>, int32_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kU32), ValueVariant>, uint32_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kI64), ValueVariant>, int64_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kU64), ValueVariant>, uint64_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kF64), ValueVariant>, double>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kBoolean), ValueVariant>, bool>);
     static_assert(
-        std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::String), ValueVariant>, std::string>);
+        std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kString), ValueVariant>, std::string>);
     static_assert(
-        std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::Null), ValueVariant>, std::nullptr_t>);
-    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::Array), ValueVariant>, Array>);
-    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::Object), ValueVariant>, Object>);
-    static_assert(std::variant_size_v<ValueVariant> == static_cast<size_t>(Type::Object) + 1U);
+        std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kNull), ValueVariant>, std::nullptr_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kArray), ValueVariant>, Array>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kObject), ValueVariant>, Object>);
+    static_assert(std::variant_size_v<ValueVariant> == static_cast<size_t>(Type::kObject) + 1U);
 
-    /// @brief Constructs a value of type Type::i32.
+    /// @brief Constructs a value of type Type::kI32.
     explicit KvsValue(int32_t number) noexcept : value_(number) {}
-    /// @brief Constructs a value of type Type::u32.
+    /// @brief Constructs a value of type Type::kU32.
     explicit KvsValue(uint32_t number) noexcept : value_(number) {}
-    /// @brief Constructs a value of type Type::i64.
+    /// @brief Constructs a value of type Type::kI64.
     explicit KvsValue(int64_t number) noexcept : value_(number) {}
-    /// @brief Constructs a value of type Type::u64.
+    /// @brief Constructs a value of type Type::kU64.
     explicit KvsValue(uint64_t number) noexcept : value_(number) {}
-    /// @brief Constructs a value of type Type::f64.
+    /// @brief Constructs a value of type Type::kF64.
     explicit KvsValue(double number) noexcept : value_(number) {}
-    /// @brief Constructs a value of type Type::Boolean.
+    /// @brief Constructs a value of type Type::kBoolean.
     explicit KvsValue(bool boolean) noexcept : value_(boolean) {}
-    /// @brief Constructs a value of type Type::String from a C string.
+    /// @brief Constructs a value of type Type::kString from a C string.
     explicit KvsValue(const char* str) noexcept;
-    /// @brief Constructs a value of type Type::String.
+    /// @brief Constructs a value of type Type::kString.
     explicit KvsValue(const std::string& str) noexcept : value_(str) {}
-    /// @brief Constructs a value of type Type::Null.
+    /// @brief Constructs a value of type Type::kNull.
     explicit KvsValue(std::nullptr_t) noexcept : value_(nullptr) {}
-    /// @brief Constructs a value of type Type::Array by copying the elements.
+    /// @brief Constructs a value of type Type::kArray by copying the elements.
     explicit KvsValue(const Array& array) noexcept;
 
-    /// @brief Constructs a value of type Type::Array by moving the elements.
+    /// @brief Constructs a value of type Type::kArray by moving the elements.
     explicit KvsValue(Array&& array) noexcept;
 
-    /// @brief Constructs a value of type Type::Object by copying the members.
+    /// @brief Constructs a value of type Type::kObject by copying the members.
     explicit KvsValue(const Object& object) noexcept;
 
-    /// @brief Constructs a value of type Type::Object by moving the members.
+    /// @brief Constructs a value of type Type::kObject by moving the members.
     explicit KvsValue(Object&& object) noexcept;
 
-    /// @brief Constructs a value of type Type::Object from a map.
+    /// @brief Constructs a value of type Type::kObject from a map.
     explicit KvsValue(const std::unordered_map<std::string, KvsValue>& object) noexcept;
 
     /// @brief Copy constructor.
@@ -147,7 +160,7 @@ class KvsValue final
 
     /// @brief Gets the type of the value.
     /// @return The type of the held value.
-    Type getType() const noexcept
+    Type GetType() const noexcept
     {
         return static_cast<Type>(value_.index());
     }
@@ -157,9 +170,26 @@ class KvsValue final
     /// Use `std::get` to retrieve the value.
     ///
     /// @return The underlying variant.
-    const ValueVariant& getValue() const noexcept
+    const ValueVariant& GetValue() const noexcept
     {
         return value_;
+    }
+
+    // Deprecated snake_case API.
+    // Each entry forwards to its PascalCase replacement and is removed in a future release.
+
+    /// @deprecated Use `GetType()` instead.
+    [[deprecated("Use GetType() instead. The snake_case API is removed in a future release.")]]
+    Type getType() const noexcept
+    {
+        return GetType();
+    }
+
+    /// @deprecated Use `GetValue()` instead.
+    [[deprecated("Use GetValue() instead. The snake_case API is removed in a future release.")]]
+    const ValueVariant& getValue() const noexcept
+    {
+        return GetValue();
     }
 
   private:

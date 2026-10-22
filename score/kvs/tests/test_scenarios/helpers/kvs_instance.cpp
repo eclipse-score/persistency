@@ -15,7 +15,7 @@
 
 #include "score/kvs/kvs_builder.h"
 
-score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params)
+score::mw::per::kvs::Kvs KvsInstance(const KvsParameters& params)
 {
     using namespace score::mw::per::kvs;
     InstanceId instance_id{params.instance_id};
@@ -24,23 +24,23 @@ score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params)
     // Set parameters.
     if (params.need_defaults.has_value())
     {
-        builder = builder.need_defaults_flag(*params.need_defaults);
+        builder = builder.NeedDefaultsFlag(*params.need_defaults);
     }
     if (params.need_kvs.has_value())
     {
-        builder = builder.need_kvs_flag(*params.need_kvs);
+        builder = builder.NeedKvsFlag(*params.need_kvs);
     }
     if (params.dir.has_value())
     {
-        builder = builder.dir(std::string(*params.dir));
+        builder = builder.Dir(std::string(*params.dir));
     }
     if (params.snapshot_max_count.has_value())
     {
-        builder = builder.snapshot_max_count(*params.snapshot_max_count);
+        builder = builder.SnapshotMaxCount(*params.snapshot_max_count);
     }
 
     // Build KVS instance.
-    auto build_result{builder.build()};
+    auto build_result{builder.Build()};
     if (build_result)
     {
         return std::move(*build_result);

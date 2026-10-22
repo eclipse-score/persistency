@@ -33,7 +33,7 @@ int main(int argc, char** argv)
         ScenarioGroup::Ptr basic_group{new ScenarioGroupImpl{"basic", {basic_scenario}, {}}};
 
         // CIT group.
-        ScenarioGroup::Ptr cit_group{cit_scenario_group()};
+        ScenarioGroup::Ptr cit_group{CitScenarioGroup()};
 
         // Root group.
         ScenarioGroup::Ptr root_group{new ScenarioGroupImpl{"root", {}, {basic_group, cit_group}}};

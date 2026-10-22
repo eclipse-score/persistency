@@ -23,70 +23,131 @@ namespace score::mw::per::kvs
 enum class ErrorCode : score::result::ErrorCode
 {
     /// Error that was not yet mapped.
-    UnmappedError,
+    kUnmappedError,
 
     /// File not found.
-    FileNotFound,
+    kFileNotFound,
 
     /// KVS file read error.
-    KvsFileReadError,
+    kKvsFileReadError,
 
     /// KVS hash file read error.
-    KvsHashFileReadError,
+    kKvsHashFileReadError,
 
     /// JSON parser error.
-    JsonParserError,
+    kJsonParserError,
 
     /// JSON generator error.
-    JsonGeneratorError,
+    kJsonGeneratorError,
 
     /// Physical storage failure.
-    PhysicalStorageFailure,
+    kPhysicalStorageFailure,
 
     /// Integrity corrupted.
-    IntegrityCorrupted,
+    kIntegrityCorrupted,
 
     /// Validation failed.
-    ValidationFailed,
+    kValidationFailed,
 
     /// Encryption failed.
-    EncryptionFailed,
+    kEncryptionFailed,
 
     /// Resource is busy.
-    ResourceBusy,
+    kResourceBusy,
 
     /// Out of storage space.
-    OutOfStorageSpace,
+    kOutOfStorageSpace,
 
     /// Quota exceeded.
-    QuotaExceeded,
+    kQuotaExceeded,
 
     /// Authentication failed.
-    AuthenticationFailed,
+    kAuthenticationFailed,
 
     /// Key not found.
-    KeyNotFound,
+    kKeyNotFound,
 
     /// Key default value not found.
-    KeyDefaultNotFound,
+    kKeyDefaultNotFound,
 
     /// Serialization failed.
-    SerializationFailed,
+    kSerializationFailed,
 
     /// Invalid snapshot ID.
-    InvalidSnapshotId,
+    kInvalidSnapshotId,
 
     /// Conversion failed.
-    ConversionFailed,
+    kConversionFailed,
 
     /// Mutex failed.
-    MutexLockFailed,
+    kMutexLockFailed,
 
     /// Invalid value type.
-    InvalidValueType,
+    kInvalidValueType,
 
     /// Key is not valid.
-    InvalidKey,
+    kInvalidKey,
+
+    // Deprecated enumerators.
+    // Each one is an alias of its k-prefixed replacement and is removed in a future release.
+    UnmappedError [[deprecated("Use kUnmappedError instead. The snake_case API is removed in a future release.")]] =
+        kUnmappedError,
+    FileNotFound [[deprecated("Use kFileNotFound instead. The snake_case API is removed in a future release.")]] =
+        kFileNotFound,
+    KvsFileReadError
+        [[deprecated("Use kKvsFileReadError instead. The snake_case API is removed in a future release.")]] =
+            kKvsFileReadError,
+    KvsHashFileReadError
+        [[deprecated("Use kKvsHashFileReadError instead. The snake_case API is removed in a future release.")]] =
+            kKvsHashFileReadError,
+    JsonParserError [[deprecated("Use kJsonParserError instead. The snake_case API is removed in a future release.")]] =
+        kJsonParserError,
+    JsonGeneratorError
+        [[deprecated("Use kJsonGeneratorError instead. The snake_case API is removed in a future release.")]] =
+            kJsonGeneratorError,
+    PhysicalStorageFailure
+        [[deprecated("Use kPhysicalStorageFailure instead. The snake_case API is removed in a future release.")]] =
+            kPhysicalStorageFailure,
+    IntegrityCorrupted
+        [[deprecated("Use kIntegrityCorrupted instead. The snake_case API is removed in a future release.")]] =
+            kIntegrityCorrupted,
+    ValidationFailed
+        [[deprecated("Use kValidationFailed instead. The snake_case API is removed in a future release.")]] =
+            kValidationFailed,
+    EncryptionFailed
+        [[deprecated("Use kEncryptionFailed instead. The snake_case API is removed in a future release.")]] =
+            kEncryptionFailed,
+    ResourceBusy [[deprecated("Use kResourceBusy instead. The snake_case API is removed in a future release.")]] =
+        kResourceBusy,
+    OutOfStorageSpace
+        [[deprecated("Use kOutOfStorageSpace instead. The snake_case API is removed in a future release.")]] =
+            kOutOfStorageSpace,
+    QuotaExceeded [[deprecated("Use kQuotaExceeded instead. The snake_case API is removed in a future release.")]] =
+        kQuotaExceeded,
+    AuthenticationFailed
+        [[deprecated("Use kAuthenticationFailed instead. The snake_case API is removed in a future release.")]] =
+            kAuthenticationFailed,
+    KeyNotFound [[deprecated("Use kKeyNotFound instead. The snake_case API is removed in a future release.")]] =
+        kKeyNotFound,
+    KeyDefaultNotFound
+        [[deprecated("Use kKeyDefaultNotFound instead. The snake_case API is removed in a future release.")]] =
+            kKeyDefaultNotFound,
+    SerializationFailed
+        [[deprecated("Use kSerializationFailed instead. The snake_case API is removed in a future release.")]] =
+            kSerializationFailed,
+    InvalidSnapshotId
+        [[deprecated("Use kInvalidSnapshotId instead. The snake_case API is removed in a future release.")]] =
+            kInvalidSnapshotId,
+    ConversionFailed
+        [[deprecated("Use kConversionFailed instead. The snake_case API is removed in a future release.")]] =
+            kConversionFailed,
+    MutexLockFailed [[deprecated("Use kMutexLockFailed instead. The snake_case API is removed in a future release.")]] =
+        kMutexLockFailed,
+    InvalidValueType
+        [[deprecated("Use kInvalidValueType instead. The snake_case API is removed in a future release.")]] =
+            kInvalidValueType,
+    InvalidKey [[deprecated("Use kInvalidKey instead. The snake_case API is removed in a future release.")]] =
+        kInvalidKey,
 };
 
 /// @brief Error domain translating `ErrorCode` codes to human-readable messages.
