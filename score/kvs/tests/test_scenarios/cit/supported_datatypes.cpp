@@ -67,11 +67,11 @@ class SupportedDatatypesKeys final : public Scenario
     {
         // Create KVS instance with provided params.
         KvsParameters params{KvsParameters::FromJson(input)};
-        Kvs kvs = KvsInstance(params);
+        Kvs kvs{KvsInstance(params)};
 
         // Try to set valid and invalid keys.
         // Null value is used - only key is used later on.
-        std::vector<std::string> keys_to_check = {
+        std::vector<std::string> keys_to_check{
             // Valid keys.
             "example",
             "snake_case_key",
@@ -93,12 +93,12 @@ class SupportedDatatypesKeys final : public Scenario
         };
         for (const auto& s : keys_to_check)
         {
-            auto set_result = kvs.SetValue(s, KvsValue(nullptr));
+            auto set_result{kvs.SetValue(s, KvsValue(nullptr))};
             InfoLogSetResult(s, set_result.has_value());
         }
 
         // Log all keys stored in KVS.
-        auto keys_in_kvs = kvs.GetAllKeys();
+        auto keys_in_kvs{kvs.GetAllKeys()};
         if (keys_in_kvs.has_value())
         {
             for (const auto& s : keys_in_kvs.value())
@@ -116,87 +116,8 @@ class SupportedDatatypesKeys final : public Scenario
 
 class SupportedDatatypesValues final : public Scenario
 {
-  private:
-    KvsValue value_;
-
-    static std::string KvsValueToString(const KvsValue& v)
-    {
-        switch (v.GetType())
-        {
-            case KvsValue::Type::kI32:
-                return std::to_string(std::get<int32_t>(v.GetValue()));
-            case KvsValue::Type::kU32:
-                return std::to_string(std::get<uint32_t>(v.GetValue()));
-            case KvsValue::Type::kI64:
-                return std::to_string(std::get<int64_t>(v.GetValue()));
-            case KvsValue::Type::kU64:
-                return std::to_string(std::get<uint64_t>(v.GetValue()));
-            case KvsValue::Type::kF64:
-            {
-                // Format with high precision, then remove trailing zeros and dot for minimal JSON representation.
-                auto val = std::get<double>(v.GetValue());
-                std::ostringstream oss;
-                oss << std::setprecision(15) << val;
-                std::string s = oss.str();
-                // Remove trailing zeros and dot if needed.
-                if (auto dot = s.find('.'); dot != std::string::npos)
-                {
-                    // Find last non-zero digit after decimal point.
-                    auto last_nonzero = s.find_last_not_of('0');
-                    if (last_nonzero != std::string::npos && last_nonzero > dot)
-                    {
-                        s.erase(last_nonzero + 1);
-                    }
-                    // Remove dot if it's the last character.
-                    if (s.back() == '.')
-                        s.pop_back();
-                }
-                return s;
-            }
-            case KvsValue::Type::kBoolean:
-                return std::get<bool>(v.GetValue()) ? "true" : "false";
-            case KvsValue::Type::kString:
-                return "\"" + std::get<std::string>(v.GetValue()) + "\"";
-            case KvsValue::Type::kNull:
-                return "null";
-            case KvsValue::Type::kArray:
-            {
-                const auto& arr = std::get<KvsValue::Array>(v.GetValue());
-                std::string json = "[";
-                for (size_t i = 0; i < arr.size(); ++i)
-                {
-                    const auto& elem = arr[i];
-                    json += "{\"t\":\"" + SupportedDatatypesValues(elem).name() + "\",\"v\":" + KvsValueToString(elem) +
-                            "}";
-                    if (i + 1 < arr.size())
-                        json += ",";
-                }
-                json += "]";
-                return json;
-            }
-            case KvsValue::Type::kObject:
-            {
-                const auto& obj = std::get<KvsValue::Object>(v.GetValue());
-                std::string json = "{";
-                size_t count = 0;
-                for (const auto& kv : obj)
-                {
-                    const auto& elem = kv.second;
-                    json += "\"" + kv.first + "\":{\"t\":\"" + SupportedDatatypesValues(elem).name() +
-                            "\",\"v\":" + KvsValueToString(elem) + "}";
-                    if (++count < obj.size())
-                        json += ",";
-                }
-                json += "}";
-                return json;
-            }
-            default:
-                return "null";
-        }
-    }
-
   public:
-    explicit SupportedDatatypesValues(const KvsValue& v) : value_(v) {}
+    explicit SupportedDatatypesValues(const KvsValue& v) : value_{v} {}
 
     ~SupportedDatatypesValues() final = default;
 
@@ -233,13 +154,13 @@ class SupportedDatatypesValues final : public Scenario
     {
         // Create KVS instance with provided params.
         KvsParameters params{KvsParameters::FromJson(input)};
-        Kvs kvs = KvsInstance(params);
+        Kvs kvs{KvsInstance(params)};
 
         // Set value.
         score::cpp::ignore = kvs.SetValue(name(), value_);
 
         // Get value.
-        auto kvs_value = kvs.GetValue(name());
+        auto kvs_value{kvs.GetValue(name())};
 
         if (kvs_value.has_value())
         {
@@ -294,7 +215,7 @@ class SupportedDatatypesValues final : public Scenario
     static Scenario::Ptr SupportedDatatypesArray()
     {
         // Compose array value as in Rust.
-        std::unordered_map<std::string, KvsValue> obj = {{"sub-number", KvsValue(789.0)}};
+        std::unordered_map<std::string, KvsValue> obj{{"sub-number", KvsValue(789.0)}};
         std::vector<KvsValue> arr = std::vector<KvsValue>{KvsValue(321.5),
                                                           KvsValue(false),
                                                           KvsValue("hello"),
@@ -306,28 +227,107 @@ class SupportedDatatypesValues final : public Scenario
 
     static Scenario::Ptr SupportedDatatypesObject()
     {
-        std::unordered_map<std::string, KvsValue> obj = {{"sub-number", KvsValue(789.0)}};
+        std::unordered_map<std::string, KvsValue> obj{{"sub-number", KvsValue(789.0)}};
         return std::make_shared<SupportedDatatypesValues>(KvsValue(obj));
     }
 
     static ScenarioGroup::Ptr ValueTypesGroup()
     {
-        std::vector<Scenario::Ptr> scenarios = {SupportedDatatypesI32(),
-                                                SupportedDatatypesU32(),
-                                                SupportedDatatypesI64(),
-                                                SupportedDatatypesU64(),
-                                                SupportedDatatypesF64(),
-                                                SupportedDatatypesBool(),
-                                                SupportedDatatypesString(),
-                                                SupportedDatatypesArray(),
-                                                SupportedDatatypesObject()};
+        std::vector<Scenario::Ptr> scenarios{SupportedDatatypesI32(),
+                                             SupportedDatatypesU32(),
+                                             SupportedDatatypesI64(),
+                                             SupportedDatatypesU64(),
+                                             SupportedDatatypesF64(),
+                                             SupportedDatatypesBool(),
+                                             SupportedDatatypesString(),
+                                             SupportedDatatypesArray(),
+                                             SupportedDatatypesObject()};
         return std::make_shared<ScenarioGroupImpl>("values", scenarios, std::vector<ScenarioGroup::Ptr>{});
     }
+
+  private:
+    static std::string KvsValueToString(const KvsValue& v)
+    {
+        switch (v.GetType())
+        {
+            case KvsValue::Type::kI32:
+                return std::to_string(std::get<int32_t>(v.GetValue()));
+            case KvsValue::Type::kU32:
+                return std::to_string(std::get<uint32_t>(v.GetValue()));
+            case KvsValue::Type::kI64:
+                return std::to_string(std::get<int64_t>(v.GetValue()));
+            case KvsValue::Type::kU64:
+                return std::to_string(std::get<uint64_t>(v.GetValue()));
+            case KvsValue::Type::kF64:
+            {
+                // Format with high precision, then remove trailing zeros and dot for minimal JSON representation.
+                auto val{std::get<double>(v.GetValue())};
+                std::ostringstream oss;
+                oss << std::setprecision(15) << val;
+                std::string s{oss.str()};
+                // Remove trailing zeros and dot if needed.
+                if (auto dot{s.find('.')}; dot != std::string::npos)
+                {
+                    // Find last non-zero digit after decimal point.
+                    auto last_nonzero{s.find_last_not_of('0')};
+                    if (last_nonzero != std::string::npos && last_nonzero > dot)
+                    {
+                        s.erase(last_nonzero + 1);
+                    }
+                    // Remove dot if it's the last character.
+                    if (s.back() == '.')
+                        s.pop_back();
+                }
+                return s;
+            }
+            case KvsValue::Type::kBoolean:
+                return std::get<bool>(v.GetValue()) ? "true" : "false";
+            case KvsValue::Type::kString:
+                return "\"" + std::get<std::string>(v.GetValue()) + "\"";
+            case KvsValue::Type::kNull:
+                return "null";
+            case KvsValue::Type::kArray:
+            {
+                const auto& arr{std::get<KvsValue::Array>(v.GetValue())};
+                std::string json{"["};
+                for (size_t i{0U}; i < arr.size(); ++i)
+                {
+                    const auto& elem{arr[i]};
+                    json += "{\"t\":\"" + SupportedDatatypesValues(elem).name() + "\",\"v\":" + KvsValueToString(elem) +
+                            "}";
+                    if (i + 1 < arr.size())
+                        json += ",";
+                }
+                json += "]";
+                return json;
+            }
+            case KvsValue::Type::kObject:
+            {
+                const auto& obj{std::get<KvsValue::Object>(v.GetValue())};
+                std::string json{"{"};
+                size_t count{0U};
+                for (const auto& kv : obj)
+                {
+                    const auto& elem{kv.second};
+                    json += "\"" + kv.first + "\":{\"t\":\"" + SupportedDatatypesValues(elem).name() +
+                            "\",\"v\":" + KvsValueToString(elem) + "}";
+                    if (++count < obj.size())
+                        json += ",";
+                }
+                json += "}";
+                return json;
+            }
+            default:
+                return "null";
+        }
+    }
+
+    KvsValue value_;
 };
 
 ScenarioGroup::Ptr SupportedDatatypesGroup()
 {
-    std::vector<Scenario::Ptr> keys = {std::make_shared<SupportedDatatypesKeys>()};
-    std::vector<ScenarioGroup::Ptr> groups = {SupportedDatatypesValues::ValueTypesGroup()};
+    std::vector<Scenario::Ptr> keys{std::make_shared<SupportedDatatypesKeys>()};
+    std::vector<ScenarioGroup::Ptr> groups{SupportedDatatypesValues::ValueTypesGroup()};
     return std::make_shared<ScenarioGroupImpl>("supported_datatypes", keys, groups);
 }

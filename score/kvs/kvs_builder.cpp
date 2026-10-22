@@ -17,13 +17,13 @@ namespace score::kvs
 {
 
 KvsBuilder::KvsBuilder(const InstanceId& instance_id) noexcept
-    : instance_id_(instance_id),
-      snapshot_id_(SnapshotId{0}),
-      defaults_(KvsDefaults::kOptional),
-      kvs_load_(score::kvs::KvsLoad::kOptional),
-      working_dir_("./data_folder/"),
-      maximum_storage_bytes_(std::nullopt),
-      max_snapshots_(kDefaultMaxSnapshots)
+    : instance_id_{instance_id},
+      snapshot_id_{SnapshotId{0}},
+      defaults_{KvsDefaults::kOptional},
+      kvs_load_{score::kvs::KvsLoad::kOptional},
+      working_dir_{"./data_folder/"},
+      maximum_storage_bytes_{std::nullopt},
+      max_snapshots_{kDefaultMaxSnapshots}
 {
 }
 

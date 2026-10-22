@@ -223,7 +223,7 @@ class SnapshotPaths final : public Scenario
         }
 
         {
-            auto [kvs_path, hash_path] = KvsHashPaths(working_dir, instance_id, snapshot_id);
+            auto [kvs_path, hash_path]{KvsHashPaths(working_dir, instance_id, snapshot_id)};
             TRACING_INFO(kTargetName,
                          std::make_pair(std::string{"kvs_path"}, kvs_path),
                          std::make_pair(std::string{"hash_path"}, hash_path));

@@ -135,21 +135,21 @@ TEST(kvs_deprecated_api, kvs_open)
     DISABLE_WARNING_PUSH
     DISABLE_WARNING(-Wdeprecated-declarations)
     // clang-format on
-    auto result = Kvs::open(kInstanceId,
-                            kSnapshotId,
-                            OpenNeedDefaults::kOptional,
-                            OpenNeedKvs::kOptional,
-                            std::string(kDataDir),
-                            std::nullopt,
-                            kDefaultMaxSnapshots);
+    auto result{Kvs::open(kInstanceId,
+                          kSnapshotId,
+                          OpenNeedDefaults::kOptional,
+                          OpenNeedKvs::kOptional,
+                          std::string(kDataDir),
+                          std::nullopt,
+                          kDefaultMaxSnapshots)};
     DISABLE_WARNING_POP
-    auto new_result = Kvs::Open(kInstanceId,
-                                kSnapshotId,
-                                KvsDefaults::kOptional,
-                                KvsLoad::kOptional,
-                                std::string(kDataDir),
-                                std::nullopt,
-                                kDefaultMaxSnapshots);
+    auto new_result{Kvs::Open(kInstanceId,
+                              kSnapshotId,
+                              KvsDefaults::kOptional,
+                              KvsLoad::kOptional,
+                              std::string(kDataDir),
+                              std::nullopt,
+                              kDefaultMaxSnapshots)};
     ASSERT_TRUE(result);
     ASSERT_TRUE(new_result);
     EXPECT_EQ(result.value().GetAllKeys().value(), new_result.value().GetAllKeys().value());
@@ -162,29 +162,29 @@ TEST(kvs_deprecated_api, kvs_open)
 TEST(kvs_deprecated_api, kvs_read_wrappers)
 {
     PrepareEnvironment();
-    auto result = OpenKvs();
+    auto result{OpenKvs()};
     ASSERT_TRUE(result);
-    Kvs& kvs = result.value();
+    Kvs& kvs{result.value()};
 
     // clang-format off
     DISABLE_WARNING_PUSH
     DISABLE_WARNING(-Wdeprecated-declarations)
     // clang-format on
-    auto old_keys = kvs.get_all_keys();
-    auto old_exists = kvs.key_exists("kvs");
-    auto old_missing = kvs.key_exists("missing");
-    auto old_value = kvs.get_value("kvs");
-    auto old_default = kvs.get_default_value("default");
-    auto old_is_default = kvs.is_value_default("default");
-    auto old_count = kvs.snapshot_count();
-    const size_t old_max_count = kvs.snapshot_max_count();
-    auto old_kvs_filename = kvs.get_kvs_filename(kSnapshotId);
-    auto old_hash_filename = kvs.get_hash_filename(kSnapshotId);
-    auto old_file_size = kvs.get_storage_file_size();
-    auto old_potential_size = kvs.calculate_potential_size();
+    auto old_keys{kvs.get_all_keys()};
+    auto old_exists{kvs.key_exists("kvs")};
+    auto old_missing{kvs.key_exists("missing")};
+    auto old_value{kvs.get_value("kvs")};
+    auto old_default{kvs.get_default_value("default")};
+    auto old_is_default{kvs.is_value_default("default")};
+    auto old_count{kvs.snapshot_count()};
+    const size_t old_max_count{kvs.snapshot_max_count()};
+    auto old_kvs_filename{kvs.get_kvs_filename(kSnapshotId)};
+    auto old_hash_filename{kvs.get_hash_filename(kSnapshotId)};
+    auto old_file_size{kvs.get_storage_file_size()};
+    auto old_potential_size{kvs.calculate_potential_size()};
     DISABLE_WARNING_POP
 
-    auto new_keys = kvs.GetAllKeys();
+    auto new_keys{kvs.GetAllKeys()};
     ASSERT_TRUE(old_keys);
     ASSERT_TRUE(new_keys);
     EXPECT_EQ(old_keys.value(), new_keys.value());
@@ -214,9 +214,9 @@ TEST(kvs_deprecated_api, kvs_read_wrappers)
 TEST(kvs_deprecated_api, kvs_write_wrappers)
 {
     PrepareEnvironment();
-    auto result = OpenKvs();
+    auto result{OpenKvs()};
     ASSERT_TRUE(result);
-    Kvs& kvs = result.value();
+    Kvs& kvs{result.value()};
 
     // clang-format off
     DISABLE_WARNING_PUSH
@@ -238,7 +238,7 @@ TEST(kvs_deprecated_api, kvs_write_wrappers)
 
     // A flushed key is visible to a KVS opened afterwards.
     ASSERT_TRUE(kvs.flush());
-    auto reopened = OpenKvs();
+    auto reopened{OpenKvs()};
     ASSERT_TRUE(reopened);
     EXPECT_TRUE(reopened.value().KeyExists("new_key").value());
     EXPECT_TRUE(reopened.value().KeyExists("kvs").value());
@@ -257,11 +257,11 @@ TEST(kvs_deprecated_api, kvs_write_wrappers)
     ASSERT_TRUE(kvs.reset());
     EXPECT_TRUE(kvs.GetAllKeys().value().empty());
 
-    auto old_restore_ok = kvs.snapshot_restore(SnapshotId{0ul});
-    auto new_restore_ok = kvs.SnapshotRestore(SnapshotId{0ul});
+    auto old_restore_ok{kvs.snapshot_restore(SnapshotId{0ul})};
+    auto new_restore_ok{kvs.SnapshotRestore(SnapshotId{0ul})};
     ExpectSame(old_restore_ok, new_restore_ok);
-    auto old_restore_bad = kvs.snapshot_restore(SnapshotId{99ul});
-    auto new_restore_bad = kvs.SnapshotRestore(SnapshotId{99ul});
+    auto old_restore_bad{kvs.snapshot_restore(SnapshotId{99ul})};
+    auto new_restore_bad{kvs.SnapshotRestore(SnapshotId{99ul})};
     ExpectSame(old_restore_bad, new_restore_bad);
     DISABLE_WARNING_POP
     CleanupEnvironment();
@@ -275,7 +275,7 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
     DISABLE_WARNING_PUSH
     DISABLE_WARNING(-Wdeprecated-declarations)
     // clang-format on
-    KvsBuilder old_builder(kInstanceId);
+    KvsBuilder old_builder{kInstanceId};
     old_builder.snapshot(SnapshotId{23ul})
         .need_defaults_flag(OpenNeedDefaults::kRequired)
         .need_kvs_flag(OpenNeedKvs::kRequired)
@@ -283,7 +283,7 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
         .max_storage_bytes(std::optional<size_t>{1024ul})
         .snapshot_max_count(2ul);
 
-    KvsBuilder new_builder(kInstanceId);
+    KvsBuilder new_builder{kInstanceId};
     new_builder.Snapshot(SnapshotId{23ul})
         .Defaults(KvsDefaults::kRequired)
         .KvsLoad(KvsLoad::kRequired)
@@ -297,9 +297,9 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
     DISABLE_WARNING_PUSH
     DISABLE_WARNING(-Wdeprecated-declarations)
     // clang-format on
-    auto old_result = old_builder.build();
+    auto old_result{old_builder.build()};
     DISABLE_WARNING_POP
-    auto new_result = new_builder.Build();
+    auto new_result{new_builder.Build()};
     ASSERT_FALSE(old_result);
     ASSERT_FALSE(new_result);
     EXPECT_EQ(*old_result.error(), *new_result.error());
@@ -310,27 +310,27 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
         DISABLE_WARNING_PUSH
         DISABLE_WARNING(-Wdeprecated-declarations)
         // clang-format on
-        auto old_build = old_builder.build();
+        auto old_build{old_builder.build()};
         DISABLE_WARNING_POP
         return std::make_pair(std::move(old_build), new_builder.Build());
     };
 
     // With only the defaults file, both builds fail, so the required KVS load reached Open().
     PrepareEnvironment("./kvsbuilder/", "kvs_", kInstance, kDefaultJson);
-    auto defaults_only = build_both();
+    auto defaults_only{build_both()};
     ASSERT_FALSE(defaults_only.first);
     ASSERT_FALSE(defaults_only.second);
     EXPECT_EQ(*defaults_only.first.error(), *defaults_only.second.error());
 
     const std::string file_prefix{"./kvsbuilder/kvs_" + std::to_string(kInstance)};
     Store(file_prefix + "_23.json", file_prefix + "_23.hash", R"({"snap": {"t": "i32", "v": 23}})");
-    auto built = build_both();
+    auto built{build_both()};
     ASSERT_TRUE(built.first);
     ASSERT_TRUE(built.second);
     for (Kvs* kvs : {&built.first.value(), &built.second.value()})
     {
         // Snapshot 23 only loads if the builder passes the snapshot ID on.
-        auto snap_value = kvs->GetValue("snap");
+        auto snap_value{kvs->GetValue("snap")};
         ASSERT_TRUE(snap_value);
         ASSERT_EQ(snap_value.value().GetType(), KvsValue::Type::kI32);
         EXPECT_EQ(std::get<int32_t>(snap_value.value().GetValue()), 23);
@@ -339,22 +339,22 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
 
         // The file name after Flush() shows the directory that reached Open().
         ASSERT_TRUE(kvs->Flush());
-        auto file_path = kvs->KvsFilePath(SnapshotId{0ul});
+        auto file_path{kvs->KvsFilePath(SnapshotId{0ul})};
         ASSERT_TRUE(file_path);
         EXPECT_EQ(file_path.value().CStr(), file_prefix + "_0.json");
 
         // A 2 KiB value only exceeds the storage limit if the 1024-byte limit reached Open().
         ASSERT_TRUE(kvs->SetValue("big", KvsValue(std::string(2048U, 'x'))));
-        auto potential_size = kvs->CalculatePotentialSize();
+        auto potential_size{kvs->CalculatePotentialSize()};
         ASSERT_FALSE(potential_size);
         EXPECT_EQ(static_cast<ErrorCode>(*potential_size.error()), ErrorCode::kOutOfStorageSpace);
     }
 
     // Without the defaults file, both builds fail, so the required defaults reached Open().
-    const auto filesystem = score::filesystem::FilesystemFactory{}.CreateInstance();
+    const auto filesystem{score::filesystem::FilesystemFactory{}.CreateInstance()};
     ASSERT_TRUE(filesystem.standard->Remove(file_prefix + "_default.json"));
     ASSERT_TRUE(filesystem.standard->Remove(file_prefix + "_default.hash"));
-    auto kvs_only = build_both();
+    auto kvs_only{build_both()};
     ASSERT_FALSE(kvs_only.first);
     ASSERT_FALSE(kvs_only.second);
     EXPECT_EQ(*kvs_only.first.error(), *kvs_only.second.error());
@@ -364,9 +364,9 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
     DISABLE_WARNING_PUSH
     DISABLE_WARNING(-Wdeprecated-declarations)
     // clang-format on
-    auto success = KvsBuilder(kInstanceId).dir(std::string(kDataDir)).build();
+    auto success{KvsBuilder(kInstanceId).dir(std::string(kDataDir)).build()};
     DISABLE_WARNING_POP
-    auto new_success = KvsBuilder(kInstanceId).WorkingDir(std::string(kDataDir)).Build();
+    auto new_success{KvsBuilder(kInstanceId).WorkingDir(std::string(kDataDir)).Build()};
     ASSERT_TRUE(success);
     ASSERT_TRUE(new_success);
     EXPECT_EQ(success.value().GetAllKeys().value(), new_success.value().GetAllKeys().value());
@@ -376,7 +376,7 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
 
 TEST(kvs_deprecated_api, kvsvalue_wrappers)
 {
-    const KvsValue value(42);
+    const KvsValue value{42};
 
     // clang-format off
     DISABLE_WARNING_PUSH

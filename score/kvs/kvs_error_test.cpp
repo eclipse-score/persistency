@@ -24,7 +24,7 @@ TEST(kvs_MessageFor, MessageFor)
     {
         ErrorCode code;
         std::string_view expected_message;
-    } test_cases[] = {
+    } test_cases[]{
         {ErrorCode::kUnmappedError, "Error that was not yet mapped"},
         {ErrorCode::kFileNotFound, "File not found"},
         {ErrorCode::kKvsFileReadError, "KVS file read error"},
@@ -51,10 +51,10 @@ TEST(kvs_MessageFor, MessageFor)
     for (const auto& test : test_cases)
     {
         SCOPED_TRACE(static_cast<int>(test.code));
-        score::result::ErrorCode code = static_cast<score::result::ErrorCode>(test.code);
+        score::result::ErrorCode code{static_cast<score::result::ErrorCode>(test.code)};
         EXPECT_EQ(kKvsErrorDomain.MessageFor(code), test.expected_message);
     }
 
-    score::result::ErrorCode invalid_code = static_cast<score::result::ErrorCode>(9999);
+    score::result::ErrorCode invalid_code{static_cast<score::result::ErrorCode>(9999)};
     EXPECT_EQ(kKvsErrorDomain.MessageFor(invalid_code), "Unknown Error!");
 }

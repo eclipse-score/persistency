@@ -55,6 +55,10 @@ class KvsValue final
     /// @brief Object as an ordered list of key-value pairs.
     using Object = std::vector<std::pair<std::string, KvsValue>>;
 
+    /// @brief Variant holding the value.
+    using ValueVariant =
+        std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>;
+
     /// @brief Type of the held value.
     enum class Type
     {
@@ -93,9 +97,6 @@ class KvsValue final
         Object [[deprecated("Use kObject instead. This name is removed in a future release.")]] = kObject,
     };
 
-    using ValueVariant =
-        std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>;
-
     /// @brief The Type enumerators must match the order of the variant alternatives.
     static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kI32), ValueVariant>, int32_t>);
     static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kU32), ValueVariant>, uint32_t>);
@@ -112,23 +113,23 @@ class KvsValue final
     static_assert(std::variant_size_v<ValueVariant> == static_cast<size_t>(Type::kObject) + 1U);
 
     /// @brief Constructs a value of type Type::kI32.
-    explicit KvsValue(int32_t number) noexcept : value_(number) {}
+    explicit KvsValue(int32_t number) noexcept : value_{number} {}
     /// @brief Constructs a value of type Type::kU32.
-    explicit KvsValue(uint32_t number) noexcept : value_(number) {}
+    explicit KvsValue(uint32_t number) noexcept : value_{number} {}
     /// @brief Constructs a value of type Type::kI64.
-    explicit KvsValue(int64_t number) noexcept : value_(number) {}
+    explicit KvsValue(int64_t number) noexcept : value_{number} {}
     /// @brief Constructs a value of type Type::kU64.
-    explicit KvsValue(uint64_t number) noexcept : value_(number) {}
+    explicit KvsValue(uint64_t number) noexcept : value_{number} {}
     /// @brief Constructs a value of type Type::kF64.
-    explicit KvsValue(double number) noexcept : value_(number) {}
+    explicit KvsValue(double number) noexcept : value_{number} {}
     /// @brief Constructs a value of type Type::kBoolean.
-    explicit KvsValue(bool boolean) noexcept : value_(boolean) {}
+    explicit KvsValue(bool boolean) noexcept : value_{boolean} {}
     /// @brief Constructs a value of type Type::kString from a C string.
     explicit KvsValue(const char* str) noexcept;
     /// @brief Constructs a value of type Type::kString.
-    explicit KvsValue(const std::string& str) noexcept : value_(str) {}
+    explicit KvsValue(const std::string& str) noexcept : value_{str} {}
     /// @brief Constructs a value of type Type::kNull.
-    explicit KvsValue(std::nullptr_t) noexcept : value_(nullptr) {}
+    explicit KvsValue(std::nullptr_t) noexcept : value_{nullptr} {}
     /// @brief Constructs a value of type Type::kArray by copying the elements.
     explicit KvsValue(const Array& array) noexcept;
 
@@ -147,17 +148,17 @@ class KvsValue final
     /// @brief Copy constructor.
     KvsValue(const KvsValue& other) noexcept;
 
-    /// @brief Copy assignment operator.
-    KvsValue& operator=(const KvsValue& other) noexcept;
-
     /// @brief Move constructor.
     KvsValue(KvsValue&& other) noexcept;
 
-    /// @brief Move assignment operator.
-    KvsValue& operator=(KvsValue&& other) noexcept;
-
     /// @brief Destructor.
     ~KvsValue() noexcept;
+
+    /// @brief Copy assignment operator.
+    KvsValue& operator=(const KvsValue& other) noexcept;
+
+    /// @brief Move assignment operator.
+    KvsValue& operator=(KvsValue&& other) noexcept;
 
     /// @brief Gets the type of the value.
     /// @return The type of the held value.

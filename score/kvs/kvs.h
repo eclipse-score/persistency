@@ -35,63 +35,57 @@ namespace score::kvs
 
 /// @brief Maximum allowed key length in bytes.
 /// @note comp_req__kvs__key_length
-constexpr std::size_t kMaxKeyLengthBytes = 32U;
+constexpr std::size_t kMaxKeyLengthBytes{32U};
 
 /// @deprecated Use `kMaxKeyLengthBytes` instead.
 [[deprecated("Use kMaxKeyLengthBytes instead. This name is removed in a future release.")]]
-constexpr std::size_t KVS_MAX_KEY_LENGTH_BYTES = kMaxKeyLengthBytes;
+constexpr std::size_t KVS_MAX_KEY_LENGTH_BYTES{kMaxKeyLengthBytes};
 
 /// @brief Upper bound of the configurable maximum number of snapshots.
 ///
 /// The configurable maximum number of snapshots is limited to the range 0..kMaxSnapshotsUpperBound.
 /// A value of 0 disables snapshot operations.
 /// @note comp_req__kvs__snapshot_max_num_cfg
-constexpr std::size_t kMaxSnapshotsUpperBound = 3U;
+constexpr std::size_t kMaxSnapshotsUpperBound{3U};
 
 /// @deprecated Use `kMaxSnapshotsUpperBound` instead.
 [[deprecated("Use kMaxSnapshotsUpperBound instead. This name is removed in a future release.")]]
-constexpr std::size_t KVS_MAX_SNAPSHOTS_UPPER_BOUND = kMaxSnapshotsUpperBound;
+constexpr std::size_t KVS_MAX_SNAPSHOTS_UPPER_BOUND{kMaxSnapshotsUpperBound};
 
 /// @brief Default maximum number of snapshots.
 ///
 /// It can be overridden per instance at init-time via KvsBuilder::SnapshotMaxCount().
 /// @note comp_req__kvs__snapshot_max_num_cfg
-constexpr std::size_t kDefaultMaxSnapshots = 3U;
+constexpr std::size_t kDefaultMaxSnapshots{3U};
 
 /// @deprecated Use `kDefaultMaxSnapshots` instead.
 [[deprecated("Use kDefaultMaxSnapshots instead. This name is removed in a future release.")]]
-constexpr std::size_t KVS_DEFAULT_MAX_SNAPSHOTS = kDefaultMaxSnapshots;
+constexpr std::size_t KVS_DEFAULT_MAX_SNAPSHOTS{kDefaultMaxSnapshots};
 
 /// @brief Identifier of a KVS instance.
 struct InstanceId
 {
-    /// Numeric value of the identifier.
-    size_t id;
-
     /// @brief Constructs an instance identifier.
     ///
     /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(InstanceId(0))`.
     /// @param id Numeric value of the identifier.
-    InstanceId(size_t id) noexcept
-    {
-        this->id = id;
-    }
+    InstanceId(size_t id) noexcept : id{id} {}
+
+    /// Numeric value of the identifier.
+    size_t id;
 };
 
 /// @brief Identifier of a KVS snapshot.
 struct SnapshotId
 {
-    /// Numeric value of the identifier.
-    size_t id;
-
     /// @brief Constructs a snapshot identifier.
     ///
     /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(SnapshotId(0))`.
     /// @param id Numeric value of the identifier.
-    SnapshotId(size_t id) noexcept
-    {
-        this->id = id;
-    }
+    SnapshotId(size_t id) noexcept : id{id} {}
+
+    /// Numeric value of the identifier.
+    size_t id;
 };
 
 /// @brief Whether default values must be available when opening a KVS.
@@ -163,10 +157,11 @@ class Kvs final
     using KeyValueMap = std::unordered_map<std::string, KvsValue>;
 
     Kvs(const Kvs&) = delete;
-    Kvs& operator=(const Kvs&) = delete;
 
     /// @brief Move constructor.
     Kvs(Kvs&& other) noexcept;
+
+    Kvs& operator=(const Kvs&) = delete;
 
     /// @brief Move assignment operator.
     Kvs& operator=(Kvs&& other) noexcept;
@@ -490,38 +485,6 @@ class Kvs final
     /// Private to prevent direct instantiation, use Open() instead.
     Kvs() noexcept;
 
-    /// Mutex guarding `kvs_`.
-    mutable std::mutex kvs_mutex_;
-
-    /// Written key-value pairs.
-    KeyValueMap kvs_;
-
-    /// Default values, fixed after Open().
-    KeyValueMap default_values_;
-
-    /// Path prefix of the KVS files, including the instance ID.
-    score::filesystem::Path filename_prefix_;
-
-    /// Maximum number of snapshots maintained by this instance.
-    /// @note comp_req__kvs__snapshot_max_num_cfg
-    std::size_t max_snapshots_;
-
-    /// Filesystem handler for file operations.
-    std::unique_ptr<score::filesystem::Filesystem> filesystem_;
-
-    /// JSON parser for reading KVS data.
-    std::unique_ptr<score::json::IJsonParser> parser_;
-
-    /// JSON writer for writing KVS data.
-    std::unique_ptr<score::json::IJsonWriter> writer_;
-
-    /// Logger of this instance.
-    std::unique_ptr<score::mw::log::Logger> logger_;
-
-    /// Maximum storage limit in bytes.
-    /// Unset means no limit is enforced.
-    std::optional<size_t> max_storage_bytes_;
-
     /// @brief Rotates the snapshots, ensuring that the maximum count is maintained.
     score::Result<void> SnapshotRotate() const noexcept;
 
@@ -557,6 +520,38 @@ class Kvs final
 
     /// @brief Retrieves the current storage size of all persisted files (defaults and snapshots).
     score::Result<size_t> GetCurrentStorageSize() const noexcept;
+
+    /// Mutex guarding `kvs_`.
+    mutable std::mutex kvs_mutex_;
+
+    /// Written key-value pairs.
+    KeyValueMap kvs_;
+
+    /// Default values, fixed after Open().
+    KeyValueMap default_values_;
+
+    /// Path prefix of the KVS files, including the instance ID.
+    score::filesystem::Path filename_prefix_;
+
+    /// Maximum number of snapshots maintained by this instance.
+    /// @note comp_req__kvs__snapshot_max_num_cfg
+    std::size_t max_snapshots_;
+
+    /// Filesystem handler for file operations.
+    std::unique_ptr<score::filesystem::Filesystem> filesystem_;
+
+    /// JSON parser for reading KVS data.
+    std::unique_ptr<score::json::IJsonParser> parser_;
+
+    /// JSON writer for writing KVS data.
+    std::unique_ptr<score::json::IJsonWriter> writer_;
+
+    /// Logger of this instance.
+    std::unique_ptr<score::mw::log::Logger> logger_;
+
+    /// Maximum storage limit in bytes.
+    /// Unset means no limit is enforced.
+    std::optional<size_t> max_storage_bytes_;
 };
 
 }  // namespace score::kvs

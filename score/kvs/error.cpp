@@ -16,6 +16,11 @@
 namespace score::kvs
 {
 
+namespace
+{
+constexpr KvsErrorDomain kKvsErrorDomain;
+}
+
 std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code) const noexcept
 {
     switch (static_cast<ErrorCode>(code))
@@ -67,11 +72,6 @@ std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code
         default:
             return "Unknown Error!";
     }
-}
-
-namespace
-{
-constexpr KvsErrorDomain kKvsErrorDomain;
 }
 
 score::result::Error MakeError(const ErrorCode code, const std::string_view user_message) noexcept
