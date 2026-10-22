@@ -11,7 +11,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "kvsvalue.hpp"
+#include "score/kvs/kvs_value.h"
+
 #include "score/assert.hpp"
 
 namespace score::mw::per::kvs

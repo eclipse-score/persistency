@@ -10,11 +10,14 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+#ifndef SCORE_KVS_KVS_GENERAL_TEST_H
+#define SCORE_KVS_KVS_GENERAL_TEST_H
 
 // The test_kvs_general files provide configuration data and methods needed for KVS tests.
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <cstdio>
 #include <cstdlib>
@@ -25,13 +28,13 @@
 // Make private members public and drop final, to access member variables and derive from KvsValue in unit tests.
 #define private public
 #define final
-#include "score/kvs/kvsbuilder.hpp"
+#include "score/kvs/kvs_builder.h"
 #undef private
 #undef final
 #include "score/filesystem/filesystem_mock.h"
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
-#include "score/kvs/internal/kvs_helper.hpp"
+#include "score/kvs/internal/kvs_helper.h"
 using namespace score::mw::per::kvs;
 
 uint32_t adler32(const std::string& data);
@@ -108,3 +111,5 @@ const std::string kvs_json = R"({
         "v": 2
     }
 })";
+
+#endif  // SCORE_KVS_KVS_GENERAL_TEST_H

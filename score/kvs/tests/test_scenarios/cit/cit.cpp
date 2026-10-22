@@ -11,11 +11,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "cit/cit.hpp"
-#include "cit/default_values.hpp"
-#include "cit/multiple_kvs.hpp"
-#include "cit/snapshots.hpp"
-#include "cit/supported_datatypes.hpp"
+#include "cit/cit.h"
+
+#include "cit/default_values.h"
+#include "cit/multiple_kvs.h"
+#include "cit/snapshots.h"
+#include "cit/supported_datatypes.h"
 
 ScenarioGroup::Ptr cit_scenario_group()
 {

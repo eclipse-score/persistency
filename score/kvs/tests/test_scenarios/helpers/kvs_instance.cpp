@@ -11,8 +11,9 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "helpers/kvs_instance.hpp"
-#include "score/kvs/kvsbuilder.hpp"
+#include "helpers/kvs_instance.h"
+
+#include "score/kvs/kvs_builder.h"
 
 score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params)
 {
