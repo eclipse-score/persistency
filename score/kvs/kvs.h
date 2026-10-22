@@ -95,7 +95,7 @@ struct SnapshotId
 };
 
 /// @brief Whether default values must be available when opening a KVS.
-enum class OpenNeedDefaults : std::uint8_t
+enum class KvsDefaults : std::uint8_t
 {
     /// Defaults must be available.
     kRequired = 0,
@@ -111,8 +111,12 @@ enum class OpenNeedDefaults : std::uint8_t
     Ignored [[deprecated("Use kIgnored instead. The snake_case API is removed in a future release.")]] = kIgnored,
 };
 
+/// @deprecated Use `KvsDefaults` instead.
+using OpenNeedDefaults [[deprecated("Use KvsDefaults instead. The snake_case API is removed in a future release.")]] =
+    KvsDefaults;
+
 /// @brief Whether KVS data must already exist when opening a KVS.
-enum class OpenNeedKvs : std::uint8_t
+enum class KvsLoad : std::uint8_t
 {
     /// KVS data must already exist.
     kRequired = 0,
@@ -127,6 +131,9 @@ enum class OpenNeedKvs : std::uint8_t
     Optional [[deprecated("Use kOptional instead. The snake_case API is removed in a future release.")]] = kOptional,
     Ignored [[deprecated("Use kIgnored instead. The snake_case API is removed in a future release.")]] = kIgnored,
 };
+
+/// @deprecated Use `KvsLoad` instead.
+using OpenNeedKvs [[deprecated("Use KvsLoad instead. The snake_case API is removed in a future release.")]] = KvsLoad;
 
 /// @brief Whether a JSON file must exist when it is opened.
 enum class OpenJsonNeedFile : std::uint8_t
@@ -175,9 +182,9 @@ class Kvs final
     /// This uniquely identifies the KVS instance.
     /// @param snapshot_id The snapshot ID of the KVS.
     /// This uniquely identifies the KVS snapshot.
-    /// @param need_defaults Whether default values are required, optional or ignored.
-    /// @param need_kvs Whether the KVS data is required, optional or ignored.
-    /// @param dir The directory path where the KVS files are located.
+    /// @param defaults Whether default values are required, optional or ignored.
+    /// @param kvs_load Whether the KVS data is required, optional or ignored.
+    /// @param working_dir The directory path where the KVS files are located.
     /// Use "" or "." for the current directory.
     /// @param max_storage_bytes Optional maximum total storage size in bytes.
     /// Pass std::nullopt to enforce no storage limit.
@@ -188,9 +195,9 @@ class Kvs final
     /// @return The opened Kvs object on success, or an ErrorCode on failure.
     static score::Result<Kvs> Open(const InstanceId& instance_id,
                                    const SnapshotId& snapshot_id,
-                                   const OpenNeedDefaults& need_defaults,
-                                   const OpenNeedKvs& need_kvs,
-                                   const std::string& dir,
+                                   const KvsDefaults& defaults,
+                                   const KvsLoad& kvs_load,
+                                   const std::string& working_dir,
                                    const std::optional<size_t>& max_storage_bytes,
                                    const std::size_t snapshot_max_count) noexcept;
 
@@ -296,7 +303,7 @@ class Kvs final
     /// @brief Retrieves the filename associated with a given snapshot ID.
     /// @param snapshot_id The identifier of the snapshot for which the filename is to be retrieved.
     /// @return The path of the snapshot's KVS file on success, or an ErrorCode on failure.
-    score::Result<score::filesystem::Path> GetKvsFilename(const SnapshotId& snapshot_id) const noexcept;
+    score::Result<score::filesystem::Path> KvsFilePath(const SnapshotId& snapshot_id) const noexcept;
 
     /// @brief Retrieves the filename of the hash file associated with a given snapshot ID.
     ///
@@ -304,7 +311,7 @@ class Kvs final
     ///
     /// @param snapshot_id The identifier of the snapshot for which the hash filename is requested.
     /// @return The path of the snapshot's hash file on success, or an ErrorCode on failure.
-    score::Result<score::filesystem::Path> GetHashFilename(const SnapshotId& snapshot_id) const noexcept;
+    score::Result<score::filesystem::Path> HashFilePath(const SnapshotId& snapshot_id) const noexcept;
 
     /// @brief Retrieves the size of the persisted key-value store on disk.
     ///
@@ -334,14 +341,14 @@ class Kvs final
     [[deprecated("Use Open() instead. The snake_case API is removed in a future release.")]]
     static score::Result<Kvs> open(const InstanceId& instance_id,
                                    const SnapshotId& snapshot_id,
-                                   const OpenNeedDefaults& need_defaults,
-                                   const OpenNeedKvs& need_kvs,
-                                   const std::string& dir,
+                                   const KvsDefaults& defaults,
+                                   const KvsLoad& kvs_load,
+                                   const std::string& working_dir,
                                    const std::optional<size_t>& max_storage_bytes,
                                    const std::size_t snapshot_max_count) noexcept
     {
         return Kvs::Open(
-            instance_id, snapshot_id, need_defaults, need_kvs, dir, max_storage_bytes, snapshot_max_count);
+            instance_id, snapshot_id, defaults, kvs_load, working_dir, max_storage_bytes, snapshot_max_count);
     }
 
     /// @deprecated Use `Reset()` instead.
@@ -449,18 +456,18 @@ class Kvs final
         return SnapshotRestore(snapshot_id);
     }
 
-    /// @deprecated Use `GetKvsFilename()` instead.
-    [[deprecated("Use GetKvsFilename() instead. The snake_case API is removed in a future release.")]]
+    /// @deprecated Use `KvsFilePath()` instead.
+    [[deprecated("Use KvsFilePath() instead. The snake_case API is removed in a future release.")]]
     score::Result<score::filesystem::Path> get_kvs_filename(const SnapshotId& snapshot_id) const noexcept
     {
-        return GetKvsFilename(snapshot_id);
+        return KvsFilePath(snapshot_id);
     }
 
-    /// @deprecated Use `GetHashFilename()` instead.
-    [[deprecated("Use GetHashFilename() instead. The snake_case API is removed in a future release.")]]
+    /// @deprecated Use `HashFilePath()` instead.
+    [[deprecated("Use HashFilePath() instead. The snake_case API is removed in a future release.")]]
     score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const noexcept
     {
-        return GetHashFilename(snapshot_id);
+        return HashFilePath(snapshot_id);
     }
 
     /// @deprecated Use `GetStorageFileSize()` instead.

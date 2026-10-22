@@ -329,7 +329,7 @@ mod kvs_tests {
     use crate::error_code::ErrorCode;
     use crate::json_backend::JsonBackendBuilder;
     use crate::kvs::{Kvs, KvsParameters};
-    use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId, KVS_MAX_KEY_LENGTH_BYTES};
+    use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId, MAX_KEY_LENGTH_BYTES};
     use crate::kvs_backend::KvsBackend;
     use crate::kvs_builder::KvsData;
     use crate::kvs_value::{KvsMap, KvsValue};
@@ -621,7 +621,7 @@ mod kvs_tests {
 
     /// Keys that must be rejected - empty, too long or with invalid content.
     fn invalid_keys() -> Vec<String> {
-        let mut keys = vec![String::new(), "k".repeat(KVS_MAX_KEY_LENGTH_BYTES + 1)];
+        let mut keys = vec![String::new(), "k".repeat(MAX_KEY_LENGTH_BYTES + 1)];
         keys.extend(invalid_character_keys());
         keys
     }
@@ -761,7 +761,7 @@ mod kvs_tests {
         let kvs = get_kvs(Box::new(MockBackend), KvsMap::new(), KvsMap::new());
 
         // comp_req__kvs__key_naming: any key consisting of printable ASCII characters is accepted.
-        // comp_req__kvs__key_length: key of `KVS_MAX_KEY_LENGTH_BYTES` is accepted.
+        // comp_req__kvs__key_length: key of `MAX_KEY_LENGTH_BYTES` is accepted.
         let mut valid_keys = vec![
             "a".to_string(),
             "Z".to_string(),
@@ -777,7 +777,7 @@ mod kvs_tests {
             // Boundaries of the allowed range.
             " ".to_string(),
             "~".to_string(),
-            "k".repeat(KVS_MAX_KEY_LENGTH_BYTES),
+            "k".repeat(MAX_KEY_LENGTH_BYTES),
         ];
         // Every allowed character on its own.
         valid_keys.extend((0x20u8..=0x7E).map(|b| char::from(b).to_string()));
@@ -800,8 +800,8 @@ mod kvs_tests {
     fn test_set_value_key_too_long() {
         let kvs = get_kvs(Box::new(MockBackend), KvsMap::new(), KvsMap::new());
 
-        // comp_req__kvs__key_length: a key of `KVS_MAX_KEY_LENGTH_BYTES + 1` bytes is rejected.
-        let key = "k".repeat(KVS_MAX_KEY_LENGTH_BYTES + 1);
+        // comp_req__kvs__key_length: a key of `MAX_KEY_LENGTH_BYTES + 1` bytes is rejected.
+        let key = "k".repeat(MAX_KEY_LENGTH_BYTES + 1);
         assert!(kvs.set_value(key, 123.4).is_err_and(|e| e == ErrorCode::InvalidKey));
         assert!(kvs.get_all_keys().unwrap().is_empty());
     }

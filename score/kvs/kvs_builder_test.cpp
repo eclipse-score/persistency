@@ -17,14 +17,14 @@ TEST(kvs_kvsbuilder, kvsbuilder_build_ignored)
 {
     KvsBuilder builder(kInstanceId);
     builder.Snapshot(SnapshotId{0ul});
-    builder.NeedDefaultsFlag(OpenNeedDefaults::kIgnored);
-    builder.NeedKvsFlag(OpenNeedKvs::kIgnored);
-    builder.Dir("./kvsbuilder/");
+    builder.Defaults(KvsDefaults::kIgnored);
+    builder.KvsLoad(KvsLoad::kIgnored);
+    builder.WorkingDir("./kvsbuilder/");
     EXPECT_EQ(builder.instance_id_.id, kInstanceId.id);
     EXPECT_EQ(builder.snapshot_id_.id, 0ul);
-    EXPECT_EQ(builder.need_defaults_, OpenNeedDefaults::kIgnored);
-    EXPECT_EQ(builder.need_kvs_, OpenNeedKvs::kIgnored);
-    EXPECT_EQ(builder.directory_, "./kvsbuilder/");
+    EXPECT_EQ(builder.defaults_, KvsDefaults::kIgnored);
+    EXPECT_EQ(builder.kvs_load_, KvsLoad::kIgnored);
+    EXPECT_EQ(builder.working_dir_, "./kvsbuilder/");
 
     auto result_build = builder.Build();
     EXPECT_TRUE(result_build);
@@ -39,32 +39,32 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     KvsBuilder builder(kInstanceId);
     EXPECT_EQ(builder.instance_id_.id, kInstanceId.id);
     EXPECT_EQ(builder.snapshot_id_.id, 0ul);
-    EXPECT_EQ(builder.need_defaults_, OpenNeedDefaults::kOptional);
-    EXPECT_EQ(builder.need_kvs_, OpenNeedKvs::kOptional);
+    EXPECT_EQ(builder.defaults_, KvsDefaults::kOptional);
+    EXPECT_EQ(builder.kvs_load_, KvsLoad::kOptional);
 
     // Test the KvsBuilder methods.
     builder.Snapshot(SnapshotId{23ul});
     EXPECT_EQ(builder.snapshot_id_.id, 23ul);
-    builder.NeedDefaultsFlag(OpenNeedDefaults::kRequired);
-    EXPECT_EQ(builder.need_defaults_, OpenNeedDefaults::kRequired);
-    builder.NeedKvsFlag(OpenNeedKvs::kRequired);
-    EXPECT_EQ(builder.need_kvs_, OpenNeedKvs::kRequired);
-    builder.Dir("./kvsbuilder/");
-    EXPECT_EQ(builder.directory_, "./kvsbuilder/");
+    builder.Defaults(KvsDefaults::kRequired);
+    EXPECT_EQ(builder.defaults_, KvsDefaults::kRequired);
+    builder.KvsLoad(KvsLoad::kRequired);
+    EXPECT_EQ(builder.kvs_load_, KvsLoad::kRequired);
+    builder.WorkingDir("./kvsbuilder/");
+    EXPECT_EQ(builder.working_dir_, "./kvsbuilder/");
 
     // Test the KvsBuilder Build method.
-    // Check that OpenNeedDefaults::kRequired and OpenNeedKvs::kRequired are passed correctly.
+    // Check that KvsDefaults::kRequired and KvsLoad::kRequired are passed correctly.
     // Build() should return an error, since the files are not available.
     auto result_build = builder.Build();
     ASSERT_FALSE(result_build);
     // This error occurs in OpenJson() and is passed through Open().
     EXPECT_EQ(static_cast<ErrorCode>(*result_build.error()), ErrorCode::kKvsFileReadError);
-    builder.NeedDefaultsFlag(OpenNeedDefaults::kOptional);
+    builder.Defaults(KvsDefaults::kOptional);
     result_build = builder.Build();
     ASSERT_FALSE(result_build);
     // This error occurs in OpenJson() and is passed through Open().
     EXPECT_EQ(static_cast<ErrorCode>(*result_build.error()), ErrorCode::kKvsFileReadError);
-    builder.NeedKvsFlag(OpenNeedKvs::kOptional);
+    builder.KvsLoad(KvsLoad::kOptional);
     result_build = builder.Build();
     EXPECT_TRUE(result_build);
     EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvsbuilder/kvs_" + std::to_string(kInstanceId.id));
@@ -74,17 +74,17 @@ TEST(kvs_kvsbuilder, kvsbuilder_directory_check)
 {
     // Test the KvsBuilder with all configurations for the current working directory.
     KvsBuilder builder(kInstanceId);
-    builder.Dir("");
+    builder.WorkingDir("");
     auto result_build = builder.Build();
     EXPECT_TRUE(result_build);
     EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvs_" + std::to_string(kInstanceId.id));
 
-    builder.Dir("./");
+    builder.WorkingDir("./");
     result_build = builder.Build();
     EXPECT_TRUE(result_build);
     EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvs_" + std::to_string(kInstanceId.id));
 
-    builder.Dir(".");
+    builder.WorkingDir(".");
     result_build = builder.Build();
     EXPECT_TRUE(result_build);
     EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvs_" + std::to_string(kInstanceId.id));
@@ -97,7 +97,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_default)
     KvsBuilder builder(kInstanceId);
     EXPECT_EQ(builder.max_snapshots_, kDefaultMaxSnapshots);
 
-    builder.Dir(std::string(kDataDir));
+    builder.WorkingDir(std::string(kDataDir));
     auto result_build = builder.Build();
     ASSERT_TRUE(result_build);
     EXPECT_EQ(result_build.value().SnapshotMaxCount(), kDefaultMaxSnapshots);
@@ -119,7 +119,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_configured)
     // The setter must be chainable like every other builder option.
     EXPECT_EQ(&builder.SnapshotMaxCount(configured_max), &builder);
 
-    builder.Dir(std::string(kDataDir));
+    builder.WorkingDir(std::string(kDataDir));
     auto result_build = builder.Build();
     ASSERT_TRUE(result_build);
     EXPECT_EQ(result_build.value().SnapshotMaxCount(), configured_max);

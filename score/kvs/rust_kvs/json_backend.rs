@@ -1084,7 +1084,7 @@ mod json_backend_builder_tests {
 mod json_backend_tests {
     use crate::error_code::ErrorCode;
     use crate::json_backend::{JsonBackend, JsonBackendBuilder};
-    use crate::kvs_api::{InstanceId, SnapshotId, KVS_MAX_KEY_LENGTH_BYTES};
+    use crate::kvs_api::{InstanceId, SnapshotId, MAX_KEY_LENGTH_BYTES};
     use crate::kvs_value::{KvsMap, KvsValue};
     use crate::test_utils::tempdir;
     use std::os::unix::fs::PermissionsExt;
@@ -1200,7 +1200,7 @@ mod json_backend_tests {
         // Keys are placed in JSON as-is - control characters must be escaped.
         let invalid_keys = vec![
             String::new(),
-            "k".repeat(KVS_MAX_KEY_LENGTH_BYTES + 1),
+            "k".repeat(MAX_KEY_LENGTH_BYTES + 1),
             "\\u001f".to_string(),
             "\\u007f".to_string(),
             "tab\\tkey".to_string(),

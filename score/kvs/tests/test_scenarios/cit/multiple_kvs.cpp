@@ -60,8 +60,8 @@ class MultipleInstanceIds final : public Scenario
         }
         auto& obj{any_res.value().As<Object>().value().get()};
 
-        auto params1{KvsParameters::FromObject(obj.at("kvs_parameters_1").As<Object>().value().get())};
-        auto params2{KvsParameters::FromObject(obj.at("kvs_parameters_2").As<Object>().value().get())};
+        auto params1{KvsParameters::FromValue(obj.at("kvs_parameters_1").As<Object>().value().get())};
+        auto params2{KvsParameters::FromValue(obj.at("kvs_parameters_2").As<Object>().value().get())};
         {
             // Create first KVS instance.
             auto kvs1{KvsInstance(params1)};

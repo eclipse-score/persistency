@@ -19,9 +19,9 @@ namespace score::kvs
 KvsBuilder::KvsBuilder(const InstanceId& instance_id) noexcept
     : instance_id_(instance_id),
       snapshot_id_(SnapshotId{0}),
-      need_defaults_(OpenNeedDefaults::kOptional),
-      need_kvs_(OpenNeedKvs::kOptional),
-      directory_("./data_folder/"),
+      defaults_(KvsDefaults::kOptional),
+      kvs_load_(score::kvs::KvsLoad::kOptional),
+      working_dir_("./data_folder/"),
       maximum_storage_bytes_(std::nullopt),
       max_snapshots_(kDefaultMaxSnapshots)
 {
@@ -33,21 +33,21 @@ KvsBuilder& KvsBuilder::Snapshot(const SnapshotId& snapshot_id) noexcept
     return *this;
 }
 
-KvsBuilder& KvsBuilder::NeedDefaultsFlag(const OpenNeedDefaults& flag) noexcept
+KvsBuilder& KvsBuilder::Defaults(const KvsDefaults& mode) noexcept
 {
-    need_defaults_ = flag;
+    defaults_ = mode;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::NeedKvsFlag(const OpenNeedKvs& flag) noexcept
+KvsBuilder& KvsBuilder::KvsLoad(const score::kvs::KvsLoad& mode) noexcept
 {
-    need_kvs_ = flag;
+    kvs_load_ = mode;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::Dir(const std::string& dir_path) noexcept
+KvsBuilder& KvsBuilder::WorkingDir(const std::string& working_dir) noexcept
 {
-    this->directory_ = dir_path;
+    this->working_dir_ = working_dir;
     return *this;
 }
 
@@ -66,10 +66,10 @@ KvsBuilder& KvsBuilder::SnapshotMaxCount(const std::size_t max_count) noexcept
 score::Result<Kvs> KvsBuilder::Build() const noexcept
 {
     // Use current directory if empty.
-    const std::string directory = directory_.empty() ? std::string{"./"} : directory_;
+    const std::string working_dir = working_dir_.empty() ? std::string{"./"} : working_dir_;
 
     return Kvs::Open(
-        instance_id_, snapshot_id_, need_defaults_, need_kvs_, directory, maximum_storage_bytes_, max_snapshots_);
+        instance_id_, snapshot_id_, defaults_, kvs_load_, working_dir, maximum_storage_bytes_, max_snapshots_);
 }
 
 }  // namespace score::kvs

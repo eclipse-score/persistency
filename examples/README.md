@@ -67,9 +67,9 @@ using namespace score::kvs;
 int main()
 {
     auto open_res = KvsBuilder(InstanceId(0))
-                        .NeedDefaultsFlag(OpenNeedDefaults::kOptional)
-                        .NeedKvsFlag(OpenNeedKvs::kOptional)
-                        .Dir("./data_folder/")
+                        .Defaults(KvsDefaults::kOptional)
+                        .KvsLoad(KvsLoad::kOptional)
+                        .WorkingDir("./data_folder/")
                         .Build();
     if (!open_res)
     {

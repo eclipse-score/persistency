@@ -14,6 +14,7 @@
 #include "score/kvs/kvs_general_test.h"
 
 #include "score/quality/compiler_warnings/warnings.h"
+#include <type_traits>
 
 // The old headers warn inside the header, so the suppression surrounds the includes.
 // clang-format off
@@ -61,12 +62,14 @@ DISABLE_WARNING(-Wdeprecated-declarations)
 static_assert(KVS_MAX_KEY_LENGTH_BYTES == kMaxKeyLengthBytes, "");
 static_assert(KVS_MAX_SNAPSHOTS_UPPER_BOUND == kMaxSnapshotsUpperBound, "");
 static_assert(KVS_DEFAULT_MAX_SNAPSHOTS == kDefaultMaxSnapshots, "");
-static_assert(OpenNeedDefaults::Required == OpenNeedDefaults::kRequired, "");
-static_assert(OpenNeedDefaults::Optional == OpenNeedDefaults::kOptional, "");
-static_assert(OpenNeedDefaults::Ignored == OpenNeedDefaults::kIgnored, "");
-static_assert(OpenNeedKvs::Required == OpenNeedKvs::kRequired, "");
-static_assert(OpenNeedKvs::Optional == OpenNeedKvs::kOptional, "");
-static_assert(OpenNeedKvs::Ignored == OpenNeedKvs::kIgnored, "");
+static_assert(OpenNeedDefaults::Required == KvsDefaults::kRequired, "");
+static_assert(OpenNeedDefaults::Optional == KvsDefaults::kOptional, "");
+static_assert(OpenNeedDefaults::Ignored == KvsDefaults::kIgnored, "");
+static_assert(OpenNeedKvs::Required == KvsLoad::kRequired, "");
+static_assert(OpenNeedKvs::Optional == KvsLoad::kOptional, "");
+static_assert(OpenNeedKvs::Ignored == KvsLoad::kIgnored, "");
+static_assert(std::is_same_v<OpenNeedDefaults, KvsDefaults>, "");
+static_assert(std::is_same_v<OpenNeedKvs, KvsLoad>, "");
 static_assert(OpenJsonNeedFile::Required == OpenJsonNeedFile::kRequired, "");
 static_assert(OpenJsonNeedFile::Optional == OpenJsonNeedFile::kOptional, "");
 static_assert(KvsValue::Type::i32 == KvsValue::Type::kI32, "");
@@ -107,8 +110,8 @@ score::Result<Kvs> OpenKvs()
 {
     return Kvs::Open(kInstanceId,
                      kSnapshotId,
-                     OpenNeedDefaults::kOptional,
-                     OpenNeedKvs::kOptional,
+                     KvsDefaults::kOptional,
+                     KvsLoad::kOptional,
                      std::string(kDataDir),
                      std::nullopt,
                      kDefaultMaxSnapshots);
@@ -142,8 +145,8 @@ TEST(kvs_deprecated_api, kvs_open)
     DISABLE_WARNING_POP
     auto new_result = Kvs::Open(kInstanceId,
                                 kSnapshotId,
-                                OpenNeedDefaults::kOptional,
-                                OpenNeedKvs::kOptional,
+                                KvsDefaults::kOptional,
+                                KvsLoad::kOptional,
                                 std::string(kDataDir),
                                 std::nullopt,
                                 kDefaultMaxSnapshots);
@@ -151,8 +154,8 @@ TEST(kvs_deprecated_api, kvs_open)
     ASSERT_TRUE(new_result);
     EXPECT_EQ(result.value().GetAllKeys().value(), new_result.value().GetAllKeys().value());
     EXPECT_EQ(result.value().SnapshotMaxCount(), new_result.value().SnapshotMaxCount());
-    EXPECT_STREQ(result.value().GetKvsFilename(kSnapshotId).value().CStr(),
-                 new_result.value().GetKvsFilename(kSnapshotId).value().CStr());
+    EXPECT_STREQ(result.value().KvsFilePath(kSnapshotId).value().CStr(),
+                 new_result.value().KvsFilePath(kSnapshotId).value().CStr());
     CleanupEnvironment();
 }
 
@@ -201,8 +204,8 @@ TEST(kvs_deprecated_api, kvs_read_wrappers)
     EXPECT_EQ(old_is_default.value(), kvs.IsValueDefault("default").value());
     EXPECT_EQ(old_count.value(), kvs.SnapshotCount().value());
     EXPECT_EQ(old_max_count, kvs.SnapshotMaxCount());
-    EXPECT_STREQ(old_kvs_filename.value().CStr(), kvs.GetKvsFilename(kSnapshotId).value().CStr());
-    EXPECT_STREQ(old_hash_filename.value().CStr(), kvs.GetHashFilename(kSnapshotId).value().CStr());
+    EXPECT_STREQ(old_kvs_filename.value().CStr(), kvs.KvsFilePath(kSnapshotId).value().CStr());
+    EXPECT_STREQ(old_hash_filename.value().CStr(), kvs.HashFilePath(kSnapshotId).value().CStr());
     EXPECT_EQ(old_file_size.value(), kvs.GetStorageFileSize().value());
     EXPECT_EQ(old_potential_size.value(), kvs.CalculatePotentialSize().value());
     CleanupEnvironment();
@@ -282,17 +285,17 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
 
     KvsBuilder new_builder(kInstanceId);
     new_builder.Snapshot(SnapshotId{23ul})
-        .NeedDefaultsFlag(OpenNeedDefaults::kRequired)
-        .NeedKvsFlag(OpenNeedKvs::kRequired)
-        .Dir("./kvsbuilder/")
+        .Defaults(KvsDefaults::kRequired)
+        .KvsLoad(KvsLoad::kRequired)
+        .WorkingDir("./kvsbuilder/")
         .MaxStorageBytes(std::optional<size_t>{1024ul})
         .SnapshotMaxCount(2ul);
     DISABLE_WARNING_POP
 
     EXPECT_EQ(old_builder.snapshot_id_.id, new_builder.snapshot_id_.id);
-    EXPECT_EQ(old_builder.need_defaults_, new_builder.need_defaults_);
-    EXPECT_EQ(old_builder.need_kvs_, new_builder.need_kvs_);
-    EXPECT_EQ(old_builder.directory_, new_builder.directory_);
+    EXPECT_EQ(old_builder.defaults_, new_builder.defaults_);
+    EXPECT_EQ(old_builder.kvs_load_, new_builder.kvs_load_);
+    EXPECT_EQ(old_builder.working_dir_, new_builder.working_dir_);
     EXPECT_EQ(old_builder.maximum_storage_bytes_, new_builder.maximum_storage_bytes_);
     EXPECT_EQ(old_builder.max_snapshots_, new_builder.max_snapshots_);
 
@@ -314,7 +317,7 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
     // clang-format on
     auto success = KvsBuilder(kInstanceId).dir(std::string(kDataDir)).build();
     DISABLE_WARNING_POP
-    auto new_success = KvsBuilder(kInstanceId).Dir(std::string(kDataDir)).Build();
+    auto new_success = KvsBuilder(kInstanceId).WorkingDir(std::string(kDataDir)).Build();
     ASSERT_TRUE(success);
     ASSERT_TRUE(new_success);
     EXPECT_EQ(success.value().GetAllKeys().value(), new_success.value().GetAllKeys().value());

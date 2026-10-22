@@ -60,7 +60,7 @@ static void InfoLog(const std::string& key, const std::string& value_is_default,
                  std::pair{std::string{"current_value"}, current_value});
 }
 
-std::string GetValueIsDefault(const Kvs& kvs, const std::string& key)
+std::string ValueIsDefaultStr(const Kvs& kvs, const std::string& key)
 {
     auto result{kvs.IsValueDefault(key)};
     if (result.has_value())
@@ -80,7 +80,7 @@ std::string GetValueIsDefault(const Kvs& kvs, const std::string& key)
     }
 }
 
-std::string GetDefaultValue(Kvs& kvs, const std::string& key)
+std::string DefaultValueStr(Kvs& kvs, const std::string& key)
 {
     auto result{kvs.GetDefaultValue(key)};
     if (result.has_value() && result.value().GetType() == KvsValue::Type::kF64)
@@ -96,7 +96,7 @@ std::string GetDefaultValue(Kvs& kvs, const std::string& key)
     }
 }
 
-std::string GetCurrentValue(Kvs& kvs, const std::string& key)
+std::string CurrentValueStr(Kvs& kvs, const std::string& key)
 {
     auto result{kvs.GetValue(key)};
     if (result.has_value() && result.value().GetType() == KvsValue::Type::kF64)
@@ -135,9 +135,9 @@ class DefaultValues final : public Scenario
             auto kvs{KvsInstance(params)};
 
             // Get current value parameters.
-            std::string value_is_default{GetValueIsDefault(kvs, key)};
-            std::string default_value{GetDefaultValue(kvs, key)};
-            std::string current_value{GetCurrentValue(kvs, key)};
+            std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            std::string default_value{DefaultValueStr(kvs, key)};
+            std::string current_value{CurrentValueStr(kvs, key)};
 
             InfoLog(key, value_is_default, default_value, current_value);
 
@@ -161,9 +161,9 @@ class DefaultValues final : public Scenario
             auto kvs{KvsInstance(params)};
 
             // Get current value parameters.
-            std::string value_is_default{GetValueIsDefault(kvs, key)};
-            std::string default_value{GetDefaultValue(kvs, key)};
-            std::string current_value{GetCurrentValue(kvs, key)};
+            std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            std::string default_value{DefaultValueStr(kvs, key)};
+            std::string current_value{CurrentValueStr(kvs, key)};
 
             InfoLog(key, value_is_default, default_value, current_value);
         }
@@ -191,9 +191,9 @@ class RemoveKey final : public Scenario
 
         // Get value parameters before set.
         {
-            std::string value_is_default{GetValueIsDefault(kvs, key)};
-            std::string default_value{GetDefaultValue(kvs, key)};
-            std::string current_value{GetCurrentValue(kvs, key)};
+            std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            std::string default_value{DefaultValueStr(kvs, key)};
+            std::string current_value{CurrentValueStr(kvs, key)};
 
             InfoLog(key, value_is_default, default_value, current_value);
         }
@@ -207,9 +207,9 @@ class RemoveKey final : public Scenario
 
         // Get current value parameters.
         {
-            std::string value_is_default{GetValueIsDefault(kvs, key)};
-            std::string default_value{GetDefaultValue(kvs, key)};
-            std::string current_value{GetCurrentValue(kvs, key)};
+            std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            std::string default_value{DefaultValueStr(kvs, key)};
+            std::string current_value{CurrentValueStr(kvs, key)};
 
             InfoLog(key, value_is_default, default_value, current_value);
         }
@@ -222,9 +222,9 @@ class RemoveKey final : public Scenario
                 throw std::runtime_error{"Failed to remove key"};
             }
 
-            std::string value_is_default{GetValueIsDefault(kvs, key)};
-            std::string default_value{GetDefaultValue(kvs, key)};
-            std::string current_value{GetCurrentValue(kvs, key)};
+            std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            std::string default_value{DefaultValueStr(kvs, key)};
+            std::string current_value{CurrentValueStr(kvs, key)};
 
             InfoLog(key, value_is_default, default_value, current_value);
         }
@@ -261,8 +261,8 @@ class ResetAllKeys final : public Scenario
         {
             // Get value before set.
             {
-                const std::string value_is_default{GetValueIsDefault(kvs, key)};
-                const std::string current_value{GetCurrentValue(kvs, key)};
+                const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+                const std::string current_value{CurrentValueStr(kvs, key)};
 
                 InfoLog(key, value_is_default, current_value);
             }
@@ -276,8 +276,8 @@ class ResetAllKeys final : public Scenario
 
             // Get value after set.
             {
-                const std::string value_is_default{GetValueIsDefault(kvs, key)};
-                const std::string current_value{GetCurrentValue(kvs, key)};
+                const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+                const std::string current_value{CurrentValueStr(kvs, key)};
 
                 InfoLog(key, value_is_default, current_value);
             }
@@ -293,8 +293,8 @@ class ResetAllKeys final : public Scenario
         // Get value parameters after reset.
         for (const auto& [key, _] : key_values)
         {
-            const std::string value_is_default{GetValueIsDefault(kvs, key)};
-            const std::string current_value{GetCurrentValue(kvs, key)};
+            const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            const std::string current_value{CurrentValueStr(kvs, key)};
 
             InfoLog(key, value_is_default, current_value);
         }
@@ -332,8 +332,8 @@ class ResetSingleKey final : public Scenario
         {
             // Get value parameters before set.
             {
-                const std::string value_is_default{GetValueIsDefault(kvs, key)};
-                const std::string current_value{GetCurrentValue(kvs, key)};
+                const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+                const std::string current_value{CurrentValueStr(kvs, key)};
 
                 InfoLog(key, value_is_default, current_value);
             }
@@ -347,8 +347,8 @@ class ResetSingleKey final : public Scenario
 
             // Get value parameters after set.
             {
-                const std::string value_is_default{GetValueIsDefault(kvs, key)};
-                const std::string current_value{GetCurrentValue(kvs, key)};
+                const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+                const std::string current_value{CurrentValueStr(kvs, key)};
 
                 InfoLog(key, value_is_default, current_value);
             }
@@ -364,8 +364,8 @@ class ResetSingleKey final : public Scenario
         // Use KVS APIs to get value_is_default and current_value after reset.
         for (const auto& [key, value] : key_values)
         {
-            const std::string value_is_default{GetValueIsDefault(kvs, key)};
-            const std::string current_value{GetCurrentValue(kvs, key)};
+            const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            const std::string current_value{CurrentValueStr(kvs, key)};
             InfoLog(key, value_is_default, current_value);
         }
     }
