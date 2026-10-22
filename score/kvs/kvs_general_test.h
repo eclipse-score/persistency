@@ -37,75 +37,75 @@
 #include "score/kvs/internal/kvs_helper.h"
 using namespace score::kvs;
 
-uint32_t adler32(const std::string& data);
-void prepare_environment();
-void cleanup_environment();
-void cleanup_environment(const std::string& dir);
-void store(const std::string& path, const std::string& hashPath, const std::string& data);
+uint32_t Adler32(const std::string& data);
+void PrepareEnvironment();
+void CleanupEnvironment();
+void CleanupEnvironment(const std::string& dir);
+void Store(const std::string& file_path, const std::string& hash_path, const std::string& data);
 
-inline void prepare_kvs(const std::string& dir,
-                        const std::string& prefix,
-                        const std::size_t instanceId,
-                        const std::size_t snapshotId)
+inline void PrepareKvs(const std::string& dir,
+                       const std::string& prefix,
+                       const std::size_t instance_id,
+                       const std::size_t snapshot_id)
 {
     // Do nothing, end of recursion.
 }
 
 template <typename... TSnapshots>
-inline void prepare_kvs(const std::string& dir,
-                        const std::string& prefix,
-                        const std::size_t instanceId,
-                        const std::size_t snapshotId,
-                        const std::string& snapshotData,
-                        TSnapshots&&... snapshots)
+inline void PrepareKvs(const std::string& dir,
+                       const std::string& prefix,
+                       const std::size_t instance_id,
+                       const std::size_t snapshot_id,
+                       const std::string& snapshot_data,
+                       TSnapshots&&... snapshots)
 {
-    const std::string path{dir + "/" + prefix + std::to_string(instanceId) + "_" + std::to_string(snapshotId)};
-    const std::string jsonPath(path + ".json");
-    const std::string hashPath(path + ".hash");
+    const std::string path{dir + "/" + prefix + std::to_string(instance_id) + "_" + std::to_string(snapshot_id)};
+    const std::string json_path(path + ".json");
+    const std::string hash_path(path + ".hash");
 
-    store(jsonPath, hashPath, snapshotData);
+    Store(json_path, hash_path, snapshot_data);
 
-    prepare_kvs(dir, prefix, instanceId, (snapshotId + 1ul), std::forward<TSnapshots>(snapshots)...);
+    PrepareKvs(dir, prefix, instance_id, (snapshot_id + 1ul), std::forward<TSnapshots>(snapshots)...);
 }
 
 template <typename... TSnapshots>
-inline void prepare_environment(const std::string& dir,
-                                const std::string& prefix,
-                                const std::size_t instanceId,
-                                const std::string& defaultData,
-                                TSnapshots&&... snapshots)
+inline void PrepareEnvironment(const std::string& dir,
+                               const std::string& prefix,
+                               const std::size_t instance_id,
+                               const std::string& default_data,
+                               TSnapshots&&... snapshots)
 {
     mkdir(dir.c_str(), 0777);
 
-    const std::string path{dir + "/" + prefix + std::to_string(instanceId)};
-    const std::string defaultJsonPath(path + "_default.json");
-    const std::string defaultHashPath(path + "_default.hash");
+    const std::string path{dir + "/" + prefix + std::to_string(instance_id)};
+    const std::string default_json_path(path + "_default.json");
+    const std::string default_hash_path(path + "_default.hash");
 
-    store(defaultJsonPath, defaultHashPath, defaultData);
+    Store(default_json_path, default_hash_path, default_data);
 
-    prepare_kvs(dir, prefix, instanceId, 0ul, std::forward<TSnapshots>(snapshots)...);
+    PrepareKvs(dir, prefix, instance_id, 0ul, std::forward<TSnapshots>(snapshots)...);
 }
 
 // Default data used in unit tests.
 
-const std::uint32_t instance = 123;
-const InstanceId instance_id{instance};
-const SnapshotId snapshot_id{0ul};
+const std::uint32_t kInstance = 123;
+const InstanceId kInstanceId{kInstance};
+const SnapshotId kSnapshotId{0ul};
 
 // score::filesystem::Path could be constructed implicitly from std::string.
 // For readability, the test code constructs it explicitly from these strings.
-const std::string data_dir = "./data_folder/";
-const std::string default_prefix = data_dir + "kvs_" + std::to_string(instance) + "_default";
-const std::string kvs_prefix = data_dir + "kvs_" + std::to_string(instance) + "_0";
-const std::string filename_prefix = data_dir + "kvs_" + std::to_string(instance);
+const std::string kDataDir = "./data_folder/";
+const std::string kDefaultPrefix = kDataDir + "kvs_" + std::to_string(kInstance) + "_default";
+const std::string kKvsPrefix = kDataDir + "kvs_" + std::to_string(kInstance) + "_0";
+const std::string kFilenamePrefix = kDataDir + "kvs_" + std::to_string(kInstance);
 
-const std::string default_json = R"({
+const std::string kDefaultJson = R"({
     "default": {
         "t": "i32",
         "v": 5
     }
 })";
-const std::string kvs_json = R"({
+const std::string kKvsJson = R"({
     "kvs": {
         "t": "i32",
         "v": 2

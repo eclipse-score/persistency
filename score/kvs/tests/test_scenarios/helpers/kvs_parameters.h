@@ -24,12 +24,12 @@ struct KvsParameters
     /// @brief Parses `KvsParameters` from a JSON string.
     ///
     /// JSON is expected to contain `kvs_parameters` field.
-    static KvsParameters from_json(const std::string& json_str);
+    static KvsParameters FromJson(const std::string& json_str);
 
     /// @brief Parses `KvsParameters` from an `Object`.
     ///
     /// `Object` is expected to contain `kvs_parameters` field.
-    static KvsParameters from_object(const score::json::Object& object);
+    static KvsParameters FromObject(const score::json::Object& object);
 
     score::kvs::InstanceId instance_id;
     std::optional<score::kvs::OpenNeedDefaults> need_defaults;

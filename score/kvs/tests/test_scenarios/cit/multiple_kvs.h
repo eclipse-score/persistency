@@ -15,6 +15,6 @@
 
 #include <scenario.hpp>
 
-ScenarioGroup::Ptr multiple_kvs_group();
+ScenarioGroup::Ptr MultipleKvsGroup();
 
 #endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_MULTIPLE_KVS_H

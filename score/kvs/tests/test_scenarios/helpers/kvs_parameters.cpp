@@ -23,22 +23,22 @@ template <typename T,
           typename std::enable_if_t<std::is_same_v<T, score::kvs::OpenNeedDefaults> ||
                                         std::is_same_v<T, score::kvs::OpenNeedKvs>,
                                     bool> = true>
-std::optional<T> deserialize_load_param(const score::json::Object& obj_root, const std::string& field_name)
+std::optional<T> DeserializeLoadParam(const score::json::Object& obj_root, const std::string& field_name)
 {
     if (obj_root.find(field_name) != obj_root.end())
     {
         auto value_str{obj_root.at(field_name).As<std::string>().value().get()};
         if (value_str == "ignored")
         {
-            return T::Ignored;
+            return T::kIgnored;
         }
         else if (value_str == "optional")
         {
-            return T::Optional;
+            return T::kOptional;
         }
         else if (value_str == "required")
         {
-            return T::Required;
+            return T::kRequired;
         }
         else
         {
@@ -51,7 +51,7 @@ std::optional<T> deserialize_load_param(const score::json::Object& obj_root, con
 
 }  // namespace
 
-KvsParameters KvsParameters::from_json(const std::string& json_str)
+KvsParameters KvsParameters::FromJson(const std::string& json_str)
 {
     // Load and parse provided JSON string.
     JsonParser parser;
@@ -61,10 +61,10 @@ KvsParameters KvsParameters::from_json(const std::string& json_str)
         throw score::result::Error(any_res.error());
     }
 
-    return KvsParameters::from_object(any_res.value().As<Object>().value().get());
+    return KvsParameters::FromObject(any_res.value().As<Object>().value().get());
 }
 
-KvsParameters KvsParameters::from_object(const Object& object)
+KvsParameters KvsParameters::FromObject(const Object& object)
 {
     // Take "kvs_parameters" field containing object.
     const auto& map_root{object.at("kvs_parameters")};
@@ -73,10 +73,10 @@ KvsParameters KvsParameters::from_object(const Object& object)
     KvsParameters params{.instance_id = obj_root.at("instance_id").As<uint64_t>().value()};
 
     // Deserialize "defaults".
-    params.need_defaults = deserialize_load_param<score::kvs::OpenNeedDefaults>(obj_root, "defaults");
+    params.need_defaults = DeserializeLoadParam<score::kvs::OpenNeedDefaults>(obj_root, "defaults");
 
     // Deserialize "kvs_load".
-    params.need_kvs = deserialize_load_param<score::kvs::OpenNeedKvs>(obj_root, "kvs_load");
+    params.need_kvs = DeserializeLoadParam<score::kvs::OpenNeedKvs>(obj_root, "kvs_load");
 
     // Deserialize "dir".
     if (obj_root.find("dir") != obj_root.end())

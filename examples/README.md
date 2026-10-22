@@ -67,10 +67,10 @@ using namespace score::kvs;
 int main()
 {
     auto open_res = KvsBuilder(InstanceId(0))
-                        .need_defaults_flag(OpenNeedDefaults::Optional)
-                        .need_kvs_flag(OpenNeedKvs::Optional)
-                        .dir("./data_folder/")
-                        .build();
+                        .NeedDefaultsFlag(OpenNeedDefaults::kOptional)
+                        .NeedKvsFlag(OpenNeedKvs::kOptional)
+                        .Dir("./data_folder/")
+                        .Build();
     if (!open_res)
     {
         std::cerr << "Failed to open KVS" << std::endl;
@@ -79,39 +79,39 @@ int main()
     Kvs kvs = std::move(open_res.value());
 
     // Set a key-value pair; errors shall be handled by the application (see safety manual)
-    if (!kvs.set_value("username", KvsValue("alice")))
+    if (!kvs.SetValue("username", KvsValue("alice")))
     {
         std::cerr << "Failed to set value" << std::endl;
         return 1;
     }
 
-    // Read a stored value (returns KeyNotFound if no value is stored for the key)
-    auto get_res = kvs.get_value("username");
-    if (get_res && get_res.value().getType() == KvsValue::Type::String)
+    // Read a stored value (returns kKeyNotFound if no value is stored for the key)
+    auto get_res = kvs.GetValue("username");
+    if (get_res && get_res.value().GetType() == KvsValue::Type::kString)
     {
-        std::cout << "username: " << std::get<std::string>(get_res.value().getValue()) << std::endl;
+        std::cout << "username: " << std::get<std::string>(get_res.value().GetValue()) << std::endl;
     }
 
     // Read a default value
-    auto default_res = kvs.get_default_value("language");
+    auto default_res = kvs.GetDefaultValue("language");
 
     // Check if a value is stored for a key
-    if (kvs.key_exists("username").value_or(false))
+    if (kvs.KeyExists("username").value_or(false))
     {
         std::cout << "username exists" << std::endl;
     }
 
     // Remove a key
-    if (!kvs.remove_key("username"))
+    if (!kvs.RemoveKey("username"))
     {
         std::cerr << "Failed to remove key" << std::endl;
     }
 
     // List all keys with a stored value (defaults are not listed)
-    auto keys_res = kvs.get_all_keys();
+    auto keys_res = kvs.GetAllKeys();
 
     // Write the values to the storage
-    if (!kvs.flush())
+    if (!kvs.Flush())
     {
         std::cerr << "Failed to flush KVS" << std::endl;
         return 1;

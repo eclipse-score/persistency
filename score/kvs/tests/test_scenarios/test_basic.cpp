@@ -39,44 +39,44 @@ void BasicScenario::run(const std::string& input) const
     // Print and parse parameters.
     std::cerr << input << std::endl;
 
-    auto params{KvsParameters::from_json(input)};
+    auto params{KvsParameters::FromJson(input)};
 
     // Set builder parameters.
     InstanceId instance_id{params.instance_id};
     KvsBuilder builder{instance_id};
     if (params.need_defaults.has_value())
     {
-        builder = builder.need_defaults_flag(*params.need_defaults);
+        builder = builder.NeedDefaultsFlag(*params.need_defaults);
     }
     if (params.need_kvs.has_value())
     {
-        builder = builder.need_kvs_flag(*params.need_kvs);
+        builder = builder.NeedKvsFlag(*params.need_kvs);
     }
 
     // Create KVS.
-    Kvs kvs{*builder.build()};
+    Kvs kvs{*builder.Build()};
 
     // Simple set/get.
     std::string key{"example_key"};
     std::string value{"example_value"};
-    auto set_value_result{kvs.set_value(key, KvsValue{value})};
+    auto set_value_result{kvs.SetValue(key, KvsValue{value})};
     if (!set_value_result)
     {
         throw std::runtime_error("Failed to set value");
     }
 
-    auto get_value_result{kvs.get_value(key)};
+    auto get_value_result{kvs.GetValue(key)};
     if (!get_value_result)
     {
         throw std::runtime_error{"Failed to get value"};
     }
     auto stored_kvs_value{get_value_result.value()};
-    if (stored_kvs_value.getType() != KvsValue::Type::String)
+    if (stored_kvs_value.GetType() != KvsValue::Type::kString)
     {
         throw std::runtime_error{"Invalid value type"};
     }
 
-    auto stored_value{std::get<std::string>(stored_kvs_value.getValue())};
+    auto stored_value{std::get<std::string>(stored_kvs_value.GetValue())};
     if (stored_value != value)
     {
         throw std::runtime_error("Value mismatch");

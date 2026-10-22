@@ -19,56 +19,56 @@ namespace score::kvs
 KvsBuilder::KvsBuilder(const InstanceId& instance_id) noexcept
     : instance_id_(instance_id),
       snapshot_id_(SnapshotId{0}),
-      need_defaults_(OpenNeedDefaults::Optional),
-      need_kvs_(OpenNeedKvs::Optional),
+      need_defaults_(OpenNeedDefaults::kOptional),
+      need_kvs_(OpenNeedKvs::kOptional),
       directory_("./data_folder/"),
       maximum_storage_bytes_(std::nullopt),
-      max_snapshots_(KVS_DEFAULT_MAX_SNAPSHOTS)
+      max_snapshots_(kDefaultMaxSnapshots)
 {
 }
 
-KvsBuilder& KvsBuilder::snapshot(const SnapshotId& snapshot_id) noexcept
+KvsBuilder& KvsBuilder::Snapshot(const SnapshotId& snapshot_id) noexcept
 {
     this->snapshot_id_ = snapshot_id;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::need_defaults_flag(const OpenNeedDefaults& flag) noexcept
+KvsBuilder& KvsBuilder::NeedDefaultsFlag(const OpenNeedDefaults& flag) noexcept
 {
     need_defaults_ = flag;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::need_kvs_flag(const OpenNeedKvs& flag) noexcept
+KvsBuilder& KvsBuilder::NeedKvsFlag(const OpenNeedKvs& flag) noexcept
 {
     need_kvs_ = flag;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::dir(const std::string& dir_path) noexcept
+KvsBuilder& KvsBuilder::Dir(const std::string& dir_path) noexcept
 {
     this->directory_ = dir_path;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::max_storage_bytes(const std::optional<size_t>& max_storage_bytes) noexcept
+KvsBuilder& KvsBuilder::MaxStorageBytes(const std::optional<size_t>& max_storage_bytes) noexcept
 {
     this->maximum_storage_bytes_ = max_storage_bytes;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::snapshot_max_count(const std::size_t max_count) noexcept
+KvsBuilder& KvsBuilder::SnapshotMaxCount(const std::size_t max_count) noexcept
 {
     this->max_snapshots_ = max_count;
     return *this;
 }
 
-score::Result<Kvs> KvsBuilder::build() const noexcept
+score::Result<Kvs> KvsBuilder::Build() const noexcept
 {
     // Use current directory if empty.
     const std::string directory = directory_.empty() ? std::string{"./"} : directory_;
 
-    return Kvs::open(
+    return Kvs::Open(
         instance_id_, snapshot_id_, need_defaults_, need_kvs_, directory, maximum_storage_bytes_, max_snapshots_);
 }
 

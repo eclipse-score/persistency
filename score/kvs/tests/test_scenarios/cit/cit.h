@@ -16,6 +16,6 @@
 #include <scenario.hpp>
 
 /// @brief Creates a group containing scenarios for CITs.
-ScenarioGroup::Ptr cit_scenario_group();
+ScenarioGroup::Ptr CitScenarioGroup();
 
 #endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_CIT_H
