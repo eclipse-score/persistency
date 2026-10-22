@@ -85,9 +85,11 @@ class SupportedDatatypesKeys final : public Scenario
             // Invalid keys.
             "",
             std::string(33, 'k'),
-            u8"emoji ✅❗😀",      // Non-ASCII characters
-            u8"greek ημα",         // Non-ASCII characters
-            u8"ąąąąąąąąąąąąąąąą",  // Non-ASCII characters, 32 bytes
+            // Non-ASCII characters.
+            u8"emoji ✅❗😀",
+            u8"greek ημα",
+            // Non-ASCII characters, 32 bytes.
+            u8"ąąąąąąąąąąąąąąąą",
         };
         for (const auto& s : keys_to_check)
         {
@@ -131,22 +133,21 @@ class SupportedDatatypesValues final : public Scenario
                 return std::to_string(std::get<uint64_t>(v.getValue()));
             case KvsValue::Type::f64:
             {
-                // Format floating point value with high precision, then remove trailing zeros and
-                // dot for minimal JSON representation
+                // Format with high precision, then remove trailing zeros and dot for minimal JSON representation.
                 auto val = std::get<double>(v.getValue());
                 std::ostringstream oss;
                 oss << std::setprecision(15) << val;
                 std::string s = oss.str();
-                // Remove trailing zeros and dot if needed
+                // Remove trailing zeros and dot if needed.
                 if (auto dot = s.find('.'); dot != std::string::npos)
                 {
-                    // Find last non-zero digit after decimal point
+                    // Find last non-zero digit after decimal point.
                     auto last_nonzero = s.find_last_not_of('0');
                     if (last_nonzero != std::string::npos && last_nonzero > dot)
                     {
                         s.erase(last_nonzero + 1);
                     }
-                    // Remove dot if it's the last character
+                    // Remove dot if it's the last character.
                     if (s.back() == '.')
                         s.pop_back();
                 }
@@ -234,15 +235,15 @@ class SupportedDatatypesValues final : public Scenario
         KvsParameters params{KvsParameters::from_json(input)};
         Kvs kvs = kvs_instance(params);
 
-        // Set value
+        // Set value.
         score::cpp::ignore = kvs.set_value(name(), value_);
 
-        // Get value
+        // Get value.
         auto kvs_value = kvs.get_value(name());
 
         if (kvs_value.has_value())
         {
-            // Log key and value as separate fields for Python test compatibility
+            // Log key and value as separate fields for Python test compatibility.
             info_log("key",
                      name(),
                      "value",
@@ -254,7 +255,7 @@ class SupportedDatatypesValues final : public Scenario
         }
     }
 
-    // Factory functions for each value type scenario
+    // Factory functions for each value type scenario.
     static Scenario::Ptr supported_datatypes_i32()
     {
         return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int32_t>(-321)));
@@ -292,7 +293,7 @@ class SupportedDatatypesValues final : public Scenario
 
     static Scenario::Ptr supported_datatypes_array()
     {
-        // Compose array value as in Rust
+        // Compose array value as in Rust.
         std::unordered_map<std::string, KvsValue> obj = {{"sub-number", KvsValue(789.0)}};
         std::vector<KvsValue> arr = std::vector<KvsValue>{KvsValue(321.5),
                                                           KvsValue(false),

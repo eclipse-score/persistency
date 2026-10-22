@@ -24,20 +24,14 @@ namespace
 {
 const std::string kTargetName{"cpp_test_scenarios::cit::default_values"};
 
-/**
- * Helper to log key/value state in a format parsable by Python tests.
- *
- * @param key The key being queried or modified in the KVS.
- * @param value_is_default String encoding whether the current value matches the
- * default ("Ok(true)", "Ok(false)", or error string).
- * @param default_value String encoding the default value for the key (e.g.,
- * "Ok(F64(...))" or error string).
- * @param current_value String encoding the current value for the key (e.g.,
- * "Ok(F64(...))" or error string).
- *
- * This function emits logs in a structured format so that the Python test suite
- * can parse and validate scenario output.
- */
+/// @brief Logs key/value state in a format parsable by Python tests.
+///
+/// The structured format lets the Python test suite parse and validate the scenario output.
+///
+/// @param key The key being queried or modified in the KVS.
+/// @param value_is_default Whether the current value matches the default ("Ok(true)", "Ok(false)" or error string).
+/// @param default_value String encoding the default value for the key (e.g. "Ok(F64(...))" or error string).
+/// @param current_value String encoding the current value for the key (e.g. "Ok(F64(...))" or error string).
 static void info_log(const std::string& key,
                      const std::string& value_is_default,
                      const std::string& default_value,
@@ -50,17 +44,13 @@ static void info_log(const std::string& key,
                  std::pair{std::string{"current_value"}, current_value});
 }
 
-/**
- * Overload of info_log for logging key/value state without a default_value field.
- *
- * @param key The key being queried or modified in the KVS.
- * @param value_is_default String encoding whether the current value matches the default.
- * @param current_value String encoding the current value for the key (e.g.,
- * "Ok(F64(...))" or an error string such as "Err(KeyNotFound)").
- *
- * This function emits logs in a structured format so that the Python test suite
- * can parse and validate scenario output.
- */
+/// @brief Logs key/value state without a default_value field, in a format parsable by Python tests.
+///
+/// The structured format lets the Python test suite parse and validate the scenario output.
+///
+/// @param key The key being queried or modified in the KVS.
+/// @param value_is_default String encoding whether the current value matches the default.
+/// @param current_value Current value for the key (e.g. "Ok(F64(...))" or an error such as "Err(KeyNotFound)").
 static void info_log(const std::string& key, const std::string& value_is_default, const std::string& current_value)
 {
     TRACING_INFO(kTargetName,
@@ -370,7 +360,7 @@ class ResetSingleKey final : public Scenario
             throw std::runtime_error{"Failed to reset key"};
         }
 
-        // Use KVS APIs to get value_is_default and current_value after reset
+        // Use KVS APIs to get value_is_default and current_value after reset.
         for (const auto& [key, value] : key_values)
         {
             const std::string value_is_default{get_value_is_default(kvs, key)};
@@ -412,7 +402,7 @@ class Checksum final : public Scenario
     }
 };
 
-// Default values group
+/// @brief Creates the default values scenario group.
 ScenarioGroup::Ptr default_values_group()
 {
     return ScenarioGroup::Ptr{new ScenarioGroupImpl{"default_values",

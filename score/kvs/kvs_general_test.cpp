@@ -13,7 +13,7 @@
 
 #include "kvs_general_test.hpp"
 
-/* adler32 control instance */
+/// @brief Independent Adler-32 implementation to check the KVS hash against.
 uint32_t adler32(const std::string& data)
 {
     const uint32_t mod = 65521;
@@ -48,10 +48,10 @@ void store(const std::string& filePath, const std::string& hashPath, const std::
     }
 }
 
-/* Create Test environment with default data, which is needed in most testcases */
+/// @brief Creates the test environment with default data, which is needed in most test cases.
 void prepare_environment()
 {
-    /* Prepare the test environment */
+    // Prepare the test environment.
     mkdir(data_dir.c_str(), 0777);
 
     const std::string default_json_path(default_prefix + ".json");
@@ -70,7 +70,7 @@ void cleanup_environment()
 
 void cleanup_environment(const std::string& dir)
 {
-    /* Cleanup the test environment */
+    // Cleanup the test environment.
     if (std::filesystem::exists(dir))
     {
         for (auto& p : std::filesystem::recursive_directory_iterator(dir))
