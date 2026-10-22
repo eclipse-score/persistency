@@ -29,7 +29,7 @@ KvsBuilder::KvsBuilder(const InstanceId& instance_id) noexcept
 
 KvsBuilder& KvsBuilder::Snapshot(const SnapshotId& snapshot_id) noexcept
 {
-    this->snapshot_id_ = snapshot_id;
+    snapshot_id_ = snapshot_id;
     return *this;
 }
 
@@ -47,19 +47,19 @@ KvsBuilder& KvsBuilder::KvsLoad(const score::mw::per::kvs::KvsLoad& mode) noexce
 
 KvsBuilder& KvsBuilder::WorkingDir(std::string&& working_dir) noexcept
 {
-    this->working_dir_ = std::move(working_dir);
+    working_dir_ = std::move(working_dir);
     return *this;
 }
 
 KvsBuilder& KvsBuilder::MaxStorageBytes(const std::optional<size_t>& max_storage_bytes) noexcept
 {
-    this->maximum_storage_bytes_ = max_storage_bytes;
+    maximum_storage_bytes_ = max_storage_bytes;
     return *this;
 }
 
 KvsBuilder& KvsBuilder::SnapshotMaxCount(std::size_t max_count) noexcept
 {
-    this->max_snapshots_ = max_count;
+    max_snapshots_ = max_count;
     return *this;
 }
 

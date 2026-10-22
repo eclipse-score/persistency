@@ -13,6 +13,8 @@
 
 #include "score/kvs/kvs_general_test.h"
 
+using namespace score::mw::per::kvs;
+
 TEST(kvs_kvsbuilder, kvsbuilder_build_ignored)
 {
     KvsBuilder builder{kInstanceId};

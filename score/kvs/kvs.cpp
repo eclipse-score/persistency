@@ -393,7 +393,7 @@ score::Result<size_t> Kvs::SnapshotCount() const noexcept
         {
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
-        if (false == fname_exists_res.value())
+        if (!fname_exists_res.value())
         {
             break;
         }
@@ -423,7 +423,7 @@ score::Result<void> Kvs::SnapshotRestore(const SnapshotId& snapshot_id) noexcept
     }
 
     // Fail if the snapshot ID is the current KVS or does not exist.
-    if ((0 == snapshot_id.id) || (snapshot_count_res.value() < snapshot_id.id))
+    if ((snapshot_id.id == 0U) || (snapshot_count_res.value() < snapshot_id.id))
     {
         return score::MakeUnexpected(ErrorCode::kInvalidSnapshotId);
     }
@@ -449,7 +449,7 @@ score::Result<score::filesystem::Path> Kvs::KvsFilePath(const SnapshotId& snapsh
     {
         return score::MakeUnexpected(static_cast<ErrorCode>(*fname_exists_res.error()));
     }
-    if (false == fname_exists_res.value())
+    if (!fname_exists_res.value())
     {
         return score::MakeUnexpected(ErrorCode::kFileNotFound);
     }
@@ -466,7 +466,7 @@ score::Result<score::filesystem::Path> Kvs::HashFilePath(const SnapshotId& snaps
     {
         return score::MakeUnexpected(static_cast<ErrorCode>(*fname_exists_res.error()));
     }
-    if (false == fname_exists_res.value())
+    if (!fname_exists_res.value())
     {
         return score::MakeUnexpected(ErrorCode::kFileNotFound);
     }
@@ -549,7 +549,7 @@ score::Result<void> Kvs::SnapshotRotate() noexcept
         logger_->LogInfo() << "rotating:" << snap_old << "->" << snap_new;
         // Rename hash.
         int32_t hash_rename{std::rename(hash_old.CStr(), hash_new.CStr())};
-        if ((0 != hash_rename) && (errno != ENOENT))
+        if ((hash_rename != 0) && (errno != ENOENT))
         {
             logger_->LogError() << "error: could not rename hash file" << snap_old << "- Rename Errorcode" << errno;
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
@@ -557,7 +557,7 @@ score::Result<void> Kvs::SnapshotRotate() noexcept
 
         // Rename snapshot.
         int32_t snap_rename{std::rename(snap_old.CStr(), snap_new.CStr())};
-        if ((0 != snap_rename) && (errno != ENOENT))
+        if ((snap_rename != 0) && (errno != ENOENT))
         {
             logger_->LogError() << "error: could not rename snapshot file" << snap_old << "- Rename Errorcode" << errno;
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);

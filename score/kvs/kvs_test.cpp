@@ -18,6 +18,8 @@
 #include "score/os/stat.h"
 #include "score/utility.hpp"
 
+using namespace score::mw::per::kvs;
+
 namespace
 {
 using score::filesystem::Perms;
@@ -1044,23 +1046,23 @@ TEST(kvs_is_value_default, is_value_default)
 
     // Check non-default value.
     {
-        auto result{kvs.IsValueDefault("not-default")};
-        ASSERT_TRUE(result);
-        ASSERT_FALSE(result.value());
+        auto not_default_res{kvs.IsValueDefault("not-default")};
+        ASSERT_TRUE(not_default_res);
+        ASSERT_FALSE(not_default_res.value());
     }
 
     // Check default value.
     {
-        auto result{kvs.IsValueDefault("default")};
-        ASSERT_TRUE(result);
-        ASSERT_TRUE(result.value());
+        auto default_res{kvs.IsValueDefault("default")};
+        ASSERT_TRUE(default_res);
+        ASSERT_TRUE(default_res.value());
     }
 
     // Check key not found.
     {
-        auto result{kvs.IsValueDefault("non_existing_key")};
-        ASSERT_FALSE(result);
-        ASSERT_EQ(result.error(), ErrorCode::kKeyNotFound);
+        auto missing_res{kvs.IsValueDefault("non_existing_key")};
+        ASSERT_FALSE(missing_res);
+        ASSERT_EQ(missing_res.error(), ErrorCode::kKeyNotFound);
     }
 
     CleanupEnvironment();
@@ -2253,7 +2255,6 @@ TEST(kvs_get_filename, get_hashname_success)
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
         auto hashname{result.value().HashFilePath(SnapshotId(i))};
-        system("ls -l ./data_folder/");
         EXPECT_TRUE(hashname);
         EXPECT_EQ(hashname.value().CStr(), kFilenamePrefix + "_" + std::to_string(i) + ".hash");
     }

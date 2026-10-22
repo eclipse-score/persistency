@@ -13,6 +13,8 @@
 
 #include "score/kvs/kvs_general_test.h"
 
+using namespace score::mw::per::kvs;
+
 TEST(kvs_calculate_hash_adler32, calculate_hash_adler32)
 {
     // Test the Adler-32 hash calculation.

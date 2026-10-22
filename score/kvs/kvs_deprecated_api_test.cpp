@@ -27,6 +27,8 @@ DISABLE_WARNING(-Wdeprecated-declarations)
 #include "score/kvs/kvsvalue.hpp"
 DISABLE_WARNING_POP
 
+using namespace score::mw::per::kvs;
+
 namespace
 {
 

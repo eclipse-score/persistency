@@ -13,6 +13,8 @@
 
 #include "score/kvs/kvs_general_test.h"
 
+using namespace score::mw::per::kvs;
+
 /// @brief Independent Adler-32 implementation to check the KVS hash against.
 uint32_t Adler32(const std::string& data)
 {
