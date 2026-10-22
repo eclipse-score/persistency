@@ -25,102 +25,129 @@
 namespace score::mw::per::kvs
 {
 
-/* Define the KvsValue class*/
-/**
- * @class KvsValue
- * @brief Represents a flexible value type that can hold various data types,
- *        including numbers, booleans, strings, null, arrays, and objects.
- *
- * The KvsValue class provides a type-safe way to store and retrieve values of
- * different types. It uses a std::variant to hold the underlying value and an
- * enum to track the type of the value.
- *
- * ## Supported Types:
- * - Number (double)
- * - Boolean (bool)
- * - String (std::string)
- * - Null (std::nullptr_t)
- * - Array (std::vector<KvsValue>)
- * - Object (std::vector<std::pair<std::string, KvsValue>>)
- *
- * ## Public Methods:
- * - `KvsValue(double number)`: Constructs a KvsValue holding a number.
- * - `KvsValue(bool boolean)`:
- * - Access the underlying value using `getValue()` and `std::get`.
- *
- * ## Example:
- * @code
- * KvsValue numberValue(42.0);
- * KvsValue stringValue("Hello, World!");
- * KvsValue arrayValue(KvsValue::Array{numberValue, stringValue});
- * KvsValue objectValue(KvsValue::Object{{"number", numberValue}, {"text", stringValue}});
- *
- * if (numberValue.getType() == KvsValue::Type::Number) {
- *     double number = std::get<double>(numberValue.getValue());
- * }
- * @endcode
- */
-
+/// @brief Value that holds a number, boolean, string, null, array or object.
+///
+/// The KvsValue class provides a type-safe way to store and retrieve values of different types.
+/// It uses a std::variant to hold the underlying value and an enum to track the type of the value.
+/// Access the underlying value using getValue() and `std::get`.
+///
+/// Example:
+/// @code
+/// KvsValue numberValue(42.0);
+/// KvsValue stringValue("Hello, World!");
+/// KvsValue arrayValue(KvsValue::Array{numberValue, stringValue});
+/// KvsValue objectValue(KvsValue::Object{{"number", numberValue}, {"text", stringValue}});
+///
+/// if (numberValue.getType() == KvsValue::Type::f64) {
+///     double number = std::get<double>(numberValue.getValue());
+/// }
+/// @endcode
 class KvsValue final
 {
   public:
-    /* Define the possible types for KvsValue*/
-    /* KvsValue is incomplete here; both containers support incomplete element types. */
+    /// @brief Array of values.
+    ///
+    /// KvsValue is incomplete here.
+    /// Both containers support incomplete element types.
     using Array = std::vector<KvsValue>;
+
+    /// @brief Object as an ordered list of key-value pairs.
     using Object = std::vector<std::pair<std::string, KvsValue>>;
 
-    /* Enum to represent the type of the value*/
+    /// @brief Type of the held value.
     enum class Type
     {
+        /// `int32_t`
         i32,
+        /// `uint32_t`
         u32,
+        /// `int64_t`
         i64,
+        /// `uint64_t`
         u64,
+        /// `double`
         f64,
+        /// `bool`
         Boolean,
+        /// `std::string`
         String,
+        /// `std::nullptr_t`
         Null,
+        /// KvsValue::Array
         Array,
+        /// KvsValue::Object
         Object
     };
 
-    /* Constructors for each type*/
+    /// @brief Constructs a value of type Type::i32.
     explicit KvsValue(int32_t number) noexcept : value_(number), type_(Type::i32) {}
+
+    /// @brief Constructs a value of type Type::u32.
     explicit KvsValue(uint32_t number) noexcept : value_(number), type_(Type::u32) {}
+
+    /// @brief Constructs a value of type Type::i64.
     explicit KvsValue(int64_t number) noexcept : value_(number), type_(Type::i64) {}
+
+    /// @brief Constructs a value of type Type::u64.
     explicit KvsValue(uint64_t number) noexcept : value_(number), type_(Type::u64) {}
+
+    /// @brief Constructs a value of type Type::f64.
     explicit KvsValue(double number) noexcept : value_(number), type_(Type::f64) {}
+
+    /// @brief Constructs a value of type Type::Boolean.
     explicit KvsValue(bool boolean) noexcept : value_(boolean), type_(Type::Boolean) {}
+
+    /// @brief Constructs a value of type Type::String from a C string.
     explicit KvsValue(const char* str) noexcept;
+
+    /// @brief Constructs a value of type Type::String.
     explicit KvsValue(const std::string& str) noexcept : value_(str), type_(Type::String) {}
+
+    /// @brief Constructs a value of type Type::Null.
     explicit KvsValue(std::nullptr_t) noexcept : value_(nullptr), type_(Type::Null) {}
+
+    /// @brief Constructs a value of type Type::Array by copying the elements.
     explicit KvsValue(const Array& array) noexcept;
+
+    /// @brief Constructs a value of type Type::Array by moving the elements.
     explicit KvsValue(Array&& array) noexcept;
+
+    /// @brief Constructs a value of type Type::Object by copying the members.
     explicit KvsValue(const Object& object) noexcept;
+
+    /// @brief Constructs a value of type Type::Object by moving the members.
     explicit KvsValue(Object&& object) noexcept;
+
+    /// @brief Constructs a value of type Type::Object from a map.
     explicit KvsValue(const std::unordered_map<std::string, KvsValue>& object) noexcept;
 
-    /* Copy constructor */
+    /// @brief Copy constructor.
     KvsValue(const KvsValue& other) noexcept;
 
-    /* copy assignment operator */
+    /// @brief Copy assignment operator.
     KvsValue& operator=(const KvsValue& other) noexcept;
 
-    /* Move constructor */
+    /// @brief Move constructor.
     KvsValue(KvsValue&& other) noexcept;
 
-    /* move assignment operator */
+    /// @brief Move assignment operator.
     KvsValue& operator=(KvsValue&& other) noexcept;
 
+    /// @brief Destructor.
     ~KvsValue() noexcept;
 
-    /* Get the type of the value*/
+    /// @brief Gets the type of the value.
+    /// @return The type of the held value.
     Type getType() const noexcept
     {
         return type_;
     }
 
-    /* Access the underlying value (use std::get to retrieve the value)*/
+    /// @brief Accesses the underlying value.
+    ///
+    /// Use `std::get` to retrieve the value.
+    ///
+    /// @return The underlying variant.
     const std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>&
     getValue() const noexcept
     {
@@ -128,13 +155,13 @@ class KvsValue final
     }
 
   private:
-    /* The underlying value*/
+    /// The underlying value.
     std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object> value_;
 
-    /* The type of the value*/
+    /// The type of the value.
     Type type_;
 };
 
-} /* namespace score::mw::per::kvs */
+}  // namespace score::mw::per::kvs
 
-#endif /* SCORE_LIB_KVS_KVSVALUE_HPP */
+#endif  // SCORE_LIB_KVS_KVSVALUE_HPP

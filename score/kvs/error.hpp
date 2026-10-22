@@ -18,89 +18,92 @@
 namespace score::mw::per::kvs
 {
 
-/**
- * @brief Error codes reported by the `kvs` API.
- */
+/// @brief Error codes reported by the `kvs` API.
 enum class ErrorCode : score::result::ErrorCode
 {
-    /* Error that was not yet mapped*/
+    /// Error that was not yet mapped.
     UnmappedError,
 
-    /* File not found*/
+    /// File not found.
     FileNotFound,
 
-    /* KVS file read error*/
+    /// KVS file read error.
     KvsFileReadError,
 
-    /* KVS hash file read error*/
+    /// KVS hash file read error.
     KvsHashFileReadError,
 
-    /* JSON parser error*/
+    /// JSON parser error.
     JsonParserError,
 
-    /* JSON generator error*/
+    /// JSON generator error.
     JsonGeneratorError,
 
-    /* Physical storage failure*/
+    /// Physical storage failure.
     PhysicalStorageFailure,
 
-    /* Integrity corrupted*/
+    /// Integrity corrupted.
     IntegrityCorrupted,
 
-    /* Validation failed*/
+    /// Validation failed.
     ValidationFailed,
 
-    /* Encryption failed*/
+    /// Encryption failed.
     EncryptionFailed,
 
-    /* Resource is busy*/
+    /// Resource is busy.
     ResourceBusy,
 
-    /* Out of storage space*/
+    /// Out of storage space.
     OutOfStorageSpace,
 
-    /* Quota exceeded*/
+    /// Quota exceeded.
     QuotaExceeded,
 
-    /* Authentication failed*/
+    /// Authentication failed.
     AuthenticationFailed,
 
-    /* Key not found*/
+    /// Key not found.
     KeyNotFound,
 
-    /* Key default value not found*/
+    /// Key default value not found.
     KeyDefaultNotFound,
 
-    /* Serialization failed*/
+    /// Serialization failed.
     SerializationFailed,
 
-    /* Invalid snapshot ID*/
+    /// Invalid snapshot ID.
     InvalidSnapshotId,
 
-    /* Conversion failed*/
+    /// Conversion failed.
     ConversionFailed,
 
-    /* Mutex failed*/
+    /// Mutex failed.
     MutexLockFailed,
 
-    /* Invalid value type*/
+    /// Invalid value type.
     InvalidValueType,
 
-    /* Key is not valid */
+    /// Key is not valid.
     InvalidKey,
 };
 
-/**
- * @brief Error domain translating `ErrorCode` codes to human-readable messages.
- */
+/// @brief Error domain translating `ErrorCode` codes to human-readable messages.
 class KvsErrorDomain final : public score::result::ErrorDomain
 {
   public:
+    /// @brief Returns the human-readable message for an error code.
+    /// @param code The error code to translate.
+    /// @return The message for `code`.
     std::string_view MessageFor(const score::result::ErrorCode& code) const noexcept override;
 };
 
+/// @brief Creates an error in the KVS error domain.
+/// @param code The error code.
+/// @param user_message Optional message with additional context.
+/// @return The created error.
 score::result::Error MakeError(const ErrorCode code, const std::string_view user_message = "") noexcept;
 
-} /* namespace score::mw::per::kvs */
+}  // namespace score::mw::per::kvs
 
-#endif /* SCORE_LIB_KVS_INTERNAL_ERROR_HPP */
+#endif  // SCORE_LIB_KVS_INTERNAL_ERROR_HPP

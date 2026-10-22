@@ -23,7 +23,7 @@ on:
 
 jobs:
   bazel-clippy:
-    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@8ab73967470fa41977dd1c1102d03719b2e2c7e2 # v0.0.3-32-g8ab7396
+    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@f77ed751fa587e3a1142b2d85320917e00c888ae # v0.0.3-32-g8ab7396
     permissions:
       contents: read
     with:
