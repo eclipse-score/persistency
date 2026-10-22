@@ -29,11 +29,11 @@ struct KvsParameters
     /// @brief Parses `KvsParameters` from an `Object`.
     ///
     /// `Object` is expected to contain `kvs_parameters` field.
-    static KvsParameters FromObject(const score::json::Object& object);
+    static KvsParameters FromValue(const score::json::Object& object);
 
     score::mw::per::kvs::InstanceId instance_id;
-    std::optional<score::mw::per::kvs::OpenNeedDefaults> need_defaults;
-    std::optional<score::mw::per::kvs::OpenNeedKvs> need_kvs;
+    std::optional<score::mw::per::kvs::KvsDefaults> defaults;
+    std::optional<score::mw::per::kvs::KvsLoad> kvs_load;
     std::optional<std::string> dir;
     std::optional<size_t> snapshot_max_count;
 };

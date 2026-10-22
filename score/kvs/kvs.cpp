@@ -221,13 +221,13 @@ score::Result<Kvs::KeyValueMap> Kvs::OpenJson(const score::filesystem::Path& pre
 
 score::Result<Kvs> Kvs::Open(const InstanceId& instance_id,
                              const SnapshotId& snapshot_id,
-                             const OpenNeedDefaults& need_defaults,
-                             const OpenNeedKvs& need_kvs,
-                             const std::string&& dir,
+                             const KvsDefaults& defaults,
+                             const KvsLoad& kvs_load,
+                             const std::string&& working_dir,
                              const std::optional<size_t>& max_storage_bytes,
                              std::size_t snapshot_max_count) noexcept
 {
-    score::filesystem::Path base_path(dir);
+    score::filesystem::Path base_path(working_dir);
     score::filesystem::Path filename_prefix = base_path / ("kvs_" + std::to_string(instance_id.id));
     const score::filesystem::Path filename_default = filename_prefix.Native() + "_default";
     const score::filesystem::Path filename_kvs = filename_prefix.Native() + "_" + std::to_string(snapshot_id.id);
@@ -236,11 +236,11 @@ score::Result<Kvs> Kvs::Open(const InstanceId& instance_id,
     kvs.max_storage_bytes_ = max_storage_bytes;
     score::Result<KeyValueMap> default_res{};
 
-    if (need_defaults != OpenNeedDefaults::kIgnored)
+    if (defaults != KvsDefaults::kIgnored)
     {
         default_res = kvs.OpenJson(
             filename_default,
-            need_defaults == OpenNeedDefaults::kRequired ? OpenJsonNeedFile::kRequired : OpenJsonNeedFile::kOptional);
+            defaults == KvsDefaults::kRequired ? OpenJsonNeedFile::kRequired : OpenJsonNeedFile::kOptional);
     }
 
     if (!default_res)
@@ -251,11 +251,10 @@ score::Result<Kvs> Kvs::Open(const InstanceId& instance_id,
 
     score::Result<KeyValueMap> kvs_res{};
 
-    if (need_kvs != OpenNeedKvs::kIgnored)
+    if (kvs_load != KvsLoad::kIgnored)
     {
         kvs_res = kvs.OpenJson(
-            filename_kvs,
-            need_kvs == OpenNeedKvs::kRequired ? OpenJsonNeedFile::kRequired : OpenJsonNeedFile::kOptional);
+            filename_kvs, kvs_load == KvsLoad::kRequired ? OpenJsonNeedFile::kRequired : OpenJsonNeedFile::kOptional);
     }
 
     if (!kvs_res)
@@ -840,7 +839,7 @@ score::Result<void> Kvs::SnapshotRestore(const SnapshotId& snapshot_id) noexcept
     return {};
 }
 
-score::Result<score::filesystem::Path> Kvs::GetKvsFilename(const SnapshotId& snapshot_id) const noexcept
+score::Result<score::filesystem::Path> Kvs::KvsFilePath(const SnapshotId& snapshot_id) const noexcept
 {
     score::filesystem::Path filename = filename_prefix_.Native() + "_" + std::to_string(snapshot_id.id) + ".json";
 
@@ -856,7 +855,7 @@ score::Result<score::filesystem::Path> Kvs::GetKvsFilename(const SnapshotId& sna
     return filename;
 }
 
-score::Result<score::filesystem::Path> Kvs::GetHashFilename(const SnapshotId& snapshot_id) const noexcept
+score::Result<score::filesystem::Path> Kvs::HashFilePath(const SnapshotId& snapshot_id) const noexcept
 {
     score::filesystem::Path filename = filename_prefix_.Native() + "_" + std::to_string(snapshot_id.id) + ".hash";
 

@@ -38,8 +38,8 @@ namespace score::mw::per::kvs
 /// int main() {
 ///   // Open kvs
 ///   auto open_res = KvsBuilder(0)
-///                       .NeedDefaultsFlag(OpenNeedDefaults::kRequired)
-///                       .NeedKvsFlag(OpenNeedKvs::kRequired)
+///                       .Defaults(KvsDefaults::kRequired)
+///                       .KvsLoad(KvsLoad::kRequired)
 ///                       .Build();
 ///   if (!open_res) return 1;
 ///   Kvs kvs = std::move(open_res.value());
@@ -68,20 +68,20 @@ class KvsBuilder final
     KvsBuilder& Snapshot(const SnapshotId& snapshot_id) noexcept;
 
     /// @brief Specifies whether default values must be loaded.
-    /// @param flag Whether default values are required, optional or ignored.
+    /// @param mode Whether default values are required, optional or ignored.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& NeedDefaultsFlag(const OpenNeedDefaults& flag) noexcept;
+    KvsBuilder& Defaults(const KvsDefaults& mode) noexcept;
 
     /// @brief Specifies whether KVS data must exist when opening the KVS.
-    /// @param flag Whether KVS data is required, optional or ignored.
+    /// @param mode Whether KVS data is required, optional or ignored.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& NeedKvsFlag(const OpenNeedKvs& flag) noexcept;
+    KvsBuilder& KvsLoad(const score::mw::per::kvs::KvsLoad& mode) noexcept;
 
     /// @brief Specifies the directory where KVS files are stored.
-    /// @param dir_path The directory path.
+    /// @param working_dir The directory path.
     /// Use "" or "." for the current directory.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& Dir(std::string&& dir_path) noexcept;
+    KvsBuilder& WorkingDir(std::string&& working_dir) noexcept;
 
     /// @brief Specifies the maximum storage size for the KVS in bytes.
     /// @param max_storage_bytes The maximum allowed total storage size in bytes.
@@ -119,25 +119,25 @@ class KvsBuilder final
         return Snapshot(snapshot_id);
     }
 
-    /// @deprecated Use `NeedDefaultsFlag()` instead.
-    [[deprecated("Use NeedDefaultsFlag() instead. The snake_case API is removed in a future release.")]]
-    KvsBuilder& need_defaults_flag(const OpenNeedDefaults& flag) noexcept
+    /// @deprecated Use `Defaults()` instead.
+    [[deprecated("Use Defaults() instead. The snake_case API is removed in a future release.")]]
+    KvsBuilder& need_defaults_flag(const KvsDefaults& flag) noexcept
     {
-        return NeedDefaultsFlag(flag);
+        return Defaults(flag);
     }
 
-    /// @deprecated Use `NeedKvsFlag()` instead.
-    [[deprecated("Use NeedKvsFlag() instead. The snake_case API is removed in a future release.")]]
-    KvsBuilder& need_kvs_flag(const OpenNeedKvs& flag) noexcept
+    /// @deprecated Use `KvsLoad()` instead.
+    [[deprecated("Use KvsLoad() instead. The snake_case API is removed in a future release.")]]
+    KvsBuilder& need_kvs_flag(const score::mw::per::kvs::KvsLoad& flag) noexcept
     {
-        return NeedKvsFlag(flag);
+        return KvsLoad(flag);
     }
 
-    /// @deprecated Use `Dir()` instead.
-    [[deprecated("Use Dir() instead. The snake_case API is removed in a future release.")]]
+    /// @deprecated Use `WorkingDir()` instead.
+    [[deprecated("Use WorkingDir() instead. The snake_case API is removed in a future release.")]]
     KvsBuilder& dir(std::string&& dir_path) noexcept
     {
-        return Dir(std::move(dir_path));
+        return WorkingDir(std::move(dir_path));
     }
 
     /// @deprecated Use `MaxStorageBytes()` instead.
@@ -169,13 +169,13 @@ class KvsBuilder final
     SnapshotId snapshot_id_;
 
     /// Whether default values are required.
-    OpenNeedDefaults need_defaults_;
+    KvsDefaults defaults_;
 
     /// Whether an existing KVS is required.
-    OpenNeedKvs need_kvs_;
+    score::mw::per::kvs::KvsLoad kvs_load_;
 
     /// Directory where the KVS files are stored.
-    std::string directory_;
+    std::string working_dir_;
 
     /// Maximum total storage size in bytes.
     /// Unset means no limit.
