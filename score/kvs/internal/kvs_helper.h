@@ -17,6 +17,7 @@
 #include "score/kvs/error.h"
 #include "score/kvs/kvs_value.h"
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <istream>
 #include <string>
@@ -25,6 +26,9 @@
 // It exists to allow unit tests to access these internal functions.
 namespace score::mw::per::kvs
 {
+
+/// @brief Size of an Adler-32 checksum in bytes.
+constexpr std::size_t kHashSize{4U};
 
 /// @brief Parses an Adler-32 checksum from its big-endian byte representation.
 /// @param in Stream to read the 4 checksum bytes from.
@@ -39,7 +43,7 @@ uint32_t CalculateHashAdler32(const std::string& data) noexcept;
 /// @brief Splits an Adler-32 checksum into its big-endian bytes for writing.
 /// @param hash The checksum to split.
 /// @return The checksum bytes.
-std::array<uint8_t, 4> GetHashBytesAdler32(uint32_t hash) noexcept;
+std::array<uint8_t, kHashSize> GetHashBytesAdler32(uint32_t hash) noexcept;
 
 /// @brief Calculates the checksum of the data and returns it as bytes for writing.
 ///
@@ -47,7 +51,7 @@ std::array<uint8_t, 4> GetHashBytesAdler32(uint32_t hash) noexcept;
 ///
 /// @param data Data to calculate the checksum of.
 /// @return The checksum bytes.
-std::array<uint8_t, 4> GetHashBytes(const std::string& data) noexcept;
+std::array<uint8_t, kHashSize> GetHashBytes(const std::string& data) noexcept;
 
 /// @brief Checks if the checksum read from a stream matches the data.
 ///

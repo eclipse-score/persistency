@@ -15,7 +15,7 @@
 
 TEST(kvs_kvsbuilder, kvsbuilder_build_ignored)
 {
-    KvsBuilder builder(kInstanceId);
+    KvsBuilder builder{kInstanceId};
     builder.Snapshot(SnapshotId{0ul});
     builder.Defaults(KvsDefaults::kIgnored);
     builder.KvsLoad(KvsLoad::kIgnored);
@@ -26,7 +26,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_build_ignored)
     EXPECT_EQ(builder.kvs_load_, KvsLoad::kIgnored);
     EXPECT_EQ(builder.working_dir_, "./kvsbuilder/");
 
-    auto result_build = builder.Build();
+    auto result_build{builder.Build()};
     EXPECT_TRUE(result_build);
     EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvsbuilder/kvs_" + std::to_string(kInstanceId.id));
 }
@@ -36,7 +36,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     // This test also checks the kvs Open function with the KvsBuilder.
 
     // Test the KvsBuilder constructor.
-    KvsBuilder builder(kInstanceId);
+    KvsBuilder builder{kInstanceId};
     EXPECT_EQ(builder.instance_id_.id, kInstanceId.id);
     EXPECT_EQ(builder.snapshot_id_.id, 0ul);
     EXPECT_EQ(builder.defaults_, KvsDefaults::kOptional);
@@ -55,7 +55,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     // Test the KvsBuilder Build method.
     // Check that KvsDefaults::kRequired and KvsLoad::kRequired are passed correctly.
     // Build() should return an error, since the files are not available.
-    auto result_build = builder.Build();
+    auto result_build{builder.Build()};
     ASSERT_FALSE(result_build);
     // This error occurs in OpenJson() and is passed through Open().
     EXPECT_EQ(static_cast<ErrorCode>(*result_build.error()), ErrorCode::kKvsFileReadError);
@@ -73,9 +73,9 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
 TEST(kvs_kvsbuilder, kvsbuilder_directory_check)
 {
     // Test the KvsBuilder with all configurations for the current working directory.
-    KvsBuilder builder(kInstanceId);
+    KvsBuilder builder{kInstanceId};
     builder.WorkingDir("");
-    auto result_build = builder.Build();
+    auto result_build{builder.Build()};
     EXPECT_TRUE(result_build);
     EXPECT_EQ(result_build.value().filename_prefix_.CStr(), "./kvs_" + std::to_string(kInstanceId.id));
 
@@ -94,11 +94,11 @@ TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_default)
 {
     // comp_req__kvs__snapshot_max_num_cfg: an unconfigured builder must keep the compile-time default.
     // Existing users then observe no behavior change.
-    KvsBuilder builder(kInstanceId);
+    KvsBuilder builder{kInstanceId};
     EXPECT_EQ(builder.max_snapshots_, kDefaultMaxSnapshots);
 
     builder.WorkingDir(std::string(kDataDir));
-    auto result_build = builder.Build();
+    auto result_build{builder.Build()};
     ASSERT_TRUE(result_build);
     EXPECT_EQ(result_build.value().SnapshotMaxCount(), kDefaultMaxSnapshots);
 
@@ -110,9 +110,9 @@ TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_configured)
     // comp_req__kvs__snapshot_max_num_cfg: the configured value must reach the built KVS instance.
     // Without the plumbing through Build()/Open() the setter would be silently ignored.
     // Inside the allowed range, and not the default.
-    const std::size_t configured_max = 2U;
+    const std::size_t configured_max{2U};
 
-    KvsBuilder builder(kInstanceId);
+    KvsBuilder builder{kInstanceId};
     builder.SnapshotMaxCount(configured_max);
     EXPECT_EQ(builder.max_snapshots_, configured_max);
 
@@ -120,7 +120,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_configured)
     EXPECT_EQ(&builder.SnapshotMaxCount(configured_max), &builder);
 
     builder.WorkingDir(std::string(kDataDir));
-    auto result_build = builder.Build();
+    auto result_build{builder.Build()};
     ASSERT_TRUE(result_build);
     EXPECT_EQ(result_build.value().SnapshotMaxCount(), configured_max);
 
