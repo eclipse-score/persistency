@@ -161,7 +161,7 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
 The following requirements in "valid" state and with "inspected" tag set are in the scope of this inspection:
 
 .. needtable::
-   :filter: docname is not None and "component_name" in docname and "requirements" in docname and status == "valid"
+   :filter: docname is not None and "kvs" in docname and "requirements" in docname and status == "valid"
    :style: table
    :types: comp_req
    :columns: id;status;tags
@@ -172,7 +172,7 @@ The following requirements in "valid" state and with "inspected" tag set are in 
 And also the following AoUs in "valid" state and with "inspected" tag set (for these please answer the questions above as if the AoUs are requirements, except question REQ_03_01):
 
 .. needtable::
-   :filter: docname is not None and "component_name" in docname and "requirements" in docname and status == "valid"
+   :filter: docname is not None and "kvs" in docname and "requirements" in docname and status == "valid"
    :style: table
    :types: aou_req
    :columns: id;status;tags
