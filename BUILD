@@ -13,9 +13,7 @@
 
 load("@score_docs_as_code//:docs.bzl", "docs")
 load("@score_sbom//:defs.bzl", "sbom")
-load("@score_tooling//:defs.bzl", "cli_helper", "dash_license_checker", "setup_starpls")
-load("@score_tooling//third_party/format:macros.bzl", "use_format_targets")
-load("@score_tools//cr_checker:cr_checker.bzl", "copyright_checker")
+load("@score_tooling//:defs.bzl", "setup_starpls")
 
 # Creates all documentation targets:
 # - `:docs` for building documentation at build-time
@@ -45,16 +43,49 @@ setup_starpls(
     visibility = ["//visibility:public"],
 )
 
-copyright_checker(
-    name = "copyright",
-    exclusion = "//:tools/copyright_exclusions.txt",
+# Exported for the Dash license check in //tools.
+exports_files(
+    ["Cargo.lock"],
+    visibility = ["//tools:__pkg__"],
+)
+
+# cicd on-pr.yml detects these root labels with `bazel query`.
+# It skips a check when its root label is missing.
+# The targets live in //tools.
+alias(
+    name = "copyright.check",
+    actual = "//tools:copyright.check",
     visibility = ["//visibility:public"],
 )
 
-dash_license_checker(
-    src = "//:Cargo.lock",
-    file_type = "cargo",
-    filter_keywords = ["github.com/eclipse-score/"],
+alias(
+    name = "copyright.fix",
+    actual = "//tools:copyright.fix",
+    visibility = ["//visibility:public"],
+)
+
+# This is not an alias on purpose.
+# `bazel test` does not expand a test_suite behind an alias.
+# The cicd `bazel test //:format.check` would find no tests.
+# Tagged manual so that `bazel test //...` skips the format check.
+test_suite(
+    name = "format.check",
+    tags = ["manual"],
+    tests = ["//tools:format.check"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "format.fix",
+    actual = "//tools:format.fix",
+    visibility = ["//visibility:public"],
+)
+
+# cicd license-check.yml runs `bazel run //:license-check` (see .github/workflows/license_check.yml).
+# The target lives in //tools.
+alias(
+    name = "license-check",
+    actual = "//tools:license-check",
     visibility = ["//visibility:public"],
 )
 
@@ -93,27 +124,19 @@ sbom(
     visibility = ["//visibility:public"],
 )
 
-cli_helper(
-    name = "cli-help",
-    visibility = ["//visibility:public"],
-)
-
 exports_files(
     [
         # Used by the @score_tooling coverage reporter to locate the workspace root.
+        # MODULE.bazel is also the workspace marker for //tools:format.check.
         "MODULE.bazel",
         "pyproject.toml",
     ],
 )
 
-# Add target for formatting checks
-use_format_targets()
-
 alias(
     name = "kvs_cpp",
     actual = "//score/kvs",
     deprecation = "//:kvs_cpp is deprecated. Update your dependency to the //score/kvs label.",
-    tags = ["cli_help=Build KVS CPP [build]"],
     visibility = ["//visibility:public"],
 )
 
