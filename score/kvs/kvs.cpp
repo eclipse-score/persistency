@@ -261,21 +261,30 @@ score::Result<KvsValue> Kvs::GetDefaultValue(const std::string_view key) const n
     return search->second;
 }
 
-score::Result<void> Kvs::ResetKey(const std::string_view key) noexcept
+score::Result<void> Kvs::SetValueToDefault(const std::string_view key) noexcept
 {
-    std::unique_lock<std::mutex> lock_kvs{kvs_mutex_, std::try_to_lock};
-    if (!lock_kvs.owns_lock())
+    // Validate key.
+    if (!IsKeyValid(key))
+    {
+        logger_->LogError() << "Provided key is not valid" << key;
+        return score::MakeUnexpected(ErrorCode::kInvalidKey);
+    }
+
+    // Get a default value.
+    auto default_value_result{GetDefaultValue(key)};
+    if (!default_value_result.has_value())
+    {
+        return score::MakeUnexpected(static_cast<ErrorCode>(*default_value_result.error()));
+    }
+
+    // Set value.
+    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
+    if (!lock.owns_lock())
     {
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
-    if (default_values_.find(std::string(key)) == default_values_.end())
-    {
-        return score::MakeUnexpected(ErrorCode::kKeyDefaultNotFound);
-    }
-
-    // Return value ignored: a key that was never written needs no reset.
-    score::cpp::ignore = kvs_.erase(std::string(key));
+    kvs_.insert_or_assign(std::string(key), std::move(*default_value_result));
     return {};
 }
 

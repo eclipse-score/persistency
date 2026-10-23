@@ -55,8 +55,6 @@ std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code
             return "Authentication failed";
         case ErrorCode::kKeyNotFound:
             return "Key not found";
-        case ErrorCode::kKeyDefaultNotFound:
-            return "Key default value not found";
         case ErrorCode::kSerializationFailed:
             return "Serialization failed";
         case ErrorCode::kInvalidSnapshotId:

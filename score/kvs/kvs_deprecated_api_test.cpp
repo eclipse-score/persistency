@@ -46,7 +46,6 @@ static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kOutOfStorageSpac
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kQuotaExceeded) == 12, "");
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kAuthenticationFailed) == 13, "");
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kKeyNotFound) == 14, "");
-static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kKeyDefaultNotFound) == 15, "");
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kSerializationFailed) == 16, "");
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kInvalidSnapshotId) == 17, "");
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kConversionFailed) == 18, "");
@@ -97,7 +96,6 @@ static_assert(ErrorCode::OutOfStorageSpace == ErrorCode::kOutOfStorageSpace, "")
 static_assert(ErrorCode::QuotaExceeded == ErrorCode::kQuotaExceeded, "");
 static_assert(ErrorCode::AuthenticationFailed == ErrorCode::kAuthenticationFailed, "");
 static_assert(ErrorCode::KeyNotFound == ErrorCode::kKeyNotFound, "");
-static_assert(ErrorCode::KeyDefaultNotFound == ErrorCode::kKeyDefaultNotFound, "");
 static_assert(ErrorCode::SerializationFailed == ErrorCode::kSerializationFailed, "");
 static_assert(ErrorCode::InvalidSnapshotId == ErrorCode::kInvalidSnapshotId, "");
 static_assert(ErrorCode::ConversionFailed == ErrorCode::kConversionFailed, "");
@@ -226,11 +224,6 @@ TEST(kvs_deprecated_api, kvs_write_wrappers)
     ExpectSame(kvs.set_value("old_key", KvsValue(1)), kvs.SetValue("new_key", KvsValue(1)));
     EXPECT_EQ(std::get<int32_t>(kvs.GetValue("old_key").value().GetValue()), 1);
     EXPECT_EQ(std::get<int32_t>(kvs.GetValue("new_key").value().GetValue()), 1);
-
-    ASSERT_TRUE(kvs.SetValue("default", KvsValue(9)));
-    ASSERT_FALSE(kvs.IsValueDefault("default").value());
-    ASSERT_TRUE(kvs.reset_key("default"));
-    EXPECT_TRUE(kvs.IsValueDefault("default").value());
 
     ASSERT_TRUE(kvs.remove_key("old_key"));
     EXPECT_FALSE(kvs.KeyExists("old_key").value());

@@ -44,17 +44,11 @@ impl KvsApi for MockKvs {
         self.map.lock().unwrap().clear();
         Ok(())
     }
-    fn reset_key(&self, key: &str) -> Result<(), ErrorCode> {
+    fn set_value_to_default(&self, _key: &str) -> Result<(), ErrorCode> {
         if self.fail {
             return Err(ErrorCode::UnmappedError);
         }
-        let mut map = self.map.lock().unwrap();
-        if map.contains_key(key) {
-            map.remove(key);
-            Ok(())
-        } else {
-            Err(ErrorCode::KeyDefaultNotFound)
-        }
+        Err(ErrorCode::KeyNotFound)
     }
     fn get_all_keys(&self) -> Result<Vec<String>, ErrorCode> {
         if self.fail {
@@ -136,6 +130,7 @@ impl KvsApi for MockKvs {
 
 #[cfg(test)]
 mod tests {
+    use crate::error_code::ErrorCode;
     use crate::kvs_api::{KvsApi, SnapshotId};
     use crate::kvs_mock::MockKvs;
     use crate::kvs_value::KvsValue;
@@ -148,6 +143,9 @@ mod tests {
         assert_eq!(kvs.get_value("a").unwrap(), KvsValue::from(1.0));
         assert_eq!(kvs.get_all_keys().unwrap(), vec!["a".to_string()]);
         assert!(kvs.key_exists("a").unwrap());
+        assert!(kvs
+            .set_value_to_default("a")
+            .is_err_and(|e| e == ErrorCode::KeyNotFound));
         assert!(kvs.remove_key("a").is_ok());
         assert!(!kvs.key_exists("a").unwrap());
         assert_eq!(kvs.snapshot_count(), 0);
@@ -167,7 +165,7 @@ mod tests {
         assert_eq!(kvs_fail.snapshot_count(), 9999);
         assert!(kvs_fail.flush().is_err());
         assert!(kvs_fail.reset().is_err());
-        assert!(kvs_fail.reset_key("a").is_err());
+        assert!(kvs_fail.set_value_to_default("a").is_err());
         assert!(kvs_fail.get_default_value("a").is_err());
         assert!(kvs_fail.is_value_default("a").is_err());
         assert!(kvs_fail.snapshot_restore(SnapshotId(0)).is_err());

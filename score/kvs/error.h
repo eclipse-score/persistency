@@ -68,9 +68,6 @@ enum class ErrorCode : score::result::ErrorCode
     /// Key not found.
     kKeyNotFound = 14,
 
-    /// Key default value not found.
-    kKeyDefaultNotFound = 15,
-
     /// Serialization failed.
     kSerializationFailed = 16,
 
@@ -121,8 +118,6 @@ enum class ErrorCode : score::result::ErrorCode
         [[deprecated("Use kAuthenticationFailed instead. This name is removed in a future release.")]] =
             kAuthenticationFailed,
     KeyNotFound [[deprecated("Use kKeyNotFound instead. This name is removed in a future release.")]] = kKeyNotFound,
-    KeyDefaultNotFound [[deprecated("Use kKeyDefaultNotFound instead. This name is removed in a future release.")]] =
-        kKeyDefaultNotFound,
     SerializationFailed [[deprecated("Use kSerializationFailed instead. This name is removed in a future release.")]] =
         kSerializationFailed,
     InvalidSnapshotId [[deprecated("Use kInvalidSnapshotId instead. This name is removed in a future release.")]] =

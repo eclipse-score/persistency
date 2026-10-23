@@ -40,7 +40,6 @@ TEST(kvs_MessageFor, MessageFor)
         {ErrorCode::kQuotaExceeded, "Quota exceeded"},
         {ErrorCode::kAuthenticationFailed, "Authentication failed"},
         {ErrorCode::kKeyNotFound, "Key not found"},
-        {ErrorCode::kKeyDefaultNotFound, "Key default value not found"},
         {ErrorCode::kSerializationFailed, "Serialization failed"},
         {ErrorCode::kInvalidSnapshotId, "Invalid snapshot ID"},
         {ErrorCode::kConversionFailed, "Conversion failed"},

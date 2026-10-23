@@ -301,20 +301,20 @@ class ResetAllKeys final : public Scenario
     }
 };
 
-class ResetSingleKey final : public Scenario
+class SetValueToDefault final : public Scenario
 {
   public:
-    ~ResetSingleKey() final = default;
+    ~SetValueToDefault() final = default;
 
     std::string name() const final
     {
-        return "reset_single_key";
+        return "set_value_to_default";
     }
 
     void run(const std::string& input) const final
     {
         const int num_values{5};
-        const int reset_index{2};
+        const int default_index{2};
 
         // Create KVS instance with provided params.
         auto params{KvsParameters::FromJson(input)};
@@ -354,14 +354,14 @@ class ResetSingleKey final : public Scenario
             }
         }
 
-        // Reset single key.
-        auto reset_result{kvs.ResetKey(key_values[reset_index].first)};
-        if (!reset_result)
+        // Set single key to default.
+        auto set_default_result{kvs.SetValueToDefault(key_values[default_index].first)};
+        if (!set_default_result)
         {
-            throw std::runtime_error{"Failed to reset key"};
+            throw std::runtime_error{"Failed to set value to default"};
         }
 
-        // Use KVS APIs to get value_is_default and current_value after reset.
+        // Use KVS APIs to get value_is_default and current_value after set to default.
         for (const auto& [key, value] : key_values)
         {
             const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
@@ -411,7 +411,7 @@ ScenarioGroup::Ptr DefaultValuesGroup()
                                                     {std::make_shared<DefaultValues>(),
                                                      std::make_shared<RemoveKey>(),
                                                      std::make_shared<ResetAllKeys>(),
-                                                     std::make_shared<ResetSingleKey>(),
+                                                     std::make_shared<SetValueToDefault>(),
                                                      std::make_shared<Checksum>()},
                                                     {}}};
 }

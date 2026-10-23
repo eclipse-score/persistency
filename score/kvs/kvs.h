@@ -229,15 +229,13 @@ class Kvs final
     /// @return The default value on success, or an ErrorCode on failure.
     score::Result<KvsValue> GetDefaultValue(const std::string_view key) const noexcept;
 
-    /// @brief Resets a specified key to its default value.
+    /// @brief Sets a specified key to its default value.
     ///
-    /// If no default value is available, it returns an ErrorCode and doesn't delete the key.
-    /// If no key was ever written, but a default value is available, it returns successfully.
-    /// If a key was written and it has a default value, it deletes the written key.
+    /// If no default value is available, it returns an ErrorCode.
     ///
-    /// @param key The key to be reset to its default value.
+    /// @param key The key to be set to its default value.
     /// @return Nothing on success, or an ErrorCode on failure.
-    score::Result<void> ResetKey(const std::string_view key) noexcept;
+    score::Result<void> SetValueToDefault(const std::string_view key) noexcept;
 
     /// @brief Checks if the specified key wasn't set yet and uses its default value.
     /// @param key The key to check.
@@ -379,13 +377,6 @@ class Kvs final
     score::Result<KvsValue> get_default_value(const std::string_view key) const noexcept
     {
         return GetDefaultValue(key);
-    }
-
-    /// @deprecated Use `ResetKey()` instead.
-    [[deprecated("Use ResetKey() instead. This name is removed in a future release.")]]
-    score::Result<void> reset_key(const std::string_view key) noexcept
-    {
-        return ResetKey(key);
     }
 
     /// @deprecated Use `IsValueDefault()` instead.

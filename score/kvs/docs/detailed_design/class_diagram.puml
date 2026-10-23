@@ -40,7 +40,7 @@ package "kvs_builder" {
 package "kvs_api" {
     +interface KvsApi {
         +reset()
-        +reset_key(key : string)
+        +set_value_to_default(key : string)
         +get_all_keys() : list<string>
         +key_exists(key : string) : bool
         +get_value(key : string) : KvsValue
@@ -66,7 +66,7 @@ package "kvs" {
         +parameters() : KvsParameters
 
         +reset()
-        +reset_key(key : string)
+        +set_value_to_default(key : string)
         +get_all_keys() : list<string>
         +key_exists(key : string) : bool
         +get_value(key : string) : KvsValue

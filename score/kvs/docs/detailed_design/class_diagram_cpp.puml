@@ -47,7 +47,7 @@ interface IKvsBackend <<interface>> {
 
 interface IKvs <<interface>> {
     + Reset() : Result<void>
-    + ResetKey(key : string) : Result<void>
+    + SetValueToDefault(key : string) : Result<void>
     + GetAllKeys() : Result<vector<string>>
     + KeyExists(key : string) : Result<bool>
     + GetValue(key : string) : Result<KvsValue>
@@ -104,7 +104,7 @@ class JsonBackend <<implementation>> {
 
 class KvsMock  <<mock>> {
     + Reset() : Result<void>
-    + ResetKey(key : string) : Result<void>
+    + SetValueToDefault(key : string) : Result<void>
     + GetAllKeys() : Result<vector<string>>
     + KeyExists(key : string) : Result<bool>
     + GetValue(key : string) : Result<KvsValue>
@@ -128,7 +128,7 @@ class Kvs <<implementation>> {
     - backend : IKvsBackend
     __
     + Reset() : Result<void>
-    + ResetKey(key : string) : Result<void>
+    + SetValueToDefault(key : string) : Result<void>
     + GetAllKeys() : Result<vector<string>>
     + KeyExists(key : string) : Result<bool>
     + GetValue(key : string) : Result<KvsValue>

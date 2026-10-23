@@ -97,7 +97,7 @@ pub enum KvsLoad {
 
 pub trait KvsApi {
     fn reset(&self) -> Result<(), ErrorCode>;
-    fn reset_key(&self, key: &str) -> Result<(), ErrorCode>;
+    fn set_value_to_default(&self, key: &str) -> Result<(), ErrorCode>;
     fn get_all_keys(&self) -> Result<Vec<String>, ErrorCode>;
     fn key_exists(&self, key: &str) -> Result<bool, ErrorCode>;
     fn get_value(&self, key: &str) -> Result<KvsValue, ErrorCode>;

@@ -840,7 +840,7 @@ TEST(kvs_get_default_value, get_default_value_failure)
     CleanupEnvironment();
 }
 
-TEST(kvs_reset_key, reset_key_success)
+TEST(kvs_set_value_to_default, set_value_to_default_success)
 {
     PrepareEnvironment();
     seed_defaults(R"({"default": {"t": "i32", "v": 5}, "kvs": {"t": "f64", "v": 42.0}})");
@@ -857,25 +857,35 @@ TEST(kvs_reset_key, reset_key_success)
     auto exists_result{result.value().KeyExists("kvs")};
     ASSERT_TRUE(exists_result);
     ASSERT_TRUE(exists_result.value());
-    // Reset a key.
-    auto reset_key_result{result.value().ResetKey("kvs")};
-    EXPECT_TRUE(reset_key_result);
+    // Set a written key to its default value.
+    auto set_value_to_default_result{result.value().SetValueToDefault("kvs")};
+    EXPECT_TRUE(set_value_to_default_result);
     exists_result = result.value().KeyExists("kvs");
     ASSERT_TRUE(exists_result);
-    EXPECT_FALSE(exists_result.value());
-    auto is_default_result{result.value().IsValueDefault("kvs")};
-    ASSERT_TRUE(is_default_result);
-    EXPECT_TRUE(is_default_result.value());
-    EXPECT_TRUE(result.value().GetDefaultValue("kvs"));
+    EXPECT_TRUE(exists_result.value());
+    auto value_result{result.value().GetValue("kvs")};
+    ASSERT_TRUE(value_result);
+    ASSERT_EQ(value_result.value().GetType(), KvsValue::Type::kF64);
+    EXPECT_EQ(std::get<double>(value_result.value().GetValue()), 42.0);
 
-    // Reset a non written key which has default value.
-    reset_key_result = result.value().ResetKey("default");
-    EXPECT_TRUE(reset_key_result);
+    // Set a non written key which has default value.
+    exists_result = result.value().KeyExists("default");
+    ASSERT_TRUE(exists_result);
+    ASSERT_FALSE(exists_result.value());
+    set_value_to_default_result = result.value().SetValueToDefault("default");
+    EXPECT_TRUE(set_value_to_default_result);
+    exists_result = result.value().KeyExists("default");
+    ASSERT_TRUE(exists_result);
+    EXPECT_TRUE(exists_result.value());
+    value_result = result.value().GetValue("default");
+    ASSERT_TRUE(value_result);
+    ASSERT_EQ(value_result.value().GetType(), KvsValue::Type::kI32);
+    EXPECT_EQ(std::get<int32_t>(value_result.value().GetValue()), 5);
 
     CleanupEnvironment();
 }
 
-TEST(kvs_reset_key, reset_key_failure)
+TEST(kvs_set_value_to_default, set_value_to_default_failure)
 {
     PrepareEnvironment();
 
@@ -888,12 +898,12 @@ TEST(kvs_reset_key, reset_key_failure)
                           kDefaultMaxSnapshots)};
     ASSERT_TRUE(result);
 
-    // Reset a non-existing key.
-    auto reset_key_result{result.value().ResetKey("non_existing_key")};
-    EXPECT_FALSE(reset_key_result);
-    EXPECT_EQ(reset_key_result.error(), ErrorCode::kKeyDefaultNotFound);
+    // Set a non-existing key to default.
+    auto set_value_to_default_result{result.value().SetValueToDefault("non_existing_key")};
+    EXPECT_FALSE(set_value_to_default_result);
+    EXPECT_EQ(set_value_to_default_result.error(), ErrorCode::kKeyNotFound);
 
-    // Reset a key without default value.
+    // Set a key without default value.
     result = Kvs::Open(kInstanceId,
                        kSnapshotId,
                        KvsDefaults::kRequired,
@@ -906,9 +916,9 @@ TEST(kvs_reset_key, reset_key_failure)
     auto get_default_result{result.value().GetDefaultValue("kvs")};
     ASSERT_FALSE(get_default_result);
     EXPECT_EQ(get_default_result.error(), ErrorCode::kKeyNotFound);
-    reset_key_result = result.value().ResetKey("kvs");
-    EXPECT_FALSE(reset_key_result);
-    EXPECT_EQ(reset_key_result.error(), ErrorCode::kKeyDefaultNotFound);
+    set_value_to_default_result = result.value().SetValueToDefault("kvs");
+    EXPECT_FALSE(set_value_to_default_result);
+    EXPECT_EQ(set_value_to_default_result.error(), ErrorCode::kKeyNotFound);
 
     // Mutex locked.
     result = Kvs::Open(kInstanceId,
@@ -920,9 +930,42 @@ TEST(kvs_reset_key, reset_key_failure)
                        kDefaultMaxSnapshots);
     ASSERT_TRUE(result);
     std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    reset_key_result = result.value().ResetKey("kvs");
-    EXPECT_FALSE(reset_key_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*reset_key_result.error()), ErrorCode::kMutexLockFailed);
+    set_value_to_default_result = result.value().SetValueToDefault("default");
+    EXPECT_FALSE(set_value_to_default_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*set_value_to_default_result.error()), ErrorCode::kMutexLockFailed);
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_set_value_to_default, set_value_to_default_failure_invalid_key)
+{
+    PrepareEnvironment();
+    auto result{Kvs::Open(kInstanceId,
+                          kSnapshotId,
+                          KvsDefaults::kRequired,
+                          KvsLoad::kRequired,
+                          std::string(kDataDir),
+                          std::nullopt,
+                          kDefaultMaxSnapshots)};
+    ASSERT_TRUE(result);
+
+    // Keys are validated before the default value lookup.
+    // None of these keys has a default value, so a lookup first would return kKeyNotFound.
+    std::vector<std::string> invalid_keys{InvalidCharacterKeys()};
+    invalid_keys.emplace_back("");
+    invalid_keys.emplace_back(kMaxKeyLengthBytes + 1U, 'k');
+    const auto keys_before{result.value().GetAllKeys()};
+    ASSERT_TRUE(keys_before);
+    for (const auto& key : invalid_keys)
+    {
+        auto set_value_to_default_result{result.value().SetValueToDefault(key)};
+        ASSERT_FALSE(set_value_to_default_result) << "key: " << key;
+        EXPECT_EQ(static_cast<ErrorCode>(*set_value_to_default_result.error()), ErrorCode::kInvalidKey)
+            << "key: " << key;
+    }
+    const auto keys_after{result.value().GetAllKeys()};
+    ASSERT_TRUE(keys_after);
+    EXPECT_EQ(keys_after.value(), keys_before.value());
 
     CleanupEnvironment();
 }
