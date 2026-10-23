@@ -10,8 +10,12 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_CIT_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_CIT_H
 
-#include "scenario.hpp"
+#include <scenario.hpp>
 
-ScenarioGroup::Ptr default_values_group();
+/// @brief Creates a group containing scenarios for CITs.
+ScenarioGroup::Ptr CitScenarioGroup();
+
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_CIT_H

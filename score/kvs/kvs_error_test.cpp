@@ -11,10 +11,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "kvs_general_test.hpp"
+#include "score/kvs/kvs_general_test.h"
+
+using namespace score::mw::per::kvs;
 
 namespace {
-    constexpr score::mw::per::kvs::KvsErrorDomain kvs_error_domain;
+constexpr score::mw::per::kvs::KvsErrorDomain kKvsErrorDomain;
 }
 
 TEST(kvs_MessageFor, MessageFor)
@@ -23,37 +25,37 @@ TEST(kvs_MessageFor, MessageFor)
     {
         ErrorCode code;
         std::string_view expected_message;
-    } test_cases[] = {
-        {ErrorCode::UnmappedError, "Error that was not yet mapped"},
-        {ErrorCode::FileNotFound, "File not found"},
-        {ErrorCode::KvsFileReadError, "KVS file read error"},
-        {ErrorCode::KvsHashFileReadError, "KVS hash file read error"},
-        {ErrorCode::JsonParserError, "JSON parser error"},
-        {ErrorCode::JsonGeneratorError, "JSON generator error"},
-        {ErrorCode::PhysicalStorageFailure, "Physical storage failure"},
-        {ErrorCode::IntegrityCorrupted, "Integrity corrupted"},
-        {ErrorCode::ValidationFailed, "Validation failed"},
-        {ErrorCode::EncryptionFailed, "Encryption failed"},
-        {ErrorCode::ResourceBusy, "Resource is busy"},
-        {ErrorCode::OutOfStorageSpace, "Out of storage space"},
-        {ErrorCode::QuotaExceeded, "Quota exceeded"},
-        {ErrorCode::AuthenticationFailed, "Authentication failed"},
-        {ErrorCode::KeyNotFound, "Key not found"},
-        {ErrorCode::KeyDefaultNotFound, "Key default value not found"},
-        {ErrorCode::SerializationFailed, "Serialization failed"},
-        {ErrorCode::InvalidSnapshotId, "Invalid snapshot ID"},
-        {ErrorCode::ConversionFailed, "Conversion failed"},
-        {ErrorCode::MutexLockFailed, "Mutex failed"},
-        {ErrorCode::InvalidValueType, "Invalid value type"},
-        {ErrorCode::InvalidKey, "Key is not valid"},
+    } test_cases[]{
+        {ErrorCode::kUnmappedError, "Error that was not yet mapped"},
+        {ErrorCode::kFileNotFound, "File not found"},
+        {ErrorCode::kKvsFileReadError, "KVS file read error"},
+        {ErrorCode::kKvsHashFileReadError, "KVS hash file read error"},
+        {ErrorCode::kJsonParserError, "JSON parser error"},
+        {ErrorCode::kJsonGeneratorError, "JSON generator error"},
+        {ErrorCode::kPhysicalStorageFailure, "Physical storage failure"},
+        {ErrorCode::kIntegrityCorrupted, "Integrity corrupted"},
+        {ErrorCode::kValidationFailed, "Validation failed"},
+        {ErrorCode::kEncryptionFailed, "Encryption failed"},
+        {ErrorCode::kResourceBusy, "Resource is busy"},
+        {ErrorCode::kOutOfStorageSpace, "Out of storage space"},
+        {ErrorCode::kQuotaExceeded, "Quota exceeded"},
+        {ErrorCode::kAuthenticationFailed, "Authentication failed"},
+        {ErrorCode::kKeyNotFound, "Key not found"},
+        {ErrorCode::kKeyDefaultNotFound, "Key default value not found"},
+        {ErrorCode::kSerializationFailed, "Serialization failed"},
+        {ErrorCode::kInvalidSnapshotId, "Invalid snapshot ID"},
+        {ErrorCode::kConversionFailed, "Conversion failed"},
+        {ErrorCode::kMutexLockFailed, "Mutex failed"},
+        {ErrorCode::kInvalidValueType, "Invalid value type"},
+        {ErrorCode::kInvalidKey, "Key is not valid"},
     };
     for (const auto& test : test_cases)
     {
         SCOPED_TRACE(static_cast<int>(test.code));
-        score::result::ErrorCode code = static_cast<score::result::ErrorCode>(test.code);
-        EXPECT_EQ(kvs_error_domain.MessageFor(code), test.expected_message);
+        score::result::ErrorCode code{static_cast<score::result::ErrorCode>(test.code)};
+        EXPECT_EQ(kKvsErrorDomain.MessageFor(code), test.expected_message);
     }
 
-    score::result::ErrorCode invalid_code = static_cast<score::result::ErrorCode>(9999);
-    EXPECT_EQ(kvs_error_domain.MessageFor(invalid_code), "Unknown Error!");
+    score::result::ErrorCode invalid_code{static_cast<score::result::ErrorCode>(9999)};
+    EXPECT_EQ(kKvsErrorDomain.MessageFor(invalid_code), "Unknown Error!");
 }

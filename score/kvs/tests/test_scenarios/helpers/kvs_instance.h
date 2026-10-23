@@ -10,8 +10,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_INSTANCE_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_INSTANCE_H
 
-#include "kvs_parameters.hpp"
+#include "helpers/kvs_parameters.h"
 
-score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params);
+score::mw::per::kvs::Kvs KvsInstance(const KvsParameters& params);
+
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_INSTANCE_H

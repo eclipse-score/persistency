@@ -11,72 +11,72 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "score/kvs/error.hpp"
+#include "score/kvs/error.h"
 
 namespace score::mw::per::kvs
 {
+
+namespace
+{
+constexpr KvsErrorDomain kKvsErrorDomain;
+}
 
 std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code) const noexcept
 {
     switch (static_cast<ErrorCode>(code))
     {
-        case ErrorCode::UnmappedError:
+        case ErrorCode::kUnmappedError:
             return "Error that was not yet mapped";
-        case ErrorCode::FileNotFound:
+        case ErrorCode::kFileNotFound:
             return "File not found";
-        case ErrorCode::KvsFileReadError:
+        case ErrorCode::kKvsFileReadError:
             return "KVS file read error";
-        case ErrorCode::KvsHashFileReadError:
+        case ErrorCode::kKvsHashFileReadError:
             return "KVS hash file read error";
-        case ErrorCode::JsonParserError:
+        case ErrorCode::kJsonParserError:
             return "JSON parser error";
-        case ErrorCode::JsonGeneratorError:
+        case ErrorCode::kJsonGeneratorError:
             return "JSON generator error";
-        case ErrorCode::PhysicalStorageFailure:
+        case ErrorCode::kPhysicalStorageFailure:
             return "Physical storage failure";
-        case ErrorCode::IntegrityCorrupted:
+        case ErrorCode::kIntegrityCorrupted:
             return "Integrity corrupted";
-        case ErrorCode::ValidationFailed:
+        case ErrorCode::kValidationFailed:
             return "Validation failed";
-        case ErrorCode::EncryptionFailed:
+        case ErrorCode::kEncryptionFailed:
             return "Encryption failed";
-        case ErrorCode::ResourceBusy:
+        case ErrorCode::kResourceBusy:
             return "Resource is busy";
-        case ErrorCode::OutOfStorageSpace:
+        case ErrorCode::kOutOfStorageSpace:
             return "Out of storage space";
-        case ErrorCode::QuotaExceeded:
+        case ErrorCode::kQuotaExceeded:
             return "Quota exceeded";
-        case ErrorCode::AuthenticationFailed:
+        case ErrorCode::kAuthenticationFailed:
             return "Authentication failed";
-        case ErrorCode::KeyNotFound:
+        case ErrorCode::kKeyNotFound:
             return "Key not found";
-        case ErrorCode::KeyDefaultNotFound:
+        case ErrorCode::kKeyDefaultNotFound:
             return "Key default value not found";
-        case ErrorCode::SerializationFailed:
+        case ErrorCode::kSerializationFailed:
             return "Serialization failed";
-        case ErrorCode::InvalidSnapshotId:
+        case ErrorCode::kInvalidSnapshotId:
             return "Invalid snapshot ID";
-        case ErrorCode::ConversionFailed:
+        case ErrorCode::kConversionFailed:
             return "Conversion failed";
-        case ErrorCode::MutexLockFailed:
+        case ErrorCode::kMutexLockFailed:
             return "Mutex failed";
-        case ErrorCode::InvalidValueType:
+        case ErrorCode::kInvalidValueType:
             return "Invalid value type";
-        case ErrorCode::InvalidKey:
+        case ErrorCode::kInvalidKey:
             return "Key is not valid";
         default:
             return "Unknown Error!";
     }
 }
 
-namespace
-{
-constexpr KvsErrorDomain kvs_error_domain;
-}
-
 score::result::Error MakeError(const ErrorCode code, const std::string_view user_message) noexcept
 {
-    return {static_cast<score::result::ErrorCode>(code), kvs_error_domain, user_message};
+    return {static_cast<score::result::ErrorCode>(code), kKvsErrorDomain, user_message};
 }
 
 }  // namespace score::mw::per::kvs

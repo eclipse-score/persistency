@@ -10,25 +10,32 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_PARAMETERS_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_PARAMETERS_H
 
-#include "score/kvs/kvs.hpp"
+#include "score/json/json_parser.h"
+#include "score/kvs/kvs.h"
+#include <cstddef>
+#include <optional>
+#include <string>
 
 struct KvsParameters
 {
     /// @brief Parses `KvsParameters` from a JSON string.
     ///
     /// JSON is expected to contain `kvs_parameters` field.
-    static KvsParameters from_json(const std::string& json_str);
+    static KvsParameters FromJson(const std::string& json_str);
 
     /// @brief Parses `KvsParameters` from an `Object`.
     ///
     /// `Object` is expected to contain `kvs_parameters` field.
-    static KvsParameters from_object(const score::json::Object& object);
+    static KvsParameters FromValue(const score::json::Object& object);
 
     score::mw::per::kvs::InstanceId instance_id;
-    std::optional<score::mw::per::kvs::OpenNeedDefaults> need_defaults;
-    std::optional<score::mw::per::kvs::OpenNeedKvs> need_kvs;
+    std::optional<score::mw::per::kvs::KvsDefaults> defaults;
+    std::optional<score::mw::per::kvs::KvsLoad> kvs_load;
     std::optional<std::string> dir;
     std::optional<size_t> snapshot_max_count;
 };
+
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_PARAMETERS_H

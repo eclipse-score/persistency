@@ -11,11 +11,11 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "supported_datatypes.hpp"
+#include "cit/supported_datatypes.h"
 
-#include "helpers/kvs_instance.hpp"
-#include "helpers/kvs_parameters.hpp"
-#include "tracing.hpp"
+#include "helpers/kvs_instance.h"
+#include "helpers/kvs_parameters.h"
+#include <tracing.hpp>
 
 #include "score/utility.hpp"
 #include <iomanip>
@@ -29,24 +29,24 @@ namespace
 {
 const std::string kTargetName{"cpp_test_scenarios::supported_datatypes"};
 
-void info_log_set_result(const std::string& keyname, bool set_ok)
+void InfoLogSetResult(const std::string& keyname, bool set_ok)
 {
     TRACING_INFO(kTargetName,
                  std::make_pair(std::string("key"), keyname),
                  std::make_pair(std::string("set_ok"), std::string(set_ok ? "true" : "false")));
 }
-void info_log_stored_key(const std::string& keyname)
+void InfoLogStoredKey(const std::string& keyname)
 {
     TRACING_INFO(kTargetName, std::make_pair(std::string("stored_key"), keyname));
 }
-void info_log(const std::string& name, const std::string& value)
+void InfoLog(const std::string& name, const std::string& value)
 {
     TRACING_INFO(kTargetName, std::make_pair(std::string(name), value));
 }
-void info_log(const std::string& key,
-              const std::string& key_value,
-              const std::string& value,
-              const std::string& value_json)
+void InfoLog(const std::string& key,
+             const std::string& key_value,
+             const std::string& value,
+             const std::string& value_json)
 {
     TRACING_INFO(
         kTargetName, std::make_pair(std::string("key"), key_value), std::make_pair(std::string("value"), value_json));
@@ -66,12 +66,12 @@ class SupportedDatatypesKeys final : public Scenario
     void run(const std::string& input) const final
     {
         // Create KVS instance with provided params.
-        KvsParameters params{KvsParameters::from_json(input)};
-        Kvs kvs = kvs_instance(params);
+        KvsParameters params{KvsParameters::FromJson(input)};
+        Kvs kvs{KvsInstance(params)};
 
         // Try to set valid and invalid keys.
         // Null value is used - only key is used later on.
-        std::vector<std::string> keys_to_check = {
+        std::vector<std::string> keys_to_check{
             // Valid keys.
             "example",
             "snake_case_key",
@@ -93,22 +93,22 @@ class SupportedDatatypesKeys final : public Scenario
         };
         for (const auto& s : keys_to_check)
         {
-            auto set_result = kvs.set_value(s, KvsValue(nullptr));
-            info_log_set_result(s, set_result.has_value());
+            auto set_result{kvs.SetValue(s, KvsValue(nullptr))};
+            InfoLogSetResult(s, set_result.has_value());
         }
 
         // Log all keys stored in KVS.
-        auto keys_in_kvs = kvs.get_all_keys();
+        auto keys_in_kvs{kvs.GetAllKeys()};
         if (keys_in_kvs.has_value())
         {
             for (const auto& s : keys_in_kvs.value())
             {
-                info_log_stored_key(s);
+                InfoLogStoredKey(s);
             }
         }
         else
         {
-            info_log("get_all_keys_error", std::string(keys_in_kvs.error().Message()));
+            InfoLog("get_all_keys_error", std::string(keys_in_kvs.error().Message()));
             throw keys_in_kvs.error();
         }
     }
@@ -116,33 +116,160 @@ class SupportedDatatypesKeys final : public Scenario
 
 class SupportedDatatypesValues final : public Scenario
 {
-  private:
-    KvsValue value_;
+  public:
+    explicit SupportedDatatypesValues(const KvsValue& v) : value_{v} {}
 
-    static std::string kvs_value_to_string(const KvsValue& v)
+    ~SupportedDatatypesValues() final = default;
+
+    std::string name() const final
     {
-        switch (v.getType())
+        switch (value_.GetType())
         {
-            case KvsValue::Type::i32:
-                return std::to_string(std::get<int32_t>(v.getValue()));
-            case KvsValue::Type::u32:
-                return std::to_string(std::get<uint32_t>(v.getValue()));
-            case KvsValue::Type::i64:
-                return std::to_string(std::get<int64_t>(v.getValue()));
-            case KvsValue::Type::u64:
-                return std::to_string(std::get<uint64_t>(v.getValue()));
-            case KvsValue::Type::f64:
+            case KvsValue::Type::kI32:
+                return "i32";
+            case KvsValue::Type::kU32:
+                return "u32";
+            case KvsValue::Type::kI64:
+                return "i64";
+            case KvsValue::Type::kU64:
+                return "u64";
+            case KvsValue::Type::kF64:
+                return "f64";
+            case KvsValue::Type::kBoolean:
+                return "bool";
+            case KvsValue::Type::kString:
+                return "str";
+            case KvsValue::Type::kNull:
+                return "null";
+            case KvsValue::Type::kArray:
+                return "arr";
+            case KvsValue::Type::kObject:
+                return "obj";
+            default:
+                return "unknown";
+        }
+    }
+
+    void run(const std::string& input) const final
+    {
+        // Create KVS instance with provided params.
+        KvsParameters params{KvsParameters::FromJson(input)};
+        Kvs kvs{KvsInstance(params)};
+
+        // Set value.
+        score::cpp::ignore = kvs.SetValue(name(), value_);
+
+        // Get value.
+        auto kvs_value{kvs.GetValue(name())};
+
+        if (kvs_value.has_value())
+        {
+            // Log key and value as separate fields for Python test compatibility.
+            InfoLog("key",
+                    name(),
+                    "value",
+                    std::string("{\"t\":\"" + name() + "\",\"v\":" + KvsValueToString(kvs_value.value()) + "}"));
+        }
+        else
+        {
+            InfoLog(name() + "_error", std::string(kvs_value.error().Message()));
+        }
+    }
+
+    // Factory functions for each value type scenario.
+    static Scenario::Ptr SupportedDatatypesI32()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int32_t>(-321)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesU32()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<uint32_t>(1234)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesI64()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int64_t>(-123456789)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesU64()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<uint64_t>(123456789)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesF64()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(-5432.1));
+    }
+
+    static Scenario::Ptr SupportedDatatypesBool()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(true));
+    }
+
+    static Scenario::Ptr SupportedDatatypesString()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue("example"));
+    }
+
+    static Scenario::Ptr SupportedDatatypesArray()
+    {
+        // Compose array value as in Rust.
+        std::unordered_map<std::string, KvsValue> obj{{"sub-number", KvsValue(789.0)}};
+        std::vector<KvsValue> arr = std::vector<KvsValue>{KvsValue(321.5),
+                                                          KvsValue(false),
+                                                          KvsValue("hello"),
+                                                          KvsValue(nullptr),
+                                                          KvsValue(std::vector<KvsValue>{}),
+                                                          KvsValue(obj)};
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(arr));
+    }
+
+    static Scenario::Ptr SupportedDatatypesObject()
+    {
+        std::unordered_map<std::string, KvsValue> obj{{"sub-number", KvsValue(789.0)}};
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(obj));
+    }
+
+    static ScenarioGroup::Ptr ValueTypesGroup()
+    {
+        std::vector<Scenario::Ptr> scenarios{SupportedDatatypesI32(),
+                                             SupportedDatatypesU32(),
+                                             SupportedDatatypesI64(),
+                                             SupportedDatatypesU64(),
+                                             SupportedDatatypesF64(),
+                                             SupportedDatatypesBool(),
+                                             SupportedDatatypesString(),
+                                             SupportedDatatypesArray(),
+                                             SupportedDatatypesObject()};
+        return std::make_shared<ScenarioGroupImpl>("values", scenarios, std::vector<ScenarioGroup::Ptr>{});
+    }
+
+  private:
+    static std::string KvsValueToString(const KvsValue& v)
+    {
+        switch (v.GetType())
+        {
+            case KvsValue::Type::kI32:
+                return std::to_string(std::get<int32_t>(v.GetValue()));
+            case KvsValue::Type::kU32:
+                return std::to_string(std::get<uint32_t>(v.GetValue()));
+            case KvsValue::Type::kI64:
+                return std::to_string(std::get<int64_t>(v.GetValue()));
+            case KvsValue::Type::kU64:
+                return std::to_string(std::get<uint64_t>(v.GetValue()));
+            case KvsValue::Type::kF64:
             {
                 // Format with high precision, then remove trailing zeros and dot for minimal JSON representation.
-                auto val = std::get<double>(v.getValue());
+                auto val{std::get<double>(v.GetValue())};
                 std::ostringstream oss;
                 oss << std::setprecision(15) << val;
-                std::string s = oss.str();
+                std::string s{oss.str()};
                 // Remove trailing zeros and dot if needed.
-                if (auto dot = s.find('.'); dot != std::string::npos)
+                if (auto dot{s.find('.')}; dot != std::string::npos)
                 {
                     // Find last non-zero digit after decimal point.
-                    auto last_nonzero = s.find_last_not_of('0');
+                    auto last_nonzero{s.find_last_not_of('0')};
                     if (last_nonzero != std::string::npos && last_nonzero > dot)
                     {
                         s.erase(last_nonzero + 1);
@@ -153,37 +280,37 @@ class SupportedDatatypesValues final : public Scenario
                 }
                 return s;
             }
-            case KvsValue::Type::Boolean:
-                return std::get<bool>(v.getValue()) ? "true" : "false";
-            case KvsValue::Type::String:
-                return "\"" + std::get<std::string>(v.getValue()) + "\"";
-            case KvsValue::Type::Null:
+            case KvsValue::Type::kBoolean:
+                return std::get<bool>(v.GetValue()) ? "true" : "false";
+            case KvsValue::Type::kString:
+                return "\"" + std::get<std::string>(v.GetValue()) + "\"";
+            case KvsValue::Type::kNull:
                 return "null";
-            case KvsValue::Type::Array:
+            case KvsValue::Type::kArray:
             {
-                const auto& arr = std::get<KvsValue::Array>(v.getValue());
-                std::string json = "[";
-                for (size_t i = 0; i < arr.size(); ++i)
+                const auto& arr{std::get<KvsValue::Array>(v.GetValue())};
+                std::string json{"["};
+                for (size_t i{0U}; i < arr.size(); ++i)
                 {
-                    const auto& elem = arr[i];
-                    json += "{\"t\":\"" + SupportedDatatypesValues(elem).name() +
-                            "\",\"v\":" + kvs_value_to_string(elem) + "}";
+                    const auto& elem{arr[i]};
+                    json += "{\"t\":\"" + SupportedDatatypesValues(elem).name() + "\",\"v\":" + KvsValueToString(elem) +
+                            "}";
                     if (i + 1 < arr.size())
                         json += ",";
                 }
                 json += "]";
                 return json;
             }
-            case KvsValue::Type::Object:
+            case KvsValue::Type::kObject:
             {
-                const auto& obj = std::get<KvsValue::Object>(v.getValue());
-                std::string json = "{";
-                size_t count = 0;
+                const auto& obj{std::get<KvsValue::Object>(v.GetValue())};
+                std::string json{"{"};
+                size_t count{0U};
                 for (const auto& kv : obj)
                 {
-                    const auto& elem = kv.second;
+                    const auto& elem{kv.second};
                     json += "\"" + kv.first + "\":{\"t\":\"" + SupportedDatatypesValues(elem).name() +
-                            "\",\"v\":" + kvs_value_to_string(elem) + "}";
+                            "\",\"v\":" + KvsValueToString(elem) + "}";
                     if (++count < obj.size())
                         json += ",";
                 }
@@ -195,139 +322,12 @@ class SupportedDatatypesValues final : public Scenario
         }
     }
 
-  public:
-    explicit SupportedDatatypesValues(const KvsValue& v) : value_(v) {}
-
-    ~SupportedDatatypesValues() final = default;
-
-    std::string name() const final
-    {
-        switch (value_.getType())
-        {
-            case KvsValue::Type::i32:
-                return "i32";
-            case KvsValue::Type::u32:
-                return "u32";
-            case KvsValue::Type::i64:
-                return "i64";
-            case KvsValue::Type::u64:
-                return "u64";
-            case KvsValue::Type::f64:
-                return "f64";
-            case KvsValue::Type::Boolean:
-                return "bool";
-            case KvsValue::Type::String:
-                return "str";
-            case KvsValue::Type::Null:
-                return "null";
-            case KvsValue::Type::Array:
-                return "arr";
-            case KvsValue::Type::Object:
-                return "obj";
-            default:
-                return "unknown";
-        }
-    }
-
-    void run(const std::string& input) const final
-    {
-        // Create KVS instance with provided params.
-        KvsParameters params{KvsParameters::from_json(input)};
-        Kvs kvs = kvs_instance(params);
-
-        // Set value.
-        score::cpp::ignore = kvs.set_value(name(), value_);
-
-        // Get value.
-        auto kvs_value = kvs.get_value(name());
-
-        if (kvs_value.has_value())
-        {
-            // Log key and value as separate fields for Python test compatibility.
-            info_log("key",
-                     name(),
-                     "value",
-                     std::string("{\"t\":\"" + name() + "\",\"v\":" + kvs_value_to_string(kvs_value.value()) + "}"));
-        }
-        else
-        {
-            info_log(name() + "_error", std::string(kvs_value.error().Message()));
-        }
-    }
-
-    // Factory functions for each value type scenario.
-    static Scenario::Ptr supported_datatypes_i32()
-    {
-        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int32_t>(-321)));
-    }
-
-    static Scenario::Ptr supported_datatypes_u32()
-    {
-        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<uint32_t>(1234)));
-    }
-
-    static Scenario::Ptr supported_datatypes_i64()
-    {
-        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int64_t>(-123456789)));
-    }
-
-    static Scenario::Ptr supported_datatypes_u64()
-    {
-        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<uint64_t>(123456789)));
-    }
-
-    static Scenario::Ptr supported_datatypes_f64()
-    {
-        return std::make_shared<SupportedDatatypesValues>(KvsValue(-5432.1));
-    }
-
-    static Scenario::Ptr supported_datatypes_bool()
-    {
-        return std::make_shared<SupportedDatatypesValues>(KvsValue(true));
-    }
-
-    static Scenario::Ptr supported_datatypes_string()
-    {
-        return std::make_shared<SupportedDatatypesValues>(KvsValue("example"));
-    }
-
-    static Scenario::Ptr supported_datatypes_array()
-    {
-        // Compose array value as in Rust.
-        std::unordered_map<std::string, KvsValue> obj = {{"sub-number", KvsValue(789.0)}};
-        std::vector<KvsValue> arr = std::vector<KvsValue>{KvsValue(321.5),
-                                                          KvsValue(false),
-                                                          KvsValue("hello"),
-                                                          KvsValue(nullptr),
-                                                          KvsValue(std::vector<KvsValue>{}),
-                                                          KvsValue(obj)};
-        return std::make_shared<SupportedDatatypesValues>(KvsValue(arr));
-    }
-
-    static Scenario::Ptr supported_datatypes_object()
-    {
-        std::unordered_map<std::string, KvsValue> obj = {{"sub-number", KvsValue(789.0)}};
-        return std::make_shared<SupportedDatatypesValues>(KvsValue(obj));
-    }
-
-    static ScenarioGroup::Ptr value_types_group()
-    {
-        std::vector<Scenario::Ptr> scenarios = {supported_datatypes_i32(),
-                                                supported_datatypes_u32(),
-                                                supported_datatypes_i64(),
-                                                supported_datatypes_u64(),
-                                                supported_datatypes_f64(),
-                                                supported_datatypes_bool(),
-                                                supported_datatypes_string(),
-                                                supported_datatypes_array(),
-                                                supported_datatypes_object()};
-        return std::make_shared<ScenarioGroupImpl>("values", scenarios, std::vector<ScenarioGroup::Ptr>{});
-    }
+    KvsValue value_;
 };
 
-ScenarioGroup::Ptr supported_datatypes_group()
+ScenarioGroup::Ptr SupportedDatatypesGroup()
 {
-    std::vector<Scenario::Ptr> keys = {std::make_shared<SupportedDatatypesKeys>()};
-    std::vector<ScenarioGroup::Ptr> groups = {SupportedDatatypesValues::value_types_group()};
+    std::vector<Scenario::Ptr> keys{std::make_shared<SupportedDatatypesKeys>()};
+    std::vector<ScenarioGroup::Ptr> groups{SupportedDatatypesValues::ValueTypesGroup()};
     return std::make_shared<ScenarioGroupImpl>("supported_datatypes", keys, groups);
 }

@@ -11,14 +11,15 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "cit/cit.hpp"
-#include "cit/default_values.hpp"
-#include "cit/multiple_kvs.hpp"
-#include "cit/snapshots.hpp"
-#include "cit/supported_datatypes.hpp"
+#include "cit/cit.h"
 
-ScenarioGroup::Ptr cit_scenario_group()
+#include "cit/default_values.h"
+#include "cit/multiple_kvs.h"
+#include "cit/snapshots.h"
+#include "cit/supported_datatypes.h"
+
+ScenarioGroup::Ptr CitScenarioGroup()
 {
     return ScenarioGroup::Ptr{new ScenarioGroupImpl{
-        "cit", {}, {default_values_group(), multiple_kvs_group(), snapshots_group(), supported_datatypes_group()}}};
+        "cit", {}, {DefaultValuesGroup(), MultipleKvsGroup(), SnapshotsGroup(), SupportedDatatypesGroup()}}};
 }

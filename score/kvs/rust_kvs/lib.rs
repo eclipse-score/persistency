@@ -148,7 +148,9 @@ pub mod prelude {
     pub use crate::error_code::ErrorCode;
     pub use crate::json_backend::{JsonBackend, JsonBackendBuilder};
     pub use crate::kvs::Kvs;
-    pub use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId, KVS_MAX_KEY_LENGTH_BYTES};
+    #[allow(deprecated)]
+    pub use crate::kvs_api::KVS_MAX_KEY_LENGTH_BYTES;
+    pub use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId, MAX_KEY_LENGTH_BYTES};
     pub use crate::kvs_backend::KvsBackend;
     pub use crate::kvs_builder::KvsBuilder;
     pub use crate::kvs_serialize::{KvsDeserialize, KvsSerialize};
