@@ -20,20 +20,30 @@ bazel_dep(name = "rules_rust", version = "0.68.2-score")
 # External dependencies for production (alphabetically sorted)
 bazel_dep(name = "platforms", version = "1.1.0")
 bazel_dep(name = "score_bazel_platforms", version = "1.1.0")
-bazel_dep(name = "score_baselibs", version = "0.2.13")
+bazel_dep(name = "score_baselibs", version = "0.2.15")
 bazel_dep(name = "score_crates", version = "0.0.13")
-bazel_dep(name = "score_docs_as_code", version = "8.4.0")
+bazel_dep(name = "score_docs_as_code", version = "8.5.1")
+bazel_dep(name = "score_logging", version = "0.2.4")
+
+# Pinned past v0.2.4 compatibility with baselibs > 0.2.13
 git_override(
-    module_name = "score_docs_as_code",
-    commit = "1f9452a270d238f7504c7a053b3886536234a650",
-    remote = "https://github.com/eclipse-score/docs-as-code.git",
+    module_name = "score_logging",
+    commit = "359df78e36f6bf1a3a0830cb61525302b0bd3460",
+    remote = "https://github.com/eclipse-score/logging",
 )
 
-bazel_dep(name = "score_logging", version = "0.2.4")
 bazel_dep(name = "score_platform", version = "0.7.3")
 bazel_dep(name = "score_process_description", version = "2.2.1")
 bazel_dep(name = "score_test_scenarios", version = "0.4.1")
-bazel_dep(name = "score_tooling", version = "2.3.1")
+
+# Pinned past v0.4.1 for the `score/` path layout introduced in eclipse-score/testing_tools#31.
+git_override(
+    module_name = "score_test_scenarios",
+    commit = "c16400a3f7c71ca26b67965c5e7469560b6de496",
+    remote = "https://github.com/eclipse-score/testing_tools",
+)
+
+bazel_dep(name = "score_tooling", version = "3.0.1")
 
 # LLVM source-based coverage pipeline (C++ + Rust): the qualified S-CORE
 # coverage tool, successor of @score_tooling//coverage. See quality/coverage/.
@@ -56,13 +66,6 @@ git_override(
     module_name = "score_tools",
     commit = "4b48cec400c67be75cfc3fa4658ac6a0489bf7a8",
     remote = "https://github.com/eclipse-score/tools",
-)
-
-# Pinned past v0.4.1 for the `score/` path layout introduced in eclipse-score/testing_tools#31.
-git_override(
-    module_name = "score_test_scenarios",
-    commit = "c16400a3f7c71ca26b67965c5e7469560b6de496",
-    remote = "https://github.com/eclipse-score/testing_tools",
 )
 
 # Python toolchain configuration
