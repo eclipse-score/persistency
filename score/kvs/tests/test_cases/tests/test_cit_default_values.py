@@ -12,8 +12,9 @@
 # *******************************************************************************
 import json
 import re
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 from zlib import adler32
 
 import pytest
@@ -33,7 +34,7 @@ def create_defaults_json(values: dict[str, TaggedValue]) -> str:
     Create JSON string containing default values.
     """
     # Create defaults.
-    json_value = dict()
+    json_value = {}
     for key, tagged_value in values.items():
         type_tag, value = tagged_value
         json_value[key] = {"t": type_tag, "v": value}
@@ -57,13 +58,13 @@ def create_defaults_file(dir_path: Path, instance_id: int, values: dict[str, Tag
     json_str = create_defaults_json(values)
 
     # Generate hash.
-    hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
+    defaults_hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
 
     # Save content and hash.
     with open(defaults_file_path, mode="w", encoding="UTF-8") as file:
         file.write(json_str)
     with open(defaults_hash_file_path, mode="wb") as file:
-        file.write(hash)
+        file.write(defaults_hash)
 
     return defaults_file_path
 
@@ -147,7 +148,7 @@ class TestDefaultValues(DefaultValuesScenario):
             # Check values before change.
             assert logs[0].value_is_default == "Ok(true)"
             assert logs[0].default_value == f"Ok(F64({self.VALUE}))"
-            assert logs[0].current_value == f"Err(KeyNotFound)"
+            assert logs[0].current_value == "Err(KeyNotFound)"
             # Check values after change.
             assert logs[1].value_is_default == "Ok(false)"
             assert logs[1].default_value == f"Ok(F64({self.VALUE}))"
@@ -298,13 +299,13 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         json_str = create_defaults_json({key: ("f64", value)})[:-2]
 
         # Generate hash.
-        hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
+        defaults_hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
 
         # Save content and hash.
         with open(defaults_file_path, mode="w", encoding="UTF-8") as file:
             file.write(json_str)
         with open(defaults_hash_file_path, mode="wb") as file:
-            file.write(hash)
+            file.write(defaults_hash)
 
         return defaults_file_path
 

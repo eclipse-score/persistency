@@ -12,8 +12,8 @@
 # *******************************************************************************
 import logging
 import shutil
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
 from testing_utils import BazelTools, BuildTools, LogContainer, Scenario
@@ -133,4 +133,4 @@ class CommonScenario(Scenario):
                 raise RuntimeError(f'Invalid "--traces" value: {traces_param}')
 
         for trace in traces:
-            print(trace)
+            print(trace)  # noqa: T201  Traces are shown through pytest output capture.

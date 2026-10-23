@@ -125,7 +125,7 @@ def pytest_html_results_table_row(report, cells):
 
 
 @pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
+def pytest_runtest_makereport(item):
     # Extract TC's data
     outcome = yield
     report = outcome.get_result()

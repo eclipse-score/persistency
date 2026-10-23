@@ -30,7 +30,10 @@ pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
     derivation_technique="requirements-analysis",
 )
 class TestMultipleInstanceIds(CommonScenario):
-    """Verifies that multiple KVS instances with different IDs store and retrieve independent values without interference."""
+    """Verifies that multiple KVS instances with different IDs store and retrieve independent values.
+
+    The instances must not interfere with each other.
+    """
 
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
@@ -103,7 +106,10 @@ class TestSameInstanceIdSameValue(CommonScenario):
     derivation_technique="requirements-analysis",
 )
 class TestSameInstanceIdDifferentValue(CommonScenario):
-    """Verifies that changes in one KVS instance with a shared ID and key are reflected in another instance, demonstrating interference."""
+    """Verifies that changes in one KVS instance with a shared ID and key are reflected in another instance.
+
+    This demonstrates interference.
+    """
 
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:

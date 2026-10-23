@@ -385,7 +385,8 @@ class Checksum final : public Scenario
         // Create KVS instance with provided params.
         auto params{KvsParameters::from_json(input)};
         auto working_dir{*params.dir};
-        std::string kvs_path, hash_path;
+        std::string kvs_path;
+        std::string hash_path;
         {
             // Create instance, flush, store paths to files, close instance.
             auto kvs{kvs_instance(params)};

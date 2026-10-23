@@ -109,7 +109,7 @@ class SupportedDatatypesKeys final : public Scenario
         else
         {
             info_log("get_all_keys_error", std::string(keys_in_kvs.error().Message()));
-            throw keys_in_kvs.error();
+            throw score::result::Error(keys_in_kvs.error());
         }
     }
 };

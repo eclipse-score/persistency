@@ -26,15 +26,15 @@ std::optional<T> deserialize_load_param(const score::json::Object& obj_root, con
     if (obj_root.find(field_name) != obj_root.end())
     {
         auto value_str{obj_root.at(field_name).As<std::string>().value().get()};
-        if (value_str.compare("ignored") == 0)
+        if (value_str == "ignored")
         {
             return T::Ignored;
         }
-        else if (value_str.compare("optional") == 0)
+        else if (value_str == "optional")
         {
             return T::Optional;
         }
-        else if (value_str.compare("required") == 0)
+        else if (value_str == "required")
         {
             return T::Required;
         }
@@ -56,7 +56,7 @@ KvsParameters KvsParameters::from_json(const std::string& json_str)
     auto any_res{parser.FromBuffer(json_str)};
     if (!any_res)
     {
-        throw any_res.error();
+        throw score::result::Error(any_res.error());
     }
 
     return KvsParameters::from_object(any_res.value().As<Object>().value().get());

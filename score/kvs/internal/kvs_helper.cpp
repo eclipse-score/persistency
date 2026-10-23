@@ -21,7 +21,8 @@ uint32_t calculate_hash_adler32(const std::string& data) noexcept
 {
     constexpr size_t ADLER32_NMAX = 5552;
     constexpr uint32_t ADLER32_BASE = 65521;
-    uint32_t a = 1, b = 0;
+    uint32_t a = 1;
+    uint32_t b = 0;
     size_t len = data.size();
     size_t i = 0;
 
@@ -46,16 +47,17 @@ uint32_t parse_hash_adler32(std::istream& in) noexcept
     std::array<uint8_t, 4> buf{};
     in.read(reinterpret_cast<char*>(buf.data()), buf.size());
 
-    uint32_t value = (uint32_t(buf[0]) << 24) | (uint32_t(buf[1]) << 16) | (uint32_t(buf[2]) << 8) | uint32_t(buf[3]);
+    uint32_t value = (static_cast<uint32_t>(buf[0]) << 24) | (static_cast<uint32_t>(buf[1]) << 16) |
+                     (static_cast<uint32_t>(buf[2]) << 8) | static_cast<uint32_t>(buf[3]);
     return value;
 }
 
 std::array<uint8_t, 4> get_hash_bytes_adler32(uint32_t hash) noexcept
 {
-    std::array<uint8_t, 4> value = {uint8_t((hash >> 24) & 0xFF),
-                                    uint8_t((hash >> 16) & 0xFF),
-                                    uint8_t((hash >> 8) & 0xFF),
-                                    uint8_t((hash) & 0xFF)};
+    std::array<uint8_t, 4> value = {static_cast<uint8_t>((hash >> 24) & 0xFF),
+                                    static_cast<uint8_t>((hash >> 16) & 0xFF),
+                                    static_cast<uint8_t>((hash >> 8) & 0xFF),
+                                    static_cast<uint8_t>((hash) & 0xFF)};
     return value;
 }
 

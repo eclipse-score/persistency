@@ -77,7 +77,7 @@ void BasicScenario::run(const std::string& input) const
     }
 
     auto stored_value{std::get<std::string>(stored_kvs_value.getValue())};
-    if (stored_value.compare(value) != 0)
+    if (stored_value != value)
     {
         throw std::runtime_error("Value mismatch");
     }
