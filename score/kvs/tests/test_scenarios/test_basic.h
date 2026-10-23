@@ -10,7 +10,8 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_TEST_BASIC_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_TEST_BASIC_H
 
 #include <optional>
 #include <string>
@@ -26,3 +27,5 @@ class BasicScenario final : public Scenario
 
     void run(const std::string& input) const final;
 };
+
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_TEST_BASIC_H

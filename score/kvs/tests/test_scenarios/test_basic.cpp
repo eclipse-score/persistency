@@ -11,19 +11,19 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "test_basic.hpp"
+#include "test_basic.h"
 
-#include "score/kvs/kvs.hpp"
-#include "score/kvs/kvsbuilder.hpp"
+#include "helpers/kvs_parameters.h"
+#include "score/json/json_parser.h"
+#include "score/json/json_writer.h"
+#include "score/kvs/kvs.h"
+#include "score/kvs/kvs_builder.h"
+#include "score/result/result.h"
+
+#include <tracing.hpp>
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
-
-#include "helpers/kvs_parameters.hpp"
-#include "score/json/json_parser.h"
-#include "score/json/json_writer.h"
-#include "score/result/result.h"
-#include <tracing.hpp>
 
 static const std::string kTargetName{"cpp_test_scenarios::basic::basic"};
 
@@ -39,44 +39,44 @@ void BasicScenario::run(const std::string& input) const
     // Print and parse parameters.
     std::cerr << input << std::endl;
 
-    auto params{KvsParameters::from_json(input)};
+    auto params{KvsParameters::FromJson(input)};
 
     // Set builder parameters.
     InstanceId instance_id{params.instance_id};
     KvsBuilder builder{instance_id};
-    if (params.need_defaults.has_value())
+    if (params.defaults.has_value())
     {
-        builder = builder.need_defaults_flag(*params.need_defaults);
+        builder = builder.Defaults(*params.defaults);
     }
-    if (params.need_kvs.has_value())
+    if (params.kvs_load.has_value())
     {
-        builder = builder.need_kvs_flag(*params.need_kvs);
+        builder = builder.KvsLoad(*params.kvs_load);
     }
 
     // Create KVS.
-    Kvs kvs{*builder.build()};
+    Kvs kvs{*builder.Build()};
 
     // Simple set/get.
     std::string key{"example_key"};
     std::string value{"example_value"};
-    auto set_value_result{kvs.set_value(key, KvsValue{value})};
+    auto set_value_result{kvs.SetValue(key, KvsValue{value})};
     if (!set_value_result)
     {
         throw std::runtime_error("Failed to set value");
     }
 
-    auto get_value_result{kvs.get_value(key)};
+    auto get_value_result{kvs.GetValue(key)};
     if (!get_value_result)
     {
         throw std::runtime_error{"Failed to get value"};
     }
     auto stored_kvs_value{get_value_result.value()};
-    if (stored_kvs_value.getType() != KvsValue::Type::String)
+    if (stored_kvs_value.GetType() != KvsValue::Type::kString)
     {
         throw std::runtime_error{"Invalid value type"};
     }
 
-    auto stored_value{std::get<std::string>(stored_kvs_value.getValue())};
+    auto stored_value{std::get<std::string>(stored_kvs_value.GetValue())};
     if (stored_value.compare(value) != 0)
     {
         throw std::runtime_error("Value mismatch");

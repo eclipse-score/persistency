@@ -10,8 +10,15 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_HELPERS_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_HELPERS_H
 
-#include "scenario.hpp"
+#include "score/kvs/kvs.h"
+#include <string>
+#include <utility>
 
-ScenarioGroup::Ptr supported_datatypes_group();
+std::pair<std::string, std::string> KvsHashPaths(const std::string& working_dir,
+                                                 score::mw::per::kvs::InstanceId instance_id,
+                                                 score::mw::per::kvs::SnapshotId snapshot_id);
+
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_HELPERS_H

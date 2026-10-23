@@ -11,71 +11,71 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "score/kvs/kvsbuilder.hpp"
+#include "score/kvs/kvs_builder.h"
 
 namespace score::mw::per::kvs
 {
 
 KvsBuilder::KvsBuilder(const InstanceId& instance_id) noexcept
-    : instance_id_(instance_id),
-      snapshot_id_(SnapshotId{0}),
-      need_defaults_(OpenNeedDefaults::Optional),
-      need_kvs_(OpenNeedKvs::Optional),
-      directory_("./data_folder/"),
-      maximum_storage_bytes_(std::nullopt),
-      max_snapshots_(KVS_DEFAULT_MAX_SNAPSHOTS)
+    : instance_id_{instance_id},
+      snapshot_id_{SnapshotId{0}},
+      defaults_{KvsDefaults::kOptional},
+      kvs_load_{score::mw::per::kvs::KvsLoad::kOptional},
+      working_dir_{"./data_folder/"},
+      maximum_storage_bytes_{std::nullopt},
+      max_snapshots_{kDefaultMaxSnapshots}
 {
 }
 
-KvsBuilder& KvsBuilder::snapshot(const SnapshotId& snapshot_id) noexcept
+KvsBuilder& KvsBuilder::Snapshot(const SnapshotId& snapshot_id) noexcept
 {
     this->snapshot_id_ = snapshot_id;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::need_defaults_flag(const OpenNeedDefaults& flag) noexcept
+KvsBuilder& KvsBuilder::Defaults(const KvsDefaults& mode) noexcept
 {
-    need_defaults_ = flag;
+    defaults_ = mode;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::need_kvs_flag(const OpenNeedKvs& flag) noexcept
+KvsBuilder& KvsBuilder::KvsLoad(const score::mw::per::kvs::KvsLoad& mode) noexcept
 {
-    need_kvs_ = flag;
+    kvs_load_ = mode;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::dir(std::string&& dir_path) noexcept
+KvsBuilder& KvsBuilder::WorkingDir(std::string&& working_dir) noexcept
 {
-    this->directory_ = std::move(dir_path);
+    this->working_dir_ = std::move(working_dir);
     return *this;
 }
 
-KvsBuilder& KvsBuilder::max_storage_bytes(const std::optional<size_t>& max_storage_bytes) noexcept
+KvsBuilder& KvsBuilder::MaxStorageBytes(const std::optional<size_t>& max_storage_bytes) noexcept
 {
     this->maximum_storage_bytes_ = max_storage_bytes;
     return *this;
 }
 
-KvsBuilder& KvsBuilder::snapshot_max_count(std::size_t max_count) noexcept
+KvsBuilder& KvsBuilder::SnapshotMaxCount(std::size_t max_count) noexcept
 {
     this->max_snapshots_ = max_count;
     return *this;
 }
 
-score::Result<Kvs> KvsBuilder::build() noexcept
+score::Result<Kvs> KvsBuilder::Build() noexcept
 {
     // Use current directory if empty.
-    if ("" == directory_)
+    if ("" == working_dir_)
     {
-        directory_ = "./";
+        working_dir_ = "./";
     }
 
-    return Kvs::open(instance_id_,
+    return Kvs::Open(instance_id_,
                      snapshot_id_,
-                     need_defaults_,
-                     need_kvs_,
-                     std::move(directory_),
+                     defaults_,
+                     kvs_load_,
+                     std::move(working_dir_),
                      maximum_storage_bytes_,
                      max_snapshots_);
 }

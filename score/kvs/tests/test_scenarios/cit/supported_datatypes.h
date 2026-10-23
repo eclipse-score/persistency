@@ -10,9 +10,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SUPPORTED_DATATYPES_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SUPPORTED_DATATYPES_H
 
 #include <scenario.hpp>
 
-/// @brief Creates a group containing scenarios for CITs.
-ScenarioGroup::Ptr cit_scenario_group();
+ScenarioGroup::Ptr SupportedDatatypesGroup();
+
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SUPPORTED_DATATYPES_H
