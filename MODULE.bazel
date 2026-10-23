@@ -176,6 +176,16 @@ use_repo(
 # SBOM metadata: tracks module versions used by the //:sbom target
 # (see root BUILD file).
 sbom_ext = use_extension("@score_sbom//:extensions.bzl", "sbom_metadata", dev_dependency = True)
+
+# score_baselibs is the only C++ module dependency of the product targets.
+# Its version is read from its own MODULE.bazel.
+# Its license is not part of the bundled cpp_metadata.json cache of score_sbom.
+sbom_ext.track_module(name = "score_baselibs")
+sbom_ext.license(
+    name = "score_baselibs",
+    license = "Apache-2.0",
+    supplier = "Eclipse Foundation",
+)
 use_repo(sbom_ext, "sbom_metadata")
 
 # *******************************************************************************
