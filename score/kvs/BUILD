@@ -30,12 +30,18 @@ cc_library(
     srcs = [
         "error.cpp",
         "internal/kvs_helper.cpp",
-        "internal/kvs_helper.hpp",
+        "internal/kvs_helper.h",
         "kvs.cpp",
-        "kvsbuilder.cpp",
-        "kvsvalue.cpp",
+        "kvs_builder.cpp",
+        "kvs_value.cpp",
     ],
     hdrs = [
+        "error.h",
+        "kvs.h",
+        "kvs_builder.h",
+        "kvs_value.h",
+        # Deprecated forwarders to the headers above.
+        # They are kept for existing includes and warn when included.
         "error.hpp",
         "kvs.hpp",
         "kvsbuilder.hpp",
@@ -73,7 +79,7 @@ cc_test(
         "kvs_builder_test.cpp",
         "kvs_error_test.cpp",
         "kvs_general_test.cpp",
-        "kvs_general_test.hpp",
+        "kvs_general_test.h",
         "kvs_helper_test.cpp",
         "kvs_test.cpp",
         "kvs_value_test.cpp",

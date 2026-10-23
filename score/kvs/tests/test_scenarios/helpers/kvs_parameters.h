@@ -10,9 +10,14 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_PARAMETERS_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_PARAMETERS_H
 
-#include "score/kvs/kvs.hpp"
+#include "score/json/json_parser.h"
+#include "score/kvs/kvs.h"
+#include <cstddef>
+#include <optional>
+#include <string>
 
 struct KvsParameters
 {
@@ -32,3 +37,5 @@ struct KvsParameters
     std::optional<std::string> dir;
     std::optional<size_t> snapshot_max_count;
 };
+
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_PARAMETERS_H

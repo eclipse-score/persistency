@@ -11,11 +11,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "default_values.hpp"
-#include "helpers/helpers.hpp"
-#include "helpers/kvs_instance.hpp"
-#include "helpers/kvs_parameters.hpp"
-#include "tracing.hpp"
+#include "cit/default_values.h"
+
+#include "helpers/helpers.h"
+#include "helpers/kvs_instance.h"
+#include "helpers/kvs_parameters.h"
+#include <tracing.hpp>
 #include <sstream>
 
 using namespace score::mw::per::kvs;

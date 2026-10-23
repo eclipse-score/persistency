@@ -10,8 +10,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SUPPORTED_DATATYPES_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SUPPORTED_DATATYPES_H
 
-#include "kvs_parameters.hpp"
+#include <scenario.hpp>
 
-score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params);
+ScenarioGroup::Ptr supported_datatypes_group();
+
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SUPPORTED_DATATYPES_H

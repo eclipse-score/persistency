@@ -13,97 +13,17 @@
 #ifndef SCORE_LIB_KVS_INTERNAL_ERROR_HPP
 #define SCORE_LIB_KVS_INTERNAL_ERROR_HPP
 
-#include "score/result/result.h"
+#include "score/kvs/error.h"
 
-namespace score::mw::per::kvs
+namespace score::mw::per::kvs::deprecated_headers
 {
 
-/// @brief Error codes reported by the `kvs` API.
-enum class ErrorCode : score::result::ErrorCode
-{
-    /// Error that was not yet mapped.
-    UnmappedError,
+/// @deprecated Include `score/kvs/error.h` instead.
+using ErrorHpp [[deprecated("score/kvs/error.hpp is deprecated. Include score/kvs/error.h instead.")]] = int;
 
-    /// File not found.
-    FileNotFound,
+// Referencing the alias emits the deprecation warning in every translation unit that includes this header.
+static_assert(sizeof(ErrorHpp) > 0, "");
 
-    /// KVS file read error.
-    KvsFileReadError,
-
-    /// KVS hash file read error.
-    KvsHashFileReadError,
-
-    /// JSON parser error.
-    JsonParserError,
-
-    /// JSON generator error.
-    JsonGeneratorError,
-
-    /// Physical storage failure.
-    PhysicalStorageFailure,
-
-    /// Integrity corrupted.
-    IntegrityCorrupted,
-
-    /// Validation failed.
-    ValidationFailed,
-
-    /// Encryption failed.
-    EncryptionFailed,
-
-    /// Resource is busy.
-    ResourceBusy,
-
-    /// Out of storage space.
-    OutOfStorageSpace,
-
-    /// Quota exceeded.
-    QuotaExceeded,
-
-    /// Authentication failed.
-    AuthenticationFailed,
-
-    /// Key not found.
-    KeyNotFound,
-
-    /// Key default value not found.
-    KeyDefaultNotFound,
-
-    /// Serialization failed.
-    SerializationFailed,
-
-    /// Invalid snapshot ID.
-    InvalidSnapshotId,
-
-    /// Conversion failed.
-    ConversionFailed,
-
-    /// Mutex failed.
-    MutexLockFailed,
-
-    /// Invalid value type.
-    InvalidValueType,
-
-    /// Key is not valid.
-    InvalidKey,
-};
-
-/// @brief Error domain translating `ErrorCode` codes to human-readable messages.
-class KvsErrorDomain final : public score::result::ErrorDomain
-{
-  public:
-    /// @brief Returns the human-readable message for an error code.
-    /// @param code The error code to translate.
-    /// @return The message for `code`.
-    std::string_view MessageFor(const score::result::ErrorCode& code) const noexcept override;
-};
-
-/// @brief Creates an error in the KVS error domain.
-/// @param code The error code.
-/// @param user_message Optional message with additional context.
-/// @return The created error.
-score::result::Error MakeError(const ErrorCode code, const std::string_view user_message = "") noexcept;
-
-}  // namespace score::mw::per::kvs
+}  // namespace score::mw::per::kvs::deprecated_headers
 
 #endif  // SCORE_LIB_KVS_INTERNAL_ERROR_HPP

@@ -11,7 +11,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "helpers/helpers.hpp"
+#include "helpers/helpers.h"
+
 #include <sstream>
 
 std::pair<std::string, std::string> kvs_hash_paths(const std::string& working_dir,

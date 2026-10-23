@@ -11,19 +11,19 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "test_basic.hpp"
+#include "test_basic.h"
 
-#include "score/kvs/kvs.hpp"
-#include "score/kvs/kvsbuilder.hpp"
+#include "helpers/kvs_parameters.h"
+#include "score/json/json_parser.h"
+#include "score/json/json_writer.h"
+#include "score/kvs/kvs.h"
+#include "score/kvs/kvs_builder.h"
+#include "score/result/result.h"
+
+#include <tracing.hpp>
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
-
-#include "helpers/kvs_parameters.hpp"
-#include "score/json/json_parser.h"
-#include "score/json/json_writer.h"
-#include "score/result/result.h"
-#include <tracing.hpp>
 
 static const std::string kTargetName{"cpp_test_scenarios::basic::basic"};
 
