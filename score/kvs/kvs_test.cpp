@@ -94,6 +94,12 @@ std::string entry(const std::string& json_escaped_key, int value)
     return "\"" + json_escaped_key + "\":{\"t\":\"i32\",\"v\":" + std::to_string(value) + "}";
 }
 
+/// @brief Returns the content of a KVS file: the type-tagged root object with the given entries.
+std::string kvs_file(const std::string& entries)
+{
+    return "{\"t\":\"obj\",\"v\":{" + entries + "}}";
+}
+
 /// @brief Keys with characters outside printable ASCII (0x20 - 0x7E) and a valid length.
 /// @note comp_req__kvs__key_naming
 std::vector<std::string> InvalidCharacterKeys()
@@ -192,7 +198,7 @@ std::string generation_hash(std::size_t index)
 TEST(kvs_constructor, move_constructor)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"test_default": {"t": "bool", "v": true}})");
+    seed_defaults(R"({"t": "obj", "v": {"test_default": {"t": "bool", "v": true}}})");
     const std::uint32_t instance_b{5U};
 
     // Create object A.
@@ -270,12 +276,14 @@ TEST(kvs_constructor, move_constructor)
     CleanupEnvironment();
 }
 
-TEST(kvs_TEST, parse_json_data_sucess)
+TEST(kvs_TEST, parse_json_data_success)
 {
     // The real parser reads the file through Open().
     // This also covers the Optional mode with an existing file.
-    auto kvs{
-        open_crafted(kDefaultJson, R"({"kvs": {"t": "i32", "v": 42}})", KvsDefaults::kOptional, KvsLoad::kOptional)};
+    auto kvs{open_crafted(kDefaultJson,
+                          R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})",
+                          KvsDefaults::kOptional,
+                          KvsLoad::kOptional)};
     ASSERT_TRUE(kvs);
 
     auto value{kvs->GetValue("kvs")};
@@ -293,16 +301,21 @@ TEST(kvs_TEST, parse_json_data_failure)
     ASSERT_FALSE(kvs);
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kJsonParserError);
 
-    // The root is valid JSON, but not an object.
+    // The root is valid JSON, but not a type-tagged value.
     kvs = open_crafted(kDefaultJson, "42");
     ASSERT_FALSE(kvs);
-    EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kJsonParserError);
+    EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kInvalidValueType);
 
     // AnyToKvsValue error.
-    kvs = open_crafted(kDefaultJson, R"({"kvs": {"t": "invalid", "v": 42}})");
+    kvs = open_crafted(kDefaultJson, R"({"t": "obj", "v": {"kvs": {"t": "invalid", "v": 42}}})");
     ASSERT_FALSE(kvs);
     // Error is passed from AnyToKvsValue.
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kInvalidValueType);
+
+    // Tagged root that is not an object.
+    kvs = open_crafted(kDefaultJson, R"({"t": "i32", "v": 5})");
+    ASSERT_FALSE(kvs);
+    EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kJsonParserError);
 
     CleanupEnvironment();
 }
@@ -312,8 +325,8 @@ TEST(kvs_open, storage_corrupted_all_kvs_open_modes)
     const KvsDefaults default_mode{KvsDefaults::kRequired};
     const InstanceId instance_id{99ul};
     const SnapshotId snapshot_id{0ul};
-    const std::string default_data{R"({"default": {"t": "i32","v": 10}})"};
-    const std::string snapshot_data_0{R"({"kvs": {"t": "i32","v": 20}})"};
+    const std::string default_data{R"({"t": "obj", "v": {"default": {"t": "i32","v": 10}}})"};
+    const std::string snapshot_data_0{R"({"t": "obj", "v": {"kvs": {"t": "i32","v": 20}}})"};
     const std::string dir{"./kvs/"};
     const std::string prefix{"kvs_"};
 
@@ -391,8 +404,8 @@ TEST(kvs_open, hash_missing_all_kvs_open_modes)
     const KvsDefaults default_mode{KvsDefaults::kRequired};
     const InstanceId instance_id{99ul};
     const SnapshotId snapshot_id{0ul};
-    const std::string default_data{R"({"default": {"t": "i32","v": 10}})"};
-    const std::string snapshot_data_0{R"({"kvs": {"t": "i32","v": 20}})"};
+    const std::string default_data{R"({"t": "obj", "v": {"default": {"t": "i32","v": 10}}})"};
+    const std::string snapshot_data_0{R"({"t": "obj", "v": {"kvs": {"t": "i32","v": 20}}})"};
     const std::string dir{"./kvs/"};
     const std::string prefix{"kvs_"};
 
@@ -455,9 +468,9 @@ TEST(kvs_open, hash_missing_all_kvs_open_modes)
 TEST(kvs_open, selected_snapshot)
 {
     const InstanceId instance_id{99ul};
-    const std::string default_data{R"({"default": {"t": "i32","v": 10}})"};
-    const std::string snapshot_data_0{R"({"kvs": {"t": "i32","v": 20}})"};
-    const std::string snapshot_data_1{R"({"kvs": {"t": "i32","v": 30}})"};
+    const std::string default_data{R"({"t": "obj", "v": {"default": {"t": "i32","v": 10}}})"};
+    const std::string snapshot_data_0{R"({"t": "obj", "v": {"kvs": {"t": "i32","v": 20}}})"};
+    const std::string snapshot_data_1{R"({"t": "obj", "v": {"kvs": {"t": "i32","v": 30}}})"};
     const std::string dir{"./kvs/"};
     const std::string prefix{"kvs_"};
 
@@ -502,6 +515,55 @@ TEST(kvs_open, selected_snapshot)
     CleanupEnvironment(dir);
 }
 
+TEST(kvs_open, t_and_v_keys_loaded_from_file)
+{
+    // "t" and "v" are type tag keys only at the value level, so they are valid user keys.
+    const InstanceId instance_id{77ul};
+    const std::string default_data =
+        R"({"t": "obj", "v": {"t": {"t": "str", "v": "default_t"}, "v": {"t": "i32", "v": 1}}})";
+    const std::string snapshot_data_0 =
+        R"({"t": "obj", "v": {"t": {"t": "str", "v": "obj"}, "v": {"t": "i32", "v": 5}}})";
+    const std::string dir{"./kvs_t_v_keys_load/"};
+    const std::string prefix{"kvs_"};
+
+    PrepareEnvironment(dir, prefix, instance_id.id, default_data, snapshot_data_0);
+
+    auto kvs{Kvs::Open(instance_id,
+                       SnapshotId{0ul},
+                       KvsDefaults::kRequired,
+                       KvsLoad::kRequired,
+                       std::string(dir),
+                       std::nullopt,
+                       kDefaultMaxSnapshots)};
+    ASSERT_TRUE(kvs);
+
+    auto keys{kvs->GetAllKeys()};
+    ASSERT_TRUE(keys);
+    EXPECT_THAT(keys.value(), ::testing::UnorderedElementsAre("t", "v"));
+
+    auto t_value{kvs->GetValue("t")};
+    ASSERT_TRUE(t_value);
+    ASSERT_EQ(t_value.value().GetType(), KvsValue::Type::kString);
+    EXPECT_EQ(std::get<std::string>(t_value.value().GetValue()), "obj");
+
+    auto v_value{kvs->GetValue("v")};
+    ASSERT_TRUE(v_value);
+    ASSERT_EQ(v_value.value().GetType(), KvsValue::Type::kI32);
+    EXPECT_EQ(std::get<int32_t>(v_value.value().GetValue()), 5);
+
+    auto t_default{kvs->GetDefaultValue("t")};
+    ASSERT_TRUE(t_default);
+    ASSERT_EQ(t_default.value().GetType(), KvsValue::Type::kString);
+    EXPECT_EQ(std::get<std::string>(t_default.value().GetValue()), "default_t");
+
+    auto v_default{kvs->GetDefaultValue("v")};
+    ASSERT_TRUE(v_default);
+    ASSERT_EQ(v_default.value().GetType(), KvsValue::Type::kI32);
+    EXPECT_EQ(std::get<int32_t>(v_default.value().GetValue()), 1);
+
+    CleanupEnvironment(dir);
+}
+
 TEST(kvs_TEST, parse_json_data_rejects_over_length_key)
 {
     // comp_req__kvs__key_length: an over-length key found while loading means the file is invalid or corrupted.
@@ -510,13 +572,13 @@ TEST(kvs_TEST, parse_json_data_rejects_over_length_key)
     const std::string too_long_key(kMaxKeyLengthBytes + 1U, 'b');
 
     // A key of the maximum length loads.
-    auto kvs{open_crafted(kDefaultJson, "{" + entry(valid_key, 42) + "}")};
+    auto kvs{open_crafted(kDefaultJson, kvs_file(entry(valid_key, 42)))};
     ASSERT_TRUE(kvs);
     auto exists{kvs->KeyExists(valid_key)};
     ASSERT_TRUE(exists);
     EXPECT_TRUE(exists.value());
 
-    kvs = open_crafted(kDefaultJson, "{" + entry(valid_key, 42) + "," + entry(too_long_key, 7) + "}");
+    kvs = open_crafted(kDefaultJson, kvs_file(entry(valid_key, 42) + "," + entry(too_long_key, 7)));
     ASSERT_FALSE(kvs);
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kInvalidKey);
 
@@ -528,7 +590,8 @@ TEST(kvs_TEST, parse_json_data_rejects_empty_key)
     // comp_req__kvs__key_length: an empty key found while loading means the file is invalid or corrupted.
     // Loading must halt with an error.
     // The JSON parser already rejects an empty key, before the key check of the KVS.
-    auto kvs{open_crafted(kDefaultJson, R"({"valid_key": {"t": "i32", "v": 42}, "": {"t": "i32", "v": 7}})")};
+    auto kvs{open_crafted(kDefaultJson,
+                          R"({"t": "obj", "v": {"valid_key": {"t": "i32", "v": 42}, "": {"t": "i32", "v": 7}}})")};
     ASSERT_FALSE(kvs);
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kJsonParserError);
 
@@ -545,10 +608,30 @@ TEST(kvs_TEST, parse_json_data_rejects_invalid_characters_key)
     for (const auto& invalid_key : invalid_keys)
     {
         SCOPED_TRACE(invalid_key);
-        auto kvs{open_crafted(kDefaultJson, "{" + entry("valid_key", 42) + "," + entry(invalid_key, 7) + "}")};
+        auto kvs{open_crafted(kDefaultJson, kvs_file(entry("valid_key", 42) + "," + entry(invalid_key, 7)))};
         ASSERT_FALSE(kvs);
         EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kInvalidKey);
     }
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_TEST, parse_json_data_accepts_over_length_nested_key)
+{
+    // comp_req__kvs__key_length applies to root keys only.
+    // Keys of nested objects are value data.
+    const std::string long_key(kMaxKeyLengthBytes + 1U, 'b');
+    auto kvs{open_crafted(kDefaultJson, kvs_file(R"("cfg":{"t":"obj","v":{)" + entry(long_key, 7) + "}}"))};
+    ASSERT_TRUE(kvs);
+
+    auto cfg{kvs->GetValue("cfg")};
+    ASSERT_TRUE(cfg);
+    ASSERT_EQ(cfg.value().GetType(), KvsValue::Type::kObject);
+    const auto& cfg_obj{std::get<KvsValue::Object>(cfg.value().GetValue())};
+    ASSERT_EQ(cfg_obj.size(), 1U);
+    EXPECT_EQ(cfg_obj[0].first, long_key);
+    ASSERT_EQ(cfg_obj[0].second.GetType(), KvsValue::Type::kI32);
+    EXPECT_EQ(std::get<int32_t>(cfg_obj[0].second.GetValue()), 7);
 
     CleanupEnvironment();
 }
@@ -727,7 +810,7 @@ TEST(kvs_key_exists, key_exists_failure)
 TEST(kvs_get_value, get_value_success)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"kvs": {"t": "i32", "v": 42}})");
+    seed_defaults(R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})");
 
     auto result{Kvs::Open(kInstanceId,
                           kSnapshotId,
@@ -794,7 +877,7 @@ TEST(kvs_get_value, get_value_failure)
 TEST(kvs_get_default_value, get_default_value_success)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"kvs": {"t": "i32", "v": 42}})");
+    seed_defaults(R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})");
 
     auto result{Kvs::Open(kInstanceId,
                           kSnapshotId,
@@ -843,7 +926,7 @@ TEST(kvs_get_default_value, get_default_value_failure)
 TEST(kvs_reset_key, reset_key_success)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"default": {"t": "i32", "v": 5}, "kvs": {"t": "f64", "v": 42.0}})");
+    seed_defaults(R"({"t": "obj", "v": {"default": {"t": "i32", "v": 5}, "kvs": {"t": "f64", "v": 42.0}}})");
 
     auto result{Kvs::Open(kInstanceId,
                           kSnapshotId,
@@ -930,7 +1013,7 @@ TEST(kvs_reset_key, reset_key_failure)
 TEST(kvs_is_value_default, is_value_default)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"default": {"t": "f64", "v": 42.0}})");
+    seed_defaults(R"({"t": "obj", "v": {"default": {"t": "f64", "v": 42.0}}})");
 
     auto result{Kvs::Open(kInstanceId,
                           kSnapshotId,
@@ -1243,6 +1326,148 @@ TEST(kvs_set_value, set_value_failure)
     EXPECT_EQ(static_cast<ErrorCode>(*set_value_result.error()), ErrorCode::kMutexLockFailed);
 
     CleanupEnvironment();
+}
+
+TEST(kvs_set_value, set_value_duplicate_object_key)
+{
+    PrepareEnvironment();
+    auto result{Kvs::Open(kInstanceId,
+                          kSnapshotId,
+                          KvsDefaults::kRequired,
+                          KvsLoad::kRequired,
+                          std::string(kDataDir),
+                          std::nullopt,
+                          kDefaultMaxSnapshots)};
+    ASSERT_TRUE(result);
+
+    // Duplicate key in a top-level object.
+    KvsValue::Object flat{{"a", KvsValue(int32_t{1})}, {"a", KvsValue(int32_t{2})}};
+    auto set_value_result{result.value().SetValue("flat", KvsValue(std::move(flat)))};
+    EXPECT_FALSE(set_value_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*set_value_result.error()), ErrorCode::kInvalidValueType);
+    auto exists_result{result.value().KeyExists("flat")};
+    ASSERT_TRUE(exists_result);
+    EXPECT_FALSE(exists_result.value());
+
+    // Duplicate key in an object nested in an array.
+    KvsValue::Object inner{{"b", KvsValue(true)}, {"b", KvsValue(false)}};
+    KvsValue::Array array{KvsValue(int32_t{0}), KvsValue(std::move(inner))};
+    KvsValue::Object outer{{"array", KvsValue(std::move(array))}};
+    set_value_result = result.value().SetValue("nested", KvsValue(std::move(outer)));
+    EXPECT_FALSE(set_value_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*set_value_result.error()), ErrorCode::kInvalidValueType);
+    exists_result = result.value().KeyExists("nested");
+    ASSERT_TRUE(exists_result);
+    EXPECT_FALSE(exists_result.value());
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_set_value, t_and_v_keys_round_trip)
+{
+    // "t" and "v" set by the user must survive Flush and reload.
+    const InstanceId instance_id{78ul};
+    const std::string dir{"./kvs_t_v_keys_set/"};
+    const std::string prefix{"kvs_"};
+
+    PrepareEnvironment(dir, prefix, instance_id.id, R"({"t": "obj", "v": {}})");
+
+    {
+        auto kvs{Kvs::Open(instance_id,
+                           SnapshotId{0ul},
+                           KvsDefaults::kRequired,
+                           KvsLoad::kOptional,
+                           std::string(dir),
+                           std::nullopt,
+                           kDefaultMaxSnapshots)};
+        ASSERT_TRUE(kvs);
+
+        EXPECT_TRUE(kvs->SetValue("t", KvsValue("obj")));
+        EXPECT_TRUE(kvs->SetValue("v", KvsValue(int32_t{42})));
+        KvsValue::Object nested{{"t", KvsValue("x")}, {"v", KvsValue(int32_t{7})}};
+        EXPECT_TRUE(kvs->SetValue("nested", KvsValue(std::move(nested))));
+        ASSERT_TRUE(kvs->Flush());
+    }
+
+    auto kvs{Kvs::Open(instance_id,
+                       SnapshotId{0ul},
+                       KvsDefaults::kRequired,
+                       KvsLoad::kRequired,
+                       std::string(dir),
+                       std::nullopt,
+                       kDefaultMaxSnapshots)};
+    ASSERT_TRUE(kvs);
+
+    auto t_value{kvs->GetValue("t")};
+    ASSERT_TRUE(t_value);
+    ASSERT_EQ(t_value.value().GetType(), KvsValue::Type::kString);
+    EXPECT_EQ(std::get<std::string>(t_value.value().GetValue()), "obj");
+
+    auto v_value{kvs->GetValue("v")};
+    ASSERT_TRUE(v_value);
+    ASSERT_EQ(v_value.value().GetType(), KvsValue::Type::kI32);
+    EXPECT_EQ(std::get<int32_t>(v_value.value().GetValue()), 42);
+
+    auto nested_value{kvs->GetValue("nested")};
+    ASSERT_TRUE(nested_value);
+    ASSERT_EQ(nested_value.value().GetType(), KvsValue::Type::kObject);
+    const auto& nested_obj{std::get<KvsValue::Object>(nested_value.value().GetValue())};
+    ASSERT_EQ(nested_obj.size(), 2U);
+    EXPECT_EQ(nested_obj[0].first, "t");
+    ASSERT_EQ(nested_obj[0].second.GetType(), KvsValue::Type::kString);
+    EXPECT_EQ(std::get<std::string>(nested_obj[0].second.GetValue()), "x");
+    EXPECT_EQ(nested_obj[1].first, "v");
+    ASSERT_EQ(nested_obj[1].second.GetType(), KvsValue::Type::kI32);
+    EXPECT_EQ(std::get<int32_t>(nested_obj[1].second.GetValue()), 7);
+
+    CleanupEnvironment(dir);
+}
+
+TEST(kvs_set_value, over_length_nested_key_round_trip)
+{
+    // comp_req__kvs__key_length applies to root keys only.
+    // A nested object with an over-length key must survive Flush and reload.
+    const InstanceId instance_id{79ul};
+    const std::string dir{"./kvs_long_nested_key/"};
+    const std::string prefix{"kvs_"};
+    const std::string long_key(kMaxKeyLengthBytes + 1U, 'x');
+
+    PrepareEnvironment(dir, prefix, instance_id.id, R"({"t": "obj", "v": {}})");
+
+    {
+        auto kvs{Kvs::Open(instance_id,
+                           SnapshotId{0ul},
+                           KvsDefaults::kRequired,
+                           KvsLoad::kOptional,
+                           std::string(dir),
+                           std::nullopt,
+                           kDefaultMaxSnapshots)};
+        ASSERT_TRUE(kvs);
+
+        KvsValue::Object cfg{{long_key, KvsValue(int32_t{1})}};
+        EXPECT_TRUE(kvs->SetValue("cfg", KvsValue(std::move(cfg))));
+        ASSERT_TRUE(kvs->Flush());
+    }
+
+    auto kvs{Kvs::Open(instance_id,
+                       SnapshotId{0ul},
+                       KvsDefaults::kRequired,
+                       KvsLoad::kRequired,
+                       std::string(dir),
+                       std::nullopt,
+                       kDefaultMaxSnapshots)};
+    ASSERT_TRUE(kvs);
+
+    auto cfg_value{kvs->GetValue("cfg")};
+    ASSERT_TRUE(cfg_value);
+    ASSERT_EQ(cfg_value.value().GetType(), KvsValue::Type::kObject);
+    const auto& cfg_obj{std::get<KvsValue::Object>(cfg_value.value().GetValue())};
+    ASSERT_EQ(cfg_obj.size(), 1U);
+    EXPECT_EQ(cfg_obj[0].first, long_key);
+    ASSERT_EQ(cfg_obj[0].second.GetType(), KvsValue::Type::kI32);
+    EXPECT_EQ(std::get<int32_t>(cfg_obj[0].second.GetValue()), 1);
+
+    CleanupEnvironment(dir);
 }
 
 TEST(kvs_remove_key, remove_key_success)
@@ -1887,7 +2112,7 @@ TEST(kvs_flush, flush_failure_json_writer)
 
     // Force error in writer.ToBuffer.
     auto mock_writer{std::make_unique<score::json::IJsonWriterMock>()};
-    EXPECT_CALL(*mock_writer, ToBuffer(::testing::A<const score::json::Object&>()))
+    EXPECT_CALL(*mock_writer, ToBuffer(::testing::A<const score::json::Any&>()))
         .WillOnce(
             ::testing::Return(score::Result<std::string>(score::MakeUnexpected(score::json::Error::kUnknownError))));
 
@@ -1983,9 +2208,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_success)
 
     // Create dummy data.
     const std::string json_data{R"({
-        "kvs_old": {
-            "t": "i32",
-            "v": 42
+        "t": "obj",
+        "v": {
+            "kvs_old": {
+                "t": "i32",
+                "v": 42
+            }
         }
     })"};
     // Create hash data for json_data.
@@ -2323,7 +2551,7 @@ TEST(kvs_remove_all_keys, remove_all_keys_empty_kvs)
 TEST(kvs_remove_all_keys, remove_all_keys_keeps_defaults)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"defaulted": {"t": "f64", "v": 42.0}})");
+    seed_defaults(R"({"t": "obj", "v": {"defaulted": {"t": "f64", "v": 42.0}}})");
 
     auto kvs{Kvs::Open(kInstanceId,
                        kSnapshotId,
@@ -2693,7 +2921,7 @@ TEST(kvs_max_storage_bytes, flush_fails_when_storage_limit_exceeded)
     // Add data close to the limit.
     // The JSON structure (key, type info, braces) and the hash file add overhead.
     // Keep the payload below the maximum.
-    const size_t overhead_estimate{100U};
+    const size_t overhead_estimate{150U};
     const std::string large_data(kTestMaxStorageBytes - overhead_estimate, 'a');
 
     auto set_res1{kvs.SetValue("large_data", KvsValue(large_data.c_str()))};

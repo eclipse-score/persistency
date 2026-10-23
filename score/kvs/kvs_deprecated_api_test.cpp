@@ -323,7 +323,7 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
     EXPECT_EQ(*defaults_only.first.error(), *defaults_only.second.error());
 
     const std::string file_prefix{"./kvsbuilder/kvs_" + std::to_string(kInstance)};
-    Store(file_prefix + "_23.json", file_prefix + "_23.hash", R"({"snap": {"t": "i32", "v": 23}})");
+    Store(file_prefix + "_23.json", file_prefix + "_23.hash", R"({"t": "obj", "v": {"snap": {"t": "i32", "v": 23}}})");
     auto built{build_both()};
     ASSERT_TRUE(built.first);
     ASSERT_TRUE(built.second);

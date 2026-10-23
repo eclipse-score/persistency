@@ -79,7 +79,8 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     // Snapshot 23 only loads if the builder passes the snapshot ID on.
     const std::string snapshot_prefix{"./kvsbuilder/kvs_" + std::to_string(kInstance) + "_23"};
     PrepareEnvironment("./kvsbuilder/", "kvs_", kInstance, kDefaultJson, kKvsJson, kKvsJson);
-    Store(snapshot_prefix + ".json", snapshot_prefix + ".hash", R"({"snap": {"t": "i32", "v": 23}})");
+    Store(
+        snapshot_prefix + ".json", snapshot_prefix + ".hash", R"({"t": "obj", "v": {"snap": {"t": "i32", "v": 23}}})");
     builder.Defaults(KvsDefaults::kRequired);
     builder.KvsLoad(KvsLoad::kRequired);
     result_build = builder.Build();

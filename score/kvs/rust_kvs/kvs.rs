@@ -872,6 +872,35 @@ mod kvs_tests {
     }
 
     #[test]
+    fn test_set_value_t_v_keys_flush_and_load() {
+        let dir = tempdir().unwrap();
+        let dir_path = dir.path().to_path_buf();
+        let backend = Box::new(JsonBackendBuilder::new().working_dir(dir_path).build());
+        let kvs = get_kvs(backend.clone(), KvsMap::new(), KvsMap::new());
+
+        // "t" and "v" are valid user keys, also inside nested objects.
+        let nested = KvsMap::from([
+            ("t".to_string(), KvsValue::from("x")),
+            ("v".to_string(), KvsValue::from(7i32)),
+        ]);
+        kvs.set_value("t", "obj").unwrap();
+        kvs.set_value("v", 42i32).unwrap();
+        kvs.set_value("nested", nested.clone()).unwrap();
+        kvs.flush().unwrap();
+
+        let instance_id = kvs.parameters().instance_id;
+        let loaded = backend.load_kvs(instance_id, SnapshotId(0)).unwrap();
+        assert_eq!(
+            loaded,
+            KvsMap::from([
+                ("t".to_string(), KvsValue::from("obj")),
+                ("v".to_string(), KvsValue::from(42i32)),
+                ("nested".to_string(), KvsValue::from(nested)),
+            ])
+        );
+    }
+
+    #[test]
     fn test_flush_snapshot_max_count_zero() {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();

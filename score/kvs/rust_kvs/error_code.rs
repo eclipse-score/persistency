@@ -88,6 +88,9 @@ pub enum ErrorCode {
     /// Instance parameters mismatch
     InstanceParametersMismatch,
 
+    /// Invalid value type
+    InvalidValueType,
+
     /// Key is not valid
     InvalidKey,
 }

@@ -27,7 +27,6 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
 
 namespace score::kvs
@@ -153,9 +152,6 @@ enum class OpenJsonNeedFile : std::uint8_t
 class Kvs final
 {
   public:
-    /// @brief Map of keys to their values.
-    using KeyValueMap = std::unordered_map<std::string, KvsValue>;
-
     Kvs(const Kvs&) = delete;
 
     /// @brief Move constructor.
@@ -489,11 +485,11 @@ class Kvs final
     score::Result<void> SnapshotRotate() const noexcept;
 
     /// @brief Parses JSON data into a map of key-value pairs.
-    score::Result<KeyValueMap> ParseJsonData(const std::string& data) const noexcept;
+    score::Result<KvsMap> ParseJsonData(const std::string& data) const noexcept;
 
     /// @brief Opens a JSON file, verifies its hash and returns its contents as a map of key-value pairs.
-    score::Result<KeyValueMap> OpenJson(const score::filesystem::Path& prefix,
-                                        const OpenJsonNeedFile need_file) const noexcept;
+    score::Result<KvsMap> OpenJson(const score::filesystem::Path& prefix,
+                                   const OpenJsonNeedFile need_file) const noexcept;
 
     /// @brief Writes the provided data to the current JSON file and its hash file.
     score::Result<void> WriteJsonData(const std::string& buf) const noexcept;
@@ -525,10 +521,10 @@ class Kvs final
     mutable std::mutex kvs_mutex_;
 
     /// Written key-value pairs.
-    KeyValueMap kvs_;
+    KvsMap kvs_;
 
     /// Default values, fixed after Open().
-    KeyValueMap default_values_;
+    KvsMap default_values_;
 
     /// Path prefix of the KVS files, including the instance ID.
     score::filesystem::Path filename_prefix_;

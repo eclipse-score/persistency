@@ -39,7 +39,7 @@ def create_defaults_json(values: dict[str, TaggedValue]) -> str:
         type_tag, value = tagged_value
         json_value[key] = {"t": type_tag, "v": value}
 
-    return json.dumps(json_value)
+    return json.dumps({"t": "obj", "v": json_value})
 
 
 def create_defaults_file(dir_path: Path, instance_id: int, values: dict[str, TaggedValue]) -> Path:

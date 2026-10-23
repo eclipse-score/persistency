@@ -95,15 +95,21 @@ const std::string kKvsPrefix{kDataDir + "kvs_" + std::to_string(kInstance) + "_0
 const std::string kFilenamePrefix{kDataDir + "kvs_" + std::to_string(kInstance)};
 
 const std::string kDefaultJson{R"({
-    "default": {
-        "t": "i32",
-        "v": 5
+    "t": "obj",
+    "v": {
+        "default": {
+            "t": "i32",
+            "v": 5
+        }
     }
 })"};
 const std::string kKvsJson{R"({
-    "kvs": {
-        "t": "i32",
-        "v": 2
+    "t": "obj",
+    "v": {
+        "kvs": {
+            "t": "i32",
+            "v": 2
+        }
     }
 })"};
 
