@@ -124,11 +124,8 @@ sbom(
     visibility = ["//visibility:public"],
 )
 
-# Lint configs, consumed by //tools/lint:linters.bzl.
-exports_files([
-    ".clang-tidy",
-    "ruff.toml",
-])
+# Lint config, consumed by //tools/lint:linters.bzl.
+exports_files([".clang-tidy"])
 
 exports_files(
     [
