@@ -50,7 +50,7 @@ import %workspace%/score.bazelrc/score_toolchain.bazelrc
 import %workspace%/score.bazelrc/score_lint.bazelrc
 
 # LLVM source-based coverage (C++ + Rust): --config=llvm_cov
-import %workspace%/quality/coverage/coverage.bazelrc
+import %workspace%/tools/coverage/coverage.bazelrc
 
 # Import custom user settings, e.g. to enable sanitizers without touching the main .bazelrc
 try-import %workspace%/user.bazelrc

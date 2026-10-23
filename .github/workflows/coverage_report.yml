@@ -10,56 +10,61 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-name: Unified Coverage (LLVM)
+name: Code Coverage
+permissions:
+  contents: read
 on:
   pull_request:
     types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+  merge_group:
+    types: [checks_requested]
+  workflow_call:
   workflow_dispatch:
-
 jobs:
-  llvm_coverage:
+  coverage-report:
     runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
-    permissions:
-      contents: read
     steps:
-      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+      - name: Free up disk space
+        uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
         with:
           level: 4
-
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
+        with:
+          lfs: true
       - name: Setup Bazel with shared caching
         uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
         with:
           disk-cache-key: ${{ github.job }}
-
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
       - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@30740c18c728bc58f9b17c914c5592a5008f6b98 # main branch (2026-10-12)
-
-      - name: Run unified Rust + C++ coverage
+      - name: Check coverage scope completeness
+        run: ./.github/tools/check_coverage_scope.sh
+      - name: Run Bazel coverage (LLVM, C++ + Rust)
         run: |
           set -euo pipefail
-          bazel coverage --lockfile_mode=error --config=llvm_cov \
-            //score/... --build_tests_only
-
-      - name: Generate unified coverage report
+          bazel coverage --lockfile_mode=error --config=llvm_cov --build_tests_only -- //score/...
+      - name: Generate HTML coverage report
         env:
-          # Report-only during the introduction phase; raise stepwise toward
-          # 100 (effective coverage with justifications) as tests and
-          # justifications land, then drop the env to use the default of 100.
+          # Report-only during the introduction phase.
+          # Raise it stepwise toward 100 (effective coverage with justifications).
+          # Then drop the env to use the default of 100.
           COVERAGE_THRESHOLD: "0"
         run: |
           set -euo pipefail
           bazel run --lockfile_mode=error @score_coverage//:generate_coverage_html -- \
-            --yaml quality/coverage/coverage_justifications.yaml \
+            --yaml tools/coverage/coverage_justifications.yaml \
             --testlogs-subdir score \
             --archive-dir coverage_artifact
-
-      # upload-artifact zips its input itself, so the script assembles an
-      # unzipped directory (--archive-dir) to avoid a zip inside a zip.
-      - name: Upload coverage report
+      # upload-artifact zips its input itself.
+      # So --archive-dir assembles an unzipped tree.
+      - name: Upload coverage artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ github.event.repository.name }}_coverage_report
-          path: coverage_artifact
+          path: coverage_artifact/
+          include-hidden-files: true
+          retention-days: 10
