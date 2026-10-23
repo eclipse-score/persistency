@@ -41,7 +41,7 @@ Static Architecture
 
 .. comp_arc_sta:: KVS Static View
    :id: comp_arc_sta__persistency_kvs__sv
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :safety: ASIL_B
    :security: NO
