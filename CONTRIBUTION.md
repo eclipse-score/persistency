@@ -25,6 +25,11 @@ In addition, you need to sign the [ECA](https://www.eclipse.org/legal/ECA.php) a
 ### Getting the source code & building the project
 Please refer to the [README.md](README.md) for further information.
 
+### Coding style
+C++ code follows the [C++ style guide](docs/cpp-style-guide.md).
+It is a copy of the baselibs guide.
+Formatting is applied by `.clang-format`.
+
 ### Getting involved
 
 #### Setup Phase
