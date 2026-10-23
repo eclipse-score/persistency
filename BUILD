@@ -43,9 +43,9 @@ setup_starpls(
     visibility = ["//visibility:public"],
 )
 
-# Exported for //tools, which hosts the score_tooling-backed copyright checker.
+# Exported for the Dash license check in //tools.
 exports_files(
-    ["cr_checker_exclusion"],
+    ["Cargo.lock"],
     visibility = ["//tools:__pkg__"],
 )
 
@@ -79,32 +79,6 @@ alias(
     name = "format.fix",
     actual = "//tools:format.fix",
     visibility = ["//visibility:public"],
-)
-
-# Needed for the Dash tool to check Rust dependency licenses.
-# This is a workaround to filter out local packages from the Cargo.lock file.
-# The tool is intended for third-party content.
-# Consumed by //tools's dash_license_checker.
-genrule(
-    name = "filtered_cargo_lock",
-    srcs = ["Cargo.lock"],
-    outs = ["Cargo.lock.filtered"],
-    cmd = """
-    awk '
-    BEGIN { skip = 0; data = "" }
-    /^\\[\\[package\\]\\]/ {
-        if (data != "" && !skip) print data;
-        skip = 1;
-        data = $$0;
-        next;
-    }
-    data != "" { data = data "\\n" $$0 }
-    # any package that has a "source = " line will not be skipped.
-    /^source = / { skip = 0 }
-    END { if (data != "" && !skip) print data }
-    ' $(location Cargo.lock) > $@
-    """,
-    visibility = ["//tools:__pkg__"],
 )
 
 # cicd license-check.yml runs `bazel run //:license-check` (see .github/workflows/license_check.yml).
