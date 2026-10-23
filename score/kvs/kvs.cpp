@@ -125,7 +125,7 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
     return *this;
 }
 
-score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data) noexcept
+score::Result<KvsMap> Kvs::parse_json_data(const std::string& data) noexcept
 {
     auto any_res = parser_->FromBuffer(data);
     if (!any_res)
@@ -134,38 +134,34 @@ score::Result<Kvs::KeyValueMap> Kvs::parse_json_data(const std::string& data) no
     }
 
     score::json::Any root = std::move(any_res).value();
-    auto obj = root.As<score::json::Object>();
-    if (!obj.has_value())
+    auto conv = any_to_kvsvalue(root);
+    if (!conv)
+    {
+        return score::MakeUnexpected(static_cast<ErrorCode>(*conv.error()));
+    }
+    if (conv->getType() != KvsValue::Type::Object)
     {
         return score::MakeUnexpected(ErrorCode::JsonParserError);
     }
 
-    KeyValueMap result_value;
-    for (const auto& element : obj.value().get())
+    const auto& object = std::get<KvsValue::Object>(conv->getValue());
+    KvsMap map;
+    map.reserve(object.size());
+    for (const auto& [key, value] : object)
     {
-        auto sv = element.first.GetAsStringView();
-        std::string key(sv.data(), sv.size());
-
         // Validate key.
-        if (!is_key_valid(sv))
+        if (!is_key_valid(key))
         {
             logger_->LogError() << "Provided key is not valid" << key;
             return score::MakeUnexpected(ErrorCode::InvalidKey);
         }
-
-        auto conv = any_to_kvsvalue(element.second);
-        if (!conv)
-        {
-            return score::MakeUnexpected(static_cast<ErrorCode>(*conv.error()));
-        }
-        result_value.emplace(std::move(key), std::move(conv.value()));
+        map.emplace(key, value);
     }
 
-    return result_value;
+    return map;
 }
 
-score::Result<Kvs::KeyValueMap> Kvs::open_json(const score::filesystem::Path& prefix,
-                                               const OpenJsonNeedFile need_file) noexcept
+score::Result<KvsMap> Kvs::open_json(const score::filesystem::Path& prefix, const OpenJsonNeedFile need_file) noexcept
 {
     score::filesystem::Path json_file = prefix.Native() + ".json";
     score::filesystem::Path hash_file = prefix.Native() + ".hash";
@@ -182,7 +178,7 @@ score::Result<Kvs::KeyValueMap> Kvs::open_json(const score::filesystem::Path& pr
         else
         {
             logger_->LogInfo() << "file" << json_file << "not found, using empty data";
-            return KeyValueMap{};
+            return KvsMap{};
         }
     }
 
@@ -230,7 +226,7 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
 
     Kvs kvs;
     kvs.max_storage_bytes_ = max_storage_bytes;
-    score::Result<KeyValueMap> default_res{};
+    score::Result<KvsMap> default_res{};
 
     if (need_defaults != OpenNeedDefaults::Ignored)
     {
@@ -245,7 +241,7 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
         return score::MakeUnexpected(static_cast<ErrorCode>(*default_res.error()));
     }
 
-    score::Result<KeyValueMap> kvs_res{};
+    score::Result<KvsMap> kvs_res{};
 
     if (need_kvs != OpenNeedKvs::Ignored)
     {
@@ -388,6 +384,13 @@ score::Result<void> Kvs::set_value(const std::string_view key, const KvsValue& v
     {
         logger_->LogError() << "Provided key is not valid" << key;
         return score::MakeUnexpected(ErrorCode::InvalidKey);
+    }
+
+    // Validate value.
+    if (!has_unique_keys(value))
+    {
+        logger_->LogError() << "Provided value has duplicate object keys" << key;
+        return score::MakeUnexpected(ErrorCode::InvalidValueType);
     }
 
     std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
@@ -653,7 +656,7 @@ score::Result<void> Kvs::write_json_data(const std::string& buf) noexcept
 
 score::Result<std::string> Kvs::serialize_and_check() noexcept
 {
-    score::json::Object root_obj;
+    score::json::Any root_obj;
 
     // 1. Serialize the current KVS map.
     {
@@ -662,15 +665,13 @@ score::Result<std::string> Kvs::serialize_and_check() noexcept
         {
             return score::MakeUnexpected(ErrorCode::MutexLockFailed);
         }
-        for (const auto& [key, value] : kvs_)
+
+        auto conv = kvsvalue_to_any(kvs_);
+        if (!conv)
         {
-            auto conv = kvsvalue_to_any(value);
-            if (!conv)
-            {
-                return score::MakeUnexpected<std::string>(conv.error());
-            }
-            root_obj.emplace(key, std::move(conv.value()));
+            return score::MakeUnexpected<std::string>(conv.error());
         }
+        root_obj = std::move(conv.value());
     }
 
     auto buf_res = writer_->ToBuffer(root_obj);

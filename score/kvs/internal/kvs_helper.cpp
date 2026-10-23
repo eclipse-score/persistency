@@ -13,8 +13,40 @@
 
 #include "kvs_helper.hpp"
 
+#include <string_view>
+#include <unordered_set>
+
 namespace score::mw::per::kvs
 {
+
+namespace
+{
+
+/// Converts object members to `{"t": "obj", "v": <object>}`, failing on a duplicate key.
+template <typename Members>
+score::Result<score::json::Any> object_to_any(const Members& members) noexcept
+{
+    score::json::Object inner_obj;
+    for (const auto& [key, value] : members)
+    {
+        auto conv = kvsvalue_to_any(value);
+        if (!conv)
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+        if (!inner_obj.emplace(key, std::move(conv.value())).second)
+        {
+            return score::MakeUnexpected(ErrorCode::InvalidValueType);
+        }
+    }
+
+    score::json::Object obj;
+    obj.emplace("t", score::json::Any(std::string("obj")));
+    obj.emplace("v", score::json::Any(std::move(inner_obj)));
+    return score::json::Any(std::move(obj));
+}
+
+}  // namespace
 
 // Optimized version: processes data in blocks to reduce modulo operations.
 uint32_t calculate_hash_adler32(const std::string& data) noexcept
@@ -284,19 +316,7 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) noexcept
         }
         case KvsValue::Type::Object:
         {
-            obj.emplace("t", score::json::Any(std::string("obj")));
-            score::json::Object inner_obj;
-            for (const auto& [key, value] : std::get<KvsValue::Object>(kv.getValue()))
-            {
-                auto conv = kvsvalue_to_any(value);
-                if (!conv)
-                {
-                    return score::MakeUnexpected(ErrorCode::InvalidValueType);
-                }
-                inner_obj.emplace(key, std::move(conv.value()));
-            }
-            obj.emplace("v", score::json::Any(std::move(inner_obj)));
-            break;
+            return kvsvalue_to_any(std::get<KvsValue::Object>(kv.getValue()));
         }
         default:
         {
@@ -305,6 +325,52 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) noexcept
     }
 
     return score::json::Any(std::move(obj));
+}
+
+score::Result<score::json::Any> kvsvalue_to_any(const KvsValue::Object& object) noexcept
+{
+    return object_to_any(object);
+}
+
+score::Result<score::json::Any> kvsvalue_to_any(const KvsMap& map) noexcept
+{
+    return object_to_any(map);
+}
+
+bool has_unique_keys(const KvsValue& value) noexcept
+{
+    switch (value.getType())
+    {
+        case KvsValue::Type::Array:
+        {
+            for (const auto& elem : std::get<KvsValue::Array>(value.getValue()))
+            {
+                if (!has_unique_keys(elem))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        case KvsValue::Type::Object:
+        {
+            const auto& object = std::get<KvsValue::Object>(value.getValue());
+            std::unordered_set<std::string_view> keys;
+            keys.reserve(object.size());
+            for (const auto& [key, member] : object)
+            {
+                if (!keys.insert(key).second || !has_unique_keys(member))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        default:
+        {
+            return true;
+        }
+    }
 }
 
 }  // namespace score::mw::per::kvs
