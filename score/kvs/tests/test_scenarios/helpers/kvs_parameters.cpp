@@ -20,7 +20,9 @@ namespace
 
 /// @brief Deserializes a load parameter: "defaults" or "kvs_load".
 template <typename T,
-          typename std::enable_if_t<std::is_same_v<T, score::mw::per::kvs::OpenNeedDefaults> || std::is_same_v<T, score::mw::per::kvs::OpenNeedKvs>, bool> = true>
+          typename std::enable_if_t<std::is_same_v<T, score::mw::per::kvs::OpenNeedDefaults> ||
+                                        std::is_same_v<T, score::mw::per::kvs::OpenNeedKvs>,
+                                    bool> = true>
 std::optional<T> deserialize_load_param(const score::json::Object& obj_root, const std::string& field_name)
 {
     if (obj_root.find(field_name) != obj_root.end())

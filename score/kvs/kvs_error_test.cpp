@@ -13,8 +13,9 @@
 
 #include "kvs_general_test.hpp"
 
-namespace {
-    constexpr score::mw::per::kvs::KvsErrorDomain kvs_error_domain;
+namespace
+{
+constexpr score::mw::per::kvs::KvsErrorDomain kvs_error_domain;
 }
 
 TEST(kvs_MessageFor, MessageFor)

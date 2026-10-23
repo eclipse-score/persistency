@@ -28,10 +28,10 @@
 #include "score/kvs/kvsbuilder.hpp"
 #undef private
 #undef final
-#include "score/kvs/internal/kvs_helper.hpp"
 #include "score/filesystem/filesystem_mock.h"
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
+#include "score/kvs/internal/kvs_helper.hpp"
 using namespace score::mw::per::kvs;
 
 uint32_t adler32(const std::string& data);
@@ -40,16 +40,21 @@ void cleanup_environment();
 void cleanup_environment(const std::string& dir);
 void store(const std::string& path, const std::string& hashPath, const std::string& data);
 
-inline void prepare_kvs(const std::string& dir, const std::string& prefix,
-                        const std::size_t instanceId, const std::size_t snapshotId)
+inline void prepare_kvs(const std::string& dir,
+                        const std::string& prefix,
+                        const std::size_t instanceId,
+                        const std::size_t snapshotId)
 {
     // Do nothing, end of recursion.
 }
 
 template <typename... TSnapshots>
-inline void prepare_kvs(const std::string& dir, const std::string& prefix,
-                        const std::size_t instanceId, const std::size_t snapshotId,
-                        const std::string& snapshotData, TSnapshots&&... snapshots)
+inline void prepare_kvs(const std::string& dir,
+                        const std::string& prefix,
+                        const std::size_t instanceId,
+                        const std::size_t snapshotId,
+                        const std::string& snapshotData,
+                        TSnapshots&&... snapshots)
 {
     const std::string path{dir + "/" + prefix + std::to_string(instanceId) + "_" + std::to_string(snapshotId)};
     const std::string jsonPath(path + ".json");
@@ -61,8 +66,10 @@ inline void prepare_kvs(const std::string& dir, const std::string& prefix,
 }
 
 template <typename... TSnapshots>
-inline void prepare_environment(const std::string& dir, const std::string& prefix,
-                                const std::size_t instanceId, const std::string& defaultData,
+inline void prepare_environment(const std::string& dir,
+                                const std::string& prefix,
+                                const std::size_t instanceId,
+                                const std::string& defaultData,
                                 TSnapshots&&... snapshots)
 {
     mkdir(dir.c_str(), 0777);

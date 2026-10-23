@@ -296,6 +296,3 @@ safety anomalies in the sense of known bugs in the software are reported in the 
           - The OSS crates ``tinyjson`` and ``adler32`` used by the Rust implementation are not classified. The previous
             classification of Tiny JSON was removed with the change of the architecture to the baselibs JSON interface.
           - Classify the crates or replace them by the baselibs interfaces in the Rust implementation.
-
-
-

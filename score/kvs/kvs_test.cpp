@@ -1476,8 +1476,10 @@ TEST(kvs_write_json_data, write_json_data_set_permissions_failure)
 
     {
         score::os::MockGuard<::testing::NiceMock<score::os::StatMock>> stat_mock;
-        EXPECT_CALL(*stat_mock, fchmod(::testing::_, score::os::Stat::Mode::kReadUser | score::os::Stat::Mode::kWriteUser |
-                                                       score::os::Stat::Mode::kReadGroup))
+        EXPECT_CALL(*stat_mock,
+                    fchmod(::testing::_,
+                           score::os::Stat::Mode::kReadUser | score::os::Stat::Mode::kWriteUser |
+                               score::os::Stat::Mode::kReadGroup))
             .WillOnce(::testing::Return(score::cpp::make_unexpected(score::os::Error::createFromErrno(EPERM))));
         auto result = kvs.write_json_data(new_kvs_json);
         ASSERT_FALSE(result);

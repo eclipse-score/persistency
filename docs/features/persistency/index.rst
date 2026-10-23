@@ -27,5 +27,3 @@ Feature request can be found here: :need:`doc__persistency`
    safety_planning/index.rst
    security_planning/index.rst
    security_analysis/stride.rst
-
-

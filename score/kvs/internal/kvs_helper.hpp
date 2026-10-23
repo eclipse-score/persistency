@@ -13,9 +13,9 @@
 #ifndef SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP
 #define SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP
 
+#include "score/json/json_parser.h"
 #include "score/kvs/error.hpp"
 #include "score/kvs/kvsvalue.hpp"
-#include "score/json/json_parser.h"
 #include <istream>
 #include <string>
 

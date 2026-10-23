@@ -13,11 +13,11 @@
 #ifndef SCORE_LIB_KVS_KVS_HPP
 #define SCORE_LIB_KVS_KVS_HPP
 
-#include "score/kvs/error.hpp"
 #include "kvsvalue.hpp"
 #include "score/filesystem/filesystem.h"
 #include "score/json/json_parser.h"
 #include "score/json/json_writer.h"
+#include "score/kvs/error.hpp"
 #include "score/mw/log/logger.h"
 #include "score/result/result.h"
 #include <atomic>

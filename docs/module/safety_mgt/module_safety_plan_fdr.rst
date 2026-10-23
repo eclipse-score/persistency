@@ -117,4 +117,3 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
           - [YES | NO ]
           - :need:`[[title]] <std_req__iso26262__management_6468>`
           - <Rationale for result>
-

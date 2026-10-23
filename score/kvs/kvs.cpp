@@ -510,7 +510,9 @@ score::Result<size_t> Kvs::get_current_storage_size() noexcept
     return total_size;
 }
 
-score::Result<void> Kvs::write_temp_file(const score::filesystem::Path& path, const void* data, std::size_t size) noexcept
+score::Result<void> Kvs::write_temp_file(const score::filesystem::Path& path,
+                                         const void* data,
+                                         std::size_t size) noexcept
 {
     const score::os::Unistd& unistd = score::os::Unistd::instance();
     const score::filesystem::Path tmp_path = temp_file_path(path);
@@ -698,7 +700,7 @@ score::Result<std::string> Kvs::serialize_and_check() noexcept
         if (total_size > max_storage_bytes_.value())
         {
             logger_->LogError() << "error: KVS storage limit would be exceeded. total_size:" << total_size
-                               << "max_storage_bytes:" << max_storage_bytes_.value();
+                                << "max_storage_bytes:" << max_storage_bytes_.value();
             return score::MakeUnexpected(ErrorCode::OutOfStorageSpace);
         }
     }
@@ -869,9 +871,8 @@ score::Result<score::filesystem::Path> Kvs::get_hash_filename(const SnapshotId& 
 
 score::Result<size_t> Kvs::get_storage_file_size() const noexcept
 {
-    const std::array<score::filesystem::Path, 2> paths{
-        score::filesystem::Path{filename_prefix_.Native() + "_0.json"},
-        score::filesystem::Path{filename_prefix_.Native() + "_0.hash"}};
+    const std::array<score::filesystem::Path, 2> paths{score::filesystem::Path{filename_prefix_.Native() + "_0.json"},
+                                                       score::filesystem::Path{filename_prefix_.Native() + "_0.hash"}};
 
     size_t total_size = 0;
     for (const auto& path : paths)
