@@ -10,8 +10,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SNAPSHOTS_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SNAPSHOTS_H
 
-#include "scenario.hpp"
+#include <scenario.hpp>
 
-ScenarioGroup::Ptr multiple_kvs_group();
+ScenarioGroup::Ptr SnapshotsGroup();
+
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SNAPSHOTS_H

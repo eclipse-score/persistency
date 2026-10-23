@@ -11,35 +11,36 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "helpers/kvs_instance.hpp"
-#include "score/kvs/kvsbuilder.hpp"
+#include "helpers/kvs_instance.h"
 
-score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params)
+#include "score/kvs/kvs_builder.h"
+
+score::mw::per::kvs::Kvs KvsInstance(const KvsParameters& params)
 {
     using namespace score::mw::per::kvs;
     InstanceId instance_id{params.instance_id};
     KvsBuilder builder{instance_id};
 
     // Set parameters.
-    if (params.need_defaults.has_value())
+    if (params.defaults.has_value())
     {
-        builder = builder.need_defaults_flag(*params.need_defaults);
+        builder = builder.Defaults(*params.defaults);
     }
-    if (params.need_kvs.has_value())
+    if (params.kvs_load.has_value())
     {
-        builder = builder.need_kvs_flag(*params.need_kvs);
+        builder = builder.KvsLoad(*params.kvs_load);
     }
     if (params.dir.has_value())
     {
-        builder = builder.dir(std::string(*params.dir));
+        builder = builder.WorkingDir(std::string(*params.dir));
     }
     if (params.snapshot_max_count.has_value())
     {
-        builder = builder.snapshot_max_count(*params.snapshot_max_count);
+        builder = builder.SnapshotMaxCount(*params.snapshot_max_count);
     }
 
     // Build KVS instance.
-    auto build_result{builder.build()};
+    auto build_result{builder.Build()};
     if (build_result)
     {
         return std::move(*build_result);

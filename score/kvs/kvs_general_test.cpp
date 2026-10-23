@@ -11,10 +11,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "kvs_general_test.hpp"
+#include "score/kvs/kvs_general_test.h"
 
 /// @brief Independent Adler-32 implementation to check the KVS hash against.
-uint32_t adler32(const std::string& data)
+uint32_t Adler32(const std::string& data)
 {
     const uint32_t mod = 65521;
     uint32_t a = 1, b = 0;
@@ -26,49 +26,49 @@ uint32_t adler32(const std::string& data)
     return (b << 16) | a;
 }
 
-void store(const std::string& filePath, const std::string& hashPath, const std::string& data)
+void Store(const std::string& file_path, const std::string& hash_path, const std::string& data)
 {
-    const uint32_t dataHash{adler32(data)};
+    const uint32_t data_hash{Adler32(data)};
 
-    std::ofstream file(filePath);
+    std::ofstream file(file_path);
     if (file.is_open())
     {
         file << data;
         file.close();
     }
 
-    std::ofstream hashFile(hashPath, std::ios::binary);
-    if (hashFile.is_open())
+    std::ofstream hash_file(hash_path, std::ios::binary);
+    if (hash_file.is_open())
     {
-        hashFile.put((dataHash >> 24) & 0xFF);
-        hashFile.put((dataHash >> 16) & 0xFF);
-        hashFile.put((dataHash >> 8) & 0xFF);
-        hashFile.put(dataHash & 0xFF);
-        hashFile.close();
+        hash_file.put((data_hash >> 24) & 0xFF);
+        hash_file.put((data_hash >> 16) & 0xFF);
+        hash_file.put((data_hash >> 8) & 0xFF);
+        hash_file.put(data_hash & 0xFF);
+        hash_file.close();
     }
 }
 
 /// @brief Creates the test environment with default data, which is needed in most test cases.
-void prepare_environment()
+void PrepareEnvironment()
 {
     // Prepare the test environment.
-    mkdir(data_dir.c_str(), 0777);
+    mkdir(kDataDir.c_str(), 0777);
 
-    const std::string default_json_path(default_prefix + ".json");
-    const std::string default_hash_path(default_prefix + ".hash");
-    const std::string kvs_json_path(kvs_prefix + ".json");
-    const std::string kvs_hash_path(kvs_prefix + ".hash");
+    const std::string default_json_path(kDefaultPrefix + ".json");
+    const std::string default_hash_path(kDefaultPrefix + ".hash");
+    const std::string kvs_json_path(kKvsPrefix + ".json");
+    const std::string kvs_hash_path(kKvsPrefix + ".hash");
 
-    store(default_json_path, default_hash_path, default_json);
-    store(kvs_json_path, kvs_hash_path, kvs_json);
+    Store(default_json_path, default_hash_path, kDefaultJson);
+    Store(kvs_json_path, kvs_hash_path, kKvsJson);
 }
 
-void cleanup_environment()
+void CleanupEnvironment()
 {
-    cleanup_environment(data_dir);
+    CleanupEnvironment(kDataDir);
 }
 
-void cleanup_environment(const std::string& dir)
+void CleanupEnvironment(const std::string& dir)
 {
     // Cleanup the test environment.
     if (std::filesystem::exists(dir))
