@@ -18,14 +18,9 @@ on:
     types: [opened, reopened, synchronize]
   merge_group:
     types: [checks_requested]
-  push:
-    branches:
-      - main
-  release:
-    types: [published]
 
 jobs:
   common:
-    uses: eclipse-score/cicd-workflows/.github/workflows/on-pr.yml@77760ad7cdb83fbb157dffa3ba30cc60fe0e141e # v0.0.3-28-g77760ad
+    uses: eclipse-score/cicd-workflows/.github/workflows/on-pr.yml@f77ed751fa587e3a1142b2d85320917e00c888ae # v0.0.3-32-g8ab7396
     permissions:
       contents: read

@@ -20,26 +20,34 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 jobs:
   qnx-build:
-    # Run pushes to the main branch ||
-    # same-repository PRs without approval ||
-    # fork PRs through pull_request_target for approval
-    if: >-
-      (github.event_name == 'push') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@77760ad7cdb83fbb157dffa3ba30cc60fe0e141e # v0.0.3-28-g77760ad
+    # Job-level `if` has no access to `env`, so the clauses are kept one per line.
+    # 1. pushes to main
+    # 2. manual dispatch (e.g. on a Dependabot branch, which gets no secrets itself)
+    # 3. same-repository PRs without approval, except Dependabot (no access to Actions secrets)
+    # 4. fork PRs through pull_request_target for approval
+    if: |-
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+        github.actor != 'dependabot[bot]' &&
+        github.event.pull_request.head.repo.full_name == github.repository) ||
+      (github.event_name == 'pull_request_target' &&
+        github.event.pull_request.head.repo.full_name != github.repository)
+    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@8ab73967470fa41977dd1c1102d03719b2e2c7e2 # v0.0.3-32-g8ab7396
     permissions:
       contents: read
       pull-requests: read
     strategy:
       matrix:
-        config: ['per-x86_64-qnx', 'per-arm64-qnx']
+        config: ['score-qnx-x86_64', 'score-qnx-aarch64']
     with:
       bazel-target: >-
         //score/kvs //score/kvs/rust_kvs:rust_kvs //score/kvs/rust_kvs_tool:kvs_tool
       bazel-config: ${{ matrix.config }}
       extra-bazel-flags: '--lockfile_mode=error'
-      credential-helper: 'tools/qnx_credential_helper.py'
       environment-name: 'workflow-approval'
     secrets:
       score-qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}

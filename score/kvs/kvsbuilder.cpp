@@ -10,19 +10,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
+
 #include "score/kvs/kvsbuilder.hpp"
 
 namespace score::mw::per::kvs
 {
 
-/*********************** KVS Builder Implementation *********************/
 KvsBuilder::KvsBuilder(const InstanceId& instance_id) noexcept
     : instance_id_(instance_id),
       snapshot_id_(SnapshotId{0}),
       need_defaults_(OpenNeedDefaults::Optional),
       need_kvs_(OpenNeedKvs::Optional),
-      directory_("./data_folder/"),         /* Default Directory */
-      maximum_storage_bytes_(std::nullopt), /* No storage limit by default */
+      directory_("./data_folder/"),
+      maximum_storage_bytes_(std::nullopt),
       max_snapshots_(KVS_DEFAULT_MAX_SNAPSHOTS)
 {
 }
@@ -65,7 +65,7 @@ KvsBuilder& KvsBuilder::snapshot_max_count(std::size_t max_count) noexcept
 
 score::Result<Kvs> KvsBuilder::build() noexcept
 {
-    /* Use current directory if empty */
+    // Use current directory if empty.
     if ("" == directory_)
     {
         directory_ = "./";
@@ -80,4 +80,4 @@ score::Result<Kvs> KvsBuilder::build() noexcept
                      max_snapshots_);
 }
 
-} /* namespace score::mw::per::kvs */
+}  // namespace score::mw::per::kvs

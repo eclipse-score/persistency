@@ -18,14 +18,23 @@ on: workflow_dispatch
 jobs:
   qnx-kvs-test:
     name: Build & Run QNX Integration Scenario
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    permissions:
+      contents: read
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
 
-      - name: Setup Bazel
-        uses: bazel-contrib/setup-bazel@0.14.0
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Bazel with shared caching
+        uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
+        with:
+          disk-cache-key: ${{ github.job }}
+
+      # Needs bazel on PATH: the action resolves `bazel info install_base`.
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@30740c18c728bc58f9b17c914c5592a5008f6b98 # main branch (2026-10-12)
 
       - name: Setup QNX License
         env:
@@ -42,7 +51,7 @@ jobs:
           bazel build --lockfile_mode=error //score/kvs/tests/integration_test_scenarios:init \
             --platforms=@score_toolchains_rust//platforms:aarch64-unknown-qnx8_0 \
             --features=-dependency_file \
-            --credential_helper=*.qnx.com=${{ github.workspace }}/tools/qnx_credential_helper.py
+            --credential_helper=*.qnx.com=${{ github.workspace }}/.github/tools/qnx_credential_helper.py
 
       - name: Run QEMU Integration Test
         run: |

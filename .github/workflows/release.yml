@@ -42,19 +42,21 @@ jobs:
   # ---------------------------------------------------------------------------
   prepare-release:
     if: github.event_name == 'workflow_dispatch' && !inputs.dry_run
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
     permissions:
       contents: write
     outputs:
       tag: ${{ steps.create-tag.outputs.tag }}
     steps:
+      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+
       - name: Validate version format
         run: |
           echo "${{ inputs.version }}" | grep -qP '^\d+\.\d+\.\d+$' || \
           (echo "ERROR: Invalid version '${{ inputs.version }}'. Use X.Y.Z format." && exit 1)
 
       - name: Checkout Repository
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
@@ -89,11 +91,15 @@ jobs:
     if: |
       github.event_name == 'release' ||
       (github.event_name == 'workflow_dispatch' && (inputs.dry_run || needs.prepare-release.result != 'failure'))
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
     permissions:
       contents: write
 
     steps:
+      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+        with:
+          level: 4
+
       - name: Validate version format (workflow_dispatch only)
         if: github.event_name == 'workflow_dispatch'
         run: |
@@ -101,7 +107,7 @@ jobs:
           (echo "ERROR: Invalid version '${{ inputs.version }}'. Use X.Y.Z format." && exit 1)
 
       - name: Checkout Repository
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # dry_run: check out main (tag doesn't exist yet / won't be created)
           # real release via dispatch: check out the newly created tag
@@ -127,24 +133,24 @@ jobs:
           fi
 
       - name: Setup Bazel with shared caching
-        uses: bazel-contrib/setup-bazel@0.19.0
+        uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
         with:
-          disk-cache: true
-          repository-cache: true
-          bazelisk-cache: true
-          cache-save: ${{ github.event_name == 'push' }}
+          disk-cache-key: ${{ github.job }}
+
+      # Needs bazel on PATH: the action resolves `bazel info install_base`.
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@30740c18c728bc58f9b17c914c5592a5008f6b98 # main branch (2026-10-12)
 
       - name: Build via Bazel
         run: |
           set -euo pipefail
-          echo "Running: bazel build --lockfile_mode=error --config=per-x86_64-linux //score/..."
-          bazel build --lockfile_mode=error --config=per-x86_64-linux //score/...
+          echo "Running: bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/..."
+          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/...
 
       - name: Run Unit Tests via Bazel
         run: |
           set -euo pipefail
-          echo "Running: bazel test --lockfile_mode=error --config=per-x86_64-linux //:unit_tests"
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //:unit_tests
+          echo "Running: bazel test --lockfile_mode=error --config=score-linux-x86_64 //:unit_tests"
+          bazel test --lockfile_mode=error --config=score-linux-x86_64 //:unit_tests
 
       - name: Run unified Rust + C++ coverage
         run: |
@@ -173,7 +179,7 @@ jobs:
           zip -r ${{ github.event.repository.name }}_coverage_report_${RELEASE_VERSION}${ARTIFACT_SUFFIX}.zip artifacts/
 
       - name: Upload artifacts (workflow artifact — always, including dry runs)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ github.event.repository.name }}_coverage_report_${{ env.RELEASE_VERSION }}${{ env.ARTIFACT_SUFFIX }}
           path: artifacts/
@@ -182,7 +188,7 @@ jobs:
         if: |
           github.event_name == 'release' ||
           (github.event_name == 'workflow_dispatch' && !inputs.dry_run)
-        uses: softprops/action-gh-release@v2.5.0
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           tag_name: >-
             ${{

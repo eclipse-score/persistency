@@ -54,7 +54,7 @@ Object get_object(const std::string& data)
 }
 }  // namespace
 
-class SnapshotCount : public Scenario
+class SnapshotCount final : public Scenario
 {
   public:
     ~SnapshotCount() final = default;
@@ -108,7 +108,7 @@ class SnapshotCount : public Scenario
     }
 };
 
-class SnapshotMaxCount : public Scenario
+class SnapshotMaxCount final : public Scenario
 {
   public:
     ~SnapshotMaxCount() final = default;
@@ -127,7 +127,7 @@ class SnapshotMaxCount : public Scenario
     }
 };
 
-class SnapshotRestore : public Scenario
+class SnapshotRestore final : public Scenario
 {
   public:
     ~SnapshotRestore() final = default;
@@ -184,7 +184,7 @@ class SnapshotRestore : public Scenario
     }
 };
 
-class SnapshotPaths : public Scenario
+class SnapshotPaths final : public Scenario
 {
   public:
     ~SnapshotPaths() final = default;

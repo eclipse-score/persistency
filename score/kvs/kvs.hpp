@@ -31,167 +31,130 @@
 namespace score::mw::per::kvs
 {
 
-/* comp_req__kvs__key_length: Maximum allowed key length in bytes. */
+/// @brief Maximum allowed key length in bytes.
+/// @note comp_req__kvs__key_length
 constexpr std::size_t KVS_MAX_KEY_LENGTH_BYTES = 32U;
 
-/* comp_req__kvs__snapshot_max_num_cfg: the configurable maximum number of snapshots is
-   limited to the range 0..KVS_MAX_SNAPSHOTS_UPPER_BOUND. A value of 0 disables snapshot
-   operations. */
+/// @brief Upper bound of the configurable maximum number of snapshots.
+///
+/// The configurable maximum number of snapshots is limited to the range 0..KVS_MAX_SNAPSHOTS_UPPER_BOUND.
+/// A value of 0 disables snapshot operations.
+/// @note comp_req__kvs__snapshot_max_num_cfg
 constexpr std::size_t KVS_MAX_SNAPSHOTS_UPPER_BOUND = 3U;
 
-/* comp_req__kvs__snapshot_max_num_cfg: default maximum number of snapshots. It can be
-   overridden per instance at init-time via KvsBuilder::snapshot_max_count(). */
+/// @brief Default maximum number of snapshots.
+///
+/// It can be overridden per instance at init-time via KvsBuilder::snapshot_max_count().
+/// @note comp_req__kvs__snapshot_max_num_cfg
 constexpr std::size_t KVS_DEFAULT_MAX_SNAPSHOTS = 3U;
 
+/// @brief Identifier of a KVS instance.
 struct InstanceId
 {
+    /// Numeric value of the identifier.
     size_t id;
 
-    /* Constructor to initialize 'id' */
-    /* Not explicit to allow implicit construction e.g. function(0) instead function(InstanceId(0))
-     */
+    /// @brief Constructs an instance identifier.
+    ///
+    /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(InstanceId(0))`.
+    /// @param id Numeric value of the identifier.
     InstanceId(size_t id) noexcept
     {
         this->id = id;
     }
 };
 
+/// @brief Identifier of a KVS snapshot.
 struct SnapshotId
 {
+    /// Numeric value of the identifier.
     size_t id;
 
-    /* Constructor to initialize 'id'*/
-    /* Not explicit to allow implicit construction e.g. function(0) instead function(SnapshotId(0))
-     */
+    /// @brief Constructs a snapshot identifier.
+    ///
+    /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(SnapshotId(0))`.
+    /// @param id Numeric value of the identifier.
     SnapshotId(size_t id) noexcept
     {
         this->id = id;
     }
 };
 
-/* Need-Defaults flag*/
+/// @brief Whether default values must be available when opening a KVS.
 enum class OpenNeedDefaults : std::uint8_t
 {
-    Required = 0, /* Required: Defaults must be available*/
-    Optional = 1, /* Optional: Use an empty defaults Storage if not available*/
-    Ignored  = 2, /* Ignored:  Defaults are not loaded*/
+    /// Defaults must be available.
+    Required = 0,
+    /// Use empty defaults if none are available.
+    Optional = 1,
+    /// Defaults are not loaded.
+    Ignored = 2,
 };
 
-/* Need-KVS flag*/
+/// @brief Whether KVS data must already exist when opening a KVS.
 enum class OpenNeedKvs : std::uint8_t
 {
-    Required = 0, /* Required: KVS must be already exist*/
-    Optional = 1, /* Optional: Use an empty KVS if no KVS is available*/
-    Ignored  = 2, /* Ignored:  KVS is not loaded*/
+    /// KVS data must already exist.
+    Required = 0,
+    /// Use an empty KVS if no KVS data is available.
+    Optional = 1,
+    /// KVS data is not loaded.
+    Ignored = 2,
 };
 
-/* Need-File flag */
+/// @brief Whether a JSON file must exist when it is opened.
 enum class OpenJsonNeedFile : std::uint8_t
 {
-    Required = 0, /* Required: The file must already exist */
-    Optional = 1, /* Optional: If the file doesn't exist, start with empty data */
+    /// The file must already exist.
+    Required = 0,
+    /// If the file doesn't exist, start with empty data.
+    Optional = 1,
 };
 
-/**
- * @class Kvs
- * @brief A thread-safe key-value store (KVS) CPP Class.
- *
- * The Kvs class provides an interface for managing a key-value store with features such as:
- * - Support for default values.
- * - Snapshot management for persistence and restoration.
- *
- *
- * Public Methods:
- * - `open`: Opens the KVS with a specified instance ID and flags.
- * - `reset`: Resets the KVS to its initial state.
- * - `get_all_keys`: Retrieves all keys stored in the KVS (only written keys, not defaults).
- * - `key_exists`: Checks if a specific key exists in the KVS (only written keys).
- * - `get_value`: Retrieves the value associated with a specific key (returns default if not
- * written).
- * - `get_default_value`: Retrieves the default value associated with a specific key.
- * - `reset_key`: Resets a key to its default value if available.
- * - `is_value_default`: Checks if a default value exists for a specific key.
- * - `set_value`: Sets the value for a specific key in the KVS.
- * - `remove_key`: Removes a specific key from the KVS.
- * - `remove_all_keys`: Removes all keys from the KVS.
- * - `discard_pending_changes`: Drops all in-memory changes made since the last flush or since open.
- * - `flush`: Flushes the KVS to storage.
- * - `flush_default`: Flushes the default values to storage.
- * - `snapshot_count`: Retrieves the number of available snapshots.
- * - `snapshot_max_count`: Retrieves the maximum number of snapshots allowed.
- * - `snapshot_restore`: Restores the KVS from a specified snapshot.
- * - `get_kvs_filename`: Retrieves the filename (path) associated with a snapshot.
- * - `get_hash_filename`: Retrieves the hashname (path) associated with a snapshot.
- * - `get_storage_file_size`: Retrieves the size in bytes of the persisted KVS data and hash files.
- *
- * Private Methods:
- * - `snapshot_rotate`: Rotates the snapshots, ensuring that the maximum count is maintained.
- * - `parse_json_data`: Parses JSON data into an unordered map of key-value pairs.
- * - `open_json`: Opens a JSON file and returns its contents as an unordered map of key-value pairs.
- * - `write_json_data`: Writes the provided data to a JSON file.
- *
- * Private Members:
- * - `kvs_mutex`: A mutex for ensuring thread safety.
- * - `kvs`: An unordered map for storing key-value pairs.
- * - `default_mutex`: A mutex for default value operations.
- * - `default_values`: An unordered map for storing optional default values.
- * - `filename_prefix`: A path prefix for filenames associated with snapshots.
- * - `filesystem`: A unique pointer to a filesystem handler for file operations.
- * - `parser`: A unique pointer to a JSON parser for reading KVS data.
- * - `writer`: A unique pointer to a JSON writer for writing KVS data.
- *
- * ----------------Notice----------------
- * - `void` should be used instead of the deprecated blank Result alias.
- * A KVS Object is not copyable, but it can be moved.
- *
- */
-
+/// @brief A thread-safe key-value store (KVS).
+///
+/// The Kvs class provides an interface for managing a key-value store with features such as:
+/// - Support for default values.
+/// - Snapshot management for persistence and restoration.
+///
+/// @note A Kvs object is not copyable, but it can be moved.
 class Kvs final
 {
   public:
+    /// @brief Map of keys to their values.
     using KeyValueMap = std::unordered_map<std::string, KvsValue>;
 
-    // Deleted copy constructor and assignment operator to prevent copying
     Kvs(const Kvs&) = delete;
     Kvs& operator=(const Kvs&) = delete;
 
-    // Default move constructor and assignment operator
+    /// @brief Move constructor.
     Kvs(Kvs&& other) noexcept;
+
+    /// @brief Move assignment operator.
     Kvs& operator=(Kvs&& other) noexcept;
 
-    /**
-     * @brief Opens the key-value store with the specified instance ID and flags.
-     *
-     * This function initializes and opens the key-value store (KVS) for a given instance ID.
-     * It allows the caller to specify whether default values and an existing KVS are required
-     * or optional during the opening process.
-     *
-     * @param instance_id The instance ID of the KVS. This uniquely identifies the KVS instance.
-     * @param snapshot_id The snapshot ID of the KVS. This uniquely identifies the KVS snapshot.
-     * @param need_defaults A flag of type OpenNeedDefaults indicating whether default values
-     *                      are required or optional.
-     *                      - OpenNeedDefaults::Required: Default values must be available.
-     *                      - OpenNeedDefaults::Optional: Default values are optional.
-     * @param need_kvs A flag of type OpenNeedKvs indicating whether the KVS is required or
-     * optional.
-     *                 - OpenNeedKvs::Required: The KVS must already exist.
-     *                 - OpenNeedKvs::Optional: An empty KVS will be used if no KVS exists.
-     * @param dir The directory path where the KVS files are located. It is passed as an rvalue
-     * reference to avoid unnecessary copying. Use "" or "." for the current directory.
-     * @param max_storage_bytes Optional maximum total storage size in bytes. Pass std::nullopt
-     *                          to enforce no storage limit.
-     * @param snapshot_max_count The maximum number of snapshots this instance maintains.
-     *                           Values above KVS_MAX_SNAPSHOTS_UPPER_BOUND are clamped to it
-     *                           (a warning is logged). A value of 0 disables snapshot
-     *                           operations; the current KVS data is still persisted by flush().
-     * @return A Result object containing either:
-     *         - A Kvs object if the operation is successful.
-     *         - An ErrorCode if an error occurs during the operation.
-     *
-     * IMPORTANT: Instead of using the Kvs::open method directly, it is recommended to use the
-     * KvsBuilder class.
-     *
-     */
+    /// @brief Opens the key-value store with the specified instance ID and flags.
+    ///
+    /// This function initializes and opens the key-value store (KVS) for a given instance ID.
+    /// It lets the caller specify whether default values and an existing KVS are required or optional.
+    ///
+    /// @note Instead of using Kvs::open() directly, it is recommended to use the KvsBuilder class.
+    ///
+    /// @param instance_id The instance ID of the KVS.
+    /// This uniquely identifies the KVS instance.
+    /// @param snapshot_id The snapshot ID of the KVS.
+    /// This uniquely identifies the KVS snapshot.
+    /// @param need_defaults Whether default values are required, optional or ignored.
+    /// @param need_kvs Whether the KVS data is required, optional or ignored.
+    /// @param dir The directory path where the KVS files are located.
+    /// Use "" or "." for the current directory.
+    /// @param max_storage_bytes Optional maximum total storage size in bytes.
+    /// Pass std::nullopt to enforce no storage limit.
+    /// @param snapshot_max_count The maximum number of snapshots this instance maintains.
+    /// Values above KVS_MAX_SNAPSHOTS_UPPER_BOUND are clamped to it (a warning is logged).
+    /// A value of 0 disables snapshot operations.
+    /// The current KVS data is still persisted by flush().
+    /// @return The opened Kvs object on success, or an ErrorCode on failure.
     static score::Result<Kvs> open(const InstanceId& instance_id,
                                    const SnapshotId& snapshot_id,
                                    const OpenNeedDefaults& need_defaults,
@@ -200,292 +163,214 @@ class Kvs final
                                    const std::optional<size_t>& max_storage_bytes,
                                    std::size_t snapshot_max_count) noexcept;
 
-    /**
-     * @brief Resets a key-value-storage to its initial state
-     *
-     */
+    /// @brief Resets the key-value store to its initial state.
+    /// @return Nothing on success, or an ErrorCode on failure.
     score::Result<void> reset() noexcept;
 
-    /**
-     * @brief Retrieves all keys stored in the key-value store.
-     *        Important: It only retrieves the written keys, no default keys are returned.
-     *
-     * @return score::Result<std::vector<std::string_view>>
-     *         A score::Result object containing a vector of all written keys on success,
-     *         or an Errorcode on failure.
-     */
+    /// @brief Retrieves all keys stored in the key-value store.
+    ///
+    /// It only retrieves the written keys, no default keys are returned.
+    ///
+    /// @return All written keys on success, or an ErrorCode on failure.
     score::Result<std::vector<std::string>> get_all_keys() noexcept;
 
-    /**
-     * @brief Checks if a key exists in the key-value store. If the key was never written it will
-     * always return false even if a default value for the key is available.
-     *
-     * @param key The key to check for existence, provided as a std::string_view.
-     * @return score::Result<bool>
-     *         - On success: A score::Result containing `true` if the key exists, or `false` if it
-     * does not.
-     *         - On failure: A score::Result containing an appropriate ErrorCode.
-     */
+    /// @brief Checks if a key exists in the key-value store.
+    ///
+    /// If the key was never written it will always return false, even if a default value for the key is available.
+    ///
+    /// @param key The key to check for existence.
+    /// @return `true` if the key exists and `false` if it does not on success, or an ErrorCode on failure.
     score::Result<bool> key_exists(const std::string_view key) noexcept;
 
-    /**
-     * @brief Retrieves the value associated with the specified key from the key-value store.
-     *        If no Key was written, it returns the default value if available.
-     *
-     * @param key The key for which the value is to be retrieved. It is passed as a string view to
-     * avoid unnecessary copying.
-     * @return A score::Result object containing either the retrieved value (KvsValue) or an
-     * ErrorCode if the operation fails.
-     */
+    /// @brief Retrieves the value associated with the specified key from the key-value store.
+    /// @param key The key for which the value is to be retrieved.
+    /// @return The retrieved value on success, or an ErrorCode on failure.
     score::Result<KvsValue> get_value(const std::string_view key) noexcept;
 
-    /**
-     * @brief Retrieves the default value associated with the specified key.
-     *
-     * This function attempts to fetch the default value for a given key from the
-     * key-value store. If the key exists, the corresponding value is returned.
-     * Otherwise, an error code is provided to indicate the failure reason.
-     *
-     * @param key The key for which the default value is to be retrieved.
-     *            It is passed as a string view to avoid unnecessary string copies.
-     *
-     * @return A score::Result object containing either the default value (KvsValue) if
-     *         the operation is successful, or an ErrorCode indicating the error
-     *         if the operation fails.
-     */
+    /// @brief Retrieves the default value associated with the specified key.
+    ///
+    /// If the key has a default value, the corresponding value is returned.
+    /// Otherwise, an error code is provided to indicate the failure reason.
+    ///
+    /// @param key The key for which the default value is to be retrieved.
+    /// @return The default value on success, or an ErrorCode on failure.
     score::Result<KvsValue> get_default_value(const std::string_view key) noexcept;
 
-    /**
-     * @brief Resets a specified key to its default value.
-     *
-     * This function attempts to reset a key to its default value.
-     * If no default value is available, it returns an ErrorCode and doesn't delete the key.
-     * If no key was ever written, but a default value is available it returns successful.
-     * If a key was written and it has a default value, it deletes the written key.
-     *
-     * @param key The key to be reset to the default value
-     *
-     * @return A score::Result object that indicates the success or failure of the operation.
-     *         - On success: Returns a blank score::Result.
-     *         - On failure: Returns an ErrorCode describing the error.
-     */
+    /// @brief Resets a specified key to its default value.
+    ///
+    /// If no default value is available, it returns an ErrorCode and doesn't delete the key.
+    /// If no key was ever written, but a default value is available, it returns successfully.
+    /// If a key was written and it has a default value, it deletes the written key.
+    ///
+    /// @param key The key to be reset to its default value.
+    /// @return Nothing on success, or an ErrorCode on failure.
     score::Result<void> reset_key(const std::string_view key) noexcept;
 
-    /**
-     * @brief Checks if the specified key wasn't set yet and uses its default value.
-     *
-     * This function determines whether the given key is associated with a default
-     * value in the key-value store.
-     *
-     * @param key The key to check, provided as a string view.
-     * @return score::Result<bool>
-     *         - On success: Returns a score::Result<bool> containing bool if the default value
-     * exists.
-     *         - On failure: Returns a score::Result containing an appropriate ErrorCode.
-     */
+    /// @brief Checks if the specified key wasn't set yet and uses its default value.
+    /// @param key The key to check.
+    /// @return `true` if the key uses its default value on success, or an ErrorCode on failure.
     score::Result<bool> is_value_default(const std::string_view key) const noexcept;
 
-    /**
-     * @brief Stores a key-value pair in the key-value store.
-     *
-     * Features:
-     *   - comp_req__kvs__key_length: The key length is limited to
-     *     KVS_MAX_KEY_LENGTH_BYTES (32) bytes.
-     *
-     * @param key The key associated with the value to be stored.
-     *            It is represented as a string view to avoid unnecessary copying.
-     * @param value The value to be stored, represented as a KvsValue object.
-     *
-     * @return A score::Result object that indicates the success or failure of the operation.
-     *         - On success: Returns a blank score::Result.
-     *         - On failure: Returns ErrorCode::InvalidKey if the key is not valid,
-     *           or another ErrorCode describing the error.
-     */
+    /// @brief Stores a key-value pair in the key-value store.
+    ///
+    /// The key length is limited to KVS_MAX_KEY_LENGTH_BYTES (32) bytes.
+    /// @note comp_req__kvs__key_length
+    ///
+    /// @param key The key associated with the value to be stored.
+    /// @param value The value to be stored.
+    /// @return Nothing on success, ErrorCode::InvalidKey if the key is not valid, or another ErrorCode on failure.
     score::Result<void> set_value(const std::string_view key, const KvsValue& value) noexcept;
 
-    /**
-     * @brief Removes a key-value pair from the store based on the specified key.
-     *
-     * @param key The key of the key-value pair to be removed. It is passed as a
-     *            std::string_view to avoid unnecessary copying.
-     * @return A score::Result object that indicates the success or failure of the operation.
-     *         - On success: Returns a blank score::Result.
-     *         - On failure: Returns an ErrorCode describing the error.
-     */
+    /// @brief Removes a key-value pair from the store based on the specified key.
+    /// @param key The key of the key-value pair to be removed.
+    /// @return Nothing on success, or an ErrorCode on failure.
     score::Result<void> remove_key(const std::string_view key) noexcept;
 
-    /**
-     * @brief Removes all key-value pairs from the store.
-     *
-     * @return A score::Result object that indicates the success or failure of the operation.
-     *         - On success: Returns a blank score::Result.
-     *         - On failure: Returns an ErrorCode describing the error.
-     */
+    /// @brief Removes all key-value pairs from the store.
+    /// @return Nothing on success, or an ErrorCode on failure.
     score::Result<void> remove_all_keys() noexcept;
 
-    /**
-     * @brief Discards all pending changes to the key-value store.
-     *
-     * Reloads the key-value pairs from persistent storage, dropping every change made since the
-     * last successful `flush()` or - if `flush()` was never called - since `open()`.
-     * Default values are not affected, since they are read-only for this instance.
-     *
-     * A store that was opened without an existing KVS file and never flushed discards to empty.
-     *
-     * @return A score::Result object that indicates the success or failure of the operation.
-     *         - On success: Returns a blank score::Result.
-     *         - On failure: Returns an ErrorCode describing the error. Because the persisted data
-     *           is re-read, this includes storage errors such as `KvsHashFileReadError`,
-     *           `ValidationFailed` and `JsonParserError`.
-     */
+    /// @brief Discards all pending changes to the key-value store.
+    ///
+    /// Reloads the key-value pairs from storage, dropping every change since the last successful `flush()`.
+    /// If `flush()` was never called, it drops every change since `open()`.
+    /// Default values are not affected, since they are read-only for this instance.
+    /// A store that was opened without an existing KVS file and never flushed discards to empty.
+    ///
+    /// @return Nothing on success, or an ErrorCode on failure.
+    /// Re-reading persisted data can also fail with `KvsHashFileReadError`, `ValidationFailed` or `JsonParserError`.
     score::Result<void> discard_pending_changes() noexcept;
 
-    /**
-     * @brief Flushes the key-value store, ensuring that all pending changes
-     *        are written to the underlying storage.
-     *
-     * @return A score::Result object that indicates the success or failure of the operation.
-     *         - On success: Returns a blank score::Result.
-     *         - On failure: Returns an ErrorCode describing the error.
-     */
+    /// @brief Flushes the key-value store, writing all pending changes to the underlying storage.
+    /// @return Nothing on success, or an ErrorCode on failure.
     score::Result<void> flush() noexcept;
 
-    /**
-     * @brief Retrieves the number of snapshots currently stored in the key-value store.
-     *
-     * @return A score::Result object that indicates the success or failure of the operation.
-     *         - On success: The total count of snapshots as a size_t value.
-     *         - On failure: Returns an ErrorCode describing the error.
-     */
+    /// @brief Retrieves the number of snapshots currently stored in the key-value store.
+    /// @return The number of snapshots on success, or an ErrorCode on failure.
     score::Result<size_t> snapshot_count() const noexcept;
 
-    /**
-     * @brief Retrieves the maximum number of snapshots that can be stored.
-     *
-     * This function returns the upper limit on the number of snapshots
-     * that the key-value store can maintain at any given time. The limit is
-     * configured per instance via KvsBuilder::snapshot_max_count(), defaults
-     * to KVS_DEFAULT_MAX_SNAPSHOTS and never exceeds KVS_MAX_SNAPSHOTS_UPPER_BOUND.
-     *
-     * @return The maximum count of snapshots as a size_t value.
-     */
+    /// @brief Retrieves the maximum number of snapshots that can be stored.
+    ///
+    /// The limit is configured per instance via KvsBuilder::snapshot_max_count().
+    /// It defaults to KVS_DEFAULT_MAX_SNAPSHOTS and never exceeds KVS_MAX_SNAPSHOTS_UPPER_BOUND.
+    ///
+    /// @return The maximum number of snapshots.
     size_t snapshot_max_count() const noexcept;
 
-    /**
-     * @brief Restores the state of the key-value store from a specified snapshot.
-     *
-     * This function attempts to restore the key-value store to the state
-     * captured in the snapshot identified by the given snapshot ID. If the
-     * restoration process fails, an appropriate error code is returned.
-     *
-     * @param snapshot_id The identifier of the snapshot to restore from.
-    * @return score::Result<void>
-     *         - On success: An empty score::Result indicating the restoration was successful.
-     *         - On failure: An error code describing the reason for the failure.
-     */
+    /// @brief Restores the state of the key-value store from a specified snapshot.
+    /// @param snapshot_id The identifier of the snapshot to restore from.
+    /// @return Nothing on success, or an ErrorCode on failure.
     score::Result<void> snapshot_restore(const SnapshotId& snapshot_id) noexcept;
 
-    /**
-     * @brief Retrieves the filename associated with a given snapshot ID in the key-value store.
-     *
-     * @param snapshot_id The identifier of the snapshot for which the filename is to be retrieved.
-    * @return score::Result<score::filesystem::Path>
-     *         - On success: A score::filesystem::Path with the filename (path) associated with the
-     * snapshot ID.
-     *         - On failure: An error code describing the reason for the failure.
-     */
+    /// @brief Retrieves the filename associated with a given snapshot ID.
+    /// @param snapshot_id The identifier of the snapshot for which the filename is to be retrieved.
+    /// @return The path of the snapshot's KVS file on success, or an ErrorCode on failure.
     score::Result<score::filesystem::Path> get_kvs_filename(const SnapshotId& snapshot_id) const noexcept;
 
-    /**
-     * @brief Retrieves the filename of the hash file associated with a given snapshot ID.
-     *
-     * This function returns a string view representing the filename of the hash file
-     * corresponding to the provided snapshot ID. The hash file is typically used to
-     * store metadata or integrity information for the snapshot.
-     *
-     * @param snapshot_id The identifier of the snapshot for which the hash filename is requested.
-    * @return score::Result<score::filesystem::Path>
-     *         - On success: A score::filesystem::Path with the filename (path) of the hash file
-     * associated with the snapshot ID.
-     *         - On failure: An error code describing the reason for the failure.
-     */
+    /// @brief Retrieves the filename of the hash file associated with a given snapshot ID.
+    ///
+    /// The hash file stores integrity information for the snapshot.
+    ///
+    /// @param snapshot_id The identifier of the snapshot for which the hash filename is requested.
+    /// @return The path of the snapshot's hash file on success, or an ErrorCode on failure.
     score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const noexcept;
 
-    /**
-     * @brief Retrieves the size of the persisted key-value store on disk.
-     *
-     * Returns the combined size in bytes of the current KVS data file and its hash file
-     * (snapshot 0). Rotated snapshots and the defaults files are not included.
-     *
-     * Since the size is read from storage, it reflects the last successful `flush()` and not
-     * any pending in-memory changes. A file that does not exist contributes zero, so a store
-     * that was never flushed reports a size of 0 instead of an error.
-     *
-     * @return A score::Result object that indicates the success or failure of the operation.
-     *         - On success: The combined size of both files in bytes.
-     *         - On failure: `ErrorCode::PhysicalStorageFailure` if a file exists but its size
-     *           cannot be determined.
-     */
+    /// @brief Retrieves the size of the persisted key-value store on disk.
+    ///
+    /// Returns the combined size in bytes of the current KVS data file and its hash file (snapshot 0).
+    /// Rotated snapshots and the defaults files are not included.
+    /// The size is read from storage, so it reflects the last successful `flush()` and not pending in-memory changes.
+    /// A missing file counts as 0 bytes, so a store that was never flushed reports 0 instead of an error.
+    ///
+    /// @return The combined size of both files in bytes on success.
+    /// `ErrorCode::PhysicalStorageFailure` if a file exists but its size cannot be determined.
     score::Result<size_t> get_storage_file_size() const noexcept;
 
-    /**
-     * @brief Performs a 'dry run' to check if the current in-memory store would
-     *        exceed the storage limit upon flushing.
-     *
-     * This function serializes the current key-value data to a temporary buffer
-     * and calculates the potential total storage size. It checks this size against
-     * the configured `max_storage_bytes` limit.
-     *
-     * @return A score::Result object containing either:
-     *         - On success: The estimated total size (size_t) that the KVS would occupy after a flush.
-     *         - On failure: An `OutOfStorageSpace` error if the limit would be exceeded,
-     *           or another ErrorCode for other failures (e.g., serialization).
-     */
+    /// @brief Performs a 'dry run' to check if flushing the in-memory store would exceed the storage limit.
+    ///
+    /// This function serializes the key-value data to a temporary buffer and calculates the potential total size.
+    /// It checks this size against the configured `max_storage_bytes` limit.
+    ///
+    /// @return The estimated total size that the KVS would occupy after a flush on success.
+    /// `OutOfStorageSpace` if the limit would be exceeded.
+    /// Another ErrorCode for other failures (e.g. serialization).
     score::Result<size_t> calculate_potential_size() noexcept;
 
   private:
-    /* Private constructor to prevent direct instantiation */
+    /// @brief Constructs an empty KVS.
+    ///
+    /// Private to prevent direct instantiation, use open() instead.
     Kvs() noexcept;
 
-    /* Internal storage and configuration details.*/
+    /// Mutex guarding `kvs_`.
     std::mutex kvs_mutex_;
+
+    /// Written key-value pairs.
     KeyValueMap kvs_;
 
-    /* Optional default values */
+    /// Default values, fixed after open().
     KeyValueMap default_values_;
 
-    /* Filename prefix */
+    /// Path prefix of the KVS files, including the instance ID.
     score::filesystem::Path filename_prefix_;
 
-    /* comp_req__kvs__snapshot_max_num_cfg: Maximum number of snapshots maintained by this instance */
+    /// Maximum number of snapshots maintained by this instance.
+    /// @note comp_req__kvs__snapshot_max_num_cfg
     std::size_t max_snapshots_;
 
-    /* Filesystem handling */
+    /// Filesystem handler for file operations.
     std::unique_ptr<score::filesystem::Filesystem> filesystem_;
 
-    /* Json handling */
+    /// JSON parser for reading KVS data.
     std::unique_ptr<score::json::IJsonParser> parser_;
+
+    /// JSON writer for writing KVS data.
     std::unique_ptr<score::json::IJsonWriter> writer_;
 
-    /* Logging */
+    /// Logger of this instance.
     std::unique_ptr<score::mw::log::Logger> logger_;
 
-    /* Maximum storage limit in bytes. Unset means no limit is enforced. */
+    /// Maximum storage limit in bytes.
+    /// Unset means no limit is enforced.
     std::optional<size_t> max_storage_bytes_;
 
-    /* Private Methods */
+    /// @brief Rotates the snapshots, ensuring that the maximum count is maintained.
     score::Result<void> snapshot_rotate() noexcept;
+
+    /// @brief Parses JSON data into a map of key-value pairs.
     score::Result<KeyValueMap> parse_json_data(const std::string& data) noexcept;
+
+    /// @brief Opens a JSON file, verifies its hash and returns its contents as a map of key-value pairs.
     score::Result<KeyValueMap> open_json(const score::filesystem::Path& prefix,
                                          const OpenJsonNeedFile need_file) noexcept;
-    score::Result<void> write_json_data(const std::string& buf) noexcept;
-    score::Result<void> write_and_sync(const std::string& path, const void* data, std::size_t size) noexcept;
 
+    /// @brief Writes the provided data to the current JSON file and its hash file.
+    score::Result<void> write_json_data(const std::string& buf) noexcept;
+
+    /// @brief Writes data to the temporary file of a KVS file and ensures it reaches physical storage.
+    ///
+    /// The live file is not touched, it is replaced by commit_temp_file() once the data is on storage.
+    score::Result<void> write_temp_file(const score::filesystem::Path& path,
+                                        const void* data,
+                                        std::size_t size) noexcept;
+
+    /// @brief Replaces a KVS file with its temporary file.
+    ///
+    /// The rename is atomic, the file is either old or new.
+    score::Result<void> commit_temp_file(const score::filesystem::Path& path) noexcept;
+
+    /// @brief Serializes the KVS and checks the projected total size against the storage limit.
     score::Result<std::string> serialize_and_check() noexcept;
+
+    /// @brief Retrieves the size of one file in bytes.
+    ///
+    /// A missing file counts as 0 bytes.
     score::Result<size_t> get_file_size(const score::filesystem::Path& file_path) noexcept;
+
+    /// @brief Retrieves the current storage size of all persisted files (defaults and snapshots).
     score::Result<size_t> get_current_storage_size() noexcept;
 };
 
-} /* namespace score::mw::per::kvs */
+}  // namespace score::mw::per::kvs
 
-#endif /* SCORE_LIB_KVS_KVS_HPP */
+#endif  // SCORE_LIB_KVS_KVS_HPP

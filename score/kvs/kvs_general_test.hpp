@@ -11,9 +11,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-////////////////////////////////////////////////////////////////////////////////
-/* The test_kvs_general files provide configuration data and methods needed for KVS tests */
-////////////////////////////////////////////////////////////////////////////////
+// The test_kvs_general files provide configuration data and methods needed for KVS tests.
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -24,8 +22,7 @@
 #include <fstream>
 #include <string>
 
-/* Change Private Members and final to public to allow access to member variables (kvs and
- * kvsbuilder) and derive from kvsvalue in unittests*/
+// Make private members public and drop final, to access member variables and derive from KvsValue in unit tests.
 #define private public
 #define final
 #include "score/kvs/kvsbuilder.hpp"
@@ -37,8 +34,6 @@
 #include "score/json/i_json_writer_mock.h"
 using namespace score::mw::per::kvs;
 
-////////////////////////////////////////////////////////////////////////////////
-
 uint32_t adler32(const std::string& data);
 void prepare_environment();
 void cleanup_environment();
@@ -48,7 +43,7 @@ void store(const std::string& path, const std::string& hashPath, const std::stri
 inline void prepare_kvs(const std::string& dir, const std::string& prefix,
                         const std::size_t instanceId, const std::size_t snapshotId)
 {
-    // Do nothing. Tail.
+    // Do nothing, end of recursion.
 }
 
 template <typename... TSnapshots>
@@ -81,16 +76,14 @@ inline void prepare_environment(const std::string& dir, const std::string& prefi
     prepare_kvs(dir, prefix, instanceId, 0ul, std::forward<TSnapshots>(snapshots)...);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-/* Default data used in unittests*/
-////////////////////////////////////////////////////////////////////////////////
+// Default data used in unit tests.
 
 const std::uint32_t instance = 123;
 const InstanceId instance_id{instance};
 const SnapshotId snapshot_id{0ul};
 
-/* Notice: score::filesystem::Path could be constructed implicitly from std::string, but for
-   readability, the explicit construction from those strings are used in the testcode */
+// score::filesystem::Path could be constructed implicitly from std::string.
+// For readability, the test code constructs it explicitly from these strings.
 const std::string data_dir = "./data_folder/";
 const std::string default_prefix = data_dir + "kvs_" + std::to_string(instance) + "_default";
 const std::string kvs_prefix = data_dir + "kvs_" + std::to_string(instance) + "_0";
@@ -108,19 +101,3 @@ const std::string kvs_json = R"({
         "v": 2
     }
 })";
-
-////////////////////////////////////////////////////////////////////////////////
-/* Mock KvsValue for testing purposes (kvsvalue_to_any) */
-////////////////////////////////////////////////////////////////////////////////
-
-class BrokenKvsValue : public KvsValue
-{
-  public:
-    BrokenKvsValue() : KvsValue(nullptr)
-    {
-        /* Intentionally break the type by assigning an invalid value */
-        *(Type*)&this->type_ = static_cast<Type>(999);
-    }
-};
-
-////////////////////////////////////////////////////////////////////////////////

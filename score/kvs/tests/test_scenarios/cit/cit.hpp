@@ -14,5 +14,5 @@
 
 #include <scenario.hpp>
 
-/// Create a group containing scenarios for CITs.
+/// @brief Creates a group containing scenarios for CITs.
 ScenarioGroup::Ptr cit_scenario_group();

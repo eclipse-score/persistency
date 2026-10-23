@@ -113,7 +113,7 @@ Module Work products List
         * - :need:`wp__audit_report`
           - performed by external experts
           - n/a
-          - Planned with the next S-CORE safety audit, see :ref:`persistency_safety_package_deviations`
+          - n/a
 
         * - :need:`wp__module_safety_manual`
           - :need:`gd_temp__safety_manual`
@@ -129,6 +129,11 @@ Module Work products List
           - :need:`gd_temp__rel_mod_rel_note`
           - :ndf:`copy('status', need_id='gd_temp__rel_mod_rel_note')`
           - :need:`doc__persistency_release_note`
+
+        * - :need:`wp__module_user_manual`
+          - :need:`gd_temp__rel_mod_user_manual`
+          - :ndf:`copy('status', need_id='gd_temp__rel_mod_user_manual')`
+          - :need:`doc__persistency_user_manual`
 
 
 Component KVS Work products List
@@ -291,5 +296,6 @@ safety anomalies in the sense of known bugs in the software are reported in the 
           - The OSS crates ``tinyjson`` and ``adler32`` used by the Rust implementation are not classified. The previous
             classification of Tiny JSON was removed with the change of the architecture to the baselibs JSON interface.
           - Classify the crates or replace them by the baselibs interfaces in the Rust implementation.
+
 
 

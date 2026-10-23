@@ -23,7 +23,7 @@ Persistency User Manual
    :version: 1
    :safety: QM
    :security: NO
-   :realizes: wp__training_path[version==1]
+   :realizes: wp__module_user_manual[version==1]
    :tags: persistency
 
 Overview

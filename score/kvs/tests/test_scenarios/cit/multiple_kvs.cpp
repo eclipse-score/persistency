@@ -16,8 +16,6 @@
 #include "helpers/kvs_parameters.hpp"
 #include "tracing.hpp"
 #include <cmath>
-#include <iomanip>
-#include <sstream>
 
 using namespace score::mw::per::kvs;
 using namespace score::json;
@@ -35,7 +33,7 @@ static void info_log(const std::string& instance, const std::string& keyname, do
 }
 }  // namespace
 
-class MultipleInstanceIds : public Scenario
+class MultipleInstanceIds final : public Scenario
 {
   public:
     ~MultipleInstanceIds() final = default;
@@ -117,7 +115,7 @@ class MultipleInstanceIds : public Scenario
     }
 };
 
-class SameInstanceIdSameValue : public Scenario
+class SameInstanceIdSameValue final : public Scenario
 {
   public:
     ~SameInstanceIdSameValue() final = default;
@@ -189,7 +187,7 @@ class SameInstanceIdSameValue : public Scenario
     }
 };
 
-class SameInstanceIdDifferentValue : public Scenario
+class SameInstanceIdDifferentValue final : public Scenario
 {
   public:
     ~SameInstanceIdDifferentValue() final = default;
