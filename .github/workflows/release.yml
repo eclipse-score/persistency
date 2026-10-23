@@ -91,7 +91,7 @@ jobs:
     needs: [precheck]
     permissions:
       contents: read
-    uses: ./.github/workflows/coverage.yml
+    uses: ./.github/workflows/coverage_report.yml
 
   cit-and-docs:
     # The docs workflow runs the component integration tests first; their report is input of the docs build.
