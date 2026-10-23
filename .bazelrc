@@ -46,6 +46,9 @@ test --test_output=errors
 # Import platform and toolchain configurations. Not try-import: these files are required.
 import %workspace%/score.bazelrc/score_toolchain.bazelrc
 
+# Import linter configurations: --config=lint (clang-tidy, clippy, ruff)
+import %workspace%/score.bazelrc/score_lint.bazelrc
+
 # LLVM source-based coverage (C++ + Rust): --config=llvm_cov
 import %workspace%/quality/coverage/coverage.bazelrc
 

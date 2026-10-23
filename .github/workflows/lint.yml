@@ -10,7 +10,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-name: Bazel Clippy
+name: Lint
 
 on:
   pull_request:
@@ -20,14 +20,14 @@ on:
       - main
   merge_group:
     types: [checks_requested]
+  workflow_call:
 
 jobs:
-  bazel-clippy:
+  lint:
     uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@f77ed751fa587e3a1142b2d85320917e00c888ae # v0.0.3-32-g8ab7396
     permissions:
       contents: read
     with:
-      bazel-targets: "//score/kvs/rust_kvs/... //score/kvs/rust_kvs_tool/..."
-      # TODO: switch back to "lint" once score.bazelrc/score_lint.bazelrc defines a real lint config.
-      bazel-config: "score-linux-x86_64"
-      bazel-args: "--lockfile_mode=error"
+      bazel-targets: "//..."
+      bazel-config: "lint"
+      bazel-args: "--lockfile_mode=error --@aspect_rules_lint//lint:fail_on_violation=true"

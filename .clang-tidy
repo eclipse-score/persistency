@@ -1,0 +1,139 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+# Local override on top of the centralized @score_cpp_policies//clang_tidy baseline.
+# Starting the Checks list with `-*` resets the check set inherited from the
+# baseline, so the checks enabled below are the only ones that apply here.
+#
+# Checks mirrors the full score_cpp_policies wildcard groups (clang-analyzer-*,
+# cert-*, cppcoreguidelines-*, bugprone-*, misc-*, performance-*, readability-*,
+# modernize-*): every check in the baseline is enabled and reported here.
+# WarningsAsErrors starts from the same groups, then carves out (via `-check-name`
+# negation) every check that currently has at least one violation in this repo.
+# Those carved-out checks stay enabled and visible as plain warnings; remove a
+# check from this negation list once its existing violations are fixed, to
+# promote it to a hard error.
+Checks: >
+  -*,
+  clang-analyzer-*,
+  -clang-analyzer-optin.core.EnumCastOutOfRange,
+  cert-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-c-arrays,
+  bugprone-*,
+  -bugprone-crtp-constructor-accessibility,
+  misc-*,
+  -misc-include-cleaner,
+  performance-*,
+  -performance-enum-size,
+  readability-*,
+  -readability-avoid-const-params-in-decls,
+  -readability-avoid-return-with-void-value,
+  -readability-identifier-length,
+  -readability-named-parameter,
+  -readability-redundant-member-init,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+WarningsAsErrors: >
+  clang-analyzer-*,
+  cert-*,
+  cppcoreguidelines-*,
+  bugprone-*,
+  misc-*,
+  performance-*,
+  readability-*,
+  modernize-*,
+  -bugprone-branch-clone,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-exception-escape,
+  -bugprone-throwing-static-initialization,
+  -bugprone-unchecked-optional-access,
+  -cert-err58-cpp,
+  -clang-analyzer-deadcode.DeadStores,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-init-variables,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-prefer-member-initializer,
+  -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-member-init,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-special-member-functions,
+  -cppcoreguidelines-use-default-member-init,
+  -misc-const-correctness,
+  -misc-no-recursion,
+  -misc-non-private-member-variables-in-classes,
+  -misc-unused-parameters,
+  -misc-use-internal-linkage,
+  -modernize-pass-by-value,
+  -modernize-raw-string-literal,
+  -modernize-use-default-member-init,
+  -modernize-use-equals-default,
+  -modernize-use-nodiscard,
+  -modernize-use-scoped-lock,
+  -performance-avoid-endl,
+  -performance-unnecessary-copy-initialization,
+  -readability-braces-around-statements,
+  -readability-container-size-empty,
+  -readability-else-after-return,
+  -readability-function-cognitive-complexity,
+  -readability-magic-numbers,
+  -readability-redundant-parentheses,
+  -readability-simplify-boolean-expr,
+  -readability-static-definition-in-anonymous-namespace
+# The score_cpp_policies baseline requires this setting.
+# Report diagnostics only for this repository's headers, not for external ones.
+# External headers (score/result, score/json, score/mw/log) are included with quotes.
+# The lint aspect overrides it for targets with public headers.
+HeaderFilterRegex: 'score/kvs/'
+ExtraArgsBefore:
+  - '-Wno-error=deprecated-declarations'
+  # The LLVM toolchain injects `-imacros .../redacted_dates.h`, redefining
+  # __DATE__/__TIME__/__TIMESTAMP__ for reproducible builds. This otherwise
+  # triggers a clang-diagnostic-builtin-macro-redefined warning on every
+  # single translation unit, unrelated to this repository's own code.
+  - '-Wno-builtin-macro-redefined'
+CheckOptions:
+  - key: misc-uniqueptr-reset-release.IncludeStyle
+    value: "llvm"
+  - key: readability-avoid-return-with-void-value.StrictMode
+    value: true
+  - key: readability-enum-initial-value.AllowExplicitZeroFirstInitialValue
+    value: true
+  - key: readability-enum-initial-value.AllowExplicitSequentialInitialValues
+    value: true
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+  - key: readability-simplify-subscript-expr.Types
+    value: >
+      ::score::futurecpp::basic_string_view;
+      ::score::futurecpp::pmr::basic_string;
+      ::score::futurecpp::pmr::vector;
+      ::score::futurecpp::span;
+      ::score::safecpp::basic_zstring_view;
+      ::std::array;
+      ::std::basic_string_view;
+      ::std::basic_string;
+      ::std::vector;
+      ::std::span
+  - key: readability-string-compare.StringLikeClasses
+    value: >
+      ::score::futurecpp::basic_string_view;
+      ::score::futurecpp::pmr::basic_string;
+      ::score::safecpp::basic_zstring_view;
+      ::std::basic_string_view;
+      ::std::basic_string
+  - key: readability-uniqueptr-delete-release.PreferResetCall
+    value: true

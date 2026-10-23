@@ -40,7 +40,10 @@ bazel_dep(name = "score_tooling", version = "2.3.1")
 bazel_dep(name = "score_coverage", version = "0.4.2", dev_dependency = True)
 
 # Development dependencies (alphabetically sorted)
-bazel_dep(name = "aspect_rules_lint", version = "2.7.2", dev_dependency = True)
+# aspect_rules_lint 2.6.0 moved lint/clippy.bzl into a nested module.
+# @score_rust_policies//clippy:linters.bzl (0.0.5) doesn't load that nested module yet.
+# Bump once score_rust_policies supports aspect_rules_lint >= 2.6.
+bazel_dep(name = "aspect_rules_lint", version = "2.5.2", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "8.5.1.3", dev_dependency = True)
 bazel_dep(name = "googletest", version = "1.18.0", dev_dependency = True)
 bazel_dep(name = "score_bazel_cpp_toolchains", version = "1.0.5", dev_dependency = True)
