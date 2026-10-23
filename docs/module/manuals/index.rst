@@ -21,3 +21,4 @@ Manuals
    user_manual
    safety_manual
    security_manual
+   ci_concept
