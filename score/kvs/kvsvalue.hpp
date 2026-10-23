@@ -168,6 +168,9 @@ class KvsValue final
     ValueVariant value_;
 };
 
+/// Key-value storage map type.
+using KvsMap = std::unordered_map<std::string, KvsValue>;
+
 }  // namespace score::mw::per::kvs
 
 #endif  // SCORE_LIB_KVS_KVSVALUE_HPP

@@ -66,6 +66,27 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept;
 /// @return The converted JSON value on success, or ErrorCode::InvalidValueType on failure.
 score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) noexcept;
 
+/// @brief Converts an object to a JSON value in the KVS file format (`{"t": "obj", "v": <object>}`).
+///
+/// Avoids wrapping the object in a KvsValue first.
+/// @param object The object to convert.
+/// @return The converted JSON value on success, or ErrorCode::InvalidValueType on failure (also on a duplicate key).
+score::Result<score::json::Any> kvsvalue_to_any(const KvsValue::Object& object) noexcept;
+
+/// @brief Converts a map to a JSON value in the KVS file format (`{"t": "obj", "v": <object>}`).
+///
+/// Avoids copying the map into a KvsValue::Object first.
+/// @param map The map to convert.
+/// @return The converted JSON value on success, or ErrorCode::InvalidValueType on failure.
+score::Result<score::json::Any> kvsvalue_to_any(const KvsMap& map) noexcept;
+
+/// @brief Checks that no object in the value has duplicate keys.
+///
+/// Checks nested arrays and objects as well.
+/// @param value The value to check.
+/// @return True if every object in the value has unique keys.
+bool has_unique_keys(const KvsValue& value) noexcept;
+
 }  // namespace score::mw::per::kvs
 
 #endif  // SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP

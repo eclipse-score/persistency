@@ -211,6 +211,34 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_object)
     EXPECT_EQ(result.value().getType(), KvsValue::Type::Object);
 }
 
+TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_object_over_length_key_accepted)
+{
+    // comp_req__kvs__key_length applies to root keys only.
+    // Keys of nested objects are value data.
+    const std::string long_key(KVS_MAX_KEY_LENGTH_BYTES + 1U, 'x');
+
+    score::json::Object inner_obj;
+    inner_obj.emplace("t", score::json::Any(std::string("i32")));
+    inner_obj.emplace("v", score::json::Any(1));
+
+    score::json::Object combined_obj;
+    combined_obj.emplace(long_key, score::json::Any(std::move(inner_obj)));
+
+    score::json::Object obj;
+    obj.emplace("t", score::json::Any(std::string("obj")));
+    obj.emplace("v", score::json::Any(std::move(combined_obj)));
+
+    score::json::Any any_obj(std::move(obj));
+    auto result = any_to_kvsvalue(any_obj);
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result.value().getType(), KvsValue::Type::Object);
+    const auto& result_obj = std::get<KvsValue::Object>(result.value().getValue());
+    ASSERT_EQ(result_obj.size(), 1U);
+    EXPECT_EQ(result_obj[0].first, long_key);
+    ASSERT_EQ(result_obj[0].second.getType(), KvsValue::Type::i32);
+    EXPECT_EQ(std::get<int32_t>(result_obj[0].second.getValue()), 1);
+}
+
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_format_invalid)
 {
     score::json::Object obj_type;
@@ -572,4 +600,108 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_object)
     const auto& count_entry = inner_obj.at("count").As<score::json::Object>().value().get();
     EXPECT_EQ(count_entry.at("t").As<std::string>().value().get(), "f64");
     EXPECT_EQ(count_entry.at("v").As<double>().value(), 42.0);
+}
+
+TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_object_duplicate_key)
+{
+    KvsValue::Object obj{{"key", KvsValue(int32_t{1})}, {"key", KvsValue(int32_t{2})}};
+    auto result = kvsvalue_to_any(KvsValue(obj));
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
+
+    // Duplicate key in an object nested in an array.
+    KvsValue::Array array{KvsValue(std::move(obj))};
+    result = kvsvalue_to_any(KvsValue(std::move(array)));
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
+}
+
+TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_map)
+{
+    // A map is serialized directly, without wrapping it in a KvsValue.
+    KvsMap map;
+    map.emplace("flag", KvsValue(true));
+    map.emplace("name", KvsValue(std::string("test")));
+    map.emplace("nested", KvsValue(KvsValue::Object{{"count", KvsValue(int32_t{7})}}));
+
+    auto result = kvsvalue_to_any(map);
+    ASSERT_TRUE(result);
+
+    const auto& outer_obj = result.value().As<score::json::Object>().value().get();
+    EXPECT_EQ(outer_obj.at("t").As<std::string>().value().get(), "obj");
+
+    const auto& inner_obj = outer_obj.at("v").As<score::json::Object>().value().get();
+    EXPECT_EQ(inner_obj.size(), 3U);
+
+    const auto& flag_entry = inner_obj.at("flag").As<score::json::Object>().value().get();
+    EXPECT_EQ(flag_entry.at("t").As<std::string>().value().get(), "bool");
+    EXPECT_EQ(flag_entry.at("v").As<bool>().value(), true);
+
+    const auto& name_entry = inner_obj.at("name").As<score::json::Object>().value().get();
+    EXPECT_EQ(name_entry.at("t").As<std::string>().value().get(), "str");
+    EXPECT_EQ(name_entry.at("v").As<std::string>().value().get(), "test");
+
+    const auto& nested_entry = inner_obj.at("nested").As<score::json::Object>().value().get();
+    EXPECT_EQ(nested_entry.at("t").As<std::string>().value().get(), "obj");
+    const auto& nested_obj = nested_entry.at("v").As<score::json::Object>().value().get();
+    const auto& count_entry = nested_obj.at("count").As<score::json::Object>().value().get();
+    EXPECT_EQ(count_entry.at("t").As<std::string>().value().get(), "i32");
+    EXPECT_EQ(count_entry.at("v").As<int32_t>().value(), 7);
+}
+
+TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_map_empty)
+{
+    KvsMap map;
+    auto result = kvsvalue_to_any(map);
+    ASSERT_TRUE(result);
+
+    const auto& outer_obj = result.value().As<score::json::Object>().value().get();
+    EXPECT_EQ(outer_obj.at("t").As<std::string>().value().get(), "obj");
+    EXPECT_TRUE(outer_obj.at("v").As<score::json::Object>().value().get().empty());
+}
+
+TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_map_invalid)
+{
+    KvsMap map;
+    map.emplace("valid", KvsValue(42.0));
+    map.emplace("invalid", KvsValue(KvsValue::Object{{"key", KvsValue(true)}, {"key", KvsValue(false)}}));
+
+    auto result = kvsvalue_to_any(map);
+    EXPECT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), ErrorCode::InvalidValueType);
+}
+
+TEST(kvs_has_unique_keys, has_unique_keys_scalar)
+{
+    EXPECT_TRUE(has_unique_keys(KvsValue(int32_t{1})));
+    EXPECT_TRUE(has_unique_keys(KvsValue("text")));
+    EXPECT_TRUE(has_unique_keys(KvsValue(nullptr)));
+}
+
+TEST(kvs_has_unique_keys, has_unique_keys_unique)
+{
+    KvsValue::Object inner{{"a", KvsValue(true)}, {"b", KvsValue(false)}};
+    KvsValue::Array array{KvsValue(inner), KvsValue(inner)};
+    KvsValue::Object outer{{"a", KvsValue(std::move(inner))}, {"b", KvsValue(std::move(array))}};
+    EXPECT_TRUE(has_unique_keys(KvsValue(std::move(outer))));
+}
+
+TEST(kvs_has_unique_keys, has_unique_keys_duplicate)
+{
+    KvsValue::Object obj{{"a", KvsValue(true)}, {"a", KvsValue(false)}};
+    EXPECT_FALSE(has_unique_keys(KvsValue(obj)));
+}
+
+TEST(kvs_has_unique_keys, has_unique_keys_duplicate_nested_in_object)
+{
+    KvsValue::Object inner{{"a", KvsValue(true)}, {"a", KvsValue(false)}};
+    KvsValue::Object outer{{"inner", KvsValue(std::move(inner))}};
+    EXPECT_FALSE(has_unique_keys(KvsValue(std::move(outer))));
+}
+
+TEST(kvs_has_unique_keys, has_unique_keys_duplicate_nested_in_array)
+{
+    KvsValue::Object inner{{"a", KvsValue(true)}, {"a", KvsValue(false)}};
+    KvsValue::Array array{KvsValue(int32_t{0}), KvsValue(std::move(inner))};
+    EXPECT_FALSE(has_unique_keys(KvsValue(std::move(array))));
 }
