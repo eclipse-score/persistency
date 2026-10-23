@@ -56,21 +56,9 @@ Assumptions of Use
 ------------------
 
 
-AoU Requirements
-################
-
-.. aou_req:: Persistency Error handling
-   :id: aou_req__persistency__error_handling
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :status: valid
-   :version: 2
-   :tags: persistency, environment
-
-   The application shall detect and handle the unavailability of the feature persistency.
-   Unavailability covers errors reported by the persistency API as well as persistency calls which do
-   not return or return too late (e.g. caused by blocked or delayed execution of the calling context).
+The assumptions of use of the feature are documented in :need:`doc__persistency_feat_aou`,
+the assumptions of use of the components in the respective component documentation.
+They are listed in the following sections.
 
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -130,8 +118,8 @@ Safety concept of the SEooC
 | not a safety relevant assumption on the application.
 | The integrity of the persisted data is checked when it is loaded: the data file is only used if its Adler-32 checksum
 | matches the stored checksum file, otherwise an error is reported and the data is not provided (see :need:`feat_req__persistency__integrity_check`).
-| The previous states of the data are kept as snapshots, which the application can restore after a reported error.
-| The safety analyses of the feature are documented in :need:`doc__persistency_fmea` and :need:`doc__persistency_dfa`.
+| Recovery after a reported error: see :need:`comp_req__kvs__recovery_snapshot_restore`.
+| Safety analyses: see References.
 
 Safety Anomalies
 ----------------
@@ -145,3 +133,4 @@ References
 | Feature architecture: :need:`doc__persistency_kvs_architecture`
 | Component architecture: :need:`doc__kvs_component_architecture`
 | Feature safety analyses: :need:`doc__persistency_fmea`, :need:`doc__persistency_dfa`
+| Component safety analyses: :need:`doc__kvs_fmea`, :need:`doc__kvs_dfa`

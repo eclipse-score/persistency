@@ -25,8 +25,10 @@ DFA (Dependent Failure Analysis)
    :tags: persistency
 
 
-The DFA for the feature Persistency is performed. To show evidence that all failure initiators are considered, the applicability has to be filled out in the
-following tables. For all applicable failure initiators, the DFA has to be performed.
+The DFA applies the dependent failure initiators of :need:`gd_guidl__dfa_failure_initiators` to the static view of
+:need:`doc__persistency_kvs_architecture`.
+
+Mechanisms inside the KVS component are analysed in :need:`doc__kvs_dfa`.
 
 Dependent Failure Initiators
 ----------------------------
@@ -52,31 +54,31 @@ Receiving function is affected by information that is false, lost, sent multiple
   * - CO_01_01
     - Information passed via argument through a function call, or via writing/reading a variable being global to the two software functions (data flow)
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - Only function arguments and return values within the calling thread; no shared globals. Corruption: see CO_01_02.
   * - CO_01_02
     - Data or message corruption / repetition / loss / delay / masquerading or incorrect addressing of information
-    - no
-    - Persistency is developed fully deterministic. So no corruption, repetition, loss, delay, masquerading or incorrect addressing of information is expected.
+    - yes
+    - :need:`feat_saf_dfa__persistency__data_corruption`
   * - CO_01_03
     - Insertion / sequence of information
     - no
-    - Subset of CO_01_02.
+    - Data and hash files are written and read as a whole; see CO_01_02.
   * - CO_01_04
     - Corruption of information, inconsistent data
-    - no
-    - Subset of CO_01_02.
+    - yes
+    - Covered by :need:`feat_saf_dfa__persistency__data_corruption`.
   * - CO_01_05
     - Asymmetric information sent from a sender to multiple receivers, so that not all defined receivers have the same information
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - No communication with multiple receivers.
   * - CO_01_06
     - Information from a sender received by only a subset of the receivers
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - Same as CO_01_05.
   * - CO_01_07
     - Blocking access to a communication channel
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - No communication channel used; blocking of the caller: see UI_01_06.
 
 
 Shared information inputs
@@ -95,19 +97,19 @@ Same information input used by multiple functions.
   * - SI_01_02
     - Configuration data
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - Each instance uses its own data, hash and default value files (instance ID). Shared instances: see SI_01_03.
   * - SI_01_03
     - Constants, or variables, being global to the two software functions
-    - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - yes
+    - :need:`feat_saf_dfa__persistency__shared_instance`
   * - SI_01_04
     - Basic software passes data (read from hardware register and converted into logical information) to two applications software functions
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - No hardware registers are read; file access via the OS.
   * - SI_01_05
     - Data / function parameter arguments / messages delivered by software function to more than one other function
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - Values are returned to the calling function only.
 
 
 Unintended impact
@@ -126,23 +128,23 @@ Unintended impacts to function due to various failures.
   * - UI_01_01
     - Memory miss-allocation and leaks
     - no
-    - Will be considered at the platform DFA.
+    - Allocation: see UI_01_11. Leaks are addressed by Rust ownership, C++ RAII and component verification.
   * - UI_01_02
     - Read/Write access to memory allocated to another software element
     - no
-    - Will be considered at the platform DFA.
+    - Only own instance memory and caller memory is accessed. Access by others is prevented by OS process isolation (platform DFA).
   * - UI_01_03
     - Stack/Buffer under-/overflow
     - no
-    - Might happen but very unlikely in Rust. Will be considered at the platform DFA.
+    - Rust bounds checking, C++ standard containers. Overflows by others: platform DFA.
   * - UI_01_04
     - Deadlocks
-    - no
-    - Deadlocks are not caused by the KVS, but by the application.
+    - yes
+    - :need:`feat_saf_dfa__persistency__callback_deadlock`
   * - UI_01_05
     - Livelocks
     - no
-    - Same consideration as done in UI_01_04.
+    - Same as UI_01_04; no retry loops.
   * - UI_01_06
     - Blocking of execution
     - yes
@@ -150,46 +152,108 @@ Unintended impacts to function due to various failures.
   * - UI_01_07
     - Incorrect allocation of execution time
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - No own execution context; see UI_01_06.
   * - UI_01_08
     - Incorrect execution flow
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - Execution flow defined by the dynamic views; corruption: see UI_01_02.
   * - UI_01_09
     - Incorrect synchronization between software elements
-    - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - yes
+    - :need:`feat_saf_dfa__persistency__multi_process`
   * - UI_01_10
     - CPU time depletion
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed. Will be analysed at the platform DFA.
+    - No own execution context; see UI_01_06.
   * - UI_01_11
     - Memory depletion
-    - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed. Will be analysed at the platform DFA.
+    - yes
+    - :need:`feat_saf_dfa__persistency__memory_depletion`
   * - UI_01_12
     - Other HW unavailability
     - no
-    - Failure initiator not applicable at persistency, so no mitigation is needed.
+    - Storage medium only, via file system; unavailability is reported and handled by aou_req__persistency__error_handling.
 
 
 DFA
 ---
-For all identified applicable failure initiators, the DFA is performed in the following section.
-
-
 
 .. feat_saf_dfa:: Persistency execution blocking
    :violates: feat_arc_sta__persistency__static
    :id: feat_saf_dfa__persistency__execution_blocking
    :failure_id: UI_01_06
-   :failure_effect: Blocking of execution. This will lead to a unavailability of the persistency feature.
+   :failure_effect: Blocking of execution, persistency is not available.
+   :safety_relevant: yes
    :mitigated_by: aou_req__persistency__error_handling
    :sufficient: yes
    :status: valid
    :version: 2
 
-   Persistency is executed in the execution context of the calling application. A blocking of this execution
-   (e.g. by the application itself or by the scheduling of the OS) will make persistency not available, i.e. a
-   persistency call does not return or returns too late. This unavailability is handled by the application
-   according to aou_req__persistency__error_handling.
+   Persistency runs in the calling context; blocking (by the application or OS scheduling) leads to no or a
+   too late response, handled by :need:`aou_req__persistency__error_handling`.
+
+.. feat_saf_dfa:: Corruption of persisted data
+   :violates: feat_arc_sta__persistency__static
+   :id: feat_saf_dfa__persistency__data_corruption
+   :failure_id: CO_01_02
+   :failure_effect: Data exchanged with the file system is corrupted, lost or inconsistent.
+   :safety_relevant: yes
+   :mitigated_by: feat_req__persistency__integrity_check, feat_req__persistency__reset_resistant, feat_req__persistency__access_control, aou_req__persistency__error_handling
+   :sufficient: yes
+   :status: valid
+   :version: 1
+
+   Causes: storage medium, interrupted write, other software writing the files.
+
+.. feat_saf_dfa:: Shared KVS instance within a process
+   :violates: feat_arc_sta__persistency__static
+   :id: feat_saf_dfa__persistency__shared_instance
+   :failure_id: SI_01_03
+   :failure_effect: Two software elements of a process use the same KVS instance and modify each other's data.
+   :safety_relevant: yes
+   :mitigated_by: aou_req__persistency__instance_separation
+   :sufficient: yes
+   :status: valid
+   :version: 1
+
+   Within a process, the same instance ID gives access to the same data.
+
+.. feat_saf_dfa:: Access to a KVS instance from multiple processes
+   :violates: feat_arc_sta__persistency__static
+   :id: feat_saf_dfa__persistency__multi_process
+   :failure_id: UI_01_09
+   :failure_effect: Unsynchronized access of two processes makes the persisted data inconsistent.
+   :safety_relevant: yes
+   :mitigated_by: feat_req__persistency__multiple_app
+   :sufficient: yes
+   :status: valid
+   :version: 1
+
+   Refined in :need:`comp_saf_dfa__kvs__multi_process`.
+
+.. feat_saf_dfa:: Memory depletion by the kvs
+   :violates: feat_arc_sta__persistency__static
+   :id: feat_saf_dfa__persistency__memory_depletion
+   :failure_id: UI_01_11
+   :failure_effect: Runtime allocation of the kvs depletes the heap shared with other software elements.
+   :safety_relevant: yes
+   :mitigated_by: feat_req__persistency__dynamic_memory_alloc, feat_req__persistency__cfg
+   :sufficient: yes
+   :status: valid
+   :version: 1
+
+   Refined in :need:`comp_saf_dfa__kvs__memory_depletion`.
+
+.. feat_saf_dfa:: Deadlock by completion callback
+   :violates: feat_arc_sta__persistency__static
+   :id: feat_saf_dfa__persistency__callback_deadlock
+   :failure_id: UI_01_04
+   :failure_effect: The application and the persistency block each other, persistency and the calling application are not available.
+   :safety_relevant: yes
+   :mitigated_by: feat_req__persistency__concurrency, aou_req__persistency__callback
+   :sufficient: yes
+   :status: valid
+   :version: 1
+
+   Application code executed on the completion signal (:need:`feat_req__persistency__async_completion`) calls the
+   same instance or waits for a resource held by the caller. Refined in :need:`comp_saf_dfa__kvs__callback_deadlock`.

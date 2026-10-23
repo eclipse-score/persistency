@@ -15,29 +15,5 @@
 AoU Component Requirements KVS
 ==============================
 
-This page contains Assumption of Use requirement snippets that belong to the
-template repository.
-
-Component AoU
--------------
-
-.. code-block:: rst
-
-   .. aou_req:: Next Title
-      :id: aou_req__mod_temp_component_name__next_title
-      :reqtype: Process
-      :security: YES
-      :safety: ASIL_B
-      :status: invalid
-
-      The Component User shall do xyz to use the component safely/securely
-
-   .. aou_req:: Another Title
-      :id: aou_req__mod_temp_component_name__another
-      :reqtype: Process
-      :security: YES
-      :safety: ASIL_B
-      :status: invalid
-      :tags: environment
-
-      The Component shall only be used in a xyz environment to ensure its proper functioning.
+The component safety analyses :need:`doc__kvs_fmea` and :need:`doc__kvs_dfa` use the assumptions of use of the
+feature (:need:`doc__persistency_feat_aou`). There are no assumptions of use specific to the component KVS.

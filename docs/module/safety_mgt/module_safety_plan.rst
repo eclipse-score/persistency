@@ -64,8 +64,12 @@ Additional to the tailoring in the SW platform project as defined in the :need:`
 
 - Notes on the execution of the planned work products:
 
-  - The component safety analyses (:need:`doc__kvs_fmea`, :need:`doc__kvs_dfa`) refer to the feature safety analyses,
-    because the KVS component has no internal components (:need:`doc__kvs_component_architecture`).
+  - Component safety analyses (:need:`doc__kvs_fmea`, :need:`doc__kvs_dfa`): although KVS has no internal components
+    (:need:`doc__kvs_component_architecture`), they are not reduced to a reference to the feature analyses as allowed by
+    :need:`doc_concept__safety_analysis`. :need:`doc__kvs_requirements` specifies mechanisms which are not visible at feature
+    level and introduce failure modes of their own; their effectiveness is shown at the software architectural level
+    (ISO 26262-6, 7.4.10, 7.4.11). Interface failure modes remain in the feature analyses. The failure modes are assigned to
+    the static view, as the component architecture has no dynamic views.
   - The detailed design is captured in the source code (public API headers and traits, source code comments) according to
     :need:`gd_guidl__implementation`. :need:`doc__kvs_detailed_design` documents the decomposition into units.
 
@@ -293,8 +297,7 @@ safety anomalies in the sense of known bugs in the software are reported in the 
           - Planned resolution
 
         * - :need:`wp__sw_component_class`
-          - The OSS crates ``tinyjson`` and ``adler32`` used by the Rust implementation are not classified. The previous
-            classification of Tiny JSON was removed with the change of the architecture to the baselibs JSON interface.
+          - The OSS crates ``tinyjson`` and ``adler32`` used by the Rust implementation are not classified.
           - Classify the crates or replace them by the baselibs interfaces in the Rust implementation.
 
 
