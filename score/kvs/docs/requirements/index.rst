@@ -32,7 +32,7 @@ Component Requirements
    :security: NO
    :safety: QM
    :derived_from: feat_req__persistency__cpp_rust[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -44,7 +44,7 @@ Component Requirements
    :security: NO
    :safety: QM
    :derived_from: feat_req__persistency__os_agnostic[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -56,7 +56,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__dynamic_memory_alloc[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -68,7 +68,7 @@ Component Requirements
    :security: NO
    :safety: QM
    :derived_from: feat_req__persistency__multiple_kvs[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -82,7 +82,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__multiple_app[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -94,10 +94,9 @@ Component Requirements
    :security: YES
    :safety: ASIL_B
    :derived_from: feat_req__persistency__access_control[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall rely on the underlying filesystem for access and
    permission management and shall not implement its own access or permission
@@ -109,10 +108,9 @@ Component Requirements
    :security: YES
    :safety: ASIL_B
    :derived_from: feat_req__persistency__access_control[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall report any access or permission errors encountered at
    the filesystem level to the application.
@@ -123,7 +121,7 @@ Component Requirements
    :security: YES
    :safety: ASIL_B
    :derived_from: feat_req__persistency__access_control[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -135,7 +133,7 @@ Component Requirements
    :security: YES
    :safety: ASIL_B
    :derived_from: feat_req__persistency__access_control[version==1],feat_req__persistency__tooling[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -147,10 +145,9 @@ Component Requirements
    :security: YES
    :safety: ASIL_B
    :derived_from: feat_req__persistency__cfg[version==2]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall allow configuration of KVS constraints at compile-time
    using source code constants or at runtime using a configuration file.
@@ -161,7 +158,7 @@ Component Requirements
    :security: YES
    :safety: ASIL_B
    :derived_from: feat_req__persistency__cfg[version==2],feat_req__persistency__cfg_priority[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -173,10 +170,9 @@ Component Requirements
    :security: YES
    :safety: ASIL_B
    :derived_from: feat_req__persistency__cfg[version==2]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: valid
 
    The component shall maintain a configurable maximum number of snapshots.
    The maximum number shall be in the range ``<0..3>``.
@@ -190,10 +186,9 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_keys[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall accept keys that consist solely of printable ASCII characters (0x20 - 0x7E).
 
@@ -203,10 +198,9 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_keys[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall encode each key as valid ASCII, compatible with UTF-8.
 
@@ -216,7 +210,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_keys[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -228,7 +222,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_keys[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -240,10 +234,9 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_keys[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall disallow empty keys and limit the maximum length of a key to 32 bytes.
 
@@ -253,7 +246,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_keys[version==1],feat_req__persistency__cached_access[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -265,7 +258,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_keys[version==1],feat_req__persistency__cached_access[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -277,7 +270,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_keys[version==1],feat_req__persistency__cached_access[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -289,7 +282,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_value[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -302,7 +295,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__cached_access[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -314,7 +307,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__cached_access[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -326,10 +319,9 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_value[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall serialize and deserialize all values to and from JSON.
 
@@ -339,7 +331,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -351,7 +343,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__support_datatype_value[version==1],feat_req__persistency__default_values[version==1],feat_req__persistency__reset_to_default[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -366,7 +358,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__default_values[version==1],feat_req__persistency__support_datatype_value[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -378,7 +370,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -390,7 +382,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_get[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -402,7 +394,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__default_values[version==1],feat_req__persistency__default_value_file[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -415,10 +407,9 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__default_value_file[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall secure the configuration file for default values with an
    associated checksum file when default values are stored in a file.
@@ -429,7 +420,7 @@ Component Requirements
    :security: YES
    :safety: ASIL_B
    :derived_from: feat_req__persistency__reset_resistant[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -441,7 +432,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__recovery_from_reset[version==1],feat_req__persistency__integrity_check[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -453,7 +444,7 @@ Component Requirements
    :security: YES
    :safety: ASIL_B
    :derived_from: feat_req__persistency__recovery_from_reset[version==1],feat_req__persistency__cfg[version==2]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -469,7 +460,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__recovery_from_reset[version==1],feat_req__persistency__snapshot_restore[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -481,7 +472,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__atomic_store[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -493,7 +484,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__store_data[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -505,7 +496,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__write_amplification[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -517,7 +508,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__cached_access[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -529,7 +520,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__cached_access[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -541,7 +532,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__load_data[version==1],feat_req__persistency__cached_access[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -553,10 +544,9 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall generate a checksum for each data file and shall store
    it alongside the data.
@@ -567,7 +557,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__integrity_check[version==1],feat_req__persistency__load_data[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -579,7 +569,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -591,10 +581,9 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__integrity_check[version==1],feat_req__persistency__store_data[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall use the JSON data format to persist data.
 
@@ -604,7 +593,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__storage_backends[version==2]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -616,7 +605,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__async_api[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -628,10 +617,9 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__async_api[version==1],feat_req__persistency__async_completion[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall provide an API for registering callbacks that are triggered by data change events.
 
@@ -640,11 +628,10 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1]
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: valid
 
    The component shall provide an API for creating a snapshot in the slot selected by index.
    See :need:`comp_req__kvs__snapshot_id_api` and :need:`comp_req__kvs__snapshot_slot_index_vali`.
@@ -659,11 +646,10 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1]
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: valid
 
    The component shall create a new snapshot in the selected snapshot slot when the slot is empty.
 
@@ -672,11 +658,10 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1]
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: valid
 
    The component shall overwrite the selected snapshot slot when the slot is occupied.
 
@@ -685,11 +670,10 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1], feat_req__persistency__snapshot_restore[version==1], feat_req__persistency__snapshot_remove[version==1]
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: valid
 
    The component shall perform snapshot creation, restoration, and deletion only when explicitly triggered by the user through the corresponding APIs.
 
@@ -699,10 +683,9 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__snapshot_create[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: valid
 
    The component shall identify snapshot slots by a one-based index in the range ``<1..3>``, where the first slot has index ``1``, the second slot has index ``2`` and the third slot has index ``3``.
    See :need:`comp_req__kvs__snapshot_max_num_cfg`.
@@ -713,7 +696,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__snapshot_create[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -724,11 +707,10 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :derived_from: feat_req__persistency__snapshot_create[version==1]
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: valid
 
    The component shall use the live values set by the user, regardless of whether the values
    have been flushed to disk.
@@ -738,7 +720,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :derived_from: feat_req__persistency__snapshot_create[version==1], feat_req__persistency__snapshot_remove[version==1]
    :satisfied_by: comp__persistency_kvs[version==1]
@@ -751,7 +733,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :derived_from: feat_req__persistency__snapshot_restore[version==1]
    :satisfied_by: comp__persistency_kvs[version==1]
@@ -764,7 +746,7 @@ Component Requirements
    :reqtype: Functional
    :security: NO
    :safety: ASIL_B
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :derived_from: feat_req__persistency__snapshot_remove[version==1]
    :satisfied_by: comp__persistency_kvs[version==1]
@@ -779,10 +761,9 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__concurrency[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
-   :tags: inspected
 
    The component shall implement thread-safe mechanisms to enable concurrent
    access to data without data races.
@@ -793,7 +774,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__versioning[version==1],feat_req__persistency__update_mechanism[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -806,7 +787,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__versioning[version==1],feat_req__persistency__update_mechanism[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 2
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -820,7 +801,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__versioning[version==1],feat_req__persistency__update_mechanism[version==1],feat_req__persistency__variant_management[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -833,7 +814,7 @@ Component Requirements
    :security: NO
    :safety: QM
    :derived_from: feat_req__persistency__fast_access[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -845,7 +826,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__tooling[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 
@@ -857,7 +838,7 @@ Component Requirements
    :security: NO
    :safety: ASIL_B
    :derived_from: feat_req__persistency__tooling[version==1]
-   :status: valid
+   :status: valid_inspected
    :version: 1
    :satisfied_by: comp__persistency_kvs[version==1]
 

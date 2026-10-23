@@ -25,8 +25,8 @@ Overview
    :colors: red,yellow, green
 
    type == 'comp_req' and status == 'invalid'
-   type == 'comp_req' and testlink == '' and (status == 'valid' or status == 'invalid')
-   type == 'comp_req' and testlink != '' and (status == 'valid' or status == 'invalid')
+   type == 'comp_req' and testlink == '' and (status in ['valid', 'valid_inspected'] or status == 'invalid')
+   type == 'comp_req' and testlink != '' and (status in ['valid', 'valid_inspected'] or status == 'invalid')
 
 In Detail
 ---------
@@ -41,7 +41,7 @@ In Detail
          :colors: red, orange, green
 
          type == 'comp_req' and status == 'invalid'
-         type == 'comp_req' and status == 'valid'
+         type == 'comp_req' and status in ['valid', 'valid_inspected']
 
    .. grid-item-card::
 
