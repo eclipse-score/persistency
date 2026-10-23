@@ -81,7 +81,7 @@ class KvsBuilder final
     /// @param dir_path The directory path.
     /// Use "" or "." for the current directory.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& dir(std::string&& dir_path) noexcept;
+    KvsBuilder& dir(const std::string& dir_path) noexcept;
 
     /// @brief Specifies the maximum storage size for the KVS in bytes.
     /// @param max_storage_bytes The maximum allowed total storage size in bytes.
@@ -100,14 +100,14 @@ class KvsBuilder final
     /// A value of 0 disables snapshot operations.
     /// flush() still persists the current KVS data.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& snapshot_max_count(std::size_t max_count) noexcept;
+    KvsBuilder& snapshot_max_count(const std::size_t max_count) noexcept;
 
     /// @brief Builds and opens the Kvs instance with the configured options.
     ///
     /// Internally calls Kvs::open() with the selected flags and directory.
     ///
     /// @return The opened store on success, or an ErrorCode on failure.
-    score::Result<Kvs> build() noexcept;
+    score::Result<Kvs> build() const noexcept;
 
   private:
     /// ID of the KVS instance.
