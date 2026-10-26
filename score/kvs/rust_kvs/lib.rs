@@ -142,6 +142,8 @@ pub mod kvs_mock;
 pub mod kvs_serialize;
 pub mod kvs_value;
 mod log;
+#[cfg(test)]
+mod test_utils;
 
 /// Prelude module for convenient imports
 pub mod prelude {

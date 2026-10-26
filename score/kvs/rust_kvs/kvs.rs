@@ -334,8 +334,8 @@ mod kvs_tests {
     use crate::kvs_builder::KvsData;
     use crate::kvs_value::{KvsMap, KvsValue};
     use crate::log::ScoreDebug;
+    use crate::test_utils::tempdir;
     use std::sync::{Arc, Mutex};
-    use tempfile::tempdir;
 
     /// Most tests can be performed with mocked backend.
     /// Only those with file handling must use concrete implementation.

@@ -322,10 +322,10 @@ mod kvs_builder_tests {
     use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
     use crate::kvs_builder::{KvsBuilder, KVS_MAX_INSTANCES, KVS_POOL};
     use crate::kvs_value::{KvsMap, KvsValue};
+    use crate::test_utils::tempdir;
     use core::ops::DerefMut;
     use std::path::{Path, PathBuf};
     use std::sync::{LazyLock, Mutex, MutexGuard};
-    use tempfile::tempdir;
 
     /// Serial test execution mutex.
     static SERIAL_TEST: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));

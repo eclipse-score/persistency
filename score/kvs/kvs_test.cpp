@@ -18,6 +18,8 @@
 #include "score/os/stat.h"
 #include "score/utility.hpp"
 
+#include <unistd.h>
+
 TEST(kvs_constructor, move_constructor)
 {
     const std::uint32_t instance_b = 5;
@@ -1919,6 +1921,12 @@ TEST(kvs_flush, flush_failure_mutex)
 
 TEST(kvs_flush, flush_failure_rotate_snapshots)
 {
+    // Root ignores file permissions, so flush would succeed.
+    if (geteuid() == 0)
+    {
+        GTEST_SKIP() << "File permissions are not enforced for root.";
+    }
+
     prepare_environment();
     // Test folder for permission handling.
     std::string permissions_dir = data_dir + "permissions/";
@@ -1936,7 +1944,7 @@ TEST(kvs_flush, flush_failure_rotate_snapshots)
         permissions_dir, std::filesystem::perms::owner_read, std::filesystem::perm_options::replace);
     auto flush_result = result.value().flush();
 
-    EXPECT_FALSE(flush_result);
+    ASSERT_FALSE(flush_result);
     EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::PhysicalStorageFailure);
 
     cleanup_environment();

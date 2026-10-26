@@ -999,9 +999,9 @@ mod error_code_tests {
 
 #[cfg(test)]
 mod json_backend_builder_tests {
+    use crate::test_utils::tempdir;
     use crate::{json_backend::JsonBackendBuilder, prelude::KvsBackend};
     use std::path::PathBuf;
-    use tempfile::tempdir;
 
     #[test]
     fn test_new_ok() {
@@ -1086,9 +1086,9 @@ mod json_backend_tests {
     use crate::json_backend::{JsonBackend, JsonBackendBuilder};
     use crate::kvs_api::{InstanceId, SnapshotId, KVS_MAX_KEY_LENGTH_BYTES};
     use crate::kvs_value::{KvsMap, KvsValue};
+    use crate::test_utils::tempdir;
     use std::os::unix::fs::PermissionsExt;
     use std::path::{Path, PathBuf};
-    use tempfile::tempdir;
 
     /// Expected permissions of KVS JSON and hash files: 0640.
     const EXPECTED_FILE_MODE: u32 = 0o640;
@@ -1525,10 +1525,10 @@ mod kvs_backend_tests {
     use crate::kvs_api::{InstanceId, SnapshotId};
     use crate::kvs_backend::KvsBackend;
     use crate::kvs_value::{KvsMap, KvsValue};
+    use crate::test_utils::tempdir;
     use std::fs;
     use std::os::unix::fs::PermissionsExt;
     use std::path::Path;
-    use tempfile::tempdir;
 
     /// Expected permissions of KVS JSON and hash files: 0640.
     const EXPECTED_FILE_MODE: u32 = 0o640;
