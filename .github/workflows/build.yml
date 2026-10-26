@@ -36,7 +36,7 @@ jobs:
         github.event.pull_request.head.repo.full_name == github.repository) ||
       (github.event_name == 'pull_request_target' &&
         github.event.pull_request.head.repo.full_name != github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@f77ed751fa587e3a1142b2d85320917e00c888ae # v0.0.3-32-g8ab7396
+    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@58cb0ec5a80441d593464d3af09d634ab91247e0 # v0.0.3-32-g8ab7396
     permissions:
       contents: read
       pull-requests: read
