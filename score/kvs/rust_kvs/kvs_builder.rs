@@ -320,6 +320,7 @@ mod kvs_builder_tests {
     use crate::error_code::ErrorCode;
     use crate::json_backend::{JsonBackend, JsonBackendBuilder};
     use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId};
+    use crate::kvs_backend::KvsBackend;
     use crate::kvs_builder::{KvsBuilder, KVS_MAX_INSTANCES, KVS_POOL};
     use crate::kvs_value::{KvsMap, KvsValue};
     use crate::test_utils::tempdir;
@@ -354,7 +355,7 @@ mod kvs_builder_tests {
 
     #[test]
     fn test_max_instances() {
-        assert_eq!(KvsBuilder::max_instances(), KVS_MAX_INSTANCES);
+        assert_eq!(KvsBuilder::max_instances(), 10);
     }
 
     #[test]
@@ -624,18 +625,23 @@ mod kvs_builder_tests {
         assert!(result.is_err_and(|e| e == ErrorCode::InvalidInstanceId));
     }
 
+    /// Example default values stored by `create_defaults_file`.
+    fn example_defaults() -> KvsMap {
+        KvsMap::from([
+            ("number1".to_string(), KvsValue::F64(123.0)),
+            ("bool1".to_string(), KvsValue::Boolean(true)),
+            ("string1".to_string(), KvsValue::String("Hello".to_string())),
+        ])
+    }
+
     /// Generate and store file containing example default values.
+    /// There is no public writer for the defaults file, so this helper calls `save` directly.
     fn create_defaults_file(working_dir: &Path, instance_id: InstanceId) -> Result<(), ErrorCode> {
         let backend = JsonBackendBuilder::new().working_dir(working_dir.to_path_buf()).build();
         let defaults_file_path = backend.defaults_file_path(instance_id);
         let defaults_hash_file_path = backend.defaults_hash_file_path(instance_id);
 
-        let kvs_map = KvsMap::from([
-            ("number1".to_string(), KvsValue::F64(123.0)),
-            ("bool1".to_string(), KvsValue::Boolean(true)),
-            ("string1".to_string(), KvsValue::String("Hello".to_string())),
-        ]);
-        JsonBackend::save(&kvs_map, &defaults_file_path, &defaults_hash_file_path)?;
+        JsonBackend::save(&example_defaults(), &defaults_file_path, &defaults_hash_file_path)?;
 
         Ok(())
     }
@@ -647,16 +653,26 @@ mod kvs_builder_tests {
         snapshot_id: SnapshotId,
     ) -> Result<(PathBuf, PathBuf), ErrorCode> {
         let backend = JsonBackendBuilder::new().working_dir(working_dir.to_path_buf()).build();
-        let kvs_file_path = backend.kvs_file_path(instance_id, snapshot_id);
-        let hash_file_path = backend.hash_file_path(instance_id, snapshot_id);
+        assert!(snapshot_id.0 < backend.snapshot_max_count());
         let kvs_map = KvsMap::from([
             ("number1".to_string(), KvsValue::F64(321.0)),
             ("bool1".to_string(), KvsValue::Boolean(false)),
             ("string1".to_string(), KvsValue::String("Hi".to_string())),
         ]);
-        JsonBackend::save(&kvs_map, &kvs_file_path, &hash_file_path)?;
+        // Each `flush` rotates the existing snapshots up by one.
+        for _ in 0..=snapshot_id.0 {
+            backend.flush(instance_id, &kvs_map)?;
+        }
+        // Remove the lower snapshots, so only the requested snapshot can be loaded.
+        for idx in 0..snapshot_id.0 {
+            std::fs::remove_file(backend.kvs_file_path(instance_id, SnapshotId(idx))).unwrap();
+            std::fs::remove_file(backend.hash_file_path(instance_id, SnapshotId(idx))).unwrap();
+        }
 
-        Ok((kvs_file_path, hash_file_path))
+        Ok((
+            backend.kvs_file_path(instance_id, snapshot_id),
+            backend.hash_file_path(instance_id, snapshot_id),
+        ))
     }
 
     #[test]
@@ -675,10 +691,10 @@ mod kvs_builder_tests {
         let kvs = builder.build().unwrap();
 
         assert_eq!(kvs.parameters().defaults, KvsDefaults::Ignored);
-        let kvs_pool = KVS_POOL.lock().unwrap();
-        let kvs_pool_entry = kvs_pool.get(2).unwrap();
-        let kvs_data = kvs_pool_entry.as_ref().unwrap();
-        assert_eq!(kvs_data.data.lock().unwrap().defaults_map, KvsMap::new());
+        for key in example_defaults().keys() {
+            assert!(kvs.get_default_value(key).is_err_and(|e| e == ErrorCode::KeyNotFound));
+            assert!(kvs.is_value_default(key).is_err_and(|e| e == ErrorCode::KeyNotFound));
+        }
     }
 
     #[test]
@@ -696,10 +712,10 @@ mod kvs_builder_tests {
         let kvs = builder.build().unwrap();
 
         assert_eq!(kvs.parameters().defaults, KvsDefaults::Optional);
-        let kvs_pool = KVS_POOL.lock().unwrap();
-        let kvs_pool_entry = kvs_pool.get(2).unwrap();
-        let kvs_data = kvs_pool_entry.as_ref().unwrap();
-        assert_eq!(kvs_data.data.lock().unwrap().defaults_map, KvsMap::new());
+        for key in example_defaults().keys() {
+            assert!(kvs.get_default_value(key).is_err_and(|e| e == ErrorCode::KeyNotFound));
+            assert!(kvs.is_value_default(key).is_err_and(|e| e == ErrorCode::KeyNotFound));
+        }
     }
 
     #[test]
@@ -718,10 +734,10 @@ mod kvs_builder_tests {
         let kvs = builder.build().unwrap();
 
         assert_eq!(kvs.parameters().defaults, KvsDefaults::Optional);
-        let kvs_pool = KVS_POOL.lock().unwrap();
-        let kvs_pool_entry = kvs_pool.get(2).unwrap();
-        let kvs_data = kvs_pool_entry.as_ref().unwrap();
-        assert_eq!(kvs_data.data.lock().unwrap().defaults_map.len(), 3);
+        for (key, value) in example_defaults() {
+            assert_eq!(kvs.get_default_value(&key).unwrap(), value);
+            assert!(kvs.is_value_default(&key).unwrap());
+        }
     }
 
     #[test]
@@ -757,10 +773,10 @@ mod kvs_builder_tests {
         let kvs = builder.build().unwrap();
 
         assert_eq!(kvs.parameters().defaults, KvsDefaults::Required);
-        let kvs_pool = KVS_POOL.lock().unwrap();
-        let kvs_pool_entry = kvs_pool.get(2).unwrap();
-        let kvs_data = kvs_pool_entry.as_ref().unwrap();
-        assert_eq!(kvs_data.data.lock().unwrap().defaults_map.len(), 3);
+        for (key, value) in example_defaults() {
+            assert_eq!(kvs.get_default_value(&key).unwrap(), value);
+            assert!(kvs.is_value_default(&key).unwrap());
+        }
     }
 
     #[test]
@@ -779,10 +795,7 @@ mod kvs_builder_tests {
         let kvs = builder.build().unwrap();
 
         assert_eq!(kvs.parameters().kvs_load, KvsLoad::Ignored);
-        let kvs_pool = KVS_POOL.lock().unwrap();
-        let kvs_pool_entry = kvs_pool.get(2).unwrap();
-        let kvs_data = kvs_pool_entry.as_ref().unwrap();
-        assert_eq!(kvs_data.data.lock().unwrap().kvs_map, KvsMap::new());
+        assert!(kvs.get_all_keys().unwrap().is_empty());
     }
 
     #[test]
@@ -800,10 +813,7 @@ mod kvs_builder_tests {
         let kvs = builder.build().unwrap();
 
         assert_eq!(kvs.parameters().kvs_load, KvsLoad::Optional);
-        let kvs_pool = KVS_POOL.lock().unwrap();
-        let kvs_pool_entry = kvs_pool.get(2).unwrap();
-        let kvs_data = kvs_pool_entry.as_ref().unwrap();
-        assert_eq!(kvs_data.data.lock().unwrap().kvs_map, KvsMap::new());
+        assert!(kvs.get_all_keys().unwrap().is_empty());
     }
 
     #[test]
@@ -862,10 +872,8 @@ mod kvs_builder_tests {
         let kvs = builder.build().unwrap();
 
         assert_eq!(kvs.parameters().kvs_load, KvsLoad::Optional);
-        let kvs_pool = KVS_POOL.lock().unwrap();
-        let kvs_pool_entry = kvs_pool.get(2).unwrap();
-        let kvs_data = kvs_pool_entry.as_ref().unwrap();
-        assert_eq!(kvs_data.data.lock().unwrap().kvs_map.len(), 3);
+        assert_eq!(kvs.get_all_keys().unwrap().len(), 3);
+        assert_eq!(kvs.get_value_as::<f64>("number1").unwrap(), 321.0);
     }
 
     #[test]
@@ -941,9 +949,7 @@ mod kvs_builder_tests {
         let kvs = builder.build().unwrap();
 
         assert_eq!(kvs.parameters().kvs_load, KvsLoad::Required);
-        let kvs_pool = KVS_POOL.lock().unwrap();
-        let kvs_pool_entry = kvs_pool.get(2).unwrap();
-        let kvs_data = kvs_pool_entry.as_ref().unwrap();
-        assert_eq!(kvs_data.data.lock().unwrap().kvs_map.len(), 3);
+        assert_eq!(kvs.get_all_keys().unwrap().len(), 3);
+        assert_eq!(kvs.get_value_as::<f64>("number1").unwrap(), 321.0);
     }
 }
