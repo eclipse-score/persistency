@@ -1,0 +1,64 @@
+# *******************************************************************************
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+name: Bazel Build (QNX)
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+  merge_group:
+    types: [checks_requested]
+  workflow_call:
+  workflow_dispatch:
+jobs:
+  qnx-build:
+    name: Build and Test ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: score-qnx-x86_64
+            bazel-config: score-qnx-x86_64
+            working-directory: "."
+            bazel-target: "//score/..."
+            bazel-disk-cache: score-qnx-x86_64
+            bazel-test-target: "//score/..."
+            extra-bazel-flags: "--lockfile_mode=error"
+            extra-bazel-test-flags: "--lockfile_mode=error"
+          - name: score-qnx-aarch64
+            bazel-config: score-qnx-aarch64
+            working-directory: "."
+            bazel-target: "//score/..."
+            bazel-disk-cache: score-qnx-aarch64
+            bazel-test-target: "//score/..."
+            extra-bazel-flags: "--lockfile_mode=error"
+            extra-bazel-test-flags: "--lockfile_mode=error --test_timeout=120,600,1800,7200" # QEMU emulation is slow
+    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@58cb0ec5a80441d593464d3af09d634ab91247e0 # v0.0.3-32-g8ab7396
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      bazel-target: ${{ matrix.bazel-target }}
+      bazel-config: ${{ matrix.bazel-config }}
+      bazel-test-target: ${{ matrix.bazel-test-target }}
+      test-log-artifact-name: qnx-testlogs-${{ matrix.bazel-disk-cache }}-${{ github.run_attempt }}
+      bazel-disk-cache: ${{ matrix.bazel-disk-cache }}
+      working-directory: ${{ matrix.working-directory }}
+      extra-bazel-flags: ${{ matrix.extra-bazel-flags }}
+      extra-bazel-test-flags: ${{ matrix.extra-bazel-test-flags }}
+    secrets:
+      score-qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
+      score-qnx-user: ${{ secrets.SCORE_QNX_USER }}
+      score-qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}

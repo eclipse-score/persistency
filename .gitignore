@@ -65,7 +65,3 @@ __pycache__/
 devenv.local.nix
 .direnv
 target
-
-# --- keep test fixture payloads under install/ (override *.so, *.a, etc.)
-!score/kvs/tests/integration_test_scenarios/install/
-!score/kvs/tests/integration_test_scenarios/install/**
