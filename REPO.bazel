@@ -18,16 +18,10 @@ repo(features = [
     "minimal_warnings",
 ])
 
-# The root `docs()` target globs documentation sources from the repository root
-# (`source_dir = "."`). Unlike `.bazelignore` (which only affects target-pattern
-# expansion such as `//...`), `ignore_directories()` also suppresses `glob()`
-# traversal. Without this, the `**/*` globs follow the `bazel-*` convenience
-# symlinks into the output base / execroot and enumerate the entire external
-# dependency tree, configuring millions of targets and making every Bazel
-# command extremely slow.
+# `ignore_directories()` keeps Bazel's convenience symlinks and Cargo's build directory out of package lookup and `glob()`.
+# `.bazelignore` only affects target-pattern expansion such as `//...`.
+# `ignore_directories()` also stops `glob()` from following the `bazel-*` symlinks into the output base.
 ignore_directories([
     "bazel-*",
-    "_build",
     "target",
-    ".venv*",
 ])

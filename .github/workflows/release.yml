@@ -10,255 +10,194 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
+#
+# Builds and verifies a release candidate.
+# It reuses the repository's build, cargo, coverage, lint and sanitizer workflows.
+# Then it creates a draft release from .github/RELEASE_TEMPLATE.md.
+# Maintainers review and publish the draft.
+# Publishing the draft creates the tag and triggers docs.yml for it.
 name: Release
+run-name: Release ${{ inputs.tag }}${{ inputs.dry_run && ' (dry run)' || '' }}
+
+permissions:
+  contents: read
 
 on:
-  # Trigger manually to do a dry-run or to create the actual release.
-  # dry_run=true  → runs the full build/test/coverage pipeline but skips
-  #                 the git tag and GitHub release.
-  # dry_run=false → creates the tag, creates the release, and attaches
-  #                 coverage artifacts.
   workflow_dispatch:
     inputs:
-      version:
-        description: "Release version (semver X.Y.Z, e.g. 0.3.3)"
+      tag:
+        description: "Release tag (vX.Y.Z, e.g. v0.3.6)"
         required: true
         type: string
       dry_run:
-        description: "Dry run — validate build/test/coverage without creating a tag or release"
+        description: "Dry run: run all checks and build the release assets, but don't create the draft release"
         required: false
         type: boolean
         default: true
 
-  # Keep existing trigger so releases created directly in the GitHub UI
-  # still run verification (backward-compatible).
-  release:
-    types: [created]
+concurrency:
+  group: release
 
 jobs:
-  # ---------------------------------------------------------------------------
-  # Job 1 (workflow_dispatch + dry_run=false only):
-  #   create release tag and GitHub release.
-  # ---------------------------------------------------------------------------
-  prepare-release:
-    if: github.event_name == 'workflow_dispatch' && !inputs.dry_run
+  validate:
     runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
-    permissions:
-      contents: write
-    outputs:
-      tag: ${{ steps.create-tag.outputs.tag }}
     steps:
-      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
-
-      - name: Validate version format
-        run: |
-          echo "${{ inputs.version }}" | grep -qP '^\d+\.\d+\.\d+$' || \
-          (echo "ERROR: Invalid version '${{ inputs.version }}'. Use X.Y.Z format." && exit 1)
-
-      - name: Checkout Repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-
-      - name: Create and push tag
-        id: create-tag
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          TAG="v${{ inputs.version }}"
-          git tag -a "$TAG" -m "Release $TAG"
-          git push origin "$TAG"
-          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
-
-      - name: Create GitHub Release
+      - name: Validate tag
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v${{ inputs.version }}" \
-            --title "Release v${{ inputs.version }}" \
-            --generate-notes \
-            --target main
+          set -euo pipefail
+          if ! [[ "${RELEASE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid tag '${RELEASE_TAG}'. Use vX.Y.Z."
+            exit 1
+          fi
+          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${RELEASE_TAG}" > /dev/null 2>&1; then
+            echo "::error::Tag '${RELEASE_TAG}' already exists."
+            exit 1
+          fi
 
-  # ---------------------------------------------------------------------------
-  # Job 2: build, test, generate coverage and (on real release) attach artifacts.
-  #   Runs for all three trigger paths:
-  #     a) workflow_dispatch dry_run=true  → validate only
-  #     b) workflow_dispatch dry_run=false → after prepare-release
-  #     c) release: created               → triggered from GitHub UI
-  # ---------------------------------------------------------------------------
-  release-verification:
-    needs: [prepare-release]
-    if: |
-      github.event_name == 'release' ||
-      (github.event_name == 'workflow_dispatch' && (inputs.dry_run || needs.prepare-release.result != 'failure'))
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+  build-linux:
+    needs: validate
+    uses: ./.github/workflows/build_linux.yml
     permissions:
-      contents: write
+      contents: read
+  build-qnx:
+    needs: validate
+    uses: ./.github/workflows/build_qnx.yml
+    permissions:
+      contents: read
+      pull-requests: read
+    secrets: inherit
+  cargo:
+    needs: validate
+    uses: ./.github/workflows/cargo_required.yml
+    permissions:
+      contents: read
+  coverage-report:
+    needs: validate
+    uses: ./.github/workflows/coverage_report.yml
+    permissions:
+      contents: read
+  lint:
+    needs: validate
+    uses: ./.github/workflows/lint.yml
+    permissions:
+      contents: read
+  sanitizers:
+    needs: validate
+    uses: ./.github/workflows/sanitizers_linux.yml
+    permissions:
+      contents: read
 
+  sbom:
+    needs: validate
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
     steps:
-      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+      - name: Free up disk space
+        uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
         with:
           level: 4
-
-      - name: Validate version format (workflow_dispatch only)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          echo "${{ inputs.version }}" | grep -qP '^\d+\.\d+\.\d+$' || \
-          (echo "ERROR: Invalid version '${{ inputs.version }}'. Use X.Y.Z format." && exit 1)
-
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # dry_run: check out main (tag doesn't exist yet / won't be created)
-          # real release via dispatch: check out the newly created tag
-          # release event from UI: github.ref already points to the tag
-          ref: >-
-            ${{
-              github.event_name == 'workflow_dispatch' && !inputs.dry_run &&
-              needs.prepare-release.outputs.tag ||
-              github.ref
-            }}
-
-      - name: Resolve release version
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "RELEASE_VERSION=v${{ inputs.version }}" >> "$GITHUB_ENV"
-          else
-            echo "RELEASE_VERSION=${{ github.event.release.tag_name }}" >> "$GITHUB_ENV"
-          fi
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.dry_run }}" == "true" ]]; then
-            echo "ARTIFACT_SUFFIX=_dry-run" >> "$GITHUB_ENV"
-          else
-            echo "ARTIFACT_SUFFIX=" >> "$GITHUB_ENV"
-          fi
-
+          lfs: true
       - name: Setup Bazel with shared caching
         uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
         with:
           disk-cache-key: ${{ github.job }}
-
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
       - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@168b6f51b21b5f0ebe49808939db53557dca410c # main branch (2026-10-12)
-
-      - name: Build via Bazel
-        run: |
-          set -euo pipefail
-          echo "Running: bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/..."
-          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/...
-
-      - name: Run Unit Tests via Bazel
-        run: |
-          set -euo pipefail
-          echo "Running: bazel test --lockfile_mode=error --config=score-linux-x86_64 //:unit_tests"
-          bazel test --lockfile_mode=error --config=score-linux-x86_64 //:unit_tests
-
-      - name: Run unified Rust + C++ coverage
-        run: |
-          set -euo pipefail
-          bazel coverage --lockfile_mode=error --config=llvm_cov \
-            //score/... --build_tests_only
-
-      - name: Generate unified coverage report
-        env:
-          # Report-only; see coverage_report.yml for the rationale on this threshold.
-          COVERAGE_THRESHOLD: "0"
-        run: |
-          set -euo pipefail
-          bazel run --lockfile_mode=error @score_coverage//:generate_coverage_html -- \
-            --yaml tools/coverage/coverage_justifications.yaml \
-            --testlogs-subdir score \
-            --archive-dir coverage_artifact
-
-      - name: Create archive of test report
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts
-          find bazel-testlogs/score/ -name 'test.xml' -print0 | xargs -0 -I{} cp --parents {} artifacts/
-          cp -r coverage_artifact artifacts/
-          zip -r ${{ github.event.repository.name }}_coverage_report_${RELEASE_VERSION}${ARTIFACT_SUFFIX}.zip artifacts/
-
-      - name: Upload artifacts (workflow artifact — always, including dry runs)
+      # Needs network access: crate metadata comes from the crates.io API.
+      - name: Build SBOM
+        run: bazel build --lockfile_mode=error --config=score-linux-x86_64 //:sbom_product
+      - name: Upload SBOM
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ${{ github.event.repository.name }}_coverage_report_${{ env.RELEASE_VERSION }}${{ env.ARTIFACT_SUFFIX }}
-          path: artifacts/
+          name: sbom
+          path: |
+            bazel-bin/sbom_product.spdx.json
+            bazel-bin/sbom_product.cdx.json
+          if-no-files-found: error
 
-      - name: Attach ZIP to GitHub Release (skipped on dry run)
-        if: |
-          github.event_name == 'release' ||
-          (github.event_name == 'workflow_dispatch' && !inputs.dry_run)
+  create-release:
+    needs: [build-linux, build-qnx, cargo, coverage-report, lint, sanitizers, sbom]
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+      DRY_RUN: ${{ inputs.dry_run }}
+      COVERAGE_ARCHIVE: ${{ github.event.repository.name }}-${{ inputs.tag }}-coverage
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Get Current Date and Previous Release Tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PREVIOUS_TAG=$(gh release view --json tagName --jq '.tagName' 2>/dev/null || echo "N/A")
+          echo "RELEASE_DATE=$(date --rfc-3339=date)" >> "$GITHUB_ENV"
+          echo "PREVIOUS_RELEASE_TAG=$PREVIOUS_TAG" >> "$GITHUB_ENV"
+      - name: Generate Release Body
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          ACTION_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          envsubst '$RELEASE_TAG $PREVIOUS_RELEASE_TAG $COMMIT_SHA $RELEASE_DATE $ACTION_RUN_URL' < .github/RELEASE_TEMPLATE.md > release_body.md
+      - name: Download Coverage Report Artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ github.event.repository.name }}_coverage_report
+          path: ${{ env.COVERAGE_ARCHIVE }}
+      - name: Create Coverage Report Archive
+        run: |
+          tar --sort=name --owner=0 --group=0 --numeric-owner \
+            -cJf "$COVERAGE_ARCHIVE.tar.xz" "$COVERAGE_ARCHIVE"
+      - name: Download SBOM Artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: sbom
+          path: sbom
+      - name: Upload Release Assets (dry run)
+        if: ${{ inputs.dry_run }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-dry-run
+          path: |
+            release_body.md
+            ${{ env.COVERAGE_ARCHIVE }}.tar.xz
+            sbom/
+      - name: Create Draft Release
+        if: ${{ !inputs.dry_run }}
+        id: draft_release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
-          tag_name: >-
-            ${{
-              github.event_name == 'workflow_dispatch' &&
-              needs.prepare-release.outputs.tag ||
-              github.event.release.tag_name
-            }}
-          files: ${{ github.event.repository.name }}_coverage_report_${{ env.RELEASE_VERSION }}${{ env.ARTIFACT_SUFFIX }}.zip
+          tag_name: ${{ inputs.tag }}
+          body_path: release_body.md
+          draft: true
+          generate_release_notes: true
+          target_commitish: ${{ github.sha }}
+          files: |
+            ${{ env.COVERAGE_ARCHIVE }}.tar.xz
+            sbom/sbom_product.spdx.json
+            sbom/sbom_product.cdx.json
+      - name: Summary
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Job Summary
-        if: always()
-        shell: bash
+          RELEASE_URL: ${{ steps.draft_release.outputs.url }}
+          REF_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
         run: |
-          VERSION="${RELEASE_VERSION}"
-          DRY_RUN="${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}"
-
           {
-            echo "## Release Verification: ${VERSION}"
-            echo ""
             if [[ "${DRY_RUN}" == "true" ]]; then
-              echo "> **Dry run** — no tag or release was created."
+              echo "### Release Dry Run :test_tube:"
+              echo "No draft release was created. The release body and assets are in the \`release-dry-run\` artifact."
             else
-              echo "> **Real release** — tag and GitHub Release were created."
+              echo "### Draft Release Created :rocket:"
+              echo "Maintainers can review at: ${RELEASE_URL}"
             fi
-            echo ""
-
-            echo "### Checks"
-            echo "| Step | Result |"
-            echo "|------|--------|"
-
-            # Parse test XML for pass/fail counts
-            PASS=0; FAIL=0; ERROR=0
-            while IFS= read -r xml; do
-              p=$(grep -oP '(?<=tests=")[0-9]+' "$xml" | head -1 || echo 0)
-              f=$(grep -oP '(?<=failures=")[0-9]+' "$xml" | head -1 || echo 0)
-              e=$(grep -oP '(?<=errors=")[0-9]+' "$xml" | head -1 || echo 0)
-              PASS=$(( PASS + ${p:-0} ))
-              FAIL=$(( FAIL + ${f:-0} ))
-              ERROR=$(( ERROR + ${e:-0} ))
-            done < <(find artifacts/ -name 'test.xml' 2>/dev/null)
-
-            TOTAL=$(( PASS + FAIL + ERROR ))
-            if [[ $TOTAL -eq 0 ]]; then
-              TEST_RESULT="⚠️ no test results found"
-            elif [[ $(( FAIL + ERROR )) -gt 0 ]]; then
-              TEST_RESULT="❌ ${PASS}/${TOTAL} passed (${FAIL} failed, ${ERROR} errors)"
-            else
-              TEST_RESULT="✅ ${PASS}/${TOTAL} passed"
-            fi
-
-            echo "| Build (x86_64-linux) | ✅ |"
-            echo "| Unit tests | ${TEST_RESULT} |"
-            echo "| Unified coverage (Rust + C++) | see coverage report artifact |"
-
-            echo ""
-            echo "### Artifacts"
-            echo "Coverage report uploaded as workflow artifact \`${{ github.event.repository.name }}_coverage_report_${VERSION}${ARTIFACT_SUFFIX}\`."
-
-            if [[ "${DRY_RUN}" != "true" ]]; then
-              echo ""
-              echo "### Next step"
-              echo "Update the Bazel registry in \`eclipse-score/score\` for release tag ${VERSION}."
-            fi
-          } | tee -a "$GITHUB_STEP_SUMMARY"
-
-          # Annotation for quick visibility in the Annotations box
-          if [[ $(( FAIL + ERROR )) -gt 0 ]]; then
-            echo "::error::Release verification failed: ${FAIL} test failure(s), ${ERROR} error(s)"
-          else
-            echo "::notice::Release verification passed for ${VERSION} (dry_run=${DRY_RUN})"
-          fi
+            echo "Tag: **${RELEASE_TAG}**"
+            echo "Branch: \`${REF_NAME}\`"
+            echo "Commit: \`${COMMIT_SHA}\`"
+            echo "Next step after publishing: update the S-CORE Bazel registry (\`eclipse-score/bazel_registry\`) for ${RELEASE_TAG}."
+          } >> "$GITHUB_STEP_SUMMARY"
