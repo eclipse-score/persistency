@@ -142,8 +142,17 @@ jobs:
           TAG: ${{ inputs.tag }}
           TAG_PATTERN: ${{ inputs.tag-pattern }}
           PREVIOUS_TAG: ${{ inputs.previous-tag }}
+          DRY_RUN: ${{ inputs.dry-run }}
+          REF_NAME: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
+
+          # Dry runs may use any branch, e.g. to test this workflow before it is merged.
+          if [[ "$DRY_RUN" != "true" && "$REF_NAME" != "$DEFAULT_BRANCH" ]]; then
+            echo "::error::Real releases must run on '$DEFAULT_BRANCH', not '$REF_NAME'. Use a dry run."
+            exit 1
+          fi
 
           if ! [[ "$TAG" =~ $TAG_PATTERN ]]; then
             echo "::error::Tag '$TAG' does not match '$TAG_PATTERN'."
