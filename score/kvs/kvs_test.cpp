@@ -3173,3 +3173,96 @@ TEST(kvs_kvsvalue, const_char_ptr_nullptr_precondition)
     const char* null_str = nullptr;
     EXPECT_DEATH(KvsValue{null_str}, "");
 }
+
+// Read-only mode: open(..., read_only=true) rejects every mutation and every flush.
+TEST(kvs_read_only, mutating_operations_return_read_only_violation)
+{
+    prepare_environment();
+
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt,
+                         KVS_DEFAULT_MAX_SNAPSHOTS,
+                         true);
+    ASSERT_TRUE(kvs);
+
+    auto set_result = kvs.value().set_value("new_key", KvsValue(1));
+    ASSERT_FALSE(set_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*set_result.error()), ErrorCode::ReadOnlyViolation);
+
+    auto remove_key_result = kvs.value().remove_key("kvs");
+    ASSERT_FALSE(remove_key_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*remove_key_result.error()), ErrorCode::ReadOnlyViolation);
+
+    auto remove_all_result = kvs.value().remove_all_keys();
+    ASSERT_FALSE(remove_all_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*remove_all_result.error()), ErrorCode::ReadOnlyViolation);
+
+    auto reset_result = kvs.value().reset();
+    ASSERT_FALSE(reset_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*reset_result.error()), ErrorCode::ReadOnlyViolation);
+
+    // "default" has a default value, so the rejection must come from read-only mode, not from KeyDefaultNotFound.
+    auto reset_key_result = kvs.value().reset_key("default");
+    ASSERT_FALSE(reset_key_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*reset_key_result.error()), ErrorCode::ReadOnlyViolation);
+
+    auto flush_result = kvs.value().flush();
+    ASSERT_FALSE(flush_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::ReadOnlyViolation);
+
+    // The rejected mutations must have left the in-memory state untouched.
+    EXPECT_TRUE(kvs.value().kvs_.count("kvs"));
+    EXPECT_FALSE(kvs.value().kvs_.count("new_key"));
+
+    cleanup_environment();
+}
+
+// Read-only mode: snapshot_restore() is exempt and loads the snapshot into memory, but flush() stays rejected.
+TEST(kvs_read_only, snapshot_restore_allowed_but_flush_still_rejected)
+{
+    prepare_environment();
+
+    auto kvs = Kvs::open(instance_id,
+                         snapshot_id,
+                         OpenNeedDefaults::Optional,
+                         OpenNeedKvs::Optional,
+                         std::string(data_dir),
+                         std::nullopt,
+                         KVS_DEFAULT_MAX_SNAPSHOTS,
+                         true);
+    ASSERT_TRUE(kvs);
+
+    // Create snapshot 1 with valid JSON and a matching hash file.
+    const std::string json_data = R"({
+        "kvs_old": {
+            "t": "i32",
+            "v": 42
+        }
+    })";
+    std::ofstream out(filename_prefix + "_1.json", std::ios::binary);
+    out.write(json_data.data(), json_data.size());
+    out.close();
+    uint32_t hash = adler32(json_data);
+    std::array<uint8_t, 4> hash_bytes = {uint8_t((hash >> 24) & 0xFF),
+                                         uint8_t((hash >> 16) & 0xFF),
+                                         uint8_t((hash >> 8) & 0xFF),
+                                         uint8_t((hash) & 0xFF)};
+    std::ofstream hash_out(filename_prefix + "_1.hash", std::ios::binary);
+    hash_out.write(reinterpret_cast<const char*>(hash_bytes.data()), hash_bytes.size());
+    hash_out.close();
+
+    auto restore_result = kvs.value().snapshot_restore(1);
+    EXPECT_TRUE(restore_result);
+    EXPECT_TRUE(kvs.value().kvs_.count("kvs_old"));
+
+    // Restored state can never be persisted on a read-only instance.
+    auto flush_result = kvs.value().flush();
+    ASSERT_FALSE(flush_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::ReadOnlyViolation);
+
+    cleanup_environment();
+}

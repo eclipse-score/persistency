@@ -136,32 +136,47 @@ class Kvs final
     /// @brief Opens the key-value store with the specified instance ID and flags.
     ///
     /// This function initializes and opens the key-value store (KVS) for a given instance ID.
-    /// It lets the caller specify whether default values and an existing KVS are required or optional.
+    /// It allows the caller to specify whether default values and an existing KVS are required
+    /// or optional during the opening process.
+    ///
+    /// @param instance_id The instance ID of the KVS. This uniquely identifies the KVS instance.
+    /// @param snapshot_id The snapshot ID of the KVS. This uniquely identifies the KVS snapshot.
+    /// @param need_defaults A flag of type OpenNeedDefaults indicating whether default values
+    ///                      are required or optional.
+    ///                      - OpenNeedDefaults::Required: Default values must be available.
+    ///                      - OpenNeedDefaults::Optional: Default values are optional.
+    ///                      - OpenNeedDefaults::Ignored: Default values are not loaded.
+    /// @param need_kvs A flag of type OpenNeedKvs indicating whether the KVS is required or
+    /// optional.
+    ///                 - OpenNeedKvs::Required: The KVS must already exist.
+    ///                 - OpenNeedKvs::Optional: An empty KVS will be used if no KVS exists.
+    ///                 - OpenNeedKvs::Ignored: KVS data is not loaded.
+    /// @param dir The directory path where the KVS files are located. It is passed as an rvalue
+    /// reference to avoid unnecessary copying. Use "" or "." for the current directory.
+    /// @param max_storage_bytes Optional maximum total storage size in bytes. Pass std::nullopt
+    ///                          to enforce no storage limit.
+    /// @param snapshot_max_count The maximum number of snapshots this instance maintains.
+    ///                           Values above KVS_MAX_SNAPSHOTS_UPPER_BOUND are clamped to it
+    ///                           (a warning is logged). A value of 0 disables snapshot
+    ///                           operations; the current KVS data is still persisted by flush().
+    /// @param read_only When `true`, mutating operations (`set_value`, `remove_key`,
+    /// `remove_all_keys`, `reset`, `reset_key`, `flush`) return `ErrorCode::ReadOnlyViolation` and
+    /// leave the KVS and its storage unchanged. `snapshot_restore()` is exempt: it may still load a
+    /// specific snapshot into memory even when read-only, but the restored state can never be
+    /// persisted, since `flush()` remains rejected. Defaults to `false`.
+    /// @return A Result object containing either:
+    ///         - A Kvs object if the operation is successful.
+    ///         - An ErrorCode if an error occurs during the operation.
     ///
     /// @note Instead of using Kvs::open() directly, it is recommended to use the KvsBuilder class.
-    ///
-    /// @param instance_id The instance ID of the KVS.
-    /// This uniquely identifies the KVS instance.
-    /// @param snapshot_id The snapshot ID of the KVS.
-    /// This uniquely identifies the KVS snapshot.
-    /// @param need_defaults Whether default values are required, optional or ignored.
-    /// @param need_kvs Whether the KVS data is required, optional or ignored.
-    /// @param dir The directory path where the KVS files are located.
-    /// Use "" or "." for the current directory.
-    /// @param max_storage_bytes Optional maximum total storage size in bytes.
-    /// Pass std::nullopt to enforce no storage limit.
-    /// @param snapshot_max_count The maximum number of snapshots this instance maintains.
-    /// Values above KVS_MAX_SNAPSHOTS_UPPER_BOUND are clamped to it (a warning is logged).
-    /// A value of 0 disables snapshot operations.
-    /// The current KVS data is still persisted by flush().
-    /// @return The opened Kvs object on success, or an ErrorCode on failure.
     static score::Result<Kvs> open(const InstanceId& instance_id,
                                    const SnapshotId& snapshot_id,
                                    const OpenNeedDefaults& need_defaults,
                                    const OpenNeedKvs& need_kvs,
                                    const std::string& dir,
                                    const std::optional<size_t>& max_storage_bytes,
-                                   const std::size_t snapshot_max_count) noexcept;
+                                   const std::size_t snapshot_max_count,
+                                   const bool read_only = false) noexcept;
 
     /// @brief Resets the key-value store to its initial state.
     /// @return Nothing on success, or an ErrorCode on failure.
@@ -258,6 +273,11 @@ class Kvs final
     size_t snapshot_max_count() const noexcept;
 
     /// @brief Restores the state of the key-value store from a specified snapshot.
+    ///
+    /// Permitted even when the store was opened read-only: the snapshot is loaded into memory
+    /// regardless, but the restored state can never be written back to storage because `flush()`
+    /// still rejects with `ErrorCode::ReadOnlyViolation` for a read-only store.
+    ///
     /// @param snapshot_id The identifier of the snapshot to restore from.
     /// @return Nothing on success, or an ErrorCode on failure.
     score::Result<void> snapshot_restore(const SnapshotId& snapshot_id) noexcept;
@@ -317,6 +337,11 @@ class Kvs final
     /// Maximum number of snapshots maintained by this instance.
     /// @note comp_req__kvs__snapshot_max_num_cfg
     std::size_t max_snapshots_;
+
+    /// When true, mutating operations are rejected with `ErrorCode::ReadOnlyViolation`, except
+    /// snapshot_restore(), which is intentionally still permitted since flush() remains rejected
+    /// and the restored state therefore cannot be persisted.
+    bool read_only_setting_{false};
 
     /// Filesystem handler for file operations.
     std::unique_ptr<score::filesystem::Filesystem> filesystem_;

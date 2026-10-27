@@ -86,6 +86,12 @@ enum class ErrorCode : score::result::ErrorCode
 
     /// Key is not valid.
     InvalidKey,
+
+    /// Invalid configuration (configuration-by-file document malformed or out of range).
+    InvalidConfiguration,
+
+    /// Read-only violation (mutating call rejected because the store was opened read-only).
+    ReadOnlyViolation,
 };
 
 /// @brief Error domain translating `ErrorCode` codes to human-readable messages.

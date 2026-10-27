@@ -102,12 +102,25 @@ class KvsBuilder final
     /// @return Reference to this builder (for chaining).
     KvsBuilder& snapshot_max_count(const std::size_t max_count) noexcept;
 
+    /// @brief Specifies whether the KVS should be opened in read-only mode.
+    /// @param flag True to open read-only; false (default) for read-write.
+    /// @return Reference to this builder (for chaining).
+    KvsBuilder& read_only_flag(bool flag) noexcept;
+
     /// @brief Builds and opens the Kvs instance with the configured options.
     ///
-    /// Internally calls Kvs::open() with the selected flags and directory.
+    /// Internally calls Kvs::open() with the selected flags and directory, after applying any
+    /// configuration-by-file entry matching the instance ID (see KvsConfigParser).
     ///
-    /// @return The opened store on success, or an ErrorCode on failure.
-    score::Result<Kvs> build() const noexcept;
+
+    /// @return The opened store on success, or an ErrorCode on failure:
+    /// - ErrorCode::FileNotFound if `STORAGE_CONFIG_PATH` names a missing configuration target.
+    /// - ErrorCode::KvsFileReadError if the configuration-by-file document could not be read.
+    /// - ErrorCode::JsonParserError if the configuration-by-file document is not valid JSON.
+    /// - ErrorCode::InvalidConfiguration if the configuration-by-file document is structurally or
+    ///   semantically invalid (e.g. an out-of-range `snapshot_max_count`).
+    /// - Any ErrorCode returned by Kvs::open() for the resulting (possibly file-overridden) options.
+    score::Result<Kvs> build() noexcept;
 
   private:
     /// ID of the KVS instance.
@@ -131,6 +144,9 @@ class KvsBuilder final
 
     /// Maximum number of snapshots to maintain.
     std::size_t max_snapshots_;
+
+    /// Whether mutating operations are rejected.
+    bool read_only_setting_;
 };
 
 }  // namespace score::mw::per::kvs

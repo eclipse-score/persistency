@@ -146,6 +146,8 @@ alias(
 test_suite(
     name = "unit_tests",
     tests = [
+        "//score/kvs:kvs_config_parser_test",
+        "//score/kvs:kvs_config_real_test",
         "//score/kvs:unit_tests",
         "//score/kvs/rust_kvs:unit_tests",
     ],

@@ -88,6 +88,7 @@ Kvs::Kvs() noexcept
 Kvs::Kvs(Kvs&& other) noexcept
     : filename_prefix_(std::move(other.filename_prefix_)),
       max_snapshots_(other.max_snapshots_),
+      read_only_setting_(other.read_only_setting_),
       filesystem_(std::move(other.filesystem_)),
       parser_(std::move(other.parser_)),
       writer_(std::move(other.writer_)),
@@ -121,6 +122,7 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
         writer_ = std::move(other.writer_);
         logger_ = std::move(other.logger_);
         max_storage_bytes_ = other.max_storage_bytes_;
+        read_only_setting_ = other.read_only_setting_;
     }
     return *this;
 }
@@ -221,7 +223,8 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
                              const OpenNeedKvs& need_kvs,
                              const std::string& dir,
                              const std::optional<size_t>& max_storage_bytes,
-                             const std::size_t snapshot_max_count) noexcept
+                             const std::size_t snapshot_max_count,
+                             const bool read_only) noexcept
 {
     const score::filesystem::Path base_path(dir);
     const score::filesystem::Path filename_prefix = base_path / ("kvs_" + std::to_string(instance_id.id));
@@ -230,6 +233,7 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
 
     Kvs kvs;
     kvs.max_storage_bytes_ = max_storage_bytes;
+    kvs.read_only_setting_ = read_only;
     score::Result<KeyValueMap> default_res{};
 
     if (need_defaults != OpenNeedDefaults::Ignored)
@@ -280,6 +284,10 @@ score::Result<Kvs> Kvs::open(const InstanceId& instance_id,
 
 score::Result<void> Kvs::reset() noexcept
 {
+    if (read_only_setting_)
+    {
+        return score::MakeUnexpected(ErrorCode::ReadOnlyViolation);
+    }
     std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
     if (!lock.owns_lock())
     {
@@ -348,6 +356,11 @@ score::Result<KvsValue> Kvs::get_default_value(const std::string_view key) const
 
 score::Result<void> Kvs::reset_key(const std::string_view key) noexcept
 {
+    if (read_only_setting_)
+    {
+        return score::MakeUnexpected(ErrorCode::ReadOnlyViolation);
+    }
+
     std::unique_lock<std::mutex> lock_kvs(kvs_mutex_, std::try_to_lock);
     if (!lock_kvs.owns_lock())
     {
@@ -396,6 +409,11 @@ score::Result<void> Kvs::set_value(const std::string_view key, const KvsValue& v
         return score::MakeUnexpected(ErrorCode::InvalidKey);
     }
 
+    if (read_only_setting_)
+    {
+        return score::MakeUnexpected(ErrorCode::ReadOnlyViolation);
+    }
+
     std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
     if (!lock.owns_lock())
     {
@@ -408,6 +426,10 @@ score::Result<void> Kvs::set_value(const std::string_view key, const KvsValue& v
 
 score::Result<void> Kvs::remove_key(const std::string_view key) noexcept
 {
+    if (read_only_setting_)
+    {
+        return score::MakeUnexpected(ErrorCode::ReadOnlyViolation);
+    }
     std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
     if (!lock.owns_lock())
     {
@@ -423,6 +445,11 @@ score::Result<void> Kvs::remove_key(const std::string_view key) noexcept
 
 score::Result<void> Kvs::remove_all_keys() noexcept
 {
+    if (read_only_setting_)
+    {
+        return score::MakeUnexpected(ErrorCode::ReadOnlyViolation);
+    }
+
     std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
     if (!lock.owns_lock())
     {
@@ -716,6 +743,10 @@ score::Result<std::string> Kvs::serialize_and_check() const noexcept
 
 score::Result<void> Kvs::flush() noexcept
 {
+    if (read_only_setting_)
+    {
+        return score::MakeUnexpected(ErrorCode::ReadOnlyViolation);
+    }
     auto result = serialize_and_check();
     if (!result)
     {

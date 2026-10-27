@@ -47,6 +47,8 @@ TEST(kvs_MessageFor, MessageFor)
         {ErrorCode::MutexLockFailed, "Mutex failed"},
         {ErrorCode::InvalidValueType, "Invalid value type"},
         {ErrorCode::InvalidKey, "Key is not valid"},
+        {ErrorCode::InvalidConfiguration, "Invalid configuration"},
+        {ErrorCode::ReadOnlyViolation, "Read-only violation"},
     };
     for (const auto& test : test_cases)
     {

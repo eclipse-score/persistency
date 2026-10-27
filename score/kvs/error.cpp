@@ -64,6 +64,10 @@ std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code
             return "Invalid value type";
         case ErrorCode::InvalidKey:
             return "Key is not valid";
+        case ErrorCode::InvalidConfiguration:
+            return "Invalid configuration";
+        case ErrorCode::ReadOnlyViolation:
+            return "Read-only violation";
         default:
             return "Unknown Error!";
     }
