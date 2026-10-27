@@ -1,0 +1,75 @@
+# *******************************************************************************
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+name: Bazel Build (QNX)
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+  merge_group:
+    types: [checks_requested]
+  workflow_call:
+  workflow_dispatch:
+jobs:
+  qnx-build:
+    name: Build and Test ${{ matrix.name }}
+    # Job-level `if` has no access to `env`, so the clauses are kept one per line.
+    # 1. pushes to main
+    # 2. merge queue runs
+    # 3. manual dispatch (e.g. on a Dependabot branch, which gets no secrets itself)
+    # 4. same-repository PRs without approval, except Dependabot (no access to Actions secrets)
+    if: |-
+      github.event_name == 'push' ||
+      github.event_name == 'merge_group' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+        github.actor != 'dependabot[bot]' &&
+        github.event.pull_request.head.repo.full_name == github.repository)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Unit tests run in a QNX VM through score_qnx_unit_tests (see .bazelrc).
+          - name: run-under-qnx-x86_64
+            bazel-config: run-under-qnx-x86_64
+            test-targets: "//score/..."
+          - name: run-under-qnx-aarch64
+            bazel-config: run-under-qnx-aarch64
+            test-targets: "//score/..."
+            test-args: "--test_timeout=120,600,1800,7200" # QEMU emulation is slow
+          # Component integration tests run in a QNX x86_64 QEMU VM (see //score/kvs/tests:cit_tests).
+          # ITF starts the VM itself, so this entry uses the plain QNX config.
+          - name: score-qnx-x86_64-cit
+            bazel-config: score-qnx-x86_64
+            test-targets: "//:cit_tests"
+    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@d241348e8670bf5b8902d67ff3ac77e7f60f9ec7 # main (2026-11-11)
+    permissions:
+      contents: read
+    with:
+      build-targets: "//score/..."
+      test-targets: ${{ matrix.test-targets }}
+      bazel-configs: ${{ matrix.bazel-config }}
+      test-args: ${{ matrix.test-args || '' }}
+      setup-qnx-sdp: true
+      # All entries start a QEMU VM: the unit tests through run_under, the CITs through ITF.
+      setup-qemu: true
+      # Each entry keeps its own build and test cache.
+      cache-key: ${{ matrix.name }}
+      disk-cleanup-level: 4
+      artifact-name: qnx-testlogs-${{ matrix.name }}-${{ github.run_attempt }}
+    secrets:
+      qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
+      qnx-user: ${{ secrets.SCORE_QNX_USER }}
+      qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}
