@@ -19,8 +19,8 @@
 #include <scenario.hpp>
 #include <test_context.hpp>
 
-#include "cit/cit.hpp"
-#include "test_basic.hpp"
+#include "cit/cit.h"
+#include "test_basic.h"
 
 int main(int argc, char** argv)
 {

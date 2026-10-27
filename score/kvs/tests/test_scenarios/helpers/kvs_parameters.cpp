@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "helpers/kvs_parameters.hpp"
+#include "helpers/kvs_parameters.h"
 
 using namespace score::json;
 

@@ -11,11 +11,11 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "supported_datatypes.hpp"
+#include "cit/supported_datatypes.h"
 
-#include "helpers/kvs_instance.hpp"
-#include "helpers/kvs_parameters.hpp"
-#include "tracing.hpp"
+#include "helpers/kvs_instance.h"
+#include "helpers/kvs_parameters.h"
+#include <tracing.hpp>
 
 #include "score/utility.hpp"
 #include <iomanip>

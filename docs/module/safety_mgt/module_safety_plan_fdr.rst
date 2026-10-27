@@ -1,6 +1,6 @@
 ..
    # *******************************************************************************
-   # Copyright (c) 2025 Contributors to the Eclipse Foundation
+   # Copyright (c) 2026 Contributors to the Eclipse Foundation
    #
    # See the NOTICE file(s) distributed with this work for additional
    # information regarding copyright ownership.
@@ -12,13 +12,13 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-Safety Plan Formal Review Report
-================================
+Persistency Safety Plan Formal Review Report
+============================================
 
 .. document:: Persistency Safety Plan Formal Review
    :id: doc__persistency_safety_plan_fdr
-   :status: valid
-   :version: 1
+   :status: draft
+   :version: 2
    :safety: ASIL_B
    :security: NO
    :realizes: wp__fdr_reports[version==1]
@@ -31,7 +31,9 @@ The purpose of this safety plan formal review checklist is to report status of t
 **Conduct**
 As described in :need:`wf__p_formal_rv`, the formal document review is performed by an "external" safety manager:
 
-- reviewer: <committer with safety manager skills explicitly named here>
+- reviewer: Alexander Schemmel (`<https://github.com/aschemmel-tech>`_)
+- scope: the module safety plan :need:`doc__persistency_safety_plan` (version 2) including the feature safety
+  work products list :need:`doc__persistency_safety_wp` and the skill check :need:`doc__persistency_codeowners`
 
 **Checklist**
 
@@ -48,72 +50,94 @@ See also :need:`doc_concept__wp_inspections` for further information about revie
 
         * - 1
           - Is the rationale for the safety work products tailoring included?
-          - [YES | NO ]
-          - :need:`[[title]] <std_req__iso26262__management_6451>`
-            :need:`[[title]] <std_req__iso26262__management_6455>`
-            :need:`[[title]] <std_req__iso26262__management_6457>`
-            :need:`[[title]] <std_req__iso26262__management_6467>`
-          - <Rationale for result>
+          - N/A
+          - :need:`[[title]] <std_req__iso26262__management_6452>`
+          - This is the first formal release of the module, so no impact analysis of re-used SW is needed.
+            For following releases the component and feature modification requests affecting the SW release
+            will be linked here (safety planning based on impact analysis as defined in the tailoring of the
+            :need:`wp__platform_safety_plan`).
 
         * - 2
           - Is impact analysis planned in case of re-use of SW (needed for every release following the first formal release)?
-          - [YES | NO ]
+          - YES
           - :need:`[[title]] <std_req__iso26262__management_6452>`
-          - <Rationale for result>
+          - The module safety plan adds to the :need:`wp__platform_safety_plan`, whose tailoring defines that the safety
+            planning for a change request on an existing feature is done based on an impact analysis.
+            The module safety plan does not repeat this.
 
         * - 3
           - Does the safety plan define all needed activities for safety management (incl. formal document review and Safety Audit)?
-          - [YES | NO ]
+          - YES
           - :need:`[[title]] <std_req__iso26262__management_6465>`
             :need:`[[title]] <std_req__iso26262__management_6491>`
             :need:`[[title]] <std_req__iso26262__management_64111>`
-          - <Rationale for result>
+          - Planned are the formal document reviews (:need:`wp__fdr_reports`) of the module safety plan,
+            the module safety package and the module's safety analyses and DFA.
+            The safety audit (:need:`wp__audit_report`) is planned on platform level in the :need:`wp__platform_safety_plan`
+            (performed by external experts); the module safety plan refers to the next S-CORE safety audit.
 
         * - 4
           - Does the safety plan define all needed activities for System and SW development, integration and verification?
-          - [YES | NO ]
+          - NO
           - :need:`[[title]] <std_req__iso26262__management_6465>`
-          - <Rationale for result>
+          - Component KVS: requirements, AoU, requirements inspection, architecture, architecture inspection, implementation,
+            unit test, implementation inspection and component integration test are planned.
+            Feature Persistency (:need:`doc__persistency_safety_wp`): feature request, requirements, AoU, architecture, FMEA, DFA
+            and the inspections are planned. Module: safety manual, user manual (:need:`wp__module_user_manual`), module
+            verification report and release note are planned. Finding:
+
+            - :need:`wp__verification_feat_int_test` has no link to a work product ("<WP Link>").
 
         * - 5
           - Does the safety plan define all needed activities for safety analysis and DFA?
-          - [YES | NO ]
+          - YES
           - :need:`[[title]] <std_req__iso26262__management_6465>`
-          - <Rationale for result>
+          - Planned are the feature FMEA and DFA (:need:`doc__persistency_safety_wp`), the component FMEA and DFA
+            and their formal document review (:need:`wp__fdr_reports`).
 
         * - 6
           - Does the safety plan define all needed activities for supporting processes (incl. tool mgt)?
-          - [YES | NO ]
+          - YES
           - :need:`[[title]] <std_req__iso26262__management_6465>`
-          - <Rationale for result>
+          - The supporting processes (configuration, change, documentation, problem resolution and tool management)
+            are planned on platform level in the :need:`wp__platform_safety_plan`. The module uses the platform tools
+            (Bazel, docs-as-code, GitHub) and adds no module specific tools.
 
         * - 7
           - Does the safety plan document a responsible for all activities?
-          - [YES | NO ]
+          - YES
           - :need:`[[title]] <std_req__iso26262__management_6463>`
-          - <Rationale for result>
+          - Safety Manager and Module Project Manager are named in the module roles. For each work product the
+            :need:`doc__persistency_safety_plan` states the link to the process (column "Link to process"), which
+            defines the responsible role. The role holders are the CODEOWNERS, whose skills are checked in
+            :need:`doc__persistency_codeowners`.
 
         * - 8
           - If OSS software components is used, is it planned to be qualified?
-          - [YES | NO ]
+          - NO
           - :need:`[[title]] <std_req__iso26262__management_6455>`
-          - <Rationale for result>
+          - The Rust implementation uses the OSS crates ``tinyjson`` and ``adler32``. Their classification
+            (:need:`wp__sw_component_class`) and qualification plan are open and documented as deviation in
+            :ref:`persistency_safety_package_deviations`. Replacement of ``adler32`` is discussed in
+            `#413 <https://github.com/eclipse-score/persistency/issues/413>`_.
 
         * - 9
           - Is a safety manager and a project manager appointed for the project?
-          - [YES | NO ]
+          - YES
           - :need:`[[title]] <std_req__iso26262__management_6461>`
             :need:`[[title]] <std_req__iso26262__management_6462>`
-          - <Rationale for result>
+          - Safety Manager: Volker Häussler, Module Project Manager (= Feature team lead): Uwe Maucher.
 
         * - 10
           - Is safety plan sufficiently linked to the project plan?
-          - [YES | NO ]
+          - YES
           - :need:`[[title]] <std_req__iso26262__management_6464>`
-          - <Rationale for result>
+          - The module safety plan links to the
+            `Persistency Feature Team Planning <https://github.com/orgs/eclipse-score/projects/20/views/12>`__.
 
         * - 11
           - Is safety plan updated iteratively to show the progress?
-          - [YES | NO ]
+          - YES
           - :need:`[[title]] <std_req__iso26262__management_6468>`
-          - <Rationale for result>
+          - The safety plan is in version 2 and maintained via pull requests (history in the repository); the work product
+            tables show the process status, the linked documents show the work product status.

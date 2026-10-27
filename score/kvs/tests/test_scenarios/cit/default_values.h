@@ -10,19 +10,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
-
-#include <optional>
-#include <string>
+#ifndef SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_DEFAULT_VALUES_H
+#define SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_DEFAULT_VALUES_H
 
 #include <scenario.hpp>
 
-class BasicScenario final : public Scenario
-{
-  public:
-    ~BasicScenario() final = default;
+ScenarioGroup::Ptr default_values_group();
 
-    std::string name() const final;
-
-    void run(const std::string& input) const final;
-};
+#endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_DEFAULT_VALUES_H

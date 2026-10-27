@@ -11,11 +11,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
 
-#include "snapshots.hpp"
-#include "helpers/helpers.hpp"
-#include "helpers/kvs_instance.hpp"
-#include "helpers/kvs_parameters.hpp"
-#include "tracing.hpp"
+#include "cit/snapshots.h"
+
+#include "helpers/helpers.h"
+#include "helpers/kvs_instance.h"
+#include "helpers/kvs_parameters.h"
+#include <tracing.hpp>
 
 using namespace score::mw::per::kvs;
 using namespace score::json;

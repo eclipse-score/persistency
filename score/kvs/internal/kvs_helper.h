@@ -10,12 +10,14 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#ifndef SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP
-#define SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP
+#ifndef SCORE_KVS_INTERNAL_KVS_HELPER_H
+#define SCORE_KVS_INTERNAL_KVS_HELPER_H
 
 #include "score/json/json_parser.h"
-#include "score/kvs/error.hpp"
-#include "score/kvs/kvsvalue.hpp"
+#include "score/kvs/error.h"
+#include "score/kvs/kvs_value.h"
+#include <array>
+#include <cstdint>
 #include <istream>
 #include <string>
 
@@ -68,4 +70,4 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) noexcept;
 
 }  // namespace score::mw::per::kvs
 
-#endif  // SCORE_LIB_KVS_INTERNAL_KVS_HELPER_HPP
+#endif  // SCORE_KVS_INTERNAL_KVS_HELPER_H
