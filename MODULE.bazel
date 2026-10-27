@@ -62,14 +62,7 @@ bazel_dep(name = "score_sbom", version = "0.1.1", dev_dependency = True)
 bazel_dep(name = "score_rules_imagefs", version = "0.1.0", dev_dependency = True)
 bazel_dep(name = "score_rust_policies", version = "0.0.5", dev_dependency = True)
 bazel_dep(name = "score_toolchains_rust", version = "0.10.0", dev_dependency = True)
-bazel_dep(name = "score_tools", version = "0.0.3", dev_dependency = True)
-
-# Pinned past v0.0.3 for the `$(locations)` fix in score_pytest.
-git_override(
-    module_name = "score_tools",
-    commit = "4b48cec400c67be75cfc3fa4658ac6a0489bf7a8",
-    remote = "https://github.com/eclipse-score/tools",
-)
+bazel_dep(name = "score_tools", version = "0.0.4", dev_dependency = True)
 
 # Python toolchain configuration
 PYTHON_VERSION = "3.12"
