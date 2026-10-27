@@ -82,10 +82,10 @@ on:
         required: false
         default: ""
         type: string
-      artifact-pattern:
+      artifact-name:
         description: >-
-          Glob for artifacts uploaded by earlier jobs of the calling workflow run. Each matching artifact
-          is attached as `<repo>-<tag>-<artifact-name>.zip`. Empty disables the download.
+          Artifact uploaded by an earlier job of the calling workflow run; bundle everything to attach into
+          one. It is attached as `<repo>-<tag>-<artifact-name>.zip`. Empty disables the download.
         required: false
         default: ""
         type: string
@@ -233,12 +233,13 @@ jobs:
             cp -L -- "$file" "dist/${REPO_NAME}-${TAG}-$(basename "$file")"
           done
 
-      - name: Download artifacts of the calling workflow
-        if: inputs.artifact-pattern != ''
+      # By name, not pattern: a pattern matching one artifact is extracted without its own directory.
+      - name: Download artifact of the calling workflow
+        if: inputs.artifact-name != ''
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          pattern: ${{ inputs.artifact-pattern }}
-          path: artifacts
+          name: ${{ inputs.artifact-name }}
+          path: artifacts/${{ inputs.artifact-name }}
 
       - name: Download documentation
         if: inputs.docs-bazel-target != ''

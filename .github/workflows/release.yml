@@ -115,7 +115,7 @@ jobs:
     with:
       tag: ${{ inputs.tag }}
       dry-run: ${{ inputs.dry_run }}
-      artifact-pattern: verification-*
+      artifact-name: verification-report
       docs-bazel-target: "--lockfile_mode=error //:docs"
       docs-tests-report-artifact: tests-report
       bazel-asset-targets: //:sbom_product
