@@ -68,11 +68,31 @@ test:_score_common --build_tests_only
 # Target configuration for CPU:x86-64|OS:Linux build (do not use it in case of system toolchains!)
 test:score-linux-x86_64 --config=_score_common
 
+# Target configuration for CPU:AArch64|OS:Linux build (do not use it in case of system toolchains!)
+# Tests run under qemu-user (`qemu-aarch64` must be on PATH).
+# ITF tests support only x86_64 targets, so only cc and rust tests run.
+test:score-linux-aarch64 --config=_score_common
+test:score-linux-aarch64 --test_timeout=300
+test:score-linux-aarch64 --run_under=//:qemu_aarch64
+test:score-linux-aarch64 --test_lang_filters=cc,rust
+
 # Target configuration for CPU:x86-64|OS:QNX build (do not use it in case of system toolchains!)
 test:score-qnx-x86_64 --config=_score_common
 
 # Target configuration for CPU:AArch64|OS:QNX build (do not use it in case of system toolchains!)
 test:score-qnx-aarch64 --config=_score_common
+
+# QNX unit tests in a QEMU VM through score_qnx_unit_tests.
+# Use these configs instead of score-qnx-x86_64 or score-qnx-aarch64 to run the cc and rust tests on QNX.
+# ITF tests such as //:cit_tests start their own VM and use the plain score-qnx-x86_64 config.
+build:run-under-qnx-x86_64 --config=score-qnx-x86_64
+test:run-under-qnx-x86_64 --run_under=@score_qnx_unit_tests//src:run_under_qnx
+test:run-under-qnx-x86_64 --test_lang_filters=cc,rust
+
+build:run-under-qnx-aarch64 --config=score-qnx-aarch64
+test:run-under-qnx-aarch64 --test_timeout=300
+test:run-under-qnx-aarch64 --run_under=@score_qnx_unit_tests//src:run_under_qnx
+test:run-under-qnx-aarch64 --test_lang_filters=cc,rust
 
 # Deprecated aliases for the previous config names.
 # `test` inherits `build:` entries, so the aliased config's `test:` entries are pulled in too.
