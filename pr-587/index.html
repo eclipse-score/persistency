@@ -737,6 +737,11 @@ The integration of the module into a Bazel project is described in <code class="
 </pre></div>
 </div>
 <p>Building without an explicit <code class="docutils literal notranslate"><span class="pre">--config</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">score-linux-x86_64</span></code>, <code class="docutils literal notranslate"><span class="pre">score-qnx-x86_64</span></code>, <code class="docutils literal notranslate"><span class="pre">score-qnx-aarch64</span></code>) is not supported.
+The config <code class="docutils literal notranslate"><span class="pre">score-linux-aarch64</span></code> is supported too.
+Its tests need <code class="docutils literal notranslate"><span class="pre">qemu-user</span></code>.
+The QNX configs need QNX SDP credentials (<code class="docutils literal notranslate"><span class="pre">SCORE_QNX_USER</span></code>, <code class="docutils literal notranslate"><span class="pre">SCORE_QNX_PASSWORD</span></code>) and a QNX license.
+Their tests run in a QEMU VM and need <code class="docutils literal notranslate"><span class="pre">qemu-system-x86_64</span></code> or <code class="docutils literal notranslate"><span class="pre">qemu-system-aarch64</span></code>.
+The x86_64 VM uses KVM when it is available.
 The old names <code class="docutils literal notranslate"><span class="pre">per-x86_64-linux</span></code>, <code class="docutils literal notranslate"><span class="pre">per-x86_64-qnx</span></code> and <code class="docutils literal notranslate"><span class="pre">per-arm64-qnx</span></code> still work as deprecated aliases.</p>
 <p>To run all tests:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span><span class="nb">test</span><span class="w"> </span>//...
