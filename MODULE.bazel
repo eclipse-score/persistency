@@ -34,15 +34,7 @@ git_override(
 
 bazel_dep(name = "score_platform", version = "0.7.3")
 bazel_dep(name = "score_process_description", version = "2.2.1")
-bazel_dep(name = "score_test_scenarios", version = "0.4.1")
-
-# Pinned past v0.4.1 for the `score/` path layout introduced in eclipse-score/testing_tools#31.
-git_override(
-    module_name = "score_test_scenarios",
-    commit = "c16400a3f7c71ca26b67965c5e7469560b6de496",
-    remote = "https://github.com/eclipse-score/testing_tools",
-)
-
+bazel_dep(name = "score_test_scenarios", version = "0.5.0")
 bazel_dep(name = "score_tooling", version = "3.0.1")
 
 # LLVM source-based coverage pipeline (C++ + Rust): the qualified S-CORE
