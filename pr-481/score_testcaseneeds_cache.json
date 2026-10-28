@@ -30,7 +30,7 @@
   {
     "name": "TestDefaultValues__test_valid[optional-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "134",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -44,7 +44,7 @@
   {
     "name": "TestDefaultValues__test_valid[required-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "134",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -58,7 +58,7 @@
   {
     "name": "TestDefaultValues__test_valid[without-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "134",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -72,7 +72,7 @@
   {
     "name": "TestRemoveKey__test_valid[optional-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "211",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -86,7 +86,7 @@
   {
     "name": "TestRemoveKey__test_valid[required-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "211",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -100,7 +100,7 @@
   {
     "name": "TestRemoveKey__test_valid[without-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "211",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -114,7 +114,7 @@
   {
     "name": "TestMalformedDefaultsFile__test_invalid[optional-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "311",
+    "line": "312",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -128,7 +128,7 @@
   {
     "name": "TestMalformedDefaultsFile__test_invalid[required-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "311",
+    "line": "312",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -142,7 +142,7 @@
   {
     "name": "TestMissingDefaultsFile__test_invalid[required-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "353",
+    "line": "354",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -156,7 +156,7 @@
   {
     "name": "TestResetAllKeys__test_valid[optional-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "402",
+    "line": "403",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -170,7 +170,7 @@
   {
     "name": "TestResetAllKeys__test_valid[required-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "402",
+    "line": "403",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -184,7 +184,7 @@
   {
     "name": "TestResetSingleKey__test_valid[optional-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "469",
+    "line": "470",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -198,7 +198,7 @@
   {
     "name": "TestResetSingleKey__test_valid[required-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "469",
+    "line": "470",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -212,7 +212,7 @@
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "549",
+    "line": "550",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -226,7 +226,7 @@
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "549",
+    "line": "550",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -240,7 +240,7 @@
   {
     "name": "TestMultipleInstanceIds__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_multiple_kvs.py",
-    "line": "46",
+    "line": "49",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -254,7 +254,7 @@
   {
     "name": "TestSameInstanceIdSameValue__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_multiple_kvs.py",
-    "line": "80",
+    "line": "83",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -268,7 +268,7 @@
   {
     "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_multiple_kvs.py",
-    "line": "116",
+    "line": "122",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -296,7 +296,7 @@
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[0-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -310,7 +310,7 @@
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[1-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -324,7 +324,7 @@
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[3-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -338,7 +338,7 @@
   {
     "name": "TestSnapshotCountFull__test_ok[0-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -352,7 +352,7 @@
   {
     "name": "TestSnapshotCountFull__test_ok[1-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -366,7 +366,7 @@
   {
     "name": "TestSnapshotCountFull__test_ok[3-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -380,7 +380,7 @@
   {
     "name": "TestSnapshotMaxCount__test_ok[0-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "128",
+    "line": "129",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -394,7 +394,7 @@
   {
     "name": "TestSnapshotMaxCount__test_ok[1-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "128",
+    "line": "129",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -408,7 +408,7 @@
   {
     "name": "TestSnapshotMaxCount__test_ok[3-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "128",
+    "line": "129",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -422,7 +422,7 @@
   {
     "name": "TestSnapshotRestorePrevious__test_ok[3-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "167",
+    "line": "168",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -436,7 +436,7 @@
   {
     "name": "TestSnapshotRestoreCurrent__test_error[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "203",
+    "line": "204",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -450,7 +450,7 @@
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "242",
+    "line": "243",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -464,7 +464,7 @@
   {
     "name": "TestSnapshotPathsExist__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "273",
+    "line": "274",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -478,7 +478,7 @@
   {
     "name": "TestSnapshotPathsNonexistent__test_error[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "309",
+    "line": "310",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -507,20 +507,20 @@
     "name": "TestSupportedDatatypesKeys__test_invalid_keys_rejected[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
     "line": "87",
-    "result": "skipped",
+    "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
     "url": "",
     "TestType": "interface-test",
     "DerivationTechnique": "requirements-analysis",
-    "result_text": "Rust KVS does not validate keys yet",
+    "result_text": "",
     "PartiallyVerifies": "comp_req__kvs__key_naming, comp_req__kvs__key_encoding, comp_req__kvs__key_length",
     "FullyVerifies": null
   },
   {
     "name": "TestSupportedDatatypesValues_I32__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -534,7 +534,7 @@
   {
     "name": "TestSupportedDatatypesValues_U32__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -548,7 +548,7 @@
   {
     "name": "TestSupportedDatatypesValues_I64__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -562,7 +562,7 @@
   {
     "name": "TestSupportedDatatypesValues_U64__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -576,7 +576,7 @@
   {
     "name": "TestSupportedDatatypesValues_F64__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -590,7 +590,7 @@
   {
     "name": "TestSupportedDatatypesValues_Bool__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -604,7 +604,7 @@
   {
     "name": "TestSupportedDatatypesValues_String__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -618,7 +618,7 @@
   {
     "name": "TestSupportedDatatypesValues_Array__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -632,7 +632,7 @@
   {
     "name": "TestSupportedDatatypesValues_Object__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -674,7 +674,7 @@
   {
     "name": "TestDefaultValues__test_valid[optional-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "134",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -688,7 +688,7 @@
   {
     "name": "TestDefaultValues__test_valid[required-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "134",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -702,7 +702,7 @@
   {
     "name": "TestDefaultValues__test_valid[without-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "134",
+    "line": "135",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -716,7 +716,7 @@
   {
     "name": "TestRemoveKey__test_valid[optional-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "211",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -730,7 +730,7 @@
   {
     "name": "TestRemoveKey__test_valid[required-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "211",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -744,7 +744,7 @@
   {
     "name": "TestRemoveKey__test_valid[without-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "211",
+    "line": "212",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -758,7 +758,7 @@
   {
     "name": "TestMalformedDefaultsFile__test_invalid[optional-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "311",
+    "line": "312",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -772,7 +772,7 @@
   {
     "name": "TestMalformedDefaultsFile__test_invalid[required-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "311",
+    "line": "312",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -786,7 +786,7 @@
   {
     "name": "TestMissingDefaultsFile__test_invalid[required-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "353",
+    "line": "354",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -800,7 +800,7 @@
   {
     "name": "TestResetAllKeys__test_valid[optional-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "402",
+    "line": "403",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -814,7 +814,7 @@
   {
     "name": "TestResetAllKeys__test_valid[required-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "402",
+    "line": "403",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -828,7 +828,7 @@
   {
     "name": "TestResetSingleKey__test_valid[optional-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "469",
+    "line": "470",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -842,7 +842,7 @@
   {
     "name": "TestResetSingleKey__test_valid[required-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "469",
+    "line": "470",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -856,7 +856,7 @@
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "549",
+    "line": "550",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -870,7 +870,7 @@
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "549",
+    "line": "550",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -884,7 +884,7 @@
   {
     "name": "TestMultipleInstanceIds__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_multiple_kvs.py",
-    "line": "46",
+    "line": "49",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -898,7 +898,7 @@
   {
     "name": "TestSameInstanceIdSameValue__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_multiple_kvs.py",
-    "line": "80",
+    "line": "83",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -912,7 +912,7 @@
   {
     "name": "TestSameInstanceIdDifferentValue__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_multiple_kvs.py",
-    "line": "116",
+    "line": "122",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -926,7 +926,7 @@
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[0-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -940,7 +940,7 @@
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[1-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -954,7 +954,7 @@
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[3-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -968,7 +968,7 @@
   {
     "name": "TestSnapshotCountFull__test_ok[0-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -982,7 +982,7 @@
   {
     "name": "TestSnapshotCountFull__test_ok[1-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -996,7 +996,7 @@
   {
     "name": "TestSnapshotCountFull__test_ok[3-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "66",
+    "line": "67",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1010,7 +1010,7 @@
   {
     "name": "TestSnapshotMaxCount__test_ok[0-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "128",
+    "line": "129",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1024,7 +1024,7 @@
   {
     "name": "TestSnapshotMaxCount__test_ok[1-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "128",
+    "line": "129",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1038,7 +1038,7 @@
   {
     "name": "TestSnapshotMaxCount__test_ok[3-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "128",
+    "line": "129",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1052,7 +1052,7 @@
   {
     "name": "TestSnapshotRestorePrevious__test_ok[3-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "167",
+    "line": "168",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1066,7 +1066,7 @@
   {
     "name": "TestSnapshotRestoreCurrent__test_error[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "203",
+    "line": "204",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1080,7 +1080,7 @@
   {
     "name": "TestSnapshotRestoreNonexistent__test_error[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "242",
+    "line": "243",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1094,7 +1094,7 @@
   {
     "name": "TestSnapshotPathsExist__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "273",
+    "line": "274",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1108,7 +1108,7 @@
   {
     "name": "TestSnapshotPathsNonexistent__test_error[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_snapshots.py",
-    "line": "309",
+    "line": "310",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1150,7 +1150,7 @@
   {
     "name": "TestSupportedDatatypesValues_I32__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1164,7 +1164,7 @@
   {
     "name": "TestSupportedDatatypesValues_U32__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1178,7 +1178,7 @@
   {
     "name": "TestSupportedDatatypesValues_I64__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1192,7 +1192,7 @@
   {
     "name": "TestSupportedDatatypesValues_U64__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1206,7 +1206,7 @@
   {
     "name": "TestSupportedDatatypesValues_F64__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1220,7 +1220,7 @@
   {
     "name": "TestSupportedDatatypesValues_Bool__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1234,7 +1234,7 @@
   {
     "name": "TestSupportedDatatypesValues_String__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1248,7 +1248,7 @@
   {
     "name": "TestSupportedDatatypesValues_Array__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -1262,7 +1262,7 @@
   {
     "name": "TestSupportedDatatypesValues_Object__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_supported_datatypes.py",
-    "line": "136",
+    "line": "127",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
