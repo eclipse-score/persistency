@@ -1,0 +1,20 @@
+{
+  "coverage_summaries": [
+    {
+      "branches": {
+        "percent": null,
+        "total": null
+      },
+      "files": {
+        "measured": 0,
+        "total": 26
+      },
+      "lines": {
+        "percent": null,
+        "total": null
+      },
+      "primary_need_id": "comp__persistency_kvs"
+    }
+  ],
+  "version": 1
+}
