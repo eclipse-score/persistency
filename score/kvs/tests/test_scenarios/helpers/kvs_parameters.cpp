@@ -70,7 +70,7 @@ KvsParameters KvsParameters::FromValue(const Object& object)
     const auto& map_root{object.at("kvs_parameters")};
     const auto& obj_root{map_root.As<Object>().value().get()};
 
-    KvsParameters params{.instance_id = obj_root.at("instance_id").As<uint64_t>().value()};
+    KvsParameters params{obj_root.at("instance_id").As<uint64_t>().value()};
 
     // Deserialize "defaults".
     params.defaults = DeserializeLoadParam<score::kvs::KvsDefaults>(obj_root, "defaults");
