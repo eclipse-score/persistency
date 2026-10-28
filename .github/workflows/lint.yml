@@ -24,7 +24,7 @@ on:
 
 jobs:
   lint:
-    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@58cb0ec5a80441d593464d3af09d634ab91247e0 # v0.0.3-32-g8ab7396
+    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@3f61217cfa69b1d40b366049ace7fc63932e63c2 # v0.0.3-32-g8ab7396
     permissions:
       contents: read
     with:
