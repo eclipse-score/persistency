@@ -38,7 +38,7 @@ namespace score::kvs
 constexpr std::size_t kMaxKeyLengthBytes = 32U;
 
 /// @deprecated Use `kMaxKeyLengthBytes` instead.
-[[deprecated("Use kMaxKeyLengthBytes instead. The snake_case API is removed in a future release.")]]
+[[deprecated("Use kMaxKeyLengthBytes instead. This name is removed in a future release.")]]
 constexpr std::size_t KVS_MAX_KEY_LENGTH_BYTES = kMaxKeyLengthBytes;
 
 /// @brief Upper bound of the configurable maximum number of snapshots.
@@ -49,7 +49,7 @@ constexpr std::size_t KVS_MAX_KEY_LENGTH_BYTES = kMaxKeyLengthBytes;
 constexpr std::size_t kMaxSnapshotsUpperBound = 3U;
 
 /// @deprecated Use `kMaxSnapshotsUpperBound` instead.
-[[deprecated("Use kMaxSnapshotsUpperBound instead. The snake_case API is removed in a future release.")]]
+[[deprecated("Use kMaxSnapshotsUpperBound instead. This name is removed in a future release.")]]
 constexpr std::size_t KVS_MAX_SNAPSHOTS_UPPER_BOUND = kMaxSnapshotsUpperBound;
 
 /// @brief Default maximum number of snapshots.
@@ -59,7 +59,7 @@ constexpr std::size_t KVS_MAX_SNAPSHOTS_UPPER_BOUND = kMaxSnapshotsUpperBound;
 constexpr std::size_t kDefaultMaxSnapshots = 3U;
 
 /// @deprecated Use `kDefaultMaxSnapshots` instead.
-[[deprecated("Use kDefaultMaxSnapshots instead. The snake_case API is removed in a future release.")]]
+[[deprecated("Use kDefaultMaxSnapshots instead. This name is removed in a future release.")]]
 constexpr std::size_t KVS_DEFAULT_MAX_SNAPSHOTS = kDefaultMaxSnapshots;
 
 /// @brief Identifier of a KVS instance.
@@ -106,13 +106,13 @@ enum class KvsDefaults : std::uint8_t
 
     // Deprecated enumerators.
     // Each one is an alias of its k-prefixed replacement and is removed in a future release.
-    Required [[deprecated("Use kRequired instead. The snake_case API is removed in a future release.")]] = kRequired,
-    Optional [[deprecated("Use kOptional instead. The snake_case API is removed in a future release.")]] = kOptional,
-    Ignored [[deprecated("Use kIgnored instead. The snake_case API is removed in a future release.")]] = kIgnored,
+    Required [[deprecated("Use kRequired instead. This name is removed in a future release.")]] = kRequired,
+    Optional [[deprecated("Use kOptional instead. This name is removed in a future release.")]] = kOptional,
+    Ignored [[deprecated("Use kIgnored instead. This name is removed in a future release.")]] = kIgnored,
 };
 
 /// @deprecated Use `KvsDefaults` instead.
-using OpenNeedDefaults [[deprecated("Use KvsDefaults instead. The snake_case API is removed in a future release.")]] =
+using OpenNeedDefaults [[deprecated("Use KvsDefaults instead. This name is removed in a future release.")]] =
     KvsDefaults;
 
 /// @brief Whether KVS data must already exist when opening a KVS.
@@ -127,13 +127,13 @@ enum class KvsLoad : std::uint8_t
 
     // Deprecated enumerators.
     // Each one is an alias of its k-prefixed replacement and is removed in a future release.
-    Required [[deprecated("Use kRequired instead. The snake_case API is removed in a future release.")]] = kRequired,
-    Optional [[deprecated("Use kOptional instead. The snake_case API is removed in a future release.")]] = kOptional,
-    Ignored [[deprecated("Use kIgnored instead. The snake_case API is removed in a future release.")]] = kIgnored,
+    Required [[deprecated("Use kRequired instead. This name is removed in a future release.")]] = kRequired,
+    Optional [[deprecated("Use kOptional instead. This name is removed in a future release.")]] = kOptional,
+    Ignored [[deprecated("Use kIgnored instead. This name is removed in a future release.")]] = kIgnored,
 };
 
 /// @deprecated Use `KvsLoad` instead.
-using OpenNeedKvs [[deprecated("Use KvsLoad instead. The snake_case API is removed in a future release.")]] = KvsLoad;
+using OpenNeedKvs [[deprecated("Use KvsLoad instead. This name is removed in a future release.")]] = KvsLoad;
 
 /// @brief Whether a JSON file must exist when it is opened.
 enum class OpenJsonNeedFile : std::uint8_t
@@ -145,8 +145,8 @@ enum class OpenJsonNeedFile : std::uint8_t
 
     // Deprecated enumerators.
     // Each one is an alias of its k-prefixed replacement and is removed in a future release.
-    Required [[deprecated("Use kRequired instead. The snake_case API is removed in a future release.")]] = kRequired,
-    Optional [[deprecated("Use kOptional instead. The snake_case API is removed in a future release.")]] = kOptional,
+    Required [[deprecated("Use kRequired instead. This name is removed in a future release.")]] = kRequired,
+    Optional [[deprecated("Use kOptional instead. This name is removed in a future release.")]] = kOptional,
 };
 
 /// @brief A thread-safe key-value store (KVS).
@@ -338,7 +338,7 @@ class Kvs final
     // Each entry forwards to its PascalCase replacement and is removed in a future release.
 
     /// @deprecated Use `Open()` instead.
-    [[deprecated("Use Open() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use Open() instead. This name is removed in a future release.")]]
     static score::Result<Kvs> open(const InstanceId& instance_id,
                                    const SnapshotId& snapshot_id,
                                    const KvsDefaults& defaults,
@@ -352,133 +352,133 @@ class Kvs final
     }
 
     /// @deprecated Use `Reset()` instead.
-    [[deprecated("Use Reset() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use Reset() instead. This name is removed in a future release.")]]
     score::Result<void> reset() noexcept
     {
         return Reset();
     }
 
     /// @deprecated Use `GetAllKeys()` instead.
-    [[deprecated("Use GetAllKeys() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use GetAllKeys() instead. This name is removed in a future release.")]]
     score::Result<std::vector<std::string>> get_all_keys() const noexcept
     {
         return GetAllKeys();
     }
 
     /// @deprecated Use `KeyExists()` instead.
-    [[deprecated("Use KeyExists() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use KeyExists() instead. This name is removed in a future release.")]]
     score::Result<bool> key_exists(const std::string_view key) const noexcept
     {
         return KeyExists(key);
     }
 
     /// @deprecated Use `GetValue()` instead.
-    [[deprecated("Use GetValue() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use GetValue() instead. This name is removed in a future release.")]]
     score::Result<KvsValue> get_value(const std::string_view key) const noexcept
     {
         return GetValue(key);
     }
 
     /// @deprecated Use `GetDefaultValue()` instead.
-    [[deprecated("Use GetDefaultValue() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use GetDefaultValue() instead. This name is removed in a future release.")]]
     score::Result<KvsValue> get_default_value(const std::string_view key) const noexcept
     {
         return GetDefaultValue(key);
     }
 
     /// @deprecated Use `ResetKey()` instead.
-    [[deprecated("Use ResetKey() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use ResetKey() instead. This name is removed in a future release.")]]
     score::Result<void> reset_key(const std::string_view key) noexcept
     {
         return ResetKey(key);
     }
 
     /// @deprecated Use `IsValueDefault()` instead.
-    [[deprecated("Use IsValueDefault() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use IsValueDefault() instead. This name is removed in a future release.")]]
     score::Result<bool> is_value_default(const std::string_view key) const noexcept
     {
         return IsValueDefault(key);
     }
 
     /// @deprecated Use `SetValue()` instead.
-    [[deprecated("Use SetValue() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use SetValue() instead. This name is removed in a future release.")]]
     score::Result<void> set_value(const std::string_view key, const KvsValue& value) noexcept
     {
         return SetValue(key, value);
     }
 
     /// @deprecated Use `RemoveKey()` instead.
-    [[deprecated("Use RemoveKey() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use RemoveKey() instead. This name is removed in a future release.")]]
     score::Result<void> remove_key(const std::string_view key) noexcept
     {
         return RemoveKey(key);
     }
 
     /// @deprecated Use `RemoveAllKeys()` instead.
-    [[deprecated("Use RemoveAllKeys() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use RemoveAllKeys() instead. This name is removed in a future release.")]]
     score::Result<void> remove_all_keys() noexcept
     {
         return RemoveAllKeys();
     }
 
     /// @deprecated Use `DiscardPendingChanges()` instead.
-    [[deprecated("Use DiscardPendingChanges() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use DiscardPendingChanges() instead. This name is removed in a future release.")]]
     score::Result<void> discard_pending_changes() noexcept
     {
         return DiscardPendingChanges();
     }
 
     /// @deprecated Use `Flush()` instead.
-    [[deprecated("Use Flush() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use Flush() instead. This name is removed in a future release.")]]
     score::Result<void> flush() noexcept
     {
         return Flush();
     }
 
     /// @deprecated Use `SnapshotCount()` instead.
-    [[deprecated("Use SnapshotCount() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use SnapshotCount() instead. This name is removed in a future release.")]]
     score::Result<size_t> snapshot_count() const noexcept
     {
         return SnapshotCount();
     }
 
     /// @deprecated Use `SnapshotMaxCount()` instead.
-    [[deprecated("Use SnapshotMaxCount() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use SnapshotMaxCount() instead. This name is removed in a future release.")]]
     size_t snapshot_max_count() const noexcept
     {
         return SnapshotMaxCount();
     }
 
     /// @deprecated Use `SnapshotRestore()` instead.
-    [[deprecated("Use SnapshotRestore() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use SnapshotRestore() instead. This name is removed in a future release.")]]
     score::Result<void> snapshot_restore(const SnapshotId& snapshot_id) noexcept
     {
         return SnapshotRestore(snapshot_id);
     }
 
     /// @deprecated Use `KvsFilePath()` instead.
-    [[deprecated("Use KvsFilePath() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use KvsFilePath() instead. This name is removed in a future release.")]]
     score::Result<score::filesystem::Path> get_kvs_filename(const SnapshotId& snapshot_id) const noexcept
     {
         return KvsFilePath(snapshot_id);
     }
 
     /// @deprecated Use `HashFilePath()` instead.
-    [[deprecated("Use HashFilePath() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use HashFilePath() instead. This name is removed in a future release.")]]
     score::Result<score::filesystem::Path> get_hash_filename(const SnapshotId& snapshot_id) const noexcept
     {
         return HashFilePath(snapshot_id);
     }
 
     /// @deprecated Use `GetStorageFileSize()` instead.
-    [[deprecated("Use GetStorageFileSize() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use GetStorageFileSize() instead. This name is removed in a future release.")]]
     score::Result<size_t> get_storage_file_size() const noexcept
     {
         return GetStorageFileSize();
     }
 
     /// @deprecated Use `CalculatePotentialSize()` instead.
-    [[deprecated("Use CalculatePotentialSize() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use CalculatePotentialSize() instead. This name is removed in a future release.")]]
     score::Result<size_t> calculate_potential_size() const noexcept
     {
         return CalculatePotentialSize();

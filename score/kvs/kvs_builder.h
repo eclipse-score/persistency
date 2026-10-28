@@ -113,49 +113,49 @@ class KvsBuilder final
     // Each entry forwards to its PascalCase replacement and is removed in a future release.
 
     /// @deprecated Use `Snapshot()` instead.
-    [[deprecated("Use Snapshot() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use Snapshot() instead. This name is removed in a future release.")]]
     KvsBuilder& snapshot(const SnapshotId& snapshot_id) noexcept
     {
         return Snapshot(snapshot_id);
     }
 
     /// @deprecated Use `Defaults()` instead.
-    [[deprecated("Use Defaults() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use Defaults() instead. This name is removed in a future release.")]]
     KvsBuilder& need_defaults_flag(const KvsDefaults& flag) noexcept
     {
         return Defaults(flag);
     }
 
     /// @deprecated Use `KvsLoad()` instead.
-    [[deprecated("Use KvsLoad() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use KvsLoad() instead. This name is removed in a future release.")]]
     KvsBuilder& need_kvs_flag(const score::kvs::KvsLoad& flag) noexcept
     {
         return KvsLoad(flag);
     }
 
     /// @deprecated Use `WorkingDir()` instead.
-    [[deprecated("Use WorkingDir() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use WorkingDir() instead. This name is removed in a future release.")]]
     KvsBuilder& dir(const std::string& dir_path) noexcept
     {
         return WorkingDir(dir_path);
     }
 
     /// @deprecated Use `MaxStorageBytes()` instead.
-    [[deprecated("Use MaxStorageBytes() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use MaxStorageBytes() instead. This name is removed in a future release.")]]
     KvsBuilder& max_storage_bytes(const std::optional<size_t>& max_storage_bytes) noexcept
     {
         return MaxStorageBytes(max_storage_bytes);
     }
 
     /// @deprecated Use `SnapshotMaxCount()` instead.
-    [[deprecated("Use SnapshotMaxCount() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use SnapshotMaxCount() instead. This name is removed in a future release.")]]
     KvsBuilder& snapshot_max_count(const std::size_t max_count) noexcept
     {
         return SnapshotMaxCount(max_count);
     }
 
     /// @deprecated Use `Build()` instead.
-    [[deprecated("Use Build() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use Build() instead. This name is removed in a future release.")]]
     score::Result<Kvs> build() const noexcept
     {
         return Build();

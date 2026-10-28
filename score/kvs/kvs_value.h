@@ -81,16 +81,16 @@ class KvsValue final
 
         // Deprecated enumerators.
         // Each one is an alias of its k-prefixed replacement and is removed in a future release.
-        i32 [[deprecated("Use kI32 instead. The snake_case API is removed in a future release.")]] = kI32,
-        u32 [[deprecated("Use kU32 instead. The snake_case API is removed in a future release.")]] = kU32,
-        i64 [[deprecated("Use kI64 instead. The snake_case API is removed in a future release.")]] = kI64,
-        u64 [[deprecated("Use kU64 instead. The snake_case API is removed in a future release.")]] = kU64,
-        f64 [[deprecated("Use kF64 instead. The snake_case API is removed in a future release.")]] = kF64,
-        Boolean [[deprecated("Use kBoolean instead. The snake_case API is removed in a future release.")]] = kBoolean,
-        String [[deprecated("Use kString instead. The snake_case API is removed in a future release.")]] = kString,
-        Null [[deprecated("Use kNull instead. The snake_case API is removed in a future release.")]] = kNull,
-        Array [[deprecated("Use kArray instead. The snake_case API is removed in a future release.")]] = kArray,
-        Object [[deprecated("Use kObject instead. The snake_case API is removed in a future release.")]] = kObject,
+        i32 [[deprecated("Use kI32 instead. This name is removed in a future release.")]] = kI32,
+        u32 [[deprecated("Use kU32 instead. This name is removed in a future release.")]] = kU32,
+        i64 [[deprecated("Use kI64 instead. This name is removed in a future release.")]] = kI64,
+        u64 [[deprecated("Use kU64 instead. This name is removed in a future release.")]] = kU64,
+        f64 [[deprecated("Use kF64 instead. This name is removed in a future release.")]] = kF64,
+        Boolean [[deprecated("Use kBoolean instead. This name is removed in a future release.")]] = kBoolean,
+        String [[deprecated("Use kString instead. This name is removed in a future release.")]] = kString,
+        Null [[deprecated("Use kNull instead. This name is removed in a future release.")]] = kNull,
+        Array [[deprecated("Use kArray instead. This name is removed in a future release.")]] = kArray,
+        Object [[deprecated("Use kObject instead. This name is removed in a future release.")]] = kObject,
     };
 
     using ValueVariant =
@@ -180,14 +180,14 @@ class KvsValue final
     // Each entry forwards to its PascalCase replacement and is removed in a future release.
 
     /// @deprecated Use `GetType()` instead.
-    [[deprecated("Use GetType() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use GetType() instead. This name is removed in a future release.")]]
     Type getType() const noexcept
     {
         return GetType();
     }
 
     /// @deprecated Use `GetValue()` instead.
-    [[deprecated("Use GetValue() instead. The snake_case API is removed in a future release.")]]
+    [[deprecated("Use GetValue() instead. This name is removed in a future release.")]]
     const ValueVariant& getValue() const noexcept
     {
         return GetValue();
