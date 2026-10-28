@@ -33,10 +33,10 @@ const std::string kTargetName{"cpp_test_scenarios::cit::default_values"};
 /// @param value_is_default Whether the current value matches the default ("Ok(true)", "Ok(false)" or error string).
 /// @param default_value String encoding the default value for the key (e.g. "Ok(F64(...))" or error string).
 /// @param current_value String encoding the current value for the key (e.g. "Ok(F64(...))" or error string).
-static void InfoLog(const std::string& key,
-                    const std::string& value_is_default,
-                    const std::string& default_value,
-                    const std::string& current_value)
+void InfoLog(const std::string& key,
+             const std::string& value_is_default,
+             const std::string& default_value,
+             const std::string& current_value)
 {
     TRACING_INFO(kTargetName,
                  std::pair{std::string{"key"}, key},
@@ -52,7 +52,7 @@ static void InfoLog(const std::string& key,
 /// @param key The key being queried or modified in the KVS.
 /// @param value_is_default String encoding whether the current value matches the default.
 /// @param current_value Current value for the key (e.g. "Ok(F64(...))" or an error such as "Err(KeyNotFound)").
-static void InfoLog(const std::string& key, const std::string& value_is_default, const std::string& current_value)
+void InfoLog(const std::string& key, const std::string& value_is_default, const std::string& current_value)
 {
     TRACING_INFO(kTargetName,
                  std::pair{std::string{"key"}, key},
