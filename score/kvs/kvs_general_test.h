@@ -25,16 +25,11 @@
 #include <fstream>
 #include <string>
 
-// Make private members public and drop final, to access member variables and derive from KvsValue in unit tests.
-#define private public
-#define final
-#include "score/kvs/kvs_builder.h"
-#undef private
-#undef final
 #include "score/filesystem/filesystem_mock.h"
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
 #include "score/kvs/internal/kvs_helper.h"
+#include "score/kvs/kvs_builder.h"
 using namespace score::kvs;
 
 uint32_t Adler32(const std::string& data);
