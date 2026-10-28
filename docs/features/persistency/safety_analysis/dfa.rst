@@ -247,7 +247,17 @@ DFA
    :status: valid
    :version: 1
 
-   All memory shall be allocated at initialization (:need:`feat_req__persistency__dynamic_memory_alloc`),
-   bounded by the configured storage and key size (:need:`feat_req__persistency__cfg`).
+   Refined in :need:`comp_saf_dfa__kvs__memory_depletion`.
+
+.. feat_saf_dfa:: Deadlock by completion callback
+   :violates: feat_arc_sta__persistency__static
+   :id: feat_saf_dfa__persistency__callback_deadlock
+   :failure_id: UI_01_04
+   :failure_effect: The application and the persistency block each other, persistency and the calling application are not available.
+   :safety_relevant: yes
+   :mitigated_by: feat_req__persistency__concurrency
+   :sufficient: yes
+   :status: valid
+   :version: 1
 
    Note: The implementations still allocate at runtime (component level).

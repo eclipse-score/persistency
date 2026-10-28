@@ -162,5 +162,6 @@ Footnotes
    detailed_design/chklst_impl_inspection.rst
    kvs.rst
    requirements/index.rst
+   safety_analysis/aou_requirements.rst
    safety_analysis/fmea.rst
    safety_analysis/dfa.rst

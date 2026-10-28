@@ -158,7 +158,7 @@ FMEA
     :failure_effect: Corrupted data or hash file content is read from the file system.
     :failure_root_cause: Fault of the storage medium, interrupted write operation or modification of the files by another software element.
     :safety_relevant: yes
-    :mitigated_by: feat_req__persistency__integrity_check, feat_req__persistency__snapshot_restore, aou_req__persistency__error_handling
+    :mitigated_by: feat_req__persistency__integrity_check, feat_req__persistency__snapshot_restore, aou_req__persistency__error_handling, aou_req__persistency__start_without_data
     :sufficient: yes
     :status: valid
     :version: 2
@@ -166,7 +166,9 @@ FMEA
     The kvs checks the hash before parsing (:need:`feat_req__persistency__integrity_check`) and reports
     Validation-Failed-Error; invalid JSON is reported as JSON-Parser-Error. Corrupted data is never provided.
     The application handles the error (:need:`aou_req__persistency__error_handling`), e.g. by restoring a
-    snapshot (:need:`feat_req__persistency__snapshot_restore`).
+    snapshot (:need:`feat_req__persistency__snapshot_restore`). If no persisted data is available, the kvs provides
+    only default values; the application configures whether this is accepted
+    (:need:`aou_req__persistency__start_without_data`).
 
 .. feat_saf_fmea:: Persisted data is corrupted when storing
     :violates: feat_arc_dyn__persistency__flush
@@ -175,7 +177,7 @@ FMEA
     :failure_effect: Data or hash file is written corrupted or incomplete (e.g. interrupted write).
     :failure_root_cause: Reset or power loss during the write operation, or fault of the storage medium.
     :safety_relevant: yes
-    :mitigated_by: feat_req__persistency__reset_resistant, feat_req__persistency__recovery_from_reset, feat_req__persistency__integrity_check, aou_req__persistency__error_handling
+    :mitigated_by: feat_req__persistency__reset_resistant, feat_req__persistency__recovery_from_reset, feat_req__persistency__integrity_check, aou_req__persistency__error_handling, aou_req__persistency__flush
     :sufficient: yes
     :status: valid
     :version: 2
@@ -183,6 +185,8 @@ FMEA
     Write operations are reset resistant (:need:`feat_req__persistency__reset_resistant`,
     :need:`feat_req__persistency__recovery_from_reset`). An inconsistent data/hash pair is detected at the next load
     (:need:`feat_saf_fmea__persistency__corrupt_load`). Write errors are reported as Physical-Storage-Failure.
+    The application considers changes as persisted only after a flush without error
+    (:need:`aou_req__persistency__flush`).
 
 .. feat_saf_fmea:: Message is not sent
     :violates: feat_arc_dyn__persistency__check_key_default, feat_arc_dyn__persistency__delete_key, feat_arc_dyn__persistency__flush, feat_arc_dyn__persistency__read_key, feat_arc_dyn__persistency__read_from_storage, feat_arc_dyn__persistency__write_key, feat_arc_dyn__persistency__snapshot_restore
@@ -214,8 +218,7 @@ FMEA
     Limits are configured according to :need:`feat_req__persistency__cfg`. Exceeding the storage results in
     Physical-Storage-Failure; persisted data and snapshots remain unchanged.
 
-    Note: :need:`comp_req__kvs__key_length` and :need:`comp_req__kvs__value_length` are not yet enforced by the
-    implementation (component level).
+    Note: :need:`comp_req__kvs__key_length` is not yet enforced by the implementation (component level).
 
 .. feat_saf_fmea:: Loss of execution
     :violates: feat_arc_dyn__persistency__check_key_default, feat_arc_dyn__persistency__delete_key, feat_arc_dyn__persistency__flush, feat_arc_dyn__persistency__read_key, feat_arc_dyn__persistency__read_from_storage, feat_arc_dyn__persistency__write_key, feat_arc_dyn__persistency__snapshot_restore
