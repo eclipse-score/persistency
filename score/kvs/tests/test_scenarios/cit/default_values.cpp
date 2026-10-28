@@ -19,7 +19,7 @@
 #include <tracing.hpp>
 #include <sstream>
 
-using namespace score::mw::per::kvs;
+using namespace score::kvs;
 
 namespace
 {

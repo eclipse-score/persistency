@@ -13,7 +13,7 @@
 
 #include "score/kvs/kvs_builder.h"
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 KvsBuilder::KvsBuilder(const InstanceId& instance_id) noexcept
@@ -72,4 +72,4 @@ score::Result<Kvs> KvsBuilder::build() const noexcept
         instance_id_, snapshot_id_, need_defaults_, need_kvs_, directory, maximum_storage_bytes_, max_snapshots_);
 }
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs

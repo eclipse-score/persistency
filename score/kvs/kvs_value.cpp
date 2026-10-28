@@ -15,7 +15,7 @@
 
 #include "score/assert.hpp"
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 KvsValue::KvsValue(const char* str) noexcept : value_(nullptr)
@@ -67,4 +67,4 @@ KvsValue& KvsValue::operator=(KvsValue&& other) noexcept
 
 KvsValue::~KvsValue() noexcept = default;
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs

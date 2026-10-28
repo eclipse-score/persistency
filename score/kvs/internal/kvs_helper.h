@@ -23,7 +23,7 @@
 
 // This header defines helper functions used internally by the Key-Value Store (KVS) implementation.
 // It exists to allow unit tests to access these internal functions.
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 /// @brief Parses an Adler-32 checksum from its big-endian byte representation.
@@ -68,6 +68,6 @@ score::Result<KvsValue> any_to_kvsvalue(const score::json::Any& any) noexcept;
 /// @return The converted JSON value on success, or ErrorCode::InvalidValueType on failure.
 score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) noexcept;
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs
 
 #endif  // SCORE_KVS_INTERNAL_KVS_HELPER_H

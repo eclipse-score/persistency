@@ -15,9 +15,10 @@
 
 #include "score/kvs/kvs_builder.h"
 
-score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params)
+using namespace score::kvs;
+
+Kvs kvs_instance(const KvsParameters& params)
 {
-    using namespace score::mw::per::kvs;
     InstanceId instance_id{params.instance_id};
     KvsBuilder builder{instance_id};
 

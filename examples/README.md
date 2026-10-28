@@ -53,7 +53,7 @@ rust_binary(
 
 ## 2. Using the C++ Implementation
 
-The C++ API is centered around the `KvsBuilder` and `Kvs` classes (namespace `score::mw::per::kvs`):
+The C++ API is centered around the `KvsBuilder` and `Kvs` classes (namespace `score::kvs`):
 
 ```cpp
 #include "score/kvs/kvs_builder.h"
@@ -62,7 +62,7 @@ The C++ API is centered around the `KvsBuilder` and `Kvs` classes (namespace `sc
 #include <string>
 #include <variant>
 
-using namespace score::mw::per::kvs;
+using namespace score::kvs;
 
 int main()
 {

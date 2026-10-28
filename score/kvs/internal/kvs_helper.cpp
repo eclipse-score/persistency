@@ -13,7 +13,7 @@
 
 #include "score/kvs/internal/kvs_helper.h"
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 // Optimized version: processes data in blocks to reduce modulo operations.
@@ -309,4 +309,4 @@ score::Result<score::json::Any> kvsvalue_to_any(const KvsValue& kv) noexcept
     return score::json::Any(std::move(obj));
 }
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs

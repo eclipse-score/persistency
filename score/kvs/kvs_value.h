@@ -13,6 +13,7 @@
 #ifndef SCORE_KVS_KVS_VALUE_H
 #define SCORE_KVS_KVS_VALUE_H
 
+#include "score/kvs/deprecated_namespace.h"
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -22,7 +23,7 @@
 #include <variant>
 #include <vector>
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 /// @brief Value that holds a number, boolean, string, null, array or object.
@@ -167,6 +168,6 @@ class KvsValue final
     ValueVariant value_;
 };
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs
 
 #endif  // SCORE_KVS_KVS_VALUE_H

@@ -19,10 +19,7 @@
 #include <unordered_map>
 #include <variant>
 
-namespace score::mw::per::kvs
-{
-namespace
-{
+using namespace score::kvs;
 
 TEST(kvs_value_test, get_type_reports_variant)
 {
@@ -83,6 +80,3 @@ TEST(kvs_value_test, move_constructor_preserves_type)
 
     EXPECT_EQ(value.getType(), KvsValue::Type::String);
 }
-
-}  // namespace
-}  // namespace score::mw::per::kvs

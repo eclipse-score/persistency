@@ -22,7 +22,7 @@
 #include <sstream>
 #include <string>
 
-using namespace score::mw::per::kvs;
+using namespace score::kvs;
 using namespace score::json;
 
 namespace

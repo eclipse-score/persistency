@@ -17,7 +17,7 @@
 #include <optional>
 #include <string>
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 /// @brief Builder for opening a KVS object.
@@ -33,7 +33,7 @@ namespace score::mw::per::kvs
 /// #include <iostream>
 /// #include "score/kvs/kvs_builder.h"
 ///
-/// using namespace score::mw::per::kvs;
+/// using namespace score::kvs;
 ///
 /// int main() {
 ///   // Open kvs
@@ -133,6 +133,6 @@ class KvsBuilder final
     std::size_t max_snapshots_;
 };
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs
 
 #endif  // SCORE_KVS_KVS_BUILDER_H

@@ -13,10 +13,11 @@
 #ifndef SCORE_KVS_ERROR_H
 #define SCORE_KVS_ERROR_H
 
+#include "score/kvs/deprecated_namespace.h"
 #include "score/result/result.h"
 #include <string_view>
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 /// @brief Error codes reported by the `kvs` API.
@@ -105,6 +106,6 @@ class KvsErrorDomain final : public score::result::ErrorDomain
 /// @return The created error.
 score::result::Error MakeError(const ErrorCode code, const std::string_view user_message = "") noexcept;
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs
 
 #endif  // SCORE_KVS_ERROR_H

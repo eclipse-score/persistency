@@ -25,6 +25,8 @@
 #include <iostream>
 #include <unordered_map>
 
+using namespace score::kvs;
+
 static const std::string kTargetName{"cpp_test_scenarios::basic::basic"};
 
 std::string BasicScenario::name() const
@@ -34,8 +36,6 @@ std::string BasicScenario::name() const
 
 void BasicScenario::run(const std::string& input) const
 {
-    using namespace score::mw::per::kvs;
-
     // Print and parse parameters.
     std::cerr << input << std::endl;
 

@@ -30,7 +30,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 /// @brief Maximum allowed key length in bytes.
@@ -373,6 +373,6 @@ class Kvs final
     score::Result<size_t> get_current_storage_size() const noexcept;
 };
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs
 
 #endif  // SCORE_KVS_KVS_H

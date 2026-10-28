@@ -40,6 +40,7 @@ cc_library(
         "kvs.h",
         "kvs_builder.h",
         "kvs_value.h",
+        "deprecated_namespace.h",
         # Deprecated forwarders to the headers above.
         # They are kept for existing includes and warn when included.
         "error.hpp",

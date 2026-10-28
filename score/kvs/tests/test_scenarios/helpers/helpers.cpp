@@ -16,8 +16,8 @@
 #include <sstream>
 
 std::pair<std::string, std::string> kvs_hash_paths(const std::string& working_dir,
-                                                   score::mw::per::kvs::InstanceId instance_id,
-                                                   score::mw::per::kvs::SnapshotId snapshot_id)
+                                                   score::kvs::InstanceId instance_id,
+                                                   score::kvs::SnapshotId snapshot_id)
 {
     std::ostringstream kvs_path;
     std::ostringstream hash_path;

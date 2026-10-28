@@ -31,7 +31,7 @@
 #include <string>
 #include <system_error>
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 namespace
@@ -903,4 +903,4 @@ score::Result<size_t> Kvs::get_storage_file_size() const noexcept
     return total_size;
 }
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs

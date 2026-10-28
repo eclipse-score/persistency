@@ -35,7 +35,7 @@
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
 #include "score/kvs/internal/kvs_helper.h"
-using namespace score::mw::per::kvs;
+using namespace score::kvs;
 
 uint32_t adler32(const std::string& data);
 void prepare_environment();

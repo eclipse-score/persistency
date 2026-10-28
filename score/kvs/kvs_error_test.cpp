@@ -15,7 +15,7 @@
 
 namespace
 {
-constexpr score::mw::per::kvs::KvsErrorDomain kvs_error_domain;
+constexpr score::kvs::KvsErrorDomain kvs_error_domain;
 }
 
 TEST(kvs_MessageFor, MessageFor)

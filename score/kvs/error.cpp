@@ -13,7 +13,7 @@
 
 #include "score/kvs/error.h"
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code) const noexcept
@@ -79,4 +79,4 @@ score::result::Error MakeError(const ErrorCode code, const std::string_view user
     return {static_cast<score::result::ErrorCode>(code), kvs_error_domain, user_message};
 }
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs

@@ -18,7 +18,7 @@
 #include <tracing.hpp>
 #include <cmath>
 
-using namespace score::mw::per::kvs;
+using namespace score::kvs;
 using namespace score::json;
 
 namespace
