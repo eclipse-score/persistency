@@ -124,7 +124,6 @@ class KvsMock  <<mock>> {
 class Kvs <<implementation>> {
     - kvs : KvsMap
     - default_kvs : KvsMap
-    - logger : ptr<mw::log::Logger>
     - backend : IKvsBackend
     __
     + Reset() : Result<void>
