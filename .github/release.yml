@@ -12,7 +12,8 @@
 # *******************************************************************************
 
 # Layout of the notes GitHub generates for releases (see release_core.yml).
-# A PR lands in the first matching category, so "Updates" must stay first.
+# A PR lands in the first matching category, so "Dependency and Tool Updates"
+# must stay before the catch-all.
 changelog:
   categories:
     - title: Dependency and Tool Updates

@@ -143,14 +143,15 @@ jobs:
           TAG_PATTERN: ${{ inputs.tag-pattern }}
           PREVIOUS_TAG: ${{ inputs.previous-tag }}
           DRY_RUN: ${{ inputs.dry-run }}
-          REF_NAME: ${{ github.ref_name }}
+          REF: ${{ github.ref }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
 
           # Dry runs may use any branch, e.g. to test this workflow before it is merged.
-          if [[ "$DRY_RUN" != "true" && "$REF_NAME" != "$DEFAULT_BRANCH" ]]; then
-            echo "::error::Real releases must run on '$DEFAULT_BRANCH', not '$REF_NAME'. Use a dry run."
+          # Compare the full ref: a tag named like the default branch has the same ref_name.
+          if [[ "$DRY_RUN" != "true" && "$REF" != "refs/heads/$DEFAULT_BRANCH" ]]; then
+            echo "::error::Real releases must run on 'refs/heads/$DEFAULT_BRANCH', not '$REF'. Use a dry run."
             exit 1
           fi
 
@@ -222,7 +223,7 @@ jobs:
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
       - name: Unblock user namespaces for the Linux sandbox
         if: inputs.bazel-asset-targets != ''
-        uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@30740c18c728bc58f9b17c914c5592a5008f6b98 # main branch (2026-10-12)
+        uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@168b6f51b21b5f0ebe49808939db53557dca410c # main branch (2026-10-12)
 
       - name: Build Bazel assets
         if: inputs.bazel-asset-targets != ''
@@ -238,7 +239,8 @@ jobs:
           bazel build "${flags[@]}" "${targets[@]}"
 
           mkdir -p dist
-          bazel cquery "${flags[@]}" --output=files "${targets[@]}" | while read -r file; do
+          # cquery takes one expression; adjacent labels are not one.
+          bazel cquery "${flags[@]}" --output=files "set(${targets[*]})" | while read -r file; do
             cp -L -- "$file" "dist/${REPO_NAME}-${TAG}-$(basename "$file")"
           done
 
