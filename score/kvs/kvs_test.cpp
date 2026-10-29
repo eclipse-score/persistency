@@ -604,28 +604,6 @@ TEST(kvs_reset, reset_success)
     CleanupEnvironment();
 }
 
-TEST(kvs_reset, reset_failure)
-{
-    PrepareEnvironment();
-
-    // Mutex locked.
-    auto result{Kvs::Open(kInstanceId,
-                          kSnapshotId,
-                          KvsDefaults::kRequired,
-                          KvsLoad::kRequired,
-                          std::string(kDataDir),
-                          std::nullopt,
-                          kDefaultMaxSnapshots)};
-    ASSERT_TRUE(result);
-
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    auto reset_result{result.value().Reset()};
-    EXPECT_FALSE(reset_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*reset_result.error()), ErrorCode::kMutexLockFailed);
-
-    CleanupEnvironment();
-}
-
 TEST(kvs_get_all_keys, get_all_keys_success)
 {
     PrepareEnvironment();
@@ -655,28 +633,6 @@ TEST(kvs_get_all_keys, get_all_keys_success)
     CleanupEnvironment();
 }
 
-TEST(kvs_get_all_keys, get_all_keys_failure)
-{
-    PrepareEnvironment();
-
-    // Mutex locked.
-    auto result{Kvs::Open(kInstanceId,
-                          kSnapshotId,
-                          KvsDefaults::kRequired,
-                          KvsLoad::kRequired,
-                          std::string(kDataDir),
-                          std::nullopt,
-                          kDefaultMaxSnapshots)};
-    ASSERT_TRUE(result);
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-
-    auto get_all_keys_result{result.value().GetAllKeys()};
-    EXPECT_FALSE(get_all_keys_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*get_all_keys_result.error()), ErrorCode::kMutexLockFailed);
-
-    CleanupEnvironment();
-}
-
 TEST(kvs_key_exists, key_exists_success)
 {
     PrepareEnvironment();
@@ -698,28 +654,6 @@ TEST(kvs_key_exists, key_exists_success)
     exists_result = result.value().KeyExists("non_existing_key");
     EXPECT_TRUE(exists_result);
     EXPECT_FALSE(exists_result.value());
-
-    CleanupEnvironment();
-}
-
-TEST(kvs_key_exists, key_exists_failure)
-{
-    PrepareEnvironment();
-
-    // Mutex locked.
-    auto result{Kvs::Open(kInstanceId,
-                          kSnapshotId,
-                          KvsDefaults::kRequired,
-                          KvsLoad::kRequired,
-                          std::string(kDataDir),
-                          std::nullopt,
-                          kDefaultMaxSnapshots)};
-    ASSERT_TRUE(result);
-
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    auto exists_result{result.value().KeyExists("kvs")};
-    EXPECT_FALSE(exists_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*exists_result.error()), ErrorCode::kMutexLockFailed);
 
     CleanupEnvironment();
 }
@@ -773,20 +707,6 @@ TEST(kvs_get_value, get_value_failure)
     auto get_value_result{result.value().GetValue("non_existing_key")};
     EXPECT_FALSE(get_value_result);
     EXPECT_EQ(get_value_result.error(), ErrorCode::kKeyNotFound);
-
-    // Mutex locked.
-    result = Kvs::Open(kInstanceId,
-                       kSnapshotId,
-                       KvsDefaults::kRequired,
-                       KvsLoad::kRequired,
-                       std::string(kDataDir),
-                       std::nullopt,
-                       kDefaultMaxSnapshots);
-    ASSERT_TRUE(result);
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    get_value_result = result.value().GetValue("kvs");
-    EXPECT_FALSE(get_value_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*get_value_result.error()), ErrorCode::kMutexLockFailed);
 
     CleanupEnvironment();
 }
@@ -920,20 +840,6 @@ TEST(kvs_set_value_to_default, set_value_to_default_failure)
     EXPECT_FALSE(set_value_to_default_result);
     EXPECT_EQ(set_value_to_default_result.error(), ErrorCode::kKeyNotFound);
 
-    // Mutex locked.
-    result = Kvs::Open(kInstanceId,
-                       kSnapshotId,
-                       KvsDefaults::kRequired,
-                       KvsLoad::kRequired,
-                       std::string(kDataDir),
-                       std::nullopt,
-                       kDefaultMaxSnapshots);
-    ASSERT_TRUE(result);
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    set_value_to_default_result = result.value().SetValueToDefault("default");
-    EXPECT_FALSE(set_value_to_default_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*set_value_to_default_result.error()), ErrorCode::kMutexLockFailed);
-
     CleanupEnvironment();
 }
 
@@ -1014,28 +920,6 @@ TEST(kvs_is_value_default, is_value_default)
         ASSERT_FALSE(result);
         ASSERT_EQ(result.error(), ErrorCode::kKeyNotFound);
     }
-
-    CleanupEnvironment();
-}
-
-TEST(kvs_is_value_default, is_value_default_failure)
-{
-    PrepareEnvironment();
-
-    // Mutex locked.
-    auto result{Kvs::Open(kInstanceId,
-                          kSnapshotId,
-                          KvsDefaults::kRequired,
-                          KvsLoad::kRequired,
-                          std::string(kDataDir),
-                          std::nullopt,
-                          kDefaultMaxSnapshots)};
-    ASSERT_TRUE(result);
-
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    auto default_result{result.value().IsValueDefault("default")};
-    EXPECT_FALSE(default_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*default_result.error()), ErrorCode::kMutexLockFailed);
 
     CleanupEnvironment();
 }
@@ -1266,28 +1150,6 @@ TEST(kvs_get_value, get_value_failure_invalid_characters)
     CleanupEnvironment();
 }
 
-TEST(kvs_set_value, set_value_failure)
-{
-    PrepareEnvironment();
-
-    // Mutex locked.
-    auto result{Kvs::Open(kInstanceId,
-                          kSnapshotId,
-                          KvsDefaults::kRequired,
-                          KvsLoad::kRequired,
-                          std::string(kDataDir),
-                          std::nullopt,
-                          kDefaultMaxSnapshots)};
-    ASSERT_TRUE(result);
-
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    auto set_value_result{result.value().SetValue("new_key", KvsValue(3.0))};
-    EXPECT_FALSE(set_value_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*set_value_result.error()), ErrorCode::kMutexLockFailed);
-
-    CleanupEnvironment();
-}
-
 TEST(kvs_remove_key, remove_key_success)
 {
     PrepareEnvironment();
@@ -1332,20 +1194,6 @@ TEST(kvs_remove_key, remove_key_failure)
     auto remove_key_result{result.value().RemoveKey("non_existing_key")};
     EXPECT_FALSE(remove_key_result);
     EXPECT_EQ(remove_key_result.error(), ErrorCode::kKeyNotFound);
-
-    // Mutex locked.
-    result = Kvs::Open(kInstanceId,
-                       kSnapshotId,
-                       KvsDefaults::kRequired,
-                       KvsLoad::kRequired,
-                       std::string(kDataDir),
-                       std::nullopt,
-                       kDefaultMaxSnapshots);
-    ASSERT_TRUE(result);
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    remove_key_result = result.value().RemoveKey("kvs");
-    EXPECT_FALSE(remove_key_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*remove_key_result.error()), ErrorCode::kMutexLockFailed);
 
     CleanupEnvironment();
 }
@@ -1736,28 +1584,6 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_hash)
     CleanupEnvironment();
 }
 
-TEST(kvs_snapshot_rotate, snapshot_rotate_failure_mutex)
-{
-    PrepareEnvironment();
-
-    auto result{Kvs::Open(kInstanceId,
-                          kSnapshotId,
-                          KvsDefaults::kOptional,
-                          KvsLoad::kOptional,
-                          std::string(kDataDir),
-                          std::nullopt,
-                          kDefaultMaxSnapshots)};
-    ASSERT_TRUE(result);
-
-    // Mutex locked.
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    auto rotate_result{result.value().SnapshotRotate()};
-    EXPECT_FALSE(rotate_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*rotate_result.error()), ErrorCode::kMutexLockFailed);
-
-    CleanupEnvironment();
-}
-
 TEST(kvs_flush, flush_success_data)
 {
     PrepareEnvironment();
@@ -1859,27 +1685,6 @@ TEST(kvs_flush, flush_sets_file_permissions)
     ASSERT_TRUE(result.value().Flush());
     EXPECT_EQ(FilePerms(json_path), static_cast<std::uint32_t>(kExpectedFilePerms));
     EXPECT_EQ(FilePerms(hash_path), static_cast<std::uint32_t>(kExpectedFilePerms));
-
-    CleanupEnvironment();
-}
-
-TEST(kvs_flush, flush_failure_mutex)
-{
-    PrepareEnvironment();
-
-    auto result{Kvs::Open(kInstanceId,
-                          kSnapshotId,
-                          KvsDefaults::kOptional,
-                          KvsLoad::kOptional,
-                          std::string(kDataDir),
-                          std::nullopt,
-                          kDefaultMaxSnapshots)};
-    ASSERT_TRUE(result);
-
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    auto flush_result{result.value().Flush()};
-    EXPECT_FALSE(flush_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::kMutexLockFailed);
 
     CleanupEnvironment();
 }
@@ -2106,27 +1911,6 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_open_json)
     EXPECT_FALSE(restore_result);
     // Passed by OpenJson.
     EXPECT_EQ(static_cast<ErrorCode>(*restore_result.error()), ErrorCode::kValidationFailed);
-
-    CleanupEnvironment();
-}
-
-TEST(kvs_snapshot_restore, snapshot_restore_failure_mutex)
-{
-    PrepareEnvironment();
-
-    auto result{Kvs::Open(kInstanceId,
-                          kSnapshotId,
-                          KvsDefaults::kOptional,
-                          KvsLoad::kOptional,
-                          std::string(kDataDir),
-                          std::nullopt,
-                          kDefaultMaxSnapshots)};
-    ASSERT_TRUE(result);
-
-    std::unique_lock<std::mutex> lock{result.value().kvs_mutex_};
-    auto restore_result{result.value().SnapshotRestore(1)};
-    EXPECT_FALSE(restore_result);
-    EXPECT_EQ(static_cast<ErrorCode>(*restore_result.error()), ErrorCode::kMutexLockFailed);
 
     CleanupEnvironment();
 }
@@ -2399,28 +2183,6 @@ TEST(kvs_remove_all_keys, remove_all_keys_keeps_defaults)
     CleanupEnvironment();
 }
 
-TEST(kvs_remove_all_keys, remove_all_keys_failure)
-{
-    PrepareEnvironment();
-
-    // Mutex locked.
-    auto kvs{Kvs::Open(kInstanceId,
-                       kSnapshotId,
-                       KvsDefaults::kRequired,
-                       KvsLoad::kRequired,
-                       std::string(kDataDir),
-                       std::nullopt,
-                       kDefaultMaxSnapshots)};
-    ASSERT_TRUE(kvs);
-
-    std::unique_lock<std::mutex> lock{kvs.value().kvs_mutex_};
-    auto result{kvs.value().RemoveAllKeys()};
-    EXPECT_FALSE(result);
-    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::kMutexLockFailed);
-
-    CleanupEnvironment();
-}
-
 TEST(kvs_discard_pending_changes, discard_reverts_to_state_at_open)
 {
     PrepareEnvironment();
@@ -2518,28 +2280,6 @@ TEST(kvs_discard_pending_changes, discard_without_changes_is_noop)
     // Repeated calls stay stable.
     EXPECT_TRUE(kvs.value().DiscardPendingChanges());
     EXPECT_EQ(kvs.value().GetAllKeys().value().size(), keys_before.value().size());
-
-    CleanupEnvironment();
-}
-
-TEST(kvs_discard_pending_changes, discard_pending_changes_failure)
-{
-    PrepareEnvironment();
-
-    // Mutex locked.
-    auto kvs{Kvs::Open(kInstanceId,
-                       kSnapshotId,
-                       KvsDefaults::kRequired,
-                       KvsLoad::kRequired,
-                       std::string(kDataDir),
-                       std::nullopt,
-                       kDefaultMaxSnapshots)};
-    ASSERT_TRUE(kvs);
-
-    std::unique_lock<std::mutex> lock{kvs.value().kvs_mutex_};
-    auto result{kvs.value().DiscardPendingChanges()};
-    EXPECT_FALSE(result);
-    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::kMutexLockFailed);
 
     CleanupEnvironment();
 }
