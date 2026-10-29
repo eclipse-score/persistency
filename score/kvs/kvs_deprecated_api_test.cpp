@@ -106,13 +106,17 @@ DISABLE_WARNING_POP
 
 score::Result<Kvs> OpenKvs()
 {
-    return Kvs::Open(kInstanceId,
-                     kSnapshotId,
-                     KvsDefaults::kOptional,
-                     KvsLoad::kOptional,
-                     std::string(kDataDir),
-                     std::nullopt,
-                     kDefaultMaxSnapshots);
+    return Kvs::Open(
+        kInstanceId,
+        kSnapshotId,
+        KvsDefaults::kOptional,
+        KvsLoad::kOptional,
+        std::string(kDataDir),
+        std::nullopt,
+        kDefaultMaxSnapshots,
+        std::make_unique<score::filesystem::Filesystem>(score::filesystem::FilesystemFactory{}.CreateInstance()),
+        std::make_unique<score::json::JsonParser>(),
+        std::make_unique<score::json::JsonWriter>());
 }
 
 void ExpectSame(const score::Result<void>& old_result, const score::Result<void>& new_result)
@@ -141,13 +145,7 @@ TEST(kvs_deprecated_api, kvs_open)
                           std::nullopt,
                           kDefaultMaxSnapshots)};
     DISABLE_WARNING_POP
-    auto new_result{Kvs::Open(kInstanceId,
-                              kSnapshotId,
-                              KvsDefaults::kOptional,
-                              KvsLoad::kOptional,
-                              std::string(kDataDir),
-                              std::nullopt,
-                              kDefaultMaxSnapshots)};
+    auto new_result{OpenKvs()};
     ASSERT_TRUE(result);
     ASSERT_TRUE(new_result);
     EXPECT_EQ(result.value().GetAllKeys().value(), new_result.value().GetAllKeys().value());

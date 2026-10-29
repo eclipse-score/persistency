@@ -69,7 +69,16 @@ score::Result<Kvs> KvsBuilder::Build() const noexcept
     const std::string working_dir = working_dir_.empty() ? std::string{"./"} : working_dir_;
 
     return Kvs::Open(
-        instance_id_, snapshot_id_, defaults_, kvs_load_, working_dir, maximum_storage_bytes_, max_snapshots_);
+        instance_id_,
+        snapshot_id_,
+        defaults_,
+        kvs_load_,
+        working_dir,
+        maximum_storage_bytes_,
+        max_snapshots_,
+        std::make_unique<score::filesystem::Filesystem>(score::filesystem::FilesystemFactory{}.CreateInstance()),
+        std::make_unique<score::json::JsonParser>(),
+        std::make_unique<score::json::JsonWriter>());
 }
 
 }  // namespace score::kvs

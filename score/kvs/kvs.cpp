@@ -13,6 +13,7 @@
 
 #include "score/kvs/kvs.h"
 
+#include "score/assert.hpp"
 #include "score/kvs/internal/kvs_helper.h"
 #include "score/os/errno.h"
 #include "score/os/fcntl.h"
@@ -136,14 +137,21 @@ score::Result<Kvs> Kvs::Open(const InstanceId& instance_id,
                              const KvsLoad& kvs_load,
                              const std::string& working_dir,
                              const std::optional<size_t>& max_storage_bytes,
-                             const std::size_t snapshot_max_count) noexcept
+                             const std::size_t snapshot_max_count,
+                             std::unique_ptr<score::filesystem::Filesystem> filesystem,
+                             std::unique_ptr<score::json::IJsonParser> parser,
+                             std::unique_ptr<score::json::IJsonWriter> writer) noexcept
 {
+    SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE(filesystem != nullptr, "Kvs::Open: filesystem must not be null");
+    SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE(parser != nullptr, "Kvs::Open: parser must not be null");
+    SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE(writer != nullptr, "Kvs::Open: writer must not be null");
+
     const score::filesystem::Path base_path{working_dir};
     const score::filesystem::Path filename_prefix{base_path / ("kvs_" + std::to_string(instance_id.id))};
     const score::filesystem::Path filename_default{filename_prefix.Native() + std::string{kDefaultSuffix}};
     const score::filesystem::Path filename_kvs{filename_prefix.Native() + "_" + std::to_string(snapshot_id.id)};
 
-    Kvs kvs;
+    Kvs kvs{std::move(filesystem), std::move(parser), std::move(writer)};
     kvs.max_storage_bytes_ = max_storage_bytes;
     score::Result<KeyValueMap> default_res{};
 
@@ -532,12 +540,13 @@ score::Result<size_t> Kvs::CalculatePotentialSize() const noexcept
     return current_size_res.value() + buf.size() + kHashFileSize;
 }
 
-Kvs::Kvs() noexcept
+Kvs::Kvs(std::unique_ptr<score::filesystem::Filesystem> filesystem,
+         std::unique_ptr<score::json::IJsonParser> parser,
+         std::unique_ptr<score::json::IJsonWriter> writer) noexcept
     : max_snapshots_{kDefaultMaxSnapshots},
-      filesystem_{
-          std::make_unique<score::filesystem::Filesystem>(score::filesystem::FilesystemFactory{}.CreateInstance())},
-      parser_{std::make_unique<score::json::JsonParser>()},
-      writer_{std::make_unique<score::json::JsonWriter>()},
+      filesystem_{std::move(filesystem)},
+      parser_{std::move(parser)},
+      writer_{std::move(writer)},
       logger_{std::make_unique<score::mw::log::Logger>("SKVS")}
 {
 }
