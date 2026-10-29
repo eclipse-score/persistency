@@ -85,10 +85,10 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     builder.KvsLoad(KvsLoad::kRequired);
     result_build = builder.Build();
     ASSERT_TRUE(result_build);
-    auto snap_value{result_build.value().GetValue("snap")};
-    ASSERT_TRUE(snap_value);
-    ASSERT_EQ(snap_value.value().GetType(), KvsValue::Type::kI32);
-    EXPECT_EQ(std::get<int32_t>(snap_value.value().GetValue()), 23);
+    auto snapshot_value{result_build.value().GetValue("snap")};
+    ASSERT_TRUE(snapshot_value);
+    ASSERT_EQ(snapshot_value.value().GetType(), KvsValue::Type::kI32);
+    EXPECT_EQ(std::get<int32_t>(snapshot_value.value().GetValue()), 23);
 
     // A builder with default settings loads snapshot 0.
     KvsBuilder default_builder{kInstanceId};

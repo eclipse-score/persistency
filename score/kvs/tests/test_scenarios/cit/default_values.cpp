@@ -85,10 +85,10 @@ std::string DefaultValueStr(Kvs& kvs, const std::string& key)
     auto result{kvs.GetDefaultValue(key)};
     if (result.has_value() && result.value().GetType() == KvsValue::Type::kF64)
     {
-        std::ostringstream oss;
-        oss.precision(1);
-        oss << std::fixed << std::get<double>(result.value().GetValue());
-        return std::string{"Ok(F64(" + oss.str() + "))"};
+        std::ostringstream stream;
+        stream.precision(1);
+        stream << std::fixed << std::get<double>(result.value().GetValue());
+        return std::string{"Ok(F64(" + stream.str() + "))"};
     }
     else
     {
@@ -101,10 +101,10 @@ std::string CurrentValueStr(Kvs& kvs, const std::string& key)
     auto result{kvs.GetValue(key)};
     if (result.has_value() && result.value().GetType() == KvsValue::Type::kF64)
     {
-        std::ostringstream oss;
-        oss.precision(1);
-        oss << std::fixed << std::get<double>(result.value().GetValue());
-        return std::string{"Ok(F64(" + oss.str() + "))"};
+        std::ostringstream stream;
+        stream.precision(1);
+        stream << std::fixed << std::get<double>(result.value().GetValue());
+        return std::string{"Ok(F64(" + stream.str() + "))"};
     }
     else
     {

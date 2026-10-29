@@ -125,9 +125,9 @@ class KvsValue final
     /// @brief Constructs a value of type Type::kBoolean.
     explicit KvsValue(bool boolean) noexcept : value_{boolean} {}
     /// @brief Constructs a value of type Type::kString from a C string.
-    explicit KvsValue(const char* str) noexcept;
+    explicit KvsValue(const char* value) noexcept;
     /// @brief Constructs a value of type Type::kString.
-    explicit KvsValue(const std::string& str) noexcept : value_{str} {}
+    explicit KvsValue(const std::string& value) noexcept : value_{value} {}
     /// @brief Constructs a value of type Type::kNull.
     explicit KvsValue(std::nullptr_t) noexcept : value_{nullptr} {}
     /// @brief Constructs a value of type Type::kArray by copying the elements.
