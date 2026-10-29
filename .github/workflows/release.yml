@@ -14,9 +14,13 @@ name: Release
 run-name: Release ${{ inputs.tag }}${{ inputs.dry_run && ' (dry run)' || '' }}
 
 # Manual trigger. Verifies the dispatched commit, then creates a DRAFT release
-# (tag, verification report, docs, SBOM, notes). A maintainer reviews and
+# (tag, verification report, docs, SBOM, notes). The module lead reviews and
 # publishes the draft; publishing triggers the tagged docs deployment (docs.yml).
 # dry_run=true runs everything but creates neither tag nor release.
+#
+# Precondition (release management process, gd_guidl__rel_management): the module
+# release note docs/module/release/release_note.rst names the tag and its PR was
+# approved by a project lead. A real release refuses to start otherwise.
 on:
   workflow_dispatch:
     inputs:
@@ -101,6 +105,36 @@ jobs:
           name: verification-report
           path: verification-report
 
+  release-note:
+    name: Check module release note
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Release note names the tag
+        env:
+          TAG: ${{ inputs.tag }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          RELEASE_NOTE: docs/module/release/release_note.rst
+        run: |
+          set -euo pipefail
+          if grep -qxF "| **Release Tag:** ${TAG}" "$RELEASE_NOTE"; then
+            exit 0
+          fi
+          msg="$RELEASE_NOTE does not name release tag '$TAG'. Merge the approved release note first."
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "::warning::$msg"
+          else
+            echo "::error::$msg"
+            exit 1
+          fi
+
   cit:
     # Its test report is traceability input of the docs build.
     permissions:
@@ -108,7 +142,7 @@ jobs:
     uses: ./.github/workflows/component_integration_tests.yml
 
   release:
-    needs: [verify, cit]
+    needs: [verify, release-note, cit]
     uses: ./.github/workflows/release_core.yml
     permissions:
       contents: write
@@ -120,3 +154,22 @@ jobs:
       docs-tests-report-artifact: tests-report
       bazel-asset-targets: //:sbom_product
       bazel-flags: --lockfile_mode=error --config=score-linux-x86_64
+
+  next-steps:
+    name: Next steps
+    needs: [release]
+    if: ${{ !inputs.dry_run }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    permissions: {}
+    steps:
+      - name: Summary
+        env:
+          TAG: ${{ needs.release.outputs.tag }}
+          URL: ${{ needs.release.outputs.release-url }}
+        run: |
+          {
+            echo "### Next steps"
+            echo ""
+            echo "1. Review the draft ${URL} and publish it."
+            echo "2. Add \`${TAG}\` of \`score_persistency\` to the Bazel registry \`eclipse-score/bazel_registry\`."
+          } >> "$GITHUB_STEP_SUMMARY"

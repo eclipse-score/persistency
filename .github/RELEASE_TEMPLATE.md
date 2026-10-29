@@ -17,4 +17,5 @@
 - Commit: $COMMIT_SHA
 - Previous release: $PREVIOUS_RELEASE_TAG ([compare]($COMPARE_URL))
 - Documentation: $DOCS_URL
+- Module release note: ${DOCS_URL}module/release/release_note.html
 - Verification run: $ACTION_RUN_URL
