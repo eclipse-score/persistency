@@ -409,7 +409,7 @@
 <li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Persistency KVS Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="chklst_arc_inspection.html">Persistency Architecture Inspection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../safety_analysis/aou_requirements.html">Persistency Assumptions of Use</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../safety_analysis/fmea.html">FMEA (Failure Modes and Effects Analysis)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../safety_analysis/fmea.html">Persistency Failure Modes and Effects Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../safety_analysis/dfa.html">DFA (Dependent Failure Analysis)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../safety_planning/index.html">Feature Safety Work Products List</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../security_planning/index.html">Persistency Security Work Products List</a></li>
@@ -476,7 +476,7 @@
                   
   <section id="persistency-kvs-architecture">
 <h1>Persistency KVS Architecture<a class="headerlink" href="#persistency-kvs-architecture" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-54656583">
+<div class="need_container docutils container" id="SNCB-8386e944">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_kvs_architecture">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -675,7 +675,7 @@ functionality call or receives a callback.</p></li>
 <h2>Static Architecture<a class="headerlink" href="#static-architecture" title="Link to this heading">#</a></h2>
 <p>The static view shows the feature with its logical interface and the components implementing it.
 The diagram is generated from the Sphinx Needs model.</p>
-<div class="need_container docutils container" id="SNCB-ebd9b92d">
+<div class="need_container docutils container" id="SNCB-e19ff3a1">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_arc_sta table" id="feat_arc_sta__persistency__static">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -699,14 +699,14 @@ The diagram is generated from the Sphinx Needs model.</p>
 <div class="line"><span><div class="line">belongs to: <span class="belongs_to"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/architecture/index.html#feat__persistency">feat__persistency</a></span></span></div>
 <div class="line">fulfils: <span class="fulfils"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__access_control">feat_req__persistency__access_control</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__async_api">feat_req__persistency__async_api</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__async_completion">feat_req__persistency__async_completion</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__cfg">feat_req__persistency__cfg</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__concurrency">feat_req__persistency__concurrency</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__default_value_file">feat_req__persistency__default_value_file</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__default_value_get">feat_req__persistency__default_value_get</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__default_values">feat_req__persistency__default_values</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__integrity_check">feat_req__persistency__integrity_check</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__load_data">feat_req__persistency__load_data</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__snapshot_create">feat_req__persistency__snapshot_create</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__store_data">feat_req__persistency__store_data</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__support_datatype_keys">feat_req__persistency__support_datatype_keys</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__support_datatype_value">feat_req__persistency__support_datatype_value</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__variant_management">feat_req__persistency__variant_management</a></span></span></div>
 <div class="line">includes: <span class="includes"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/architecture/index.html#logic_arc_int__persistency__interface">logic_arc_int__persistency__interface</a></span></span></div>
-<div class="line">violated_by: <span class="violates"><span><a class="reference internal" href="../safety_analysis/dfa.html#feat_saf_dfa__persistency__execution_blocking" title="feat_arc_sta__persistency__static">feat_saf_dfa__persistency__execution_blocking</a></span></span></div>
+<div class="line">violated_by: <span class="violates"><span><a class="reference internal" href="../safety_analysis/dfa.html#feat_saf_dfa__persistency__callback_deadlock" title="feat_arc_sta__persistency__static">feat_saf_dfa__persistency__callback_deadlock</a>, <a class="reference internal" href="../safety_analysis/dfa.html#feat_saf_dfa__persistency__data_corruption" title="feat_arc_sta__persistency__static">feat_saf_dfa__persistency__data_corruption</a>, <a class="reference internal" href="../safety_analysis/dfa.html#feat_saf_dfa__persistency__execution_blocking" title="feat_arc_sta__persistency__static">feat_saf_dfa__persistency__execution_blocking</a>, <a class="reference internal" href="../safety_analysis/dfa.html#feat_saf_dfa__persistency__memory_depletion" title="feat_arc_sta__persistency__static">feat_saf_dfa__persistency__memory_depletion</a>, <a class="reference internal" href="../safety_analysis/dfa.html#feat_saf_dfa__persistency__multi_process" title="feat_arc_sta__persistency__static">feat_saf_dfa__persistency__multi_process</a>, <a class="reference internal" href="../safety_analysis/dfa.html#feat_saf_dfa__persistency__shared_instance" title="feat_arc_sta__persistency__static">feat_saf_dfa__persistency__shared_instance</a></span></span></div>
 </span></div>
 </div>
 </td>
 <td class="meta" colspan="3"></td>
 </tr>
 <tr class="content row-odd"><td class="content" colspan="6"><p class="plantuml" id="needarch-features/persistency/architecture/index-0">
-<object data="../../../_images/plantuml-a7e22e4282a20784b71d2f5dab423a325a8bdf57.svg" type="image/svg+xml" style="width:344px;height:484px;background:#FFFFFF;"></object></p>
+<object data="../../../_images/plantuml-cd8ee0a11dca4176ab1634c7dfd31658ebedeef6.svg" type="image/svg+xml" style="width:344px;height:484px;background:#FFFFFF;"></object></p>
 </td>
 </tr>
 <tr class="footer row-even"><td class="footer_left" colspan="2"><div class="needs_footer_left line-block">
@@ -728,7 +728,7 @@ The diagram is generated from the Sphinx Needs model.</p>
 <h2>Dynamic Architecture<a class="headerlink" href="#dynamic-architecture" title="Link to this heading">#</a></h2>
 <p>The dynamic views describe the interactions between the user and the components of the feature
 for the main use cases of the KVS.</p>
-<div class="need_container docutils container" id="SNCB-ed30d3a3">
+<div class="need_container docutils container" id="SNCB-bd717e42">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_arc_dyn table" id="feat_arc_dyn__persistency__check_key_default">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -775,7 +775,7 @@ for the main use cases of the KVS.</p>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-9cf8c5b1">
+<div class="need_container docutils container" id="SNCB-9b5434f4">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_arc_dyn table" id="feat_arc_dyn__persistency__delete_key">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -822,7 +822,7 @@ for the main use cases of the KVS.</p>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-b0d4a55a">
+<div class="need_container docutils container" id="SNCB-afb95b83">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_arc_dyn table" id="feat_arc_dyn__persistency__flush">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -845,7 +845,7 @@ for the main use cases of the KVS.</p>
 </span></span></div>
 <div class="line"><span><div class="line">belongs to: <span class="belongs_to"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/architecture/index.html#feat__persistency">feat__persistency</a></span></span></div>
 <div class="line">fulfils: <span class="fulfils"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__integrity_check">feat_req__persistency__integrity_check</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__snapshot_create">feat_req__persistency__snapshot_create</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__snapshot_restore">feat_req__persistency__snapshot_restore</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__store_data">feat_req__persistency__store_data</a></span></span></div>
-<div class="line">violated_by: <span class="violates"><span><a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__corrupted_message" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__corrupted_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__err_handl" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__err_handl</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__late_message" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__late_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__msg_not_received" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__msg_not_received</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__not_sent" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__not_sent</a></span></span></div>
+<div class="line">violated_by: <span class="violates"><span><a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__constraint_max" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__constraint_max</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__corrupt_store" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__corrupt_store</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__err_handl" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__err_handl</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__late_message" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__late_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__msg_not_received" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__msg_not_received</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__not_sent" title="feat_arc_dyn__persistency__flush">feat_saf_fmea__persistency__not_sent</a></span></span></div>
 </span></div>
 </div>
 </td>
@@ -869,7 +869,7 @@ for the main use cases of the KVS.</p>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-2f6046b3">
+<div class="need_container docutils container" id="SNCB-6bc58ea4">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_arc_dyn table" id="feat_arc_dyn__persistency__read_key">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -916,7 +916,7 @@ for the main use cases of the KVS.</p>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-324481f8">
+<div class="need_container docutils container" id="SNCB-b4ba89b0">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_arc_dyn table" id="feat_arc_dyn__persistency__read_from_storage">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -939,7 +939,7 @@ for the main use cases of the KVS.</p>
 </span></span></div>
 <div class="line"><span><div class="line">belongs to: <span class="belongs_to"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/architecture/index.html#feat__persistency">feat__persistency</a></span></span></div>
 <div class="line">fulfils: <span class="fulfils"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__integrity_check">feat_req__persistency__integrity_check</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__load_data">feat_req__persistency__load_data</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__snapshot_restore">feat_req__persistency__snapshot_restore</a></span></span></div>
-<div class="line">violated_by: <span class="violates"><span><a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__corrupted_message" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__corrupted_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__err_handl" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__err_handl</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__late_message" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__late_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__msg_not_received" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__msg_not_received</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__not_sent" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__not_sent</a></span></span></div>
+<div class="line">violated_by: <span class="violates"><span><a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__constraint_max" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__constraint_max</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__corrupt_load" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__corrupt_load</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__err_handl" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__err_handl</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__late_message" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__late_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__msg_not_received" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__msg_not_received</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__not_sent" title="feat_arc_dyn__persistency__read_from_storage">feat_saf_fmea__persistency__not_sent</a></span></span></div>
 </span></div>
 </div>
 </td>
@@ -963,7 +963,7 @@ for the main use cases of the KVS.</p>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-320b991a">
+<div class="need_container docutils container" id="SNCB-1b520bf1">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_arc_dyn table" id="feat_arc_dyn__persistency__write_key">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -986,7 +986,7 @@ for the main use cases of the KVS.</p>
 </span></span></div>
 <div class="line"><span><div class="line">belongs to: <span class="belongs_to"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/architecture/index.html#feat__persistency">feat__persistency</a></span></span></div>
 <div class="line">fulfils: <span class="fulfils"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__support_datatype_keys">feat_req__persistency__support_datatype_keys</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__support_datatype_value">feat_req__persistency__support_datatype_value</a></span></span></div>
-<div class="line">violated_by: <span class="violates"><span><a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__corrupted_message" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__corrupted_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__err_handl" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__err_handl</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__late_message" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__late_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__msg_not_received" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__msg_not_received</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__not_sent" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__not_sent</a></span></span></div>
+<div class="line">violated_by: <span class="violates"><span><a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__constraint_max" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__constraint_max</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__corrupted_message" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__corrupted_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__err_handl" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__err_handl</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__late_message" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__late_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__msg_not_received" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__msg_not_received</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__not_sent" title="feat_arc_dyn__persistency__write_key">feat_saf_fmea__persistency__not_sent</a></span></span></div>
 </span></div>
 </div>
 </td>
@@ -1010,7 +1010,7 @@ for the main use cases of the KVS.</p>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-80e01189">
+<div class="need_container docutils container" id="SNCB-6d8fea9c">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_arc_dyn table" id="feat_arc_dyn__persistency__snapshot_restore">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -1033,7 +1033,7 @@ for the main use cases of the KVS.</p>
 </span></span></div>
 <div class="line"><span><div class="line">belongs to: <span class="belongs_to"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/architecture/index.html#feat__persistency">feat__persistency</a></span></span></div>
 <div class="line">fulfils: <span class="fulfils"><span><a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__snapshot_restore">feat_req__persistency__snapshot_restore</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__store_data">feat_req__persistency__store_data</a></span></span></div>
-<div class="line">violated_by: <span class="violates"><span><a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__corrupted_message" title="feat_arc_dyn__persistency__snapshot_restore">feat_saf_fmea__persistency__corrupted_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__err_handl" title="feat_arc_dyn__persistency__snapshot_restore">feat_saf_fmea__persistency__err_handl</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__late_message" title="feat_arc_dyn__persistency__snapshot_restore">feat_saf_fmea__persistency__late_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__msg_not_received" title="feat_arc_dyn__persistency__snapshot_restore">feat_saf_fmea__persistency__msg_not_received</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__not_sent" title="feat_arc_dyn__persistency__snapshot_restore">feat_saf_fmea__persistency__not_sent</a></span></span></div>
+<div class="line">violated_by: <span class="violates"><span><a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__corrupt_load" title="feat_arc_dyn__persistency__snapshot_restore">feat_saf_fmea__persistency__corrupt_load</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__err_handl" title="feat_arc_dyn__persistency__snapshot_restore">feat_saf_fmea__persistency__err_handl</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__late_message" title="feat_arc_dyn__persistency__snapshot_restore">feat_saf_fmea__persistency__late_message</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__msg_not_received" title="feat_arc_dyn__persistency__snapshot_restore">feat_saf_fmea__persistency__msg_not_received</a>, <a class="reference internal" href="../safety_analysis/fmea.html#feat_saf_fmea__persistency__not_sent" title="feat_arc_dyn__persistency__snapshot_restore">feat_saf_fmea__persistency__not_sent</a></span></span></div>
 </span></div>
 </div>
 </td>
