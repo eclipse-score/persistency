@@ -41,6 +41,22 @@ build --@score_logging//score/mw/log/flags:KRemote_Logging=False
 # It has its own toolchain type, so it doesn't compete with the ferrocene toolchain registered in score_toolchain.bazelrc.
 build:score-linux-x86_64 --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_unknown_linux_gnu_miri
 
+# CodeQL C++ analysis: --config=codeql
+# CodeQL traces compiler calls with LD_PRELOAD, which the statically linked S-CORE GCC ignores.
+# The hermetic Clang of the coverage toolchain is dynamically linked, so CodeQL can trace it.
+# The platform has no gcc_12.2.0 constraint, so the S-CORE GCC is not selected.
+# Clang rejects the GCC-only warning flags under -Werror, so warnings stay warnings, as in coverage.
+# Local spawns without action cache, so that CodeQL sees every compiler call.
+build:codeql --platforms=@score_bazel_platforms//:x86_64-linux
+build:codeql --host_platform=@score_bazel_platforms//:x86_64-linux
+build:codeql --extra_toolchains=@llvm_toolchain//:cc-toolchain-x86_64-linux
+build:codeql --features=-warnings_as_errors --host_features=-warnings_as_errors
+build:codeql --features=-treat_warnings_as_errors --host_features=-treat_warnings_as_errors
+build:codeql --spawn_strategy=local
+build:codeql --nouse_action_cache
+build:codeql --noremote_accept_cached
+build:codeql --noremote_upload_local_results
+
 test --test_output=errors
 
 # Import platform and toolchain configurations. Not try-import: these files are required.
