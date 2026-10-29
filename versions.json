@@ -158,5 +158,9 @@
   {
     "version": "pr-623",
     "url": "https://eclipse-score.github.io/persistency/pr-623/"
+  },
+  {
+    "version": "pr-625",
+    "url": "https://eclipse-score.github.io/persistency/pr-625/"
   }
 ]
