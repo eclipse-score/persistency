@@ -15,6 +15,6 @@
 
 #include "helpers/kvs_parameters.h"
 
-score::mw::per::kvs::Kvs kvs_instance(const KvsParameters& params);
+score::kvs::Kvs KvsInstance(const KvsParameters& params);
 
 #endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_INSTANCE_H

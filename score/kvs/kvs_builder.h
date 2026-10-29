@@ -17,7 +17,7 @@
 #include <optional>
 #include <string>
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 /// @brief Builder for opening a KVS object.
@@ -33,24 +33,24 @@ namespace score::mw::per::kvs
 /// #include <iostream>
 /// #include "score/kvs/kvs_builder.h"
 ///
-/// using namespace score::mw::per::kvs;
+/// using namespace score::kvs;
 ///
 /// int main() {
 ///   // Open kvs
 ///   auto open_res = KvsBuilder(0)
-///                       .need_defaults_flag(OpenNeedDefaults::Required)
-///                       .need_kvs_flag(OpenNeedKvs::Required)
-///                       .build();
+///                       .Defaults(KvsDefaults::kRequired)
+///                       .KvsLoad(KvsLoad::kRequired)
+///                       .Build();
 ///   if (!open_res) return 1;
 ///   Kvs kvs = std::move(open_res.value());
 ///
 ///   // Set and get a value
-///   kvs.set_value("pi", KvsValue(3.14));
-///   auto get_res = kvs.get_value("pi");
+///   kvs.SetValue("pi", KvsValue(3.14));
+///   auto get_res = kvs.GetValue("pi");
 ///
 ///   // Delete a key
-///   kvs.remove_key("pi");
-///   std::cout << "has pi? " << (kvs.key_exists("pi").value_or(false) ? "yes" : "no") << "\n";
+///   kvs.RemoveKey("pi");
+///   std::cout << "has pi? " << (kvs.KeyExists("pi").value_or(false) ? "yes" : "no") << "\n";
 ///
 ///   return 0;
 /// }
@@ -65,49 +65,101 @@ class KvsBuilder final
     /// @brief Specifies the snapshot identifier to be loaded.
     /// @param snapshot_id Unique identifier for the KVS snapshot.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& snapshot(const SnapshotId& snapshot_id) noexcept;
+    KvsBuilder& Snapshot(const SnapshotId& snapshot_id) noexcept;
 
     /// @brief Specifies whether default values must be loaded.
-    /// @param flag Whether default values are required, optional or ignored.
+    /// @param mode Whether default values are required, optional or ignored.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& need_defaults_flag(const OpenNeedDefaults& flag) noexcept;
+    KvsBuilder& Defaults(const KvsDefaults& mode) noexcept;
 
     /// @brief Specifies whether KVS data must exist when opening the KVS.
-    /// @param flag Whether KVS data is required, optional or ignored.
+    /// @param mode Whether KVS data is required, optional or ignored.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& need_kvs_flag(const OpenNeedKvs& flag) noexcept;
+    KvsBuilder& KvsLoad(const score::kvs::KvsLoad& mode) noexcept;
 
     /// @brief Specifies the directory where KVS files are stored.
-    /// @param dir_path The directory path.
+    /// @param working_dir The directory path.
     /// Use "" or "." for the current directory.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& dir(const std::string& dir_path) noexcept;
+    KvsBuilder& WorkingDir(const std::string& working_dir) noexcept;
 
     /// @brief Specifies the maximum storage size for the KVS in bytes.
     /// @param max_storage_bytes The maximum allowed total storage size in bytes.
     /// When this option is not used, no storage limit is enforced.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& max_storage_bytes(const std::optional<size_t>& max_storage_bytes) noexcept;
+    KvsBuilder& MaxStorageBytes(const std::optional<size_t>& max_storage_bytes) noexcept;
 
     /// @brief Specifies the maximum number of snapshots the KVS maintains.
     ///
-    /// The maximum number of snapshots is configurable per instance in the range 0..KVS_MAX_SNAPSHOTS_UPPER_BOUND.
-    /// When this option is not used, KVS_DEFAULT_MAX_SNAPSHOTS is applied.
+    /// The maximum number of snapshots is configurable per instance in the range 0..kMaxSnapshotsUpperBound.
+    /// When this option is not used, kDefaultMaxSnapshots is applied.
     /// @note comp_req__kvs__snapshot_max_num_cfg
     ///
     /// @param max_count Maximum number of snapshots.
-    /// Values above KVS_MAX_SNAPSHOTS_UPPER_BOUND are clamped to it when the KVS is built.
+    /// Values above kMaxSnapshotsUpperBound are clamped to it when the KVS is built.
     /// A value of 0 disables snapshot operations.
-    /// flush() still persists the current KVS data.
+    /// Flush() still persists the current KVS data.
     /// @return Reference to this builder (for chaining).
-    KvsBuilder& snapshot_max_count(const std::size_t max_count) noexcept;
+    KvsBuilder& SnapshotMaxCount(const std::size_t max_count) noexcept;
 
     /// @brief Builds and opens the Kvs instance with the configured options.
     ///
-    /// Internally calls Kvs::open() with the selected flags and directory.
+    /// Internally calls Kvs::Open() with the selected flags and directory.
     ///
     /// @return The opened store on success, or an ErrorCode on failure.
-    score::Result<Kvs> build() const noexcept;
+    score::Result<Kvs> Build() const noexcept;
+
+    // Deprecated snake_case API.
+    // Each entry forwards to its PascalCase replacement and is removed in a future release.
+
+    /// @deprecated Use `Snapshot()` instead.
+    [[deprecated("Use Snapshot() instead. This name is removed in a future release.")]]
+    KvsBuilder& snapshot(const SnapshotId& snapshot_id) noexcept
+    {
+        return Snapshot(snapshot_id);
+    }
+
+    /// @deprecated Use `Defaults()` instead.
+    [[deprecated("Use Defaults() instead. This name is removed in a future release.")]]
+    KvsBuilder& need_defaults_flag(const KvsDefaults& flag) noexcept
+    {
+        return Defaults(flag);
+    }
+
+    /// @deprecated Use `KvsLoad()` instead.
+    [[deprecated("Use KvsLoad() instead. This name is removed in a future release.")]]
+    KvsBuilder& need_kvs_flag(const score::kvs::KvsLoad& flag) noexcept
+    {
+        return KvsLoad(flag);
+    }
+
+    /// @deprecated Use `WorkingDir()` instead.
+    [[deprecated("Use WorkingDir() instead. This name is removed in a future release.")]]
+    KvsBuilder& dir(const std::string& dir_path) noexcept
+    {
+        return WorkingDir(dir_path);
+    }
+
+    /// @deprecated Use `MaxStorageBytes()` instead.
+    [[deprecated("Use MaxStorageBytes() instead. This name is removed in a future release.")]]
+    KvsBuilder& max_storage_bytes(const std::optional<size_t>& max_storage_bytes) noexcept
+    {
+        return MaxStorageBytes(max_storage_bytes);
+    }
+
+    /// @deprecated Use `SnapshotMaxCount()` instead.
+    [[deprecated("Use SnapshotMaxCount() instead. This name is removed in a future release.")]]
+    KvsBuilder& snapshot_max_count(const std::size_t max_count) noexcept
+    {
+        return SnapshotMaxCount(max_count);
+    }
+
+    /// @deprecated Use `Build()` instead.
+    [[deprecated("Use Build() instead. This name is removed in a future release.")]]
+    score::Result<Kvs> build() const noexcept
+    {
+        return Build();
+    }
 
   private:
     /// ID of the KVS instance.
@@ -117,13 +169,13 @@ class KvsBuilder final
     SnapshotId snapshot_id_;
 
     /// Whether default values are required.
-    OpenNeedDefaults need_defaults_;
+    KvsDefaults defaults_;
 
     /// Whether an existing KVS is required.
-    OpenNeedKvs need_kvs_;
+    score::kvs::KvsLoad kvs_load_;
 
     /// Directory where the KVS files are stored.
-    std::string directory_;
+    std::string working_dir_;
 
     /// Maximum total storage size in bytes.
     /// Unset means no limit.
@@ -133,6 +185,6 @@ class KvsBuilder final
     std::size_t max_snapshots_;
 };
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs
 
 #endif  // SCORE_KVS_KVS_BUILDER_H

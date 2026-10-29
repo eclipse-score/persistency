@@ -13,80 +13,122 @@
 #ifndef SCORE_KVS_ERROR_H
 #define SCORE_KVS_ERROR_H
 
+#include "score/kvs/deprecated_namespace.h"
 #include "score/result/result.h"
 #include <string_view>
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
 /// @brief Error codes reported by the `kvs` API.
 enum class ErrorCode : score::result::ErrorCode
 {
     /// Error that was not yet mapped.
-    UnmappedError,
+    kUnmappedError = 0,
 
     /// File not found.
-    FileNotFound,
+    kFileNotFound = 1,
 
     /// KVS file read error.
-    KvsFileReadError,
+    kKvsFileReadError = 2,
 
     /// KVS hash file read error.
-    KvsHashFileReadError,
+    kKvsHashFileReadError = 3,
 
     /// JSON parser error.
-    JsonParserError,
+    kJsonParserError = 4,
 
     /// JSON generator error.
-    JsonGeneratorError,
+    kJsonGeneratorError = 5,
 
     /// Physical storage failure.
-    PhysicalStorageFailure,
+    kPhysicalStorageFailure = 6,
 
     /// Integrity corrupted.
-    IntegrityCorrupted,
+    kIntegrityCorrupted = 7,
 
     /// Validation failed.
-    ValidationFailed,
+    kValidationFailed = 8,
 
     /// Encryption failed.
-    EncryptionFailed,
+    kEncryptionFailed = 9,
 
     /// Resource is busy.
-    ResourceBusy,
+    kResourceBusy = 10,
 
     /// Out of storage space.
-    OutOfStorageSpace,
+    kOutOfStorageSpace = 11,
 
     /// Quota exceeded.
-    QuotaExceeded,
+    kQuotaExceeded = 12,
 
     /// Authentication failed.
-    AuthenticationFailed,
+    kAuthenticationFailed = 13,
 
     /// Key not found.
-    KeyNotFound,
-
-    /// Key default value not found.
-    KeyDefaultNotFound,
+    kKeyNotFound = 14,
 
     /// Serialization failed.
-    SerializationFailed,
+    kSerializationFailed = 16,
 
     /// Invalid snapshot ID.
-    InvalidSnapshotId,
+    kInvalidSnapshotId = 17,
 
     /// Conversion failed.
-    ConversionFailed,
+    kConversionFailed = 18,
 
     /// Mutex failed.
-    MutexLockFailed,
+    kMutexLockFailed = 19,
 
     /// Invalid value type.
-    InvalidValueType,
+    kInvalidValueType = 20,
 
     /// Key is not valid.
-    InvalidKey,
+    kInvalidKey = 21,
+
+    // Deprecated enumerators.
+    // Each one is an alias of its k-prefixed replacement and is removed in a future release.
+    UnmappedError [[deprecated("Use kUnmappedError instead. This name is removed in a future release.")]] =
+        kUnmappedError,
+    FileNotFound [[deprecated("Use kFileNotFound instead. This name is removed in a future release.")]] = kFileNotFound,
+    KvsFileReadError [[deprecated("Use kKvsFileReadError instead. This name is removed in a future release.")]] =
+        kKvsFileReadError,
+    KvsHashFileReadError
+        [[deprecated("Use kKvsHashFileReadError instead. This name is removed in a future release.")]] =
+            kKvsHashFileReadError,
+    JsonParserError [[deprecated("Use kJsonParserError instead. This name is removed in a future release.")]] =
+        kJsonParserError,
+    JsonGeneratorError [[deprecated("Use kJsonGeneratorError instead. This name is removed in a future release.")]] =
+        kJsonGeneratorError,
+    PhysicalStorageFailure
+        [[deprecated("Use kPhysicalStorageFailure instead. This name is removed in a future release.")]] =
+            kPhysicalStorageFailure,
+    IntegrityCorrupted [[deprecated("Use kIntegrityCorrupted instead. This name is removed in a future release.")]] =
+        kIntegrityCorrupted,
+    ValidationFailed [[deprecated("Use kValidationFailed instead. This name is removed in a future release.")]] =
+        kValidationFailed,
+    EncryptionFailed [[deprecated("Use kEncryptionFailed instead. This name is removed in a future release.")]] =
+        kEncryptionFailed,
+    ResourceBusy [[deprecated("Use kResourceBusy instead. This name is removed in a future release.")]] = kResourceBusy,
+    OutOfStorageSpace [[deprecated("Use kOutOfStorageSpace instead. This name is removed in a future release.")]] =
+        kOutOfStorageSpace,
+    QuotaExceeded [[deprecated("Use kQuotaExceeded instead. This name is removed in a future release.")]] =
+        kQuotaExceeded,
+    AuthenticationFailed
+        [[deprecated("Use kAuthenticationFailed instead. This name is removed in a future release.")]] =
+            kAuthenticationFailed,
+    KeyNotFound [[deprecated("Use kKeyNotFound instead. This name is removed in a future release.")]] = kKeyNotFound,
+    SerializationFailed [[deprecated("Use kSerializationFailed instead. This name is removed in a future release.")]] =
+        kSerializationFailed,
+    InvalidSnapshotId [[deprecated("Use kInvalidSnapshotId instead. This name is removed in a future release.")]] =
+        kInvalidSnapshotId,
+    ConversionFailed [[deprecated("Use kConversionFailed instead. This name is removed in a future release.")]] =
+        kConversionFailed,
+    MutexLockFailed [[deprecated("Use kMutexLockFailed instead. This name is removed in a future release.")]] =
+        kMutexLockFailed,
+    InvalidValueType [[deprecated("Use kInvalidValueType instead. This name is removed in a future release.")]] =
+        kInvalidValueType,
+    InvalidKey [[deprecated("Use kInvalidKey instead. This name is removed in a future release.")]] = kInvalidKey,
 };
 
 /// @brief Error domain translating `ErrorCode` codes to human-readable messages.
@@ -105,6 +147,6 @@ class KvsErrorDomain final : public score::result::ErrorDomain
 /// @return The created error.
 score::result::Error MakeError(const ErrorCode code, const std::string_view user_message = "") noexcept;
 
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs
 
 #endif  // SCORE_KVS_ERROR_H

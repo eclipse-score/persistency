@@ -69,23 +69,34 @@ impl KvsApi for Kvs {
         Ok(())
     }
 
-    /// Reset a key-value pair in the storage to its initial state
+    /// Sets a specified key to its default value.
     ///
     /// # Parameters
-    ///    * 'key': Key being reset to default
+    ///    * 'key': The key to be set to its default value.
     ///
     /// # Return Values
-    ///    * Ok: Reset of the key-value pair was successful
+    ///    * Ok: Set to a default value was successful
     ///    * `ErrorCode::MutexLockFailed`: Mutex locking failed
-    ///    * `ErrorCode::KeyDefaultNotFound`: Key has no default value
-    fn reset_key(&self, key: &str) -> Result<(), ErrorCode> {
-        let mut data = self.data.lock()?;
-        if !data.defaults_map.contains_key(key) {
-            error!("Resetting key without a default value: {}", key);
-            return Err(ErrorCode::KeyDefaultNotFound);
+    ///    * `ErrorCode::KeyNotFound`: Key has no default value
+    fn set_value_to_default(&self, key: &str) -> Result<(), ErrorCode> {
+        // Validate key.
+        if !is_key_valid(key) {
+            error!("Provided key is not valid: {}", key);
+            return Err(ErrorCode::InvalidKey);
         }
 
-        let _ = data.kvs_map.remove(key);
+        // Get a default value.
+        let mut data = self.data.lock()?;
+        let default_value = match data.defaults_map.get(key) {
+            Some(value) => value.clone(),
+            None => {
+                error!("Setting a default value to a key without a default value: {}", key);
+                return Err(ErrorCode::KeyNotFound);
+            },
+        };
+
+        // Set value.
+        data.kvs_map.insert(key.to_string(), default_value);
         Ok(())
     }
 
@@ -329,7 +340,7 @@ mod kvs_tests {
     use crate::error_code::ErrorCode;
     use crate::json_backend::JsonBackendBuilder;
     use crate::kvs::{Kvs, KvsParameters};
-    use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId, KVS_MAX_KEY_LENGTH_BYTES};
+    use crate::kvs_api::{InstanceId, KvsApi, KvsDefaults, KvsLoad, SnapshotId, MAX_KEY_LENGTH_BYTES};
     use crate::kvs_backend::KvsBackend;
     use crate::kvs_builder::KvsData;
     use crate::kvs_value::{KvsMap, KvsValue};
@@ -419,25 +430,54 @@ mod kvs_tests {
 
     #[cfg_attr(miri, ignore)]
     #[test]
-    fn test_reset_key() {
+    fn test_set_value_to_default() {
         let kvs = get_kvs(
             Box::new(MockBackend),
             KvsMap::from([
                 ("example1".to_string(), KvsValue::from("explicit_value")),
                 ("example2".to_string(), KvsValue::from(true)),
             ]),
-            KvsMap::from([("example1".to_string(), KvsValue::from("default_value"))]),
+            KvsMap::from([
+                ("example1".to_string(), KvsValue::from("default_value")),
+                ("example3".to_string(), KvsValue::from(123.4)),
+            ]),
         );
 
-        kvs.reset_key("example1").unwrap();
-        assert!(kvs
-            .get_value_as::<String>("example1")
-            .is_err_and(|e| e == ErrorCode::KeyNotFound));
+        // Written key with a default value - default value is written.
+        kvs.set_value_to_default("example1").unwrap();
+        assert_eq!(kvs.get_value_as::<String>("example1").unwrap(), "default_value");
+        assert!(!kvs.is_value_default("example1").unwrap());
 
-        // TODO: determine why resetting entry without default value is an error.
+        // Not written key with a default value - default value is written.
+        kvs.set_value_to_default("example3").unwrap();
+        assert_eq!(kvs.get_value_as::<f64>("example3").unwrap(), 123.4);
+        assert!(!kvs.is_value_default("example3").unwrap());
+
+        // Key without a default value - explicit value is kept.
         assert!(kvs
-            .reset_key("example2")
-            .is_err_and(|e| e == ErrorCode::KeyDefaultNotFound));
+            .set_value_to_default("example2")
+            .is_err_and(|e| e == ErrorCode::KeyNotFound));
+        assert!(kvs.get_value_as::<bool>("example2").unwrap());
+    }
+
+    #[test]
+    fn test_set_value_to_default_invalid_key() {
+        let defaults_map = KvsMap::from_iter(
+            invalid_keys()
+                .into_iter()
+                .map(|key| (key, KvsValue::from("default_value"))),
+        );
+        let kvs = get_kvs(Box::new(MockBackend), KvsMap::new(), defaults_map);
+
+        // Keys are validated before the default value lookup.
+        for key in invalid_keys() {
+            assert!(
+                kvs.set_value_to_default(&key)
+                    .is_err_and(|e| e == ErrorCode::InvalidKey),
+                "key: {key:?}"
+            );
+        }
+        assert!(kvs.get_all_keys().unwrap().is_empty());
     }
 
     #[test]
@@ -621,7 +661,7 @@ mod kvs_tests {
 
     /// Keys that must be rejected - empty, too long or with invalid content.
     fn invalid_keys() -> Vec<String> {
-        let mut keys = vec![String::new(), "k".repeat(KVS_MAX_KEY_LENGTH_BYTES + 1)];
+        let mut keys = vec![String::new(), "k".repeat(MAX_KEY_LENGTH_BYTES + 1)];
         keys.extend(invalid_character_keys());
         keys
     }
@@ -761,7 +801,7 @@ mod kvs_tests {
         let kvs = get_kvs(Box::new(MockBackend), KvsMap::new(), KvsMap::new());
 
         // comp_req__kvs__key_naming: any key consisting of printable ASCII characters is accepted.
-        // comp_req__kvs__key_length: key of `KVS_MAX_KEY_LENGTH_BYTES` is accepted.
+        // comp_req__kvs__key_length: key of `MAX_KEY_LENGTH_BYTES` is accepted.
         let mut valid_keys = vec![
             "a".to_string(),
             "Z".to_string(),
@@ -777,7 +817,7 @@ mod kvs_tests {
             // Boundaries of the allowed range.
             " ".to_string(),
             "~".to_string(),
-            "k".repeat(KVS_MAX_KEY_LENGTH_BYTES),
+            "k".repeat(MAX_KEY_LENGTH_BYTES),
         ];
         // Every allowed character on its own.
         valid_keys.extend((0x20u8..=0x7E).map(|b| char::from(b).to_string()));
@@ -800,8 +840,8 @@ mod kvs_tests {
     fn test_set_value_key_too_long() {
         let kvs = get_kvs(Box::new(MockBackend), KvsMap::new(), KvsMap::new());
 
-        // comp_req__kvs__key_length: a key of `KVS_MAX_KEY_LENGTH_BYTES + 1` bytes is rejected.
-        let key = "k".repeat(KVS_MAX_KEY_LENGTH_BYTES + 1);
+        // comp_req__kvs__key_length: a key of `MAX_KEY_LENGTH_BYTES + 1` bytes is rejected.
+        let key = "k".repeat(MAX_KEY_LENGTH_BYTES + 1);
         assert!(kvs.set_value(key, 123.4).is_err_and(|e| e == ErrorCode::InvalidKey));
         assert!(kvs.get_all_keys().unwrap().is_empty());
     }

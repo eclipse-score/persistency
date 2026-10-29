@@ -186,17 +186,17 @@ impl Scenario for ResetAllKeys {
     }
 }
 
-/// Reset single key.
-struct ResetSingleKey;
+/// Set single key to default.
+struct SetValueToDefault;
 
-impl Scenario for ResetSingleKey {
+impl Scenario for SetValueToDefault {
     fn name(&self) -> &str {
-        "reset_single_key"
+        "set_value_to_default"
     }
 
     fn run(&self, input: &str) -> Result<(), String> {
         let num_values = 5;
-        let reset_index = 2;
+        let default_index = 2;
 
         // Create KVS instance with provided params.
         let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
@@ -229,11 +229,11 @@ impl Scenario for ResetSingleKey {
                 info!(key, value_is_default, current_value);
             }
 
-            // Reset single key.
-            kvs.reset_key(&key_values.get(reset_index).expect("Failed to read value").0)
-                .expect("Failed to reset key");
+            // Set single key to default.
+            kvs.set_value_to_default(&key_values.get(default_index).expect("Failed to read value").0)
+                .expect("Failed to set value to default");
 
-            // Get value parameters after reset.
+            // Get value parameters after set to default.
             for (key, _) in key_values.iter() {
                 let value_is_default = value_is_default_str(&kvs, key);
                 let current_value = current_value_str(&kvs, key);
@@ -282,7 +282,7 @@ pub fn default_values_group() -> Box<dyn ScenarioGroup> {
             Box::new(DefaultValues),
             Box::new(RemoveKey),
             Box::new(ResetAllKeys),
-            Box::new(ResetSingleKey),
+            Box::new(SetValueToDefault),
             Box::new(Checksum),
         ],
         vec![],

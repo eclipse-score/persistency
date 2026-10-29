@@ -80,7 +80,7 @@ List of AoUs expected from the environment the module runs on:
    results = []
 
    for need in needs.filter_types(["aou_req"]):
-      if need and "persistency" in need["tags"]:
+      if need and "persistency" in need["tags"] and need["safety"] != "QM":
          if need and "environment" in need["tags"]:
                 results.append(need)
 
@@ -107,7 +107,7 @@ For the feature Persistency the platform safety manual and this module safety ma
 
    for need in needs.filter_types(["aou_req"]):
       if need and "environment" not in need["tags"]:
-         if need and "persistency" in need["tags"]:
+         if need and "persistency" in need["tags"] and need["safety"] != "QM":
                 results.append(need)
 
 Safety concept of the SEooC

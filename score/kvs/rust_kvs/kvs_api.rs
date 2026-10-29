@@ -15,14 +15,18 @@ use crate::kvs_value::KvsValue;
 use crate::log::ScoreDebug;
 
 /// Maximum key length in bytes.
-pub const KVS_MAX_KEY_LENGTH_BYTES: usize = 32;
+pub const MAX_KEY_LENGTH_BYTES: usize = 32;
+
+/// Maximum key length in bytes.
+#[deprecated(note = "Use `MAX_KEY_LENGTH_BYTES` instead.")]
+pub const KVS_MAX_KEY_LENGTH_BYTES: usize = MAX_KEY_LENGTH_BYTES;
 
 /// Validate that:
-/// - Key length is in valid range - (0; `KVS_MAX_KEY_LENGTH_BYTES`>.
+/// - Key length is in valid range - (0; `MAX_KEY_LENGTH_BYTES`>.
 /// - Key consists solely of printable ASCII characters (0x20 - 0x7E).
 pub(crate) fn is_key_valid(key: &str) -> bool {
     // comp_req__kvs__key_length: disallow empty keys and keys too long.
-    if key.is_empty() || key.len() > KVS_MAX_KEY_LENGTH_BYTES {
+    if key.is_empty() || key.len() > MAX_KEY_LENGTH_BYTES {
         return false;
     }
 
@@ -93,7 +97,7 @@ pub enum KvsLoad {
 
 pub trait KvsApi {
     fn reset(&self) -> Result<(), ErrorCode>;
-    fn reset_key(&self, key: &str) -> Result<(), ErrorCode>;
+    fn set_value_to_default(&self, key: &str) -> Result<(), ErrorCode>;
     fn get_all_keys(&self) -> Result<Vec<String>, ErrorCode>;
     fn key_exists(&self, key: &str) -> Result<bool, ErrorCode>;
     fn get_value(&self, key: &str) -> Result<KvsValue, ErrorCode>;

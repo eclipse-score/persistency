@@ -19,7 +19,7 @@
 #include <tracing.hpp>
 #include <sstream>
 
-using namespace score::mw::per::kvs;
+using namespace score::kvs;
 
 namespace
 {
@@ -33,10 +33,10 @@ const std::string kTargetName{"cpp_test_scenarios::cit::default_values"};
 /// @param value_is_default Whether the current value matches the default ("Ok(true)", "Ok(false)" or error string).
 /// @param default_value String encoding the default value for the key (e.g. "Ok(F64(...))" or error string).
 /// @param current_value String encoding the current value for the key (e.g. "Ok(F64(...))" or error string).
-static void info_log(const std::string& key,
-                     const std::string& value_is_default,
-                     const std::string& default_value,
-                     const std::string& current_value)
+static void InfoLog(const std::string& key,
+                    const std::string& value_is_default,
+                    const std::string& default_value,
+                    const std::string& current_value)
 {
     TRACING_INFO(kTargetName,
                  std::pair{std::string{"key"}, key},
@@ -52,7 +52,7 @@ static void info_log(const std::string& key,
 /// @param key The key being queried or modified in the KVS.
 /// @param value_is_default String encoding whether the current value matches the default.
 /// @param current_value Current value for the key (e.g. "Ok(F64(...))" or an error such as "Err(KeyNotFound)").
-static void info_log(const std::string& key, const std::string& value_is_default, const std::string& current_value)
+static void InfoLog(const std::string& key, const std::string& value_is_default, const std::string& current_value)
 {
     TRACING_INFO(kTargetName,
                  std::pair{std::string{"key"}, key},
@@ -60,9 +60,9 @@ static void info_log(const std::string& key, const std::string& value_is_default
                  std::pair{std::string{"current_value"}, current_value});
 }
 
-std::string get_value_is_default(const Kvs& kvs, const std::string& key)
+std::string ValueIsDefaultStr(const Kvs& kvs, const std::string& key)
 {
-    auto result{kvs.is_value_default(key)};
+    auto result{kvs.IsValueDefault(key)};
     if (result.has_value())
     {
         if (result.value())
@@ -80,14 +80,14 @@ std::string get_value_is_default(const Kvs& kvs, const std::string& key)
     }
 }
 
-std::string get_default_value(Kvs& kvs, const std::string& key)
+std::string DefaultValueStr(Kvs& kvs, const std::string& key)
 {
-    auto result{kvs.get_default_value(key)};
-    if (result.has_value() && result.value().getType() == KvsValue::Type::f64)
+    auto result{kvs.GetDefaultValue(key)};
+    if (result.has_value() && result.value().GetType() == KvsValue::Type::kF64)
     {
         std::ostringstream oss;
         oss.precision(1);
-        oss << std::fixed << std::get<double>(result.value().getValue());
+        oss << std::fixed << std::get<double>(result.value().GetValue());
         return std::string{"Ok(F64(" + oss.str() + "))"};
     }
     else
@@ -96,14 +96,14 @@ std::string get_default_value(Kvs& kvs, const std::string& key)
     }
 }
 
-std::string get_current_value(Kvs& kvs, const std::string& key)
+std::string CurrentValueStr(Kvs& kvs, const std::string& key)
 {
-    auto result{kvs.get_value(key)};
-    if (result.has_value() && result.value().getType() == KvsValue::Type::f64)
+    auto result{kvs.GetValue(key)};
+    if (result.has_value() && result.value().GetType() == KvsValue::Type::kF64)
     {
         std::ostringstream oss;
         oss.precision(1);
-        oss << std::fixed << std::get<double>(result.value().getValue());
+        oss << std::fixed << std::get<double>(result.value().GetValue());
         return std::string{"Ok(F64(" + oss.str() + "))"};
     }
     else
@@ -130,26 +130,26 @@ class DefaultValues final : public Scenario
         std::string key{"test_number"};
 
         // Create KVS instance with provided params.
-        auto params{KvsParameters::from_json(input)};
+        auto params{KvsParameters::FromJson(input)};
         {
-            auto kvs{kvs_instance(params)};
+            auto kvs{KvsInstance(params)};
 
             // Get current value parameters.
-            std::string value_is_default{get_value_is_default(kvs, key)};
-            std::string default_value{get_default_value(kvs, key)};
-            std::string current_value{get_current_value(kvs, key)};
+            std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            std::string default_value{DefaultValueStr(kvs, key)};
+            std::string current_value{CurrentValueStr(kvs, key)};
 
-            info_log(key, value_is_default, default_value, current_value);
+            InfoLog(key, value_is_default, default_value, current_value);
 
             // Set value and check value parameters.
-            auto set_result{kvs.set_value(key, KvsValue{432.1})};
+            auto set_result{kvs.SetValue(key, KvsValue{432.1})};
             if (!set_result)
             {
                 throw std::runtime_error{"Failed to set value"};
             }
 
             // Flush KVS.
-            auto flush_result{kvs.flush()};
+            auto flush_result{kvs.Flush()};
             if (!flush_result)
             {
                 throw std::runtime_error{"Failed to flush"};
@@ -158,14 +158,14 @@ class DefaultValues final : public Scenario
 
         // Flush and reopen KVS instance to ensure persistency.
         {
-            auto kvs{kvs_instance(params)};
+            auto kvs{KvsInstance(params)};
 
             // Get current value parameters.
-            std::string value_is_default{get_value_is_default(kvs, key)};
-            std::string default_value{get_default_value(kvs, key)};
-            std::string current_value{get_current_value(kvs, key)};
+            std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            std::string default_value{DefaultValueStr(kvs, key)};
+            std::string current_value{CurrentValueStr(kvs, key)};
 
-            info_log(key, value_is_default, default_value, current_value);
+            InfoLog(key, value_is_default, default_value, current_value);
         }
     }
 };
@@ -186,20 +186,20 @@ class RemoveKey final : public Scenario
         std::string key{"test_number"};
 
         // Create KVS instance with provided params.
-        auto params{KvsParameters::from_json(input)};
-        auto kvs{kvs_instance(params)};
+        auto params{KvsParameters::FromJson(input)};
+        auto kvs{KvsInstance(params)};
 
         // Get value parameters before set.
         {
-            std::string value_is_default{get_value_is_default(kvs, key)};
-            std::string default_value{get_default_value(kvs, key)};
-            std::string current_value{get_current_value(kvs, key)};
+            std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            std::string default_value{DefaultValueStr(kvs, key)};
+            std::string current_value{CurrentValueStr(kvs, key)};
 
-            info_log(key, value_is_default, default_value, current_value);
+            InfoLog(key, value_is_default, default_value, current_value);
         }
 
         // Get value parameters after set.
-        auto set_result{kvs.set_value(key, KvsValue{432.1})};
+        auto set_result{kvs.SetValue(key, KvsValue{432.1})};
         if (!set_result)
         {
             throw std::runtime_error{"Failed to set value"};
@@ -207,26 +207,26 @@ class RemoveKey final : public Scenario
 
         // Get current value parameters.
         {
-            std::string value_is_default{get_value_is_default(kvs, key)};
-            std::string default_value{get_default_value(kvs, key)};
-            std::string current_value{get_current_value(kvs, key)};
+            std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            std::string default_value{DefaultValueStr(kvs, key)};
+            std::string current_value{CurrentValueStr(kvs, key)};
 
-            info_log(key, value_is_default, default_value, current_value);
+            InfoLog(key, value_is_default, default_value, current_value);
         }
 
         // Get value parameters after remove.
         {
-            auto remove_result{kvs.remove_key(key)};
+            auto remove_result{kvs.RemoveKey(key)};
             if (!remove_result)
             {
                 throw std::runtime_error{"Failed to remove key"};
             }
 
-            std::string value_is_default{get_value_is_default(kvs, key)};
-            std::string default_value{get_default_value(kvs, key)};
-            std::string current_value{get_current_value(kvs, key)};
+            std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            std::string default_value{DefaultValueStr(kvs, key)};
+            std::string current_value{CurrentValueStr(kvs, key)};
 
-            info_log(key, value_is_default, default_value, current_value);
+            InfoLog(key, value_is_default, default_value, current_value);
         }
     }
 };
@@ -246,8 +246,8 @@ class ResetAllKeys final : public Scenario
         const int num_values{5};
 
         // Create KVS instance with provided params.
-        auto params{KvsParameters::from_json(input)};
-        auto kvs{kvs_instance(params)};
+        auto params{KvsParameters::FromJson(input)};
+        auto kvs{KvsInstance(params)};
 
         // List of keys and corresponding values.
         std::vector<std::pair<std::string, double>> key_values;
@@ -261,14 +261,14 @@ class ResetAllKeys final : public Scenario
         {
             // Get value before set.
             {
-                const std::string value_is_default{get_value_is_default(kvs, key)};
-                const std::string current_value{get_current_value(kvs, key)};
+                const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+                const std::string current_value{CurrentValueStr(kvs, key)};
 
-                info_log(key, value_is_default, current_value);
+                InfoLog(key, value_is_default, current_value);
             }
 
             // Set value.
-            auto set_result{kvs.set_value(key, KvsValue{value})};
+            auto set_result{kvs.SetValue(key, KvsValue{value})};
             if (!set_result)
             {
                 throw std::runtime_error{"Failed to set value"};
@@ -276,15 +276,15 @@ class ResetAllKeys final : public Scenario
 
             // Get value after set.
             {
-                const std::string value_is_default{get_value_is_default(kvs, key)};
-                const std::string current_value{get_current_value(kvs, key)};
+                const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+                const std::string current_value{CurrentValueStr(kvs, key)};
 
-                info_log(key, value_is_default, current_value);
+                InfoLog(key, value_is_default, current_value);
             }
         }
 
         // Reset.
-        auto reset_result{kvs.reset()};
+        auto reset_result{kvs.Reset()};
         if (!reset_result)
         {
             throw std::runtime_error{"Failed to reset KVS instance"};
@@ -293,32 +293,32 @@ class ResetAllKeys final : public Scenario
         // Get value parameters after reset.
         for (const auto& [key, _] : key_values)
         {
-            const std::string value_is_default{get_value_is_default(kvs, key)};
-            const std::string current_value{get_current_value(kvs, key)};
+            const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            const std::string current_value{CurrentValueStr(kvs, key)};
 
-            info_log(key, value_is_default, current_value);
+            InfoLog(key, value_is_default, current_value);
         }
     }
 };
 
-class ResetSingleKey final : public Scenario
+class SetValueToDefault final : public Scenario
 {
   public:
-    ~ResetSingleKey() final = default;
+    ~SetValueToDefault() final = default;
 
     std::string name() const final
     {
-        return "reset_single_key";
+        return "set_value_to_default";
     }
 
     void run(const std::string& input) const final
     {
         const int num_values{5};
-        const int reset_index{2};
+        const int default_index{2};
 
         // Create KVS instance with provided params.
-        auto params{KvsParameters::from_json(input)};
-        auto kvs{kvs_instance(params)};
+        auto params{KvsParameters::FromJson(input)};
+        auto kvs{KvsInstance(params)};
 
         // List of keys and corresponding values.
         std::vector<std::pair<std::string, double>> key_values;
@@ -332,14 +332,14 @@ class ResetSingleKey final : public Scenario
         {
             // Get value parameters before set.
             {
-                const std::string value_is_default{get_value_is_default(kvs, key)};
-                const std::string current_value{get_current_value(kvs, key)};
+                const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+                const std::string current_value{CurrentValueStr(kvs, key)};
 
-                info_log(key, value_is_default, current_value);
+                InfoLog(key, value_is_default, current_value);
             }
 
             // Set value.
-            auto set_result{kvs.set_value(key, KvsValue{value})};
+            auto set_result{kvs.SetValue(key, KvsValue{value})};
             if (!set_result)
             {
                 throw std::runtime_error{"Failed to set value"};
@@ -347,26 +347,26 @@ class ResetSingleKey final : public Scenario
 
             // Get value parameters after set.
             {
-                const std::string value_is_default{get_value_is_default(kvs, key)};
-                const std::string current_value{get_current_value(kvs, key)};
+                const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+                const std::string current_value{CurrentValueStr(kvs, key)};
 
-                info_log(key, value_is_default, current_value);
+                InfoLog(key, value_is_default, current_value);
             }
         }
 
-        // Reset single key.
-        auto reset_result{kvs.reset_key(key_values[reset_index].first)};
-        if (!reset_result)
+        // Set single key to default.
+        auto set_default_result{kvs.SetValueToDefault(key_values[default_index].first)};
+        if (!set_default_result)
         {
-            throw std::runtime_error{"Failed to reset key"};
+            throw std::runtime_error{"Failed to set value to default"};
         }
 
-        // Use KVS APIs to get value_is_default and current_value after reset.
+        // Use KVS APIs to get value_is_default and current_value after set to default.
         for (const auto& [key, value] : key_values)
         {
-            const std::string value_is_default{get_value_is_default(kvs, key)};
-            const std::string current_value{get_current_value(kvs, key)};
-            info_log(key, value_is_default, current_value);
+            const std::string value_is_default{ValueIsDefaultStr(kvs, key)};
+            const std::string current_value{CurrentValueStr(kvs, key)};
+            InfoLog(key, value_is_default, current_value);
         }
     }
 };
@@ -384,19 +384,19 @@ class Checksum final : public Scenario
     void run(const std::string& input) const final
     {
         // Create KVS instance with provided params.
-        auto params{KvsParameters::from_json(input)};
+        auto params{KvsParameters::FromJson(input)};
         auto working_dir{*params.dir};
         std::string kvs_path;
         std::string hash_path;
         {
             // Create instance, flush, store paths to files, close instance.
-            auto kvs{kvs_instance(params)};
-            auto flush_result{kvs.flush()};
+            auto kvs{KvsInstance(params)};
+            auto flush_result{kvs.Flush()};
             if (!flush_result)
             {
                 throw std::runtime_error{"Failed to flush"};
             }
-            std::tie(kvs_path, hash_path) = kvs_hash_paths(working_dir, params.instance_id, SnapshotId{0});
+            std::tie(kvs_path, hash_path) = KvsHashPaths(working_dir, params.instance_id, SnapshotId{0});
         }
 
         TRACING_INFO(
@@ -405,13 +405,13 @@ class Checksum final : public Scenario
 };
 
 /// @brief Creates the default values scenario group.
-ScenarioGroup::Ptr default_values_group()
+ScenarioGroup::Ptr DefaultValuesGroup()
 {
     return ScenarioGroup::Ptr{new ScenarioGroupImpl{"default_values",
                                                     {std::make_shared<DefaultValues>(),
                                                      std::make_shared<RemoveKey>(),
                                                      std::make_shared<ResetAllKeys>(),
-                                                     std::make_shared<ResetSingleKey>(),
+                                                     std::make_shared<SetValueToDefault>(),
                                                      std::make_shared<Checksum>()},
                                                     {}}};
 }

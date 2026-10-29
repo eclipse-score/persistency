@@ -18,8 +18,8 @@
 #include "cit/snapshots.h"
 #include "cit/supported_datatypes.h"
 
-ScenarioGroup::Ptr cit_scenario_group()
+ScenarioGroup::Ptr CitScenarioGroup()
 {
     return ScenarioGroup::Ptr{new ScenarioGroupImpl{
-        "cit", {}, {default_values_group(), multiple_kvs_group(), snapshots_group(), supported_datatypes_group()}}};
+        "cit", {}, {DefaultValuesGroup(), MultipleKvsGroup(), SnapshotsGroup(), SupportedDatatypesGroup()}}};
 }
