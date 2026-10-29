@@ -53,12 +53,12 @@ class MultipleInstanceIds final : public Scenario
 
         // Parameters.
         JsonParser parser;
-        auto any_res{parser.FromBuffer(input)};
-        if (!any_res)
+        auto any_result{parser.FromBuffer(input)};
+        if (!any_result)
         {
-            throw score::result::Error(any_res.error());
+            throw score::result::Error(any_result.error());
         }
-        auto& obj{any_res.value().As<Object>().value().get()};
+        auto& obj{any_result.value().As<Object>().value().get()};
 
         auto params1{KvsParameters::FromValue(obj.at("kvs_parameters_1").As<Object>().value().get())};
         auto params2{KvsParameters::FromValue(obj.at("kvs_parameters_2").As<Object>().value().get())};

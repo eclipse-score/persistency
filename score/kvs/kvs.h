@@ -487,7 +487,7 @@ class Kvs final
                                    const OpenJsonNeedFile need_file) const noexcept;
 
     /// @brief Writes the provided data to the current JSON file and its hash file.
-    score::Result<void> WriteJsonData(const std::string& buf) const noexcept;
+    score::Result<void> WriteJsonData(const std::string& buffer) const noexcept;
 
     /// @brief Serializes the KVS and checks the projected total size against the storage limit.
     score::Result<std::string> SerializeAndCheck() const noexcept;

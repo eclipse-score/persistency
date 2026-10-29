@@ -68,9 +68,9 @@ bool CheckHash(const std::string& data_calculate, std::istream& data_parse) noex
 score::Result<KvsValue> AnyToKvsValue(const score::json::Any& any) noexcept;
 
 /// @brief Converts a KvsValue to a JSON value in the KVS file format (`{"t": <type>, "v": <value>}`).
-/// @param kv The value to convert.
+/// @param kvs_value The value to convert.
 /// @return The converted JSON value on success, or ErrorCode::kInvalidValueType on failure.
-score::Result<score::json::Any> KvsValueToAny(const KvsValue& kv) noexcept;
+score::Result<score::json::Any> KvsValueToAny(const KvsValue& kvs_value) noexcept;
 
 /// @brief Converts an object to a JSON value in the KVS file format (`{"t": "obj", "v": <object>}`).
 ///

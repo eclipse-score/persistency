@@ -37,16 +37,16 @@ namespace score::kvs
 ///
 /// int main() {
 ///   // Open kvs
-///   auto open_res = KvsBuilder(0)
+///   auto open_result = KvsBuilder(0)
 ///                       .Defaults(KvsDefaults::kRequired)
 ///                       .KvsLoad(KvsLoad::kRequired)
 ///                       .Build();
-///   if (!open_res) return 1;
-///   Kvs kvs = std::move(open_res.value());
+///   if (!open_result) return 1;
+///   Kvs kvs = std::move(open_result.value());
 ///
 ///   // Set and get a value
 ///   kvs.SetValue("pi", KvsValue(3.14));
-///   auto get_res = kvs.GetValue("pi");
+///   auto get_result = kvs.GetValue("pi");
 ///
 ///   // Delete a key
 ///   kvs.RemoveKey("pi");
