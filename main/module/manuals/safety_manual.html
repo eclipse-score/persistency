@@ -491,7 +491,7 @@
                   
   <section id="safety-manual">
 <h1>Safety Manual<a class="headerlink" href="#safety-manual" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-b113ea39">
+<div class="need_container docutils container" id="SNCB-66efdc7b">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_safety_manual">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -572,6 +572,9 @@
 </section>
 <section id="assumptions-of-use">
 <h2>Assumptions of Use<a class="headerlink" href="#assumptions-of-use" title="Link to this heading">#</a></h2>
+<p>The assumptions of use of the feature are documented in <a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#doc__persistency_feat_aou" title="doc__persistency_feat_aou"><em class="xref need">Persistency Feature AoU (doc__persistency_feat_aou)</em></a>,
+the assumptions of use of the components in the respective component documentation.
+They are listed in the following sections.</p>
 <section id="assumptions-on-the-environment">
 <h3>Assumptions on the Environment<a class="headerlink" href="#assumptions-on-the-environment" title="Link to this heading">#</a></h3>
 <div class="line-block">
@@ -583,7 +586,28 @@
 <div class="line">Beyond these OS services the module has no specific AoUs on its environment (OS, C/C++ standard library, HW).</div>
 </div>
 <p>List of AoUs expected from the environment the module runs on:</p>
-<p class="needs_filter_warning" id="needtable-module/manuals/safety_manual-1">No needs passed the filters</p>
+<div class="needstable_wrapper docutils container" id="needtable-module/manuals/safety_manual-1">
+<div class="pst-scrollable-table-container"><table class="NEEDS_TABLE table" id="needtable-module/manuals/safety_manual-1-table_node">
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Title</p></th>
+<th class="head"><p>ID</p></th>
+<th class="head"><p>Status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="need row-even"><td class="needs_title"><p>Persistency Error handling</p></td>
+<td class="needs_id"><p><a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__error_handling">aou_req__persistency__error_handling</a></p></td>
+<td class="needs_status"><p>valid</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </section>
 <section id="assumptions-on-the-user">
 <h3>Assumptions on the User<a class="headerlink" href="#assumptions-on-the-user" title="Link to this heading">#</a></h3>
@@ -611,8 +635,16 @@ For the feature Persistency the platform safety manual and this module safety ma
 </tr>
 </thead>
 <tbody>
-<tr class="need row-even"><td class="needs_title"><p>Persistency Error handling</p></td>
-<td class="needs_id"><p><a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__error_handling">aou_req__persistency__error_handling</a></p></td>
+<tr class="need row-even"><td class="needs_title"><p>Flush of Safety Relevant Changes</p></td>
+<td class="needs_id"><p><a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__flush">aou_req__persistency__flush</a></p></td>
+<td class="needs_status"><p>valid</p></td>
+</tr>
+<tr class="need row-odd"><td class="needs_title"><p>Separate KVS Instances per Software Element</p></td>
+<td class="needs_id"><p><a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__instance_separation">aou_req__persistency__instance_separation</a></p></td>
+<td class="needs_status"><p>valid</p></td>
+</tr>
+<tr class="need row-even"><td class="needs_title"><p>Start without Persisted Data</p></td>
+<td class="needs_id"><p><a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__start_without_data">aou_req__persistency__start_without_data</a></p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 </tbody>
