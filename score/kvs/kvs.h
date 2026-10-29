@@ -187,6 +187,11 @@ class Kvs final
     /// Values above kMaxSnapshotsUpperBound are clamped to it (a warning is logged).
     /// A value of 0 disables snapshot operations.
     /// The current KVS data is still persisted by Flush().
+    /// @param filesystem Filesystem handler for file operations.
+    /// @param parser JSON parser for reading KVS data.
+    /// @param writer JSON writer for writing KVS data.
+    /// @pre `filesystem`, `parser` and `writer` are not null.
+    /// A null pointer aborts through the S-CORE assertion handler.
     /// @return The opened Kvs object on success, or an ErrorCode on failure.
     static score::Result<Kvs> Open(const InstanceId& instance_id,
                                    const SnapshotId& snapshot_id,
@@ -194,7 +199,10 @@ class Kvs final
                                    const KvsLoad& kvs_load,
                                    const std::string& working_dir,
                                    const std::optional<size_t>& max_storage_bytes,
-                                   const std::size_t snapshot_max_count) noexcept;
+                                   const std::size_t snapshot_max_count,
+                                   std::unique_ptr<score::filesystem::Filesystem> filesystem,
+                                   std::unique_ptr<score::json::IJsonParser> parser,
+                                   std::unique_ptr<score::json::IJsonWriter> writer) noexcept;
 
     /// @brief Resets the key-value store to its initial state.
     /// @return Nothing on success, or an ErrorCode on failure.
@@ -341,7 +349,16 @@ class Kvs final
                                    const std::size_t snapshot_max_count) noexcept
     {
         return Kvs::Open(
-            instance_id, snapshot_id, defaults, kvs_load, working_dir, max_storage_bytes, snapshot_max_count);
+            instance_id,
+            snapshot_id,
+            defaults,
+            kvs_load,
+            working_dir,
+            max_storage_bytes,
+            snapshot_max_count,
+            std::make_unique<score::filesystem::Filesystem>(score::filesystem::FilesystemFactory{}.CreateInstance()),
+            std::make_unique<score::json::JsonParser>(),
+            std::make_unique<score::json::JsonWriter>());
     }
 
     /// @deprecated Use `Reset()` instead.
@@ -471,10 +488,12 @@ class Kvs final
     }
 
   private:
-    /// @brief Constructs an empty KVS.
+    /// @brief Constructs an empty KVS with the given filesystem, JSON parser and JSON writer.
     ///
     /// Private to prevent direct instantiation, use Open() instead.
-    Kvs() noexcept;
+    Kvs(std::unique_ptr<score::filesystem::Filesystem> filesystem,
+        std::unique_ptr<score::json::IJsonParser> parser,
+        std::unique_ptr<score::json::IJsonWriter> writer) noexcept;
 
     /// @brief Rotates the snapshots, ensuring that the maximum count is maintained.
     score::Result<void> SnapshotRotate() const noexcept;
