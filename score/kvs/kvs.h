@@ -18,7 +18,6 @@
 #include "score/json/json_writer.h"
 #include "score/kvs/error.h"
 #include "score/kvs/kvs_value.h"
-#include "score/mw/log/logger.h"
 #include "score/result/result.h"
 #include <cstddef>
 #include <cstdint>
@@ -485,25 +484,8 @@ class Kvs final
     /// @brief Writes the provided data to the current JSON file and its hash file.
     score::Result<void> WriteJsonData(const std::string& buf) const noexcept;
 
-    /// @brief Writes data to the temporary file of a KVS file and ensures it reaches physical storage.
-    ///
-    /// The live file is not touched, it is replaced by CommitTempFile() once the data is on storage.
-    score::Result<void> WriteTempFile(const score::filesystem::Path& path,
-                                      const void* data,
-                                      const std::size_t size) const noexcept;
-
-    /// @brief Replaces a KVS file with its temporary file.
-    ///
-    /// The rename is atomic, the file is either old or new.
-    score::Result<void> CommitTempFile(const score::filesystem::Path& path) const noexcept;
-
     /// @brief Serializes the KVS and checks the projected total size against the storage limit.
     score::Result<std::string> SerializeAndCheck() const noexcept;
-
-    /// @brief Retrieves the size of one file in bytes.
-    ///
-    /// A missing file counts as 0 bytes.
-    score::Result<size_t> GetFileSize(const score::filesystem::Path& file_path) const noexcept;
 
     /// @brief Retrieves the current storage size of all persisted files (defaults and snapshots).
     score::Result<size_t> GetCurrentStorageSize() const noexcept;
@@ -532,9 +514,6 @@ class Kvs final
 
     /// JSON writer for writing KVS data.
     std::unique_ptr<score::json::IJsonWriter> writer_;
-
-    /// Logger of this instance.
-    std::unique_ptr<score::mw::log::Logger> logger_;
 
     /// Maximum storage limit in bytes.
     /// Unset means no limit is enforced.
