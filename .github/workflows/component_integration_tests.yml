@@ -12,6 +12,9 @@
 # *******************************************************************************
 name: Component Integration Tests
 
+permissions:
+  contents: read
+
 on:
   pull_request:
     types: [opened, reopened, synchronize]
@@ -24,80 +27,10 @@ on:
 
 jobs:
   component-integration-tests:
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
-    permissions:
-      contents: read
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
-
-      - name: Checkout repository (pull_request_target via workflow_call)
-        if: ${{ github.event_name == 'pull_request_target' }}
-        # TODO(#349): remove once secure fork-PR checkout is finalized.
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.head_ref || github.event.pull_request.head.ref || github.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-
-      - name: Checkout repository
-        if: ${{ github.event_name != 'pull_request_target' }}
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Setup Rust build environment
-        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch (2026-10-16)
-        with:
-          toolchain: 1.90.0
-
-      - name: Setup Bazel with shared caching
-        uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
-        with:
-          disk-cache-key: ${{ github.job }}
-
-      # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@168b6f51b21b5f0ebe49808939db53557dca410c # main branch (2026-10-12)
-
-      - name: Build C++ test scenarios with Bazel
-        run: |
-          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/kvs/tests/test_scenarios
-
-      - name: Build Rust test scenarios with Bazel
-        run: |
-          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/kvs/rust_kvs/tests/test_scenarios
-
-      - name: Set up Python 3
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        with:
-          python-version: "3.12"
-
-      - name: Set up Python virtual environment
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install -r score/kvs/tests/test_cases/requirements.txt
-
-      - name: Run Python tests with pytest
-        run: |
-          source .venv/bin/activate
-          python -m pytest --traces=all --log-cli-level=DEBUG
-
-      - name: Run Python tests with bazel
-        run: |
-          bazel test --lockfile_mode=error --config=score-linux-x86_64 //:cit_tests
-
-      - name: Prepare test reports
-        if: always()
-        # Creating tests-report directory
-        # Follow Symlinks via '-L' to copy correctly
-        # Copy everything inside the 'test-reports' folder
-        run: |
-          mkdir -p tests-report
-          rsync -amL --include='*/' --include='test.xml' --include='test.log' --exclude='*' bazel-testlogs/ tests-report/
-
-      - name: Upload bundled test report
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: tests-report
-          path: tests-report
+    uses: eclipse-score/cicd-workflows/.github/workflows/tests.yml@58cb0ec5a80441d593464d3af09d634ab91247e0 # v0.0.3-32-g8ab7396
+    with:
+      bazel-target: "test --lockfile_mode=error --config=score-linux-x86_64 //:cit_tests"
+      upload-name: tests-report
+      result-paths: |
+        bazel-testlogs/**/test.xml
+        bazel-testlogs/**/test.log
