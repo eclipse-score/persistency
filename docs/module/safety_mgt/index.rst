@@ -18,7 +18,6 @@ Safety Management
 .. toctree::
    :titlesonly:
 
-   feature_safety_analysis_fdr
    module_codeowners
    module_safety_analysis_fdr
    module_safety_plan
