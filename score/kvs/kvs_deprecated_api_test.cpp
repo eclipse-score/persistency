@@ -49,7 +49,6 @@ static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kKeyNotFound) == 
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kSerializationFailed) == 16, "");
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kInvalidSnapshotId) == 17, "");
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kConversionFailed) == 18, "");
-static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kMutexLockFailed) == 19, "");
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kInvalidValueType) == 20, "");
 static_assert(static_cast<score::result::ErrorCode>(ErrorCode::kInvalidKey) == 21, "");
 
@@ -99,7 +98,6 @@ static_assert(ErrorCode::KeyNotFound == ErrorCode::kKeyNotFound, "");
 static_assert(ErrorCode::SerializationFailed == ErrorCode::kSerializationFailed, "");
 static_assert(ErrorCode::InvalidSnapshotId == ErrorCode::kInvalidSnapshotId, "");
 static_assert(ErrorCode::ConversionFailed == ErrorCode::kConversionFailed, "");
-static_assert(ErrorCode::MutexLockFailed == ErrorCode::kMutexLockFailed, "");
 static_assert(ErrorCode::InvalidValueType == ErrorCode::kInvalidValueType, "");
 static_assert(ErrorCode::InvalidKey == ErrorCode::kInvalidKey, "");
 DISABLE_WARNING_POP

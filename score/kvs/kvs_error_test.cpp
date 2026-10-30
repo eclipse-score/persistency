@@ -43,7 +43,6 @@ TEST(kvs_MessageFor, MessageFor)
         {ErrorCode::kSerializationFailed, "Serialization failed"},
         {ErrorCode::kInvalidSnapshotId, "Invalid snapshot ID"},
         {ErrorCode::kConversionFailed, "Conversion failed"},
-        {ErrorCode::kMutexLockFailed, "Mutex failed"},
         {ErrorCode::kInvalidValueType, "Invalid value type"},
         {ErrorCode::kInvalidKey, "Key is not valid"},
     };

@@ -195,11 +195,7 @@ score::Result<Kvs> Kvs::Open(const InstanceId& instance_id,
 
 score::Result<void> Kvs::Reset() noexcept
 {
-    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     kvs_.clear();
     return {};
@@ -207,11 +203,7 @@ score::Result<void> Kvs::Reset() noexcept
 
 score::Result<std::vector<std::string>> Kvs::GetAllKeys() const noexcept
 {
-    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     std::vector<std::string> keys;
     keys.reserve(kvs_.size());
@@ -224,11 +216,7 @@ score::Result<std::vector<std::string>> Kvs::GetAllKeys() const noexcept
 
 score::Result<bool> Kvs::KeyExists(const std::string_view key) const noexcept
 {
-    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     // unordered_map find() needs string and doesn't work with string_view.
     // C++20 heterogeneous lookup would avoid the copy (applies to more functions).
@@ -237,11 +225,7 @@ score::Result<bool> Kvs::KeyExists(const std::string_view key) const noexcept
 
 score::Result<KvsValue> Kvs::GetValue(const std::string_view key) const noexcept
 {
-    std::unique_lock<std::mutex> lock_kvs{kvs_mutex_, std::try_to_lock};
-    if (!lock_kvs.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     const auto search_kvs{kvs_.find(std::string(key))};
     if (search_kvs == kvs_.end())
@@ -278,11 +262,7 @@ score::Result<void> Kvs::SetValueToDefault(const std::string_view key) noexcept
     }
 
     // Set value.
-    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     kvs_.insert_or_assign(std::string(key), std::move(*default_value_result));
     return {};
@@ -290,11 +270,7 @@ score::Result<void> Kvs::SetValueToDefault(const std::string_view key) noexcept
 
 score::Result<bool> Kvs::IsValueDefault(const std::string_view key) const noexcept
 {
-    std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock(kvs_mutex_);
 
     const std::string key_str{key};
     if (kvs_.find(key_str) != kvs_.end())
@@ -327,11 +303,7 @@ score::Result<void> Kvs::SetValue(const std::string_view key, const KvsValue& va
         return score::MakeUnexpected(ErrorCode::kInvalidValueType);
     }
 
-    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     kvs_.insert_or_assign(std::string(key), value);
     return {};
@@ -339,11 +311,7 @@ score::Result<void> Kvs::SetValue(const std::string_view key, const KvsValue& va
 
 score::Result<void> Kvs::RemoveKey(const std::string_view key) noexcept
 {
-    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     if (kvs_.erase(std::string(key)) == 0U)
     {
@@ -354,11 +322,7 @@ score::Result<void> Kvs::RemoveKey(const std::string_view key) noexcept
 
 score::Result<void> Kvs::RemoveAllKeys() noexcept
 {
-    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     kvs_.clear();
     return {};
@@ -366,11 +330,7 @@ score::Result<void> Kvs::RemoveAllKeys() noexcept
 
 score::Result<void> Kvs::DiscardPendingChanges() noexcept
 {
-    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     // Snapshot 0 is the current persisted state: written by Flush(), read by Open().
     const score::filesystem::Path kvs_path{filename_prefix_.Native() + "_0"};
@@ -388,6 +348,8 @@ score::Result<void> Kvs::DiscardPendingChanges() noexcept
 
 score::Result<void> Kvs::Flush() noexcept
 {
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
+
     auto result{SerializeAndCheck()};
     if (!result)
     {
@@ -432,11 +394,7 @@ size_t Kvs::SnapshotMaxCount() const noexcept
 
 score::Result<void> Kvs::SnapshotRestore(const SnapshotId& snapshot_id) noexcept
 {
-    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     const auto snapshot_count_res{SnapshotCount()};
     if (!snapshot_count_res)
@@ -522,6 +480,8 @@ score::Result<size_t> Kvs::GetStorageFileSize() const noexcept
 
 score::Result<size_t> Kvs::CalculatePotentialSize() const noexcept
 {
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
+
     auto result{SerializeAndCheck()};
     if (!result)
     {
@@ -551,12 +511,6 @@ Kvs::Kvs() noexcept
 
 score::Result<void> Kvs::SnapshotRotate() const noexcept
 {
-    std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-    if (!lock.owns_lock())
-    {
-        return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-    }
-
     for (size_t idx{max_snapshots_}; idx > 0; --idx)
     {
         const score::filesystem::Path hash_old{filename_prefix_.Native() + "_" + std::to_string(idx - 1) +
@@ -821,23 +775,13 @@ score::Result<void> Kvs::CommitTempFile(const score::filesystem::Path& path) con
 
 score::Result<std::string> Kvs::SerializeAndCheck() const noexcept
 {
-    score::json::Any root_obj;
-
     // 1. Serialize the current KVS map.
+    auto conv{KvsValueToAny(kvs_)};
+    if (!conv)
     {
-        std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
-        if (!lock.owns_lock())
-        {
-            return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
-        }
-
-        auto conv{KvsValueToAny(kvs_)};
-        if (!conv)
-        {
-            return score::MakeUnexpected<std::string>(conv.error());
-        }
-        root_obj = std::move(conv.value());
+        return score::MakeUnexpected<std::string>(conv.error());
     }
+    const score::json::Any root_obj{std::move(conv.value())};
 
     auto buf_res{writer_->ToBuffer(root_obj)};
     if (!buf_res)

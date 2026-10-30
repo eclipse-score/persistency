@@ -138,7 +138,7 @@ Unintended impacts to function due to various failures.
   * - UI_01_04
     - Deadlocks
     - no
-    - One mutex per instance (Rust additionally one for the instance pool in the builder); never more than one lock is held at a time. Rust waits for the lock; C++ does not wait and returns MutexLockFailed.
+    - One mutex per instance (Rust additionally one for the instance pool in the builder). Both implementations wait for the lock. A call holds at most one lock and does not call back into the application while holding it. Exception: the C++ move assignment takes the locks of both instances at once with ``std::scoped_lock``, which avoids deadlock.
   * - UI_01_05
     - Livelocks
     - no
@@ -185,10 +185,14 @@ DFA
    :mitigated_by: aou_req__persistency__error_handling
    :sufficient: yes
    :status: valid
-   :version: 2
+   :version: 3
 
-   Persistency runs in the calling context; blocking (by the application or OS scheduling) leads to no or a
-   too late response, handled by :need:`aou_req__persistency__error_handling`.
+   Persistency runs in the calling context. Blocking leads to no or a too late response, handled by
+   :need:`aou_req__persistency__error_handling`.
+
+   Causes: the application or OS scheduling, and waiting for the instance lock while another thread of the
+   process uses the same instance. The wait lasts until that call returns, including its file access (e.g.
+   flush or snapshot restore).
 
 .. feat_saf_dfa:: Corruption of persisted data
    :violates: feat_arc_sta__persistency__static
