@@ -30,7 +30,6 @@
 #include "score/json/i_json_writer_mock.h"
 #include "score/kvs/internal/kvs_helper.h"
 #include "score/kvs/kvs_builder.h"
-using namespace score::kvs;
 
 uint32_t Adler32(const std::string& data);
 void PrepareEnvironment();
@@ -84,8 +83,8 @@ inline void PrepareEnvironment(const std::string& dir,
 // Default data used in unit tests.
 
 const std::uint32_t kInstance{123U};
-const InstanceId kInstanceId{kInstance};
-const SnapshotId kSnapshotId{0ul};
+const score::kvs::InstanceId kInstanceId{kInstance};
+const score::kvs::SnapshotId kSnapshotId{0ul};
 
 // score::filesystem::Path could be constructed implicitly from std::string.
 // For readability, the test code constructs it explicitly from these strings.

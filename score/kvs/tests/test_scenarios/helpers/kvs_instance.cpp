@@ -25,19 +25,19 @@ Kvs KvsInstance(const KvsParameters& params)
     // Set parameters.
     if (params.defaults.has_value())
     {
-        builder = builder.Defaults(*params.defaults);
+        builder.Defaults(*params.defaults);
     }
     if (params.kvs_load.has_value())
     {
-        builder = builder.KvsLoad(*params.kvs_load);
+        builder.KvsLoad(*params.kvs_load);
     }
     if (params.dir.has_value())
     {
-        builder = builder.WorkingDir(std::string(*params.dir));
+        builder.WorkingDir(std::string(*params.dir));
     }
     if (params.snapshot_max_count.has_value())
     {
-        builder = builder.SnapshotMaxCount(*params.snapshot_max_count);
+        builder.SnapshotMaxCount(*params.snapshot_max_count);
     }
 
     // Build KVS instance.

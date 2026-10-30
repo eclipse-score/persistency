@@ -13,9 +13,11 @@
 
 #include "score/kvs/kvs_general_test.h"
 
+using namespace score::kvs;
+
 namespace
 {
-void remove_file(const std::string& path)
+void RemoveFile(const std::string& path)
 {
     score::cpp::ignore = score::filesystem::FilesystemFactory{}.CreateInstance().standard->Remove(path);
 }
@@ -121,8 +123,8 @@ TEST(kvs_kvsbuilder, kvsbuilder_directory_check)
         ASSERT_TRUE(kvs.Flush());
 
         auto filename{kvs.KvsFilePath(SnapshotId{0ul})};
-        remove_file(expected_prefix + ".json");
-        remove_file(expected_prefix + ".hash");
+        RemoveFile(expected_prefix + ".json");
+        RemoveFile(expected_prefix + ".hash");
         ASSERT_TRUE(filename);
         EXPECT_EQ(filename.value().CStr(), expected_prefix + ".json");
     }
