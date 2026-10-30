@@ -22,25 +22,28 @@ directory only holds what is specific to this repository:
 | `BUILD` | `score_coverage_scope` (the production targets in scope) + `score_coverage_reporter` (LLVM tool wiring) |
 | `coverage.bazelrc` | the `llvm_cov` config, imported from the root `.bazelrc` |
 | `coverage_justifications.yaml` | reviewed justifications for intentionally uncovered lines (`COV_JUSTIFIED` markers) |
+| `scope_exclusions.txt` | production libraries deliberately left out of the scope, each with a justification. `.github/tools/check_coverage_scope.sh` checks this list. |
 
 ## Usage
 
 ```bash
-bazel coverage --config=llvm_cov //score/... --build_tests_only
+.github/tools/check_coverage_scope.sh
+
+bazel coverage --config=llvm_cov --build_tests_only //score/...
 
 bazel run @score_coverage//:generate_coverage_html -- \
-    --yaml quality/coverage/coverage_justifications.yaml --testlogs-subdir score
+    --yaml tools/coverage/coverage_justifications.yaml --testlogs-subdir score
 
 xdg-open coverage_linux/index.html
 ```
 
-> Do NOT combine `--config=llvm_cov` with `--config=score-linux-x86_64`:
-> the GCC toolchain would win resolution and produce no coverage data.
+> Do NOT combine `--config=llvm_cov` with `--config=score-linux-x86_64` (or its alias `per-x86_64-linux`).
+> The GCC toolchain would win resolution and produce no coverage data.
 
 Untested in-scope files (e.g. `kvs_tool.rs`) appear at exact 0%; the gate
 compares *effective* coverage (covered + justified) against
 `COVERAGE_THRESHOLD` (CI: report-only during introduction, see
-`.github/workflows/coverage.yml`).
+`.github/workflows/coverage_report.yml`).
 
 Full documentation lives with the tool:
 [user manual](https://eclipse-score.github.io/coverage_tool/main/manual/user_manual.html)

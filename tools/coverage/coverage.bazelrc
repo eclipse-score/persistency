@@ -1,0 +1,69 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+# LLVM source-based coverage (C++ + Rust) via @score_coverage (eclipse-score/coverage_tool).
+# Use with: bazel coverage --config=llvm_cov //score/... --build_tests_only
+# Manual: https://eclipse-score.github.io/coverage_tool/main/manual/user_manual.html
+#
+# Do NOT combine with --config=score-linux-x86_64 (or its alias per-x86_64-linux).
+# That config registers the GCC toolchain after this file's flags.
+# The last --extra_toolchains wins resolution, and GCC produces no LLVM covmap.
+
+coverage:llvm_cov --nocache_test_results
+# Instrument everything under //score.
+# Left unset, Bazel guesses the filter from the packages of the test targets and strips only a trailing "/tests".
+# A library tested from a "test" subpackage is then compiled without counters.
+coverage:llvm_cov --instrumentation_filter=^//score[/:]
+coverage:llvm_cov --cxxopt=-O0
+coverage:llvm_cov --combined_report=lcov
+coverage:llvm_cov --experimental_fetch_all_coverage_outputs
+# Link statically.
+# With per-library *.so files, a header used by differently instrumented objects takes its counters from whichever object comes first.
+# That leaves coverage gaps.
+coverage:llvm_cov --dynamic_mode=off
+coverage:llvm_cov --experimental_generate_llvm_lcov
+coverage:llvm_cov --experimental_use_llvm_covmap
+
+# Toolchains: Clang 22 with covmap for C++, Ferrocene for Rust.
+# Clang must win over the GCC toolchain registered globally in score.bazelrc/score_toolchain.bazelrc.
+# Ferrocene >= 0.10.0 is the standard toolchain and ships llvm-cov/llvm-profdata.
+coverage:llvm_cov --platforms=@score_bazel_platforms//:x86_64-linux-gcc_12.2.0-posix
+coverage:llvm_cov --extra_toolchains=@llvm_toolchain//:cc-toolchain-x86_64-linux
+coverage:llvm_cov --extra_toolchains=@score_toolchains_rust//toolchains/ferrocene:ferrocene_x86_64_unknown_linux_gnu
+
+# Per-test merger from score_coverage.
+# The reporter carries this repository's scope (tools/coverage/BUILD).
+coverage:llvm_cov --coverage_output_generator=@score_coverage//:merger
+coverage:llvm_cov --coverage_report_generator=//tools/coverage:reporter_wrapper
+coverage:llvm_cov --test_env=GENERATE_LLVM_LCOV=0
+coverage:llvm_cov --test_env=COVERAGE_GCOV_PATH=/usr/bin/true
+# Continuous-mode profiles, so death tests and abnormal exits still write their counters.
+# Rust needs runtime counter relocation for that mode.
+coverage:llvm_cov --test_env=LLVM_PROFILE_CONTINUOUS_MODE=1
+coverage:llvm_cov --features=enable_llvm_coverage_for_death_tests
+coverage:llvm_cov --features=coverage
+coverage:llvm_cov --@rules_rust//rust/settings:extra_rustc_flag=-Cllvm-args=-runtime-counter-relocation
+coverage:llvm_cov --@rules_rust//rust/settings:extra_rustc_flag=-Clink-dead-code
+# Unstable -Z flag: accepted because the Ferrocene toolchain in use is a rolling (nightly-based) build.
+# Drop it if a stable-channel Ferrocene is pinned.
+coverage:llvm_cov --@rules_rust//rust/settings:extra_rustc_flag=-Zcoverage-options=branch
+
+# The @score_cpp_policies warning flags are GCC-only and Clang 22 warns where GCC 12 does not,
+# so drop warning enforcement from the coverage-only build. --host_features covers exec-config
+# builds of scope deps.
+coverage:llvm_cov --features=-strict_warnings --features=-warnings_as_errors
+coverage:llvm_cov --host_features=-strict_warnings --host_features=-warnings_as_errors
+
+# External deps (score_baselibs) still request treat_warnings_as_errors, the -Werror feature of the rules_cc unix toolchain config that backs the Clang toolchain of this config.
+coverage:llvm_cov --features=-treat_warnings_as_errors
+coverage:llvm_cov --host_features=-treat_warnings_as_errors

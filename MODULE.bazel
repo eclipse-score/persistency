@@ -38,7 +38,7 @@ bazel_dep(name = "score_test_scenarios", version = "0.5.0")
 bazel_dep(name = "score_tooling", version = "3.0.1")
 
 # LLVM source-based coverage pipeline (C++ + Rust): the qualified S-CORE
-# coverage tool, successor of @score_tooling//coverage. See quality/coverage/.
+# coverage tool, successor of @score_tooling//coverage. See tools/coverage/.
 bazel_dep(name = "score_coverage", version = "0.4.2", dev_dependency = True)
 
 # Development dependencies (alphabetically sorted)
@@ -181,14 +181,13 @@ use_repo(sbom_ext, "sbom_metadata")
 
 # *******************************************************************************
 # Coverage toolchain (LLVM source-based coverage pipeline from
-# @score_coverage, see quality/coverage/). Only active during
+# @score_coverage, see tools/coverage/). Only active during
 # `bazel coverage --config=llvm_cov` runs.
 #
 # C++ needs the hermetic Clang toolchain below (covmap instrumentation).
-# Rust needs nothing extra: the standard @score_toolchains_rust//toolchains/
-# ferrocene toolchain registered in score.bazelrc/score_toolchain.bazelrc
-# ships llvm-cov/llvm-profdata since score_toolchains_rust 0.10.0, which
-# activates Rust coverage instrumentation under `bazel coverage`.
+# Rust uses the standard @score_toolchains_rust//toolchains/ferrocene toolchain.
+# tools/coverage/coverage.bazelrc registers it explicitly for llvm_cov.
+# It ships llvm-cov/llvm-profdata since score_toolchains_rust 0.10.0.
 # *******************************************************************************
 bazel_dep(name = "toolchains_llvm", version = "1.11.1", dev_dependency = True)
 
