@@ -106,13 +106,13 @@ DISABLE_WARNING_POP
 
 score::Result<Kvs> OpenKvs()
 {
-    return Kvs::Open(kInstanceId,
-                     kSnapshotId,
-                     KvsDefaults::kOptional,
-                     KvsLoad::kOptional,
-                     std::string(kDataDir),
-                     std::nullopt,
-                     kDefaultMaxSnapshots);
+    return KvsBuilder{kInstanceId}
+        .Snapshot(kSnapshotId)
+        .Defaults(KvsDefaults::kOptional)
+        .KvsLoad(KvsLoad::kOptional)
+        .WorkingDir(std::string(kDataDir))
+        .SnapshotMaxCount(kDefaultMaxSnapshots)
+        .Build();
 }
 
 void ExpectSame(const score::Result<void>& old_result, const score::Result<void>& new_result)
@@ -133,21 +133,21 @@ TEST(kvs_deprecated_api, kvs_open)
     DISABLE_WARNING_PUSH
     DISABLE_WARNING(-Wdeprecated-declarations)
     // clang-format on
-    auto result{Kvs::open(kInstanceId,
-                          kSnapshotId,
-                          OpenNeedDefaults::kOptional,
-                          OpenNeedKvs::kOptional,
-                          std::string(kDataDir),
-                          std::nullopt,
-                          kDefaultMaxSnapshots)};
+    auto result = KvsBuilder{kInstanceId}
+                      .Snapshot(kSnapshotId)
+                      .Defaults(KvsDefaults::kOptional)
+                      .KvsLoad(KvsLoad::kOptional)
+                      .WorkingDir(std::string(kDataDir))
+                      .SnapshotMaxCount(kDefaultMaxSnapshots)
+                      .Build();
     DISABLE_WARNING_POP
-    auto new_result{Kvs::Open(kInstanceId,
-                              kSnapshotId,
-                              KvsDefaults::kOptional,
-                              KvsLoad::kOptional,
-                              std::string(kDataDir),
-                              std::nullopt,
-                              kDefaultMaxSnapshots)};
+    auto new_result = KvsBuilder{kInstanceId}
+                          .Snapshot(kSnapshotId)
+                          .Defaults(KvsDefaults::kOptional)
+                          .KvsLoad(KvsLoad::kOptional)
+                          .WorkingDir(std::string(kDataDir))
+                          .SnapshotMaxCount(kDefaultMaxSnapshots)
+                          .Build();
     ASSERT_TRUE(result);
     ASSERT_TRUE(new_result);
     EXPECT_EQ(result.value().GetAllKeys().value(), new_result.value().GetAllKeys().value());
@@ -262,25 +262,36 @@ TEST(kvs_deprecated_api, kvs_write_wrappers)
 
 TEST(kvs_deprecated_api, kvsbuilder_wrappers)
 {
-    PrepareEnvironment();
+    const InstanceId instance_id_1{2ul};
+    const InstanceId instance_id_2{3ul};
+    const SnapshotId snapshotId{1ul};
+    const std::string prefix{"kvs_"};
+    const std::string dir{"./kvsbuilder_wrappers"};
+    const std::string snapshot_data_0{R"({"t": "obj", "v": {"snap": {"t": "i32","v": 20}}})"};
+    const std::string snapshot_data_1{R"({"t": "obj", "v": {"snap": {"t": "i32","v": 23}}})"};
+
+    const std::string instance_id_1_file_prefix{dir + "/" + prefix + std::to_string(instance_id_1.id)};
+    const std::string instance_id_2_file_prefix{dir + "/" + prefix + std::to_string(instance_id_2.id)};
+
+    CleanupEnvironment(dir);
 
     // clang-format off
     DISABLE_WARNING_PUSH
     DISABLE_WARNING(-Wdeprecated-declarations)
     // clang-format on
-    KvsBuilder old_builder{kInstanceId};
-    old_builder.snapshot(SnapshotId{23ul})
+    KvsBuilder old_builder(instance_id_1);
+    old_builder.snapshot(snapshotId)
         .need_defaults_flag(OpenNeedDefaults::kRequired)
         .need_kvs_flag(OpenNeedKvs::kRequired)
-        .dir("./kvsbuilder/")
+        .dir(dir)
         .max_storage_bytes(std::optional<size_t>{1024ul})
         .snapshot_max_count(2ul);
 
-    KvsBuilder new_builder{kInstanceId};
-    new_builder.Snapshot(SnapshotId{23ul})
+    KvsBuilder new_builder(instance_id_2);
+    new_builder.Snapshot(snapshotId)
         .Defaults(KvsDefaults::kRequired)
         .KvsLoad(KvsLoad::kRequired)
-        .WorkingDir("./kvsbuilder/")
+        .WorkingDir(dir)
         .MaxStorageBytes(std::optional<size_t>{1024ul})
         .SnapshotMaxCount(2ul);
     DISABLE_WARNING_POP
@@ -308,22 +319,32 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
         return std::make_pair(std::move(old_build), new_builder.Build());
     };
 
+    // Without the defaults file, both builds fail, so the required defaults reached Open().
+    auto kvs_only = build_both();
+    ASSERT_FALSE(kvs_only.first);
+    ASSERT_FALSE(kvs_only.second);
+    EXPECT_EQ(*kvs_only.first.error(), *kvs_only.second.error());
+
     // With only the defaults file, both builds fail, so the required KVS load reached Open().
-    PrepareEnvironment("./kvsbuilder/", "kvs_", kInstance, kDefaultJson);
-    auto defaults_only{build_both()};
+    PrepareEnvironment(dir, prefix, instance_id_1.id, kDefaultJson);
+    PrepareEnvironment(dir, prefix, instance_id_2.id, kDefaultJson);
+    auto defaults_only = build_both();
     ASSERT_FALSE(defaults_only.first);
     ASSERT_FALSE(defaults_only.second);
     EXPECT_EQ(*defaults_only.first.error(), *defaults_only.second.error());
 
-    const std::string file_prefix{"./kvsbuilder/kvs_" + std::to_string(kInstance)};
-    Store(file_prefix + "_23.json", file_prefix + "_23.hash", R"({"t": "obj", "v": {"snap": {"t": "i32", "v": 23}}})");
-    auto built{build_both()};
+    // Builds should succeed. Two different instances containing two snapshots each.
+    PrepareEnvironment(dir, prefix, instance_id_1.id, kDefaultJson, snapshot_data_0, snapshot_data_1);
+    PrepareEnvironment(dir, prefix, instance_id_2.id, kDefaultJson, snapshot_data_0, snapshot_data_1);
+    auto built = build_both();
     ASSERT_TRUE(built.first);
     ASSERT_TRUE(built.second);
+
+    // Check.
     for (Kvs* kvs : {&built.first.value(), &built.second.value()})
     {
-        // Snapshot 23 only loads if the builder passes the snapshot ID on.
-        auto snap_value{kvs->GetValue("snap")};
+        // Snapshot 1 only loads if the builder passes the snapshot ID on.
+        auto snap_value = kvs->GetValue("snap");
         ASSERT_TRUE(snap_value);
         ASSERT_EQ(snap_value.value().GetType(), KvsValue::Type::kI32);
         EXPECT_EQ(std::get<int32_t>(snap_value.value().GetValue()), 23);
@@ -334,7 +355,8 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
         ASSERT_TRUE(kvs->Flush());
         auto file_path{kvs->KvsFilePath(SnapshotId{0ul})};
         ASSERT_TRUE(file_path);
-        EXPECT_EQ(file_path.value().CStr(), file_prefix + "_0.json");
+        EXPECT_THAT(file_path.value().Native(),
+                    testing::AnyOf(instance_id_1_file_prefix + "_0.json", instance_id_2_file_prefix + "_0.json"));
 
         // A 2 KiB value only exceeds the storage limit if the 1024-byte limit reached Open().
         ASSERT_TRUE(kvs->SetValue("big", KvsValue(std::string(2048U, 'x'))));
@@ -342,17 +364,9 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
         ASSERT_FALSE(potential_size);
         EXPECT_EQ(static_cast<ErrorCode>(*potential_size.error()), ErrorCode::kOutOfStorageSpace);
     }
+    CleanupEnvironment(dir);
 
-    // Without the defaults file, both builds fail, so the required defaults reached Open().
-    const auto filesystem{score::filesystem::FilesystemFactory{}.CreateInstance()};
-    ASSERT_TRUE(filesystem.standard->Remove(file_prefix + "_default.json"));
-    ASSERT_TRUE(filesystem.standard->Remove(file_prefix + "_default.hash"));
-    auto kvs_only{build_both()};
-    ASSERT_FALSE(kvs_only.first);
-    ASSERT_FALSE(kvs_only.second);
-    EXPECT_EQ(*kvs_only.first.error(), *kvs_only.second.error());
-    CleanupEnvironment("./kvsbuilder/");
-
+    PrepareEnvironment();
     // clang-format off
     DISABLE_WARNING_PUSH
     DISABLE_WARNING(-Wdeprecated-declarations)

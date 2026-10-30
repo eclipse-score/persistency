@@ -75,6 +75,7 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     builder.KvsLoad(KvsLoad::kOptional);
     result_build = builder.Build();
     EXPECT_TRUE(result_build);
+    CleanupEnvironment();
 
     // Snapshot 23 only loads if the builder passes the snapshot ID on.
     const std::string snapshot_prefix{"./kvsbuilder/kvs_" + std::to_string(kInstance) + "_23"};
@@ -89,7 +90,9 @@ TEST(kvs_kvsbuilder, kvsbuilder_build)
     ASSERT_TRUE(snap_value);
     ASSERT_EQ(snap_value.value().GetType(), KvsValue::Type::kI32);
     EXPECT_EQ(std::get<int32_t>(snap_value.value().GetValue()), 23);
+    CleanupEnvironment();
 
+    PrepareEnvironment("./kvsbuilder/", "kvs_", kInstance, kDefaultJson, kKvsJson, kKvsJson);
     // A builder with default settings loads snapshot 0.
     KvsBuilder default_builder{kInstanceId};
     default_builder.WorkingDir("./kvsbuilder/");
@@ -109,6 +112,8 @@ TEST(kvs_kvsbuilder, kvsbuilder_directory_check)
     const std::string expected_prefix{"./kvs_" + std::to_string(kInstanceId.id) + "_0"};
     for (const char* dir : {"", "./", "."})
     {
+        CleanupEnvironment();
+
         SCOPED_TRACE(dir);
         KvsBuilder builder{kInstanceId};
         builder.WorkingDir(dir);
@@ -130,6 +135,8 @@ TEST(kvs_kvsbuilder, kvsbuilder_directory_check)
 
 TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_default)
 {
+    PrepareEnvironment();
+
     // comp_req__kvs__snapshot_max_num_cfg: an unconfigured builder must keep the compile-time default.
     // Existing users then observe no behavior change.
     KvsBuilder builder{kInstanceId};
@@ -143,6 +150,8 @@ TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_default)
 
 TEST(kvs_kvsbuilder, kvsbuilder_snapshot_max_count_configured)
 {
+    PrepareEnvironment();
+
     // comp_req__kvs__snapshot_max_num_cfg: the configured value must reach the built KVS instance.
     // Without the plumbing through Build()/Open() the setter would be silently ignored.
     // Inside the allowed range, and not the default.
