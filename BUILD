@@ -14,6 +14,7 @@
 load("@score_docs_as_code//:docs.bzl", "docs")
 load("@score_sbom//:defs.bzl", "sbom")
 load("@score_tooling//:defs.bzl", "setup_starpls")
+load(":qemu.bzl", "qemu_aarch64")
 
 # Creates all documentation targets:
 # - `:docs` for building documentation at build-time
@@ -176,3 +177,6 @@ test_suite(
     ],
     visibility = ["//visibility:public"],
 )
+
+# Wrapper for running aarch64 Linux test binaries under qemu-user (--config=score-linux-aarch64).
+qemu_aarch64()
