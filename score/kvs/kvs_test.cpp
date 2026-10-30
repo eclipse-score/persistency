@@ -35,7 +35,7 @@ namespace
 using score::filesystem::Perms;
 
 /// @brief Expected permissions of KVS JSON and hash files: 0640.
-constexpr Perms kExpectedFilePerms{Perms::kReadUser | Perms::kWriteUser | Perms::kReadGroup};
+constexpr Perms kExpectedFilePermissions{Perms::kReadUser | Perms::kWriteUser | Perms::kReadGroup};
 
 /// @brief Storage limit used by the max-size tests.
 ///
@@ -49,7 +49,7 @@ score::filesystem::Filesystem RealFilesystem()
 
 /// @brief Reads permissions of a file as an integer, readable on failure.
 /// @return The permissions, or kUnknown if the status could not be retrieved.
-std::uint32_t FilePerms(const score::filesystem::Path& path)
+std::uint32_t FilePermissions(const score::filesystem::Path& path)
 {
     const auto status{RealFilesystem().standard->Status(path)};
     return static_cast<std::uint32_t>(status.has_value() ? status.value().Permissions() : Perms::kUnknown);
@@ -243,28 +243,28 @@ TEST(kvs_constructor, move_constructor)
 
     // Expectations:
     // - kvs_a now contains data from the former kvs_b.
-    auto val{kvs_a.GetValue("test_kvs")};
-    ASSERT_TRUE(val);
-    EXPECT_EQ(val.value().GetType(), KvsValue::Type::kF64);
-    EXPECT_EQ(std::get<double>(val.value().GetValue()), 42.0);
+    auto value{kvs_a.GetValue("test_kvs")};
+    ASSERT_TRUE(value);
+    EXPECT_EQ(value.value().GetType(), KvsValue::Type::kF64);
+    EXPECT_EQ(std::get<double>(value.value().GetValue()), 42.0);
 
     auto loaded{kvs_a.GetValue("kvs")};
     ASSERT_TRUE(loaded);
     EXPECT_EQ(loaded.value().GetType(), KvsValue::Type::kI32);
     EXPECT_EQ(std::get<int32_t>(loaded.value().GetValue()), 2);
 
-    auto def{kvs_a.GetDefaultValue("test_default")};
-    ASSERT_TRUE(def);
-    EXPECT_EQ(def.value().GetType(), KvsValue::Type::kBoolean);
-    EXPECT_EQ(std::get<bool>(def.value().GetValue()), true);
+    auto default_value{kvs_a.GetDefaultValue("test_default")};
+    ASSERT_TRUE(default_value);
+    EXPECT_EQ(default_value.value().GetType(), KvsValue::Type::kBoolean);
+    EXPECT_EQ(std::get<bool>(default_value.value().GetValue()), true);
 
     // - kvs_b is empty.
     auto keys_b{kvs_b.GetAllKeys()};
     ASSERT_TRUE(keys_b);
     EXPECT_TRUE(keys_b.value().empty());
-    auto def_b{kvs_b.GetDefaultValue("test_default")};
-    ASSERT_FALSE(def_b);
-    EXPECT_EQ(def_b.error(), ErrorCode::kKeyNotFound);
+    auto default_value_b{kvs_b.GetDefaultValue("test_default")};
+    ASSERT_FALSE(default_value_b);
+    EXPECT_EQ(default_value_b.error(), ErrorCode::kKeyNotFound);
 
     // - The file name prefix moved too, so kvs_a writes the files of the former kvs_b.
     ASSERT_TRUE(kvs_a.Flush());
@@ -889,10 +889,10 @@ TEST(kvs_get_default_value, get_default_value_success)
     ASSERT_TRUE(result);
 
     // Check if default value is returned.
-    auto get_def_value_result{result.value().GetDefaultValue("kvs")};
-    ASSERT_TRUE(get_def_value_result);
-    EXPECT_EQ(get_def_value_result.value().GetType(), KvsValue::Type::kI32);
-    EXPECT_EQ(std::get<int32_t>(get_def_value_result.value().GetValue()), 42);
+    auto get_default_value_result{result.value().GetDefaultValue("kvs")};
+    ASSERT_TRUE(get_default_value_result);
+    EXPECT_EQ(get_default_value_result.value().GetType(), KvsValue::Type::kI32);
+    EXPECT_EQ(std::get<int32_t>(get_default_value_result.value().GetValue()), 42);
 
     // The written value differs from the default value.
     auto get_value_result{result.value().GetValue("kvs")};
@@ -916,9 +916,9 @@ TEST(kvs_get_default_value, get_default_value_failure)
     ASSERT_TRUE(result);
 
     // Check if non-existing key returns error.
-    auto get_def_value_result{result.value().GetDefaultValue("non_existing_key")};
-    EXPECT_FALSE(get_def_value_result);
-    EXPECT_EQ(get_def_value_result.error(), ErrorCode::kKeyNotFound);
+    auto get_default_value_result{result.value().GetDefaultValue("non_existing_key")};
+    EXPECT_FALSE(get_default_value_result);
+    EXPECT_EQ(get_default_value_result.error(), ErrorCode::kKeyNotFound);
 
     CleanupEnvironment();
 }
@@ -1747,14 +1747,15 @@ TEST(kvs_write_json_data, write_json_data_replaces_stale_temp_file)
     const score::filesystem::Path json_tmp_path{kKvsPrefix + ".json.tmp"};
     const auto fs{RealFilesystem()};
     std::ofstream{json_tmp_path.Native()} << "stale";
-    constexpr Perms all_perms{Perms::kReadWriteExecUser | Perms::kReadWriteExecGroup | Perms::kReadWriteExecOthers};
-    ASSERT_TRUE(fs.standard->Permissions(json_tmp_path, all_perms));
+    constexpr Perms all_permissions{Perms::kReadWriteExecUser | Perms::kReadWriteExecGroup |
+                                    Perms::kReadWriteExecOthers};
+    ASSERT_TRUE(fs.standard->Permissions(json_tmp_path, all_permissions));
     auto kvs{open_test_kvs_with_new_key()};
 
     ASSERT_TRUE(kvs.Flush());
     EXPECT_FALSE(FileExists(json_tmp_path));
     expect_only_new_key();
-    EXPECT_EQ(FilePerms(json_path), static_cast<std::uint32_t>(kExpectedFilePerms));
+    EXPECT_EQ(FilePermissions(json_path), static_cast<std::uint32_t>(kExpectedFilePermissions));
 
     CleanupEnvironment();
 }
@@ -1790,8 +1791,8 @@ TEST(kvs_write_json_data, write_json_data_permissions_ignore_umask)
         score::cpp::ignore = score::os::Stat::instance().umask(previous_umask.value());
 
         ASSERT_TRUE(result);
-        EXPECT_EQ(FilePerms(json_path), static_cast<std::uint32_t>(kExpectedFilePerms));
-        EXPECT_EQ(FilePerms(hash_path), static_cast<std::uint32_t>(kExpectedFilePerms));
+        EXPECT_EQ(FilePermissions(json_path), static_cast<std::uint32_t>(kExpectedFilePermissions));
+        EXPECT_EQ(FilePermissions(hash_path), static_cast<std::uint32_t>(kExpectedFilePermissions));
     }
 
     CleanupEnvironment();
@@ -1804,17 +1805,18 @@ TEST(kvs_write_json_data, write_json_data_overrides_existing_file_permissions)
     const score::filesystem::Path json_path{kKvsPrefix + ".json"};
     const score::filesystem::Path hash_path{kKvsPrefix + ".hash"};
     const auto fs{RealFilesystem()};
-    constexpr Perms all_perms{Perms::kReadWriteExecUser | Perms::kReadWriteExecGroup | Perms::kReadWriteExecOthers};
-    ASSERT_TRUE(fs.standard->Permissions(json_path, all_perms));
-    ASSERT_TRUE(fs.standard->Permissions(hash_path, all_perms));
-    ASSERT_EQ(FilePerms(json_path), static_cast<std::uint32_t>(all_perms));
-    ASSERT_EQ(FilePerms(hash_path), static_cast<std::uint32_t>(all_perms));
+    constexpr Perms all_permissions{Perms::kReadWriteExecUser | Perms::kReadWriteExecGroup |
+                                    Perms::kReadWriteExecOthers};
+    ASSERT_TRUE(fs.standard->Permissions(json_path, all_permissions));
+    ASSERT_TRUE(fs.standard->Permissions(hash_path, all_permissions));
+    ASSERT_EQ(FilePermissions(json_path), static_cast<std::uint32_t>(all_permissions));
+    ASSERT_EQ(FilePermissions(hash_path), static_cast<std::uint32_t>(all_permissions));
 
     // With a maximum of 0 snapshots, Flush() replaces these files instead of rotating them to snapshot 1.
     auto kvs{open_test_kvs_with_new_key()};
     ASSERT_TRUE(kvs.Flush());
-    EXPECT_EQ(FilePerms(json_path), static_cast<std::uint32_t>(kExpectedFilePerms));
-    EXPECT_EQ(FilePerms(hash_path), static_cast<std::uint32_t>(kExpectedFilePerms));
+    EXPECT_EQ(FilePermissions(json_path), static_cast<std::uint32_t>(kExpectedFilePermissions));
+    EXPECT_EQ(FilePermissions(hash_path), static_cast<std::uint32_t>(kExpectedFilePermissions));
 
     CleanupEnvironment();
 }
@@ -2082,8 +2084,8 @@ TEST(kvs_flush, flush_sets_file_permissions)
     std::string value{"value1"};
     ASSERT_TRUE(result.value().SetValue("key1", KvsValue(value)));
     ASSERT_TRUE(result.value().Flush());
-    EXPECT_EQ(FilePerms(json_path), static_cast<std::uint32_t>(kExpectedFilePerms));
-    EXPECT_EQ(FilePerms(hash_path), static_cast<std::uint32_t>(kExpectedFilePerms));
+    EXPECT_EQ(FilePermissions(json_path), static_cast<std::uint32_t>(kExpectedFilePermissions));
+    EXPECT_EQ(FilePermissions(hash_path), static_cast<std::uint32_t>(kExpectedFilePermissions));
 
     CleanupEnvironment();
 }
@@ -2935,16 +2937,16 @@ TEST(kvs_max_storage_bytes, flush_succeeds_without_configured_limit)
 
     KvsBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
-    auto open_res{builder.Build()};
-    ASSERT_TRUE(open_res);
-    Kvs kvs{std::move(open_res.value())};
+    auto open_result{builder.Build()};
+    ASSERT_TRUE(open_result);
+    Kvs kvs{std::move(open_result.value())};
 
     const std::string large_data(kTestMaxStorageBytes * 4U, 'a');
-    auto set_res{kvs.SetValue("large_data", KvsValue(large_data.c_str()))};
-    ASSERT_TRUE(set_res);
+    auto set_result{kvs.SetValue("large_data", KvsValue(large_data.c_str()))};
+    ASSERT_TRUE(set_result);
 
-    auto flush_res{kvs.Flush()};
-    EXPECT_TRUE(flush_res);
+    auto flush_result{kvs.Flush()};
+    EXPECT_TRUE(flush_result);
 
     std::filesystem::remove_all(test_dir);
 }
@@ -2957,9 +2959,9 @@ TEST(kvs_max_storage_bytes, flush_fails_when_storage_limit_exceeded)
     KvsBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
     builder.MaxStorageBytes(kTestMaxStorageBytes);
-    auto open_res{builder.Build()};
-    ASSERT_TRUE(open_res);
-    Kvs kvs{std::move(open_res.value())};
+    auto open_result{builder.Build()};
+    ASSERT_TRUE(open_result);
+    Kvs kvs{std::move(open_result.value())};
 
     // Add data close to the limit.
     // The JSON structure (key, type info, braces) and the hash file add overhead.
@@ -2967,20 +2969,20 @@ TEST(kvs_max_storage_bytes, flush_fails_when_storage_limit_exceeded)
     const size_t overhead_estimate{150U};
     const std::string large_data(kTestMaxStorageBytes - overhead_estimate, 'a');
 
-    auto set_res1{kvs.SetValue("large_data", KvsValue(large_data.c_str()))};
-    ASSERT_TRUE(set_res1);
+    auto set_result1{kvs.SetValue("large_data", KvsValue(large_data.c_str()))};
+    ASSERT_TRUE(set_result1);
 
     // The first flush still fits.
-    auto flush_res1{kvs.Flush()};
-    ASSERT_TRUE(flush_res1);
+    auto flush_result1{kvs.Flush()};
+    ASSERT_TRUE(flush_result1);
 
     // A little more data pushes the total over the limit.
-    auto set_res2{kvs.SetValue("extra_data", KvsValue("this should not fit"))};
-    ASSERT_TRUE(set_res2);
+    auto set_result2{kvs.SetValue("extra_data", KvsValue("this should not fit"))};
+    ASSERT_TRUE(set_result2);
 
-    auto flush_res2{kvs.Flush()};
-    ASSERT_FALSE(flush_res2);
-    EXPECT_EQ(static_cast<ErrorCode>(*flush_res2.error()), ErrorCode::kOutOfStorageSpace);
+    auto flush_result2{kvs.Flush()};
+    ASSERT_FALSE(flush_result2);
+    EXPECT_EQ(static_cast<ErrorCode>(*flush_result2.error()), ErrorCode::kOutOfStorageSpace);
 
     std::filesystem::remove_all(test_dir);
 }
@@ -2993,17 +2995,17 @@ TEST(kvs_check_size, check_size_within_limit_succeeds)
     KvsBuilder builder{InstanceId(1)};
     builder.WorkingDir(std::string(test_dir));
     builder.MaxStorageBytes(kTestMaxStorageBytes);
-    auto open_res{builder.Build()};
-    ASSERT_TRUE(open_res);
-    Kvs kvs{std::move(open_res.value())};
+    auto open_result{builder.Build()};
+    ASSERT_TRUE(open_result);
+    Kvs kvs{std::move(open_result.value())};
 
-    auto set_res{kvs.SetValue("key", KvsValue("some_data"))};
-    ASSERT_TRUE(set_res);
+    auto set_result{kvs.SetValue("key", KvsValue("some_data"))};
+    ASSERT_TRUE(set_result);
 
-    auto check_res{kvs.CalculatePotentialSize()};
-    ASSERT_TRUE(check_res) << "CalculatePotentialSize should succeed for data within limits";
-    EXPECT_GT(check_res.value(), 0U);
-    EXPECT_LT(check_res.value(), kTestMaxStorageBytes);
+    auto check_result{kvs.CalculatePotentialSize()};
+    ASSERT_TRUE(check_result) << "CalculatePotentialSize should succeed for data within limits";
+    EXPECT_GT(check_result.value(), 0U);
+    EXPECT_LT(check_result.value(), kTestMaxStorageBytes);
 
     std::filesystem::remove_all(test_dir);
 }
@@ -3016,17 +3018,17 @@ TEST(kvs_check_size, check_size_exceeding_limit_fails)
     KvsBuilder builder{InstanceId(2)};
     builder.WorkingDir(std::string(test_dir));
     builder.MaxStorageBytes(kTestMaxStorageBytes);
-    auto open_res{builder.Build()};
-    ASSERT_TRUE(open_res);
-    Kvs kvs{std::move(open_res.value())};
+    auto open_result{builder.Build()};
+    ASSERT_TRUE(open_result);
+    Kvs kvs{std::move(open_result.value())};
 
     const std::string large_data(kTestMaxStorageBytes, 'x');
-    auto set_res{kvs.SetValue("oversized_key", KvsValue(large_data.c_str()))};
-    ASSERT_TRUE(set_res);
+    auto set_result{kvs.SetValue("oversized_key", KvsValue(large_data.c_str()))};
+    ASSERT_TRUE(set_result);
 
-    auto check_res{kvs.CalculatePotentialSize()};
-    ASSERT_FALSE(check_res) << "CalculatePotentialSize should fail when the storage limit is exceeded";
-    EXPECT_EQ(static_cast<ErrorCode>(*check_res.error()), ErrorCode::kOutOfStorageSpace);
+    auto check_result{kvs.CalculatePotentialSize()};
+    ASSERT_FALSE(check_result) << "CalculatePotentialSize should fail when the storage limit is exceeded";
+    EXPECT_EQ(static_cast<ErrorCode>(*check_result.error()), ErrorCode::kOutOfStorageSpace);
 
     std::filesystem::remove_all(test_dir);
 }
@@ -3042,18 +3044,18 @@ TEST(kvs_max_storage_bytes, flush_without_limit_does_not_measure_storage)
 
     KvsBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
-    auto open_res{builder.Build()};
-    ASSERT_TRUE(open_res);
-    Kvs kvs{std::move(open_res.value())};
+    auto open_result{builder.Build()};
+    ASSERT_TRUE(open_result);
+    Kvs kvs{std::move(open_result.value())};
 
     // Obstruct the measurement only after opening, so Open() itself is unaffected.
     std::filesystem::create_directories(test_dir + "kvs_" + std::to_string(kInstance) + "_default.hash");
 
-    auto set_res{kvs.SetValue("key", KvsValue("value"))};
-    ASSERT_TRUE(set_res);
+    auto set_result{kvs.SetValue("key", KvsValue("value"))};
+    ASSERT_TRUE(set_result);
 
-    auto flush_res{kvs.Flush()};
-    EXPECT_TRUE(flush_res);
+    auto flush_result{kvs.Flush()};
+    EXPECT_TRUE(flush_result);
 
     std::filesystem::remove_all(test_dir);
 }
@@ -3070,18 +3072,18 @@ TEST(kvs_max_storage_bytes, flush_with_limit_measures_storage)
     KvsBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
     builder.MaxStorageBytes(kTestMaxStorageBytes * 1000U);
-    auto open_res{builder.Build()};
-    ASSERT_TRUE(open_res);
-    Kvs kvs{std::move(open_res.value())};
+    auto open_result{builder.Build()};
+    ASSERT_TRUE(open_result);
+    Kvs kvs{std::move(open_result.value())};
 
     std::filesystem::create_directories(test_dir + "kvs_" + std::to_string(kInstance) + "_default.hash");
 
-    auto set_res{kvs.SetValue("key", KvsValue("value"))};
-    ASSERT_TRUE(set_res);
+    auto set_result{kvs.SetValue("key", KvsValue("value"))};
+    ASSERT_TRUE(set_result);
 
-    auto flush_res{kvs.Flush()};
-    ASSERT_FALSE(flush_res);
-    EXPECT_EQ(static_cast<ErrorCode>(*flush_res.error()), ErrorCode::kPhysicalStorageFailure);
+    auto flush_result{kvs.Flush()};
+    ASSERT_FALSE(flush_result);
+    EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::kPhysicalStorageFailure);
 
     std::filesystem::remove_all(test_dir);
 }
@@ -3096,16 +3098,16 @@ TEST(kvs_check_size, check_size_without_limit_reports_size)
 
     KvsBuilder builder{InstanceId(3)};
     builder.WorkingDir(std::string(test_dir));
-    auto open_res{builder.Build()};
-    ASSERT_TRUE(open_res);
-    Kvs kvs{std::move(open_res.value())};
+    auto open_result{builder.Build()};
+    ASSERT_TRUE(open_result);
+    Kvs kvs{std::move(open_result.value())};
 
-    auto set_res{kvs.SetValue("key", KvsValue("some_data"))};
-    ASSERT_TRUE(set_res);
+    auto set_result{kvs.SetValue("key", KvsValue("some_data"))};
+    ASSERT_TRUE(set_result);
 
-    auto check_res{kvs.CalculatePotentialSize()};
-    ASSERT_TRUE(check_res) << "CalculatePotentialSize should succeed when no limit is configured";
-    EXPECT_GT(check_res.value(), 0U);
+    auto check_result{kvs.CalculatePotentialSize()};
+    ASSERT_TRUE(check_result) << "CalculatePotentialSize should succeed when no limit is configured";
+    EXPECT_GT(check_result.value(), 0U);
 
     std::filesystem::remove_all(test_dir);
 }
@@ -3360,19 +3362,19 @@ TEST(kvs_max_storage_bytes, storage_size_counts_only_configured_snapshots)
     builder.WorkingDir(std::string(test_dir));
     builder.SnapshotMaxCount(1U);
     builder.MaxStorageBytes(kTestMaxStorageBytes);
-    auto open_res{builder.Build()};
-    ASSERT_TRUE(open_res);
-    Kvs kvs{std::move(open_res.value())};
+    auto open_result{builder.Build()};
+    ASSERT_TRUE(open_result);
+    Kvs kvs{std::move(open_result.value())};
 
     // A large file in snapshot slot 1, which the next rotation overwrites.
     std::filesystem::create_directories(test_dir);
     std::ofstream(test_dir + "kvs_" + std::to_string(kInstance) + "_1.json") << std::string(kTestMaxStorageBytes, 'x');
 
-    auto set_res{kvs.SetValue("key", KvsValue("value"))};
-    ASSERT_TRUE(set_res);
+    auto set_result{kvs.SetValue("key", KvsValue("value"))};
+    ASSERT_TRUE(set_result);
 
-    auto flush_res{kvs.Flush()};
-    EXPECT_TRUE(flush_res);
+    auto flush_result{kvs.Flush()};
+    EXPECT_TRUE(flush_result);
 
     std::filesystem::remove_all(test_dir);
 }

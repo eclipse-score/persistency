@@ -35,10 +35,10 @@ KvsValue::Object ToObject(const std::unordered_map<std::string, KvsValue>& map)
 
 }  // namespace
 
-KvsValue::KvsValue(const char* str) noexcept : value_{nullptr}
+KvsValue::KvsValue(const char* value) noexcept : value_{nullptr}
 {
-    SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE(str != nullptr, "KvsValue: str must not be null");
-    value_ = std::string(str);
+    SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE(value != nullptr, "KvsValue: str must not be null");
+    value_ = std::string(value);
 }
 
 KvsValue::KvsValue(const Array& array) noexcept : value_{array} {}
