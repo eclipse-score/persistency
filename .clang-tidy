@@ -54,7 +54,6 @@ WarningsAsErrors: >
   modernize-*,
   -bugprone-branch-clone,
   -bugprone-easily-swappable-parameters,
-  -bugprone-exception-escape,
   -bugprone-throwing-static-initialization,
   -bugprone-unchecked-optional-access,
   -cert-err58-cpp,
