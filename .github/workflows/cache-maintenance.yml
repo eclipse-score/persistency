@@ -1,0 +1,82 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+name: Cache maintenance
+
+on:
+  # Read-only self-test of every `variants` entry before merge.
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+  # The same self-test for the merge-queue commit.
+  merge_group:
+    types: [checks_requested]
+  # Rebuild caches manually, for example after a transient download failure.
+  workflow_dispatch:
+  # Pushes to main warm and prune the shared caches.
+  push:
+    branches: [main]
+
+jobs:
+  repository_cache_maintenance:
+    permissions:
+      # Required when a lockfile change replaces and prunes caches.
+      actions: write
+      contents: read
+    secrets:
+      qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
+      qnx-user: ${{ secrets.SCORE_QNX_USER }}
+      qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}
+    uses: eclipse-score/cicd-workflows/.github/workflows/cache-maintenance.yml@58cb0ec5a80441d593464d3af09d634ab91247e0 # v0.0.3-32-g8ab7396
+    with:
+      # Each line becomes one `bazel fetch` invocation.
+      variants: |
+        //...
+        --config=score-linux-aarch64 //...
+        --config=score-qnx-x86_64 //...
+        --config=score-qnx-aarch64 //...
+
+  warmup-linux:
+    needs: repository_cache_maintenance
+    # PR and merge-queue runs validate variants above but never warm shared caches.
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build_linux.yml
+
+  warmup-qnx:
+    needs: repository_cache_maintenance
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: read
+      pull-requests: read
+    secrets: inherit
+    uses: ./.github/workflows/build_qnx.yml
+
+  warmup-cargo:
+    needs: repository_cache_maintenance
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/cargo_required.yml
+
+  delete_old_caches:
+    needs: [warmup-linux, warmup-qnx, warmup-cargo]
+    if: ${{ !cancelled() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    permissions:
+      # Prune after every warmup job has completed its cache-save post-step.
+      actions: write
+      contents: read
+    steps:
+      - name: Prune obsolete Bazel caches
+        uses: eclipse-score/cicd-actions/prune-cache@8e69f47b45778afd3b0d069c0456184c4ceeffe7 # prune-cache/v0.0.0
