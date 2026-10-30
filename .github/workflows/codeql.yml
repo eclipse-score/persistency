@@ -25,18 +25,46 @@ on:
     - cron: '0 2 * * 1' # weekly, also catches new CodeQL queries without code changes
 
 jobs:
-  # C++: MISRA C++:2023 query pack via the shared S-CORE workflow.
+  # C++: default code scanning suite plus the MISRA C++:2023 query pack.
+  # The CLI is pinned to the only version the pack supports (see its supported_codeql_configs.json).
+  # A newer CLI breaks the control-flow graph of the precompiled pack and reports false positives.
   # The toolchain and tracing setup live in the `codeql` config in .bazelrc.
   codeql-cpp:
-    uses: eclipse-score/cicd-workflows/.github/workflows/codeql.yml@8ab73967470fa41977dd1c1102d03719b2e2c7e2 # v0.0.3-32-g8ab7396
+    name: Analyze (c-cpp)
+    runs-on: ubuntu-24.04
     permissions:
       security-events: write
       packages: read
       actions: read
       contents: read
-    with:
-      build-script: |
-        bazel build --lockfile_mode=error --config=codeql //score/kvs:kvs
+    steps:
+      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          tools: https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.4/codeql-bundle-linux64.tar.gz
+          languages: c-cpp
+          build-mode: manual
+          packs: codeql/misra-cpp-coding-standards@2.62.0
+
+      - name: Build
+        run: bazel build --lockfile_mode=error --config=codeql //score/kvs:kvs
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          category: "/language:c-cpp"
+          output: sarif-results.sarif
+
+      - name: Upload SARIF
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sarif-results.sarif
+          path: sarif-results.sarif
 
   # Rust: CodeQL default code scanning suite, extracted from the Cargo workspace without a build.
   codeql-rust:
