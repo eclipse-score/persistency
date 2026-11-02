@@ -1,0 +1,55 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+name: Bazel Sanitizers (Linux)
+permissions:
+  contents: read
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+  merge_group:
+    types: [checks_requested]
+  workflow_call:
+jobs:
+  linux-sanitizers:
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    steps:
+      - name: Free up disk space
+        uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+        with:
+          level: 4
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          lfs: true
+      - name: Setup Bazel with shared caching
+        uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
+        with:
+          disk-cache-key: ${{ github.job }}
+      # Needs bazel on PATH: the action resolves `bazel info install_base`.
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@168b6f51b21b5f0ebe49808939db53557dca410c # main branch (2026-10-12)
+      - name: Bazel test with sanitizers (ASan + UBSan + LSan)
+        run: |
+          set -euo pipefail
+          bazel test --lockfile_mode=error --config=score-linux-x86_64 --config=asan_ubsan_lsan \
+            --build_tests_only -- //score/...
+      - name: Upload test logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sanitizers-linux-testlogs-${{ github.run_attempt }}
+          path: bazel-testlogs/**
+          if-no-files-found: ignore
+          retention-days: 10
