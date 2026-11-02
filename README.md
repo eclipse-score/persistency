@@ -71,6 +71,11 @@ bazel build --config=score-linux-x86_64 -- //...
 ```
 
 > Building without an explicit `--config` (e.g. `score-linux-x86_64`, `score-qnx-x86_64`, `score-qnx-aarch64`) is not supported.
+> The config `score-linux-aarch64` is supported too.
+> Its tests need `qemu-user`.
+> The QNX configs need QNX SDP credentials (`SCORE_QNX_USER`, `SCORE_QNX_PASSWORD`) and a QNX license.
+> Their tests run in a QEMU VM and need `qemu-system-x86_64` or `qemu-system-aarch64`.
+> The x86_64 VM uses KVM when it is available.
 > The old names `per-x86_64-linux`, `per-x86_64-qnx` and `per-arm64-qnx` still work as deprecated aliases.
 
 ## Run

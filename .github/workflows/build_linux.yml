@@ -1,0 +1,85 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+name: Bazel Build (Linux)
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+  merge_group:
+    types: [checks_requested]
+  workflow_call:
+jobs:
+  linux-build-and-test:
+    name: Build and Test ${{ matrix.name }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: score-linux-x86_64
+            artifact-name: x86_64-linux
+            bazel-config: score-linux-x86_64
+            working-directory: "."
+            bazel-flags: "--lockfile_mode=error"
+            bazel-build-target: "//..."
+            bazel-test-target: "//score/..."
+          - name: score-linux-aarch64
+            artifact-name: aarch64-linux
+            bazel-config: score-linux-aarch64
+            working-directory: "."
+            bazel-flags: "--lockfile_mode=error"
+            bazel-build-target: "//score/..."
+            bazel-test-target: "//score/..."
+            bazel-test-extra-flags: "--test_timeout=180,900,2700,10800" # QEMU emulation is slow
+    steps:
+      - name: Free up disk space
+        uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+        with:
+          level: 4
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          lfs: true
+      - name: Setup Bazel with shared caching
+        uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
+        with:
+          disk-cache-key: ${{ github.job }}-${{ matrix.artifact-name }}
+      # Needs bazel on PATH: the action resolves `bazel info install_base`.
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@168b6f51b21b5f0ebe49808939db53557dca410c # main branch (2026-10-12)
+      - name: Install QEMU
+        if: matrix.bazel-config == 'score-linux-aarch64'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user
+      - name: Bazel build
+        working-directory: ${{ matrix.working-directory }}
+        run: |
+          bazel build --config=${{ matrix.bazel-config }} ${{ matrix.bazel-flags }} -- ${{ matrix.bazel-build-target }}
+      - name: Bazel test
+        working-directory: ${{ matrix.working-directory }}
+        run: |
+          bazel test --config=${{ matrix.bazel-config }} ${{ matrix.bazel-flags }} ${{ matrix.bazel-test-extra-flags }} -- ${{ matrix.bazel-test-target }}
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-report-${{ matrix.artifact-name }}-${{ github.run_attempt }}
+          path: |
+            ${{ matrix.working-directory }}/bazel-testlogs/**/test.log
+            ${{ matrix.working-directory }}/bazel-testlogs/**/test.xml
+          retention-days: 5
+          if-no-files-found: warn
