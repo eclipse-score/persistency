@@ -62,12 +62,14 @@ constexpr std::size_t kDefaultMaxSnapshots{3U};
 constexpr std::size_t KVS_DEFAULT_MAX_SNAPSHOTS{kDefaultMaxSnapshots};
 
 /// @brief Identifier of a KVS instance.
+// codeql::misra_deviation_next_line(kvs-special-members)
 struct InstanceId
 {
     /// @brief Constructs an instance identifier.
     ///
     /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(InstanceId(0))`.
     /// @param id Numeric value of the identifier.
+    // codeql::misra_deviation_next_line(kvs-id-implicit-ctor)
     InstanceId(size_t id) noexcept : id{id} {}
 
     /// Numeric value of the identifier.
@@ -75,12 +77,14 @@ struct InstanceId
 };
 
 /// @brief Identifier of a KVS snapshot.
+// codeql::misra_deviation_next_line(kvs-special-members)
 struct SnapshotId
 {
     /// @brief Constructs a snapshot identifier.
     ///
     /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(SnapshotId(0))`.
     /// @param id Numeric value of the identifier.
+    // codeql::misra_deviation_next_line(kvs-id-implicit-ctor)
     SnapshotId(size_t id) noexcept : id{id} {}
 
     /// Numeric value of the identifier.
@@ -149,6 +153,7 @@ enum class OpenJsonNeedFile : std::uint8_t
 /// - Snapshot management for persistence and restoration.
 ///
 /// @note A Kvs object is not copyable, but it can be moved.
+// codeql::misra_deviation_next_line(kvs-special-members)
 class Kvs final
 {
   public:
@@ -160,7 +165,7 @@ class Kvs final
     Kvs& operator=(const Kvs&) = delete;
 
     /// @brief Move assignment operator.
-    Kvs& operator=(Kvs&& other) noexcept;
+    Kvs& operator=(Kvs&& other) & noexcept;
 
     /// @brief Opens the key-value store with the specified instance ID and flags.
     ///

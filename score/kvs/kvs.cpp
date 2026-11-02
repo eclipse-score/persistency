@@ -22,8 +22,6 @@
 #include "score/utility.hpp"
 #include <algorithm>
 #include <array>
-#include <cerrno>
-#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -40,20 +38,27 @@ namespace
 constexpr size_t kHashFileSize{kHashSize};
 
 /// @brief File name suffix of KVS JSON files.
-constexpr std::string_view kJsonSuffix{".json"};
+const std::string_view kJsonSuffix{".json"};
 
 /// @brief File name suffix of KVS hash files.
-constexpr std::string_view kHashSuffix{".hash"};
+const std::string_view kHashSuffix{".hash"};
 
 /// @brief File name suffix of temporary files written before the final rename.
-constexpr std::string_view kTempSuffix{".tmp"};
+const std::string_view kTempSuffix{".tmp"};
 
 /// @brief File name suffix of the default value files.
-constexpr std::string_view kDefaultSuffix{"_default"};
+const std::string_view kDefaultSuffix{"_default"};
 
 /// @brief Permissions of KVS JSON and hash files: 0640.
 constexpr score::os::Stat::Mode kKvsFileMode{score::os::Stat::Mode::kReadUser | score::os::Stat::Mode::kWriteUser |
                                              score::os::Stat::Mode::kReadGroup};
+
+/// @brief Checks that a character is printable ASCII (0x20 - 0x7E).
+bool IsPrintableAscii(const char c) noexcept
+{
+    const auto code{std::char_traits<char>::to_int_type(c)};
+    return (code >= 0x20) && (code <= 0x7E);
+}
 
 /// @brief Checks that a key is valid.
 ///
@@ -63,16 +68,14 @@ constexpr score::os::Stat::Mode kKvsFileMode{score::os::Stat::Mode::kReadUser | 
 bool IsKeyValid(const std::string_view key) noexcept
 {
     // comp_req__kvs__key_length: disallow empty keys and keys too long.
-    if (key.empty() || key.length() > kMaxKeyLengthBytes)
+    if (key.empty() || (key.length() > kMaxKeyLengthBytes))
     {
         return false;
     }
 
     // comp_req__kvs__key_naming: check for allowed characters.
     // comp_req__kvs__key_encoding: allowed characters enforce encoding.
-    return std::all_of(key.cbegin(), key.cend(), [](char c) {
-        return c >= 0x20 && c <= 0x7E;
-    });
+    return std::all_of(key.cbegin(), key.cend(), IsPrintableAscii);
 }
 
 /// @brief Returns the path of the temporary file a KVS file is written to before it replaces the KVS file.
@@ -107,7 +110,7 @@ Kvs::Kvs(Kvs&& other) noexcept
     }
 }
 
-Kvs& Kvs::operator=(Kvs&& other) noexcept
+Kvs& Kvs::operator=(Kvs&& other) & noexcept
 {
     if (this != &other)
     {
@@ -116,6 +119,7 @@ Kvs& Kvs::operator=(Kvs&& other) noexcept
 
         {
             // Lock both mutexes at once to avoid deadlock on concurrent cross-moves.
+            // codeql::misra_deviation_next_line(kvs-raii-lock-guard)
             std::scoped_lock lock{kvs_mutex_, other.kvs_mutex_};
             kvs_ = std::move(other.kvs_);
         }
@@ -151,7 +155,7 @@ score::Result<Kvs> Kvs::Open(const InstanceId& instance_id,
     {
         default_res = kvs.OpenJson(
             filename_default,
-            defaults == KvsDefaults::kRequired ? OpenJsonNeedFile::kRequired : OpenJsonNeedFile::kOptional);
+            (defaults == KvsDefaults::kRequired) ? OpenJsonNeedFile::kRequired : OpenJsonNeedFile::kOptional);
     }
 
     if (!default_res)
@@ -165,7 +169,7 @@ score::Result<Kvs> Kvs::Open(const InstanceId& instance_id,
     if (kvs_load != KvsLoad::kIgnored)
     {
         kvs_res = kvs.OpenJson(
-            filename_kvs, kvs_load == KvsLoad::kRequired ? OpenJsonNeedFile::kRequired : OpenJsonNeedFile::kOptional);
+            filename_kvs, (kvs_load == KvsLoad::kRequired) ? OpenJsonNeedFile::kRequired : OpenJsonNeedFile::kOptional);
     }
 
     if (!kvs_res)
@@ -215,9 +219,9 @@ score::Result<std::vector<std::string>> Kvs::GetAllKeys() const noexcept
 
     std::vector<std::string> keys;
     keys.reserve(kvs_.size());
-    for (const auto& [key, _] : kvs_)
+    for (const auto& entry : kvs_)
     {
-        keys.emplace_back(key);
+        score::cpp::ignore = keys.emplace_back(entry.first);
     }
     return keys;
 }
@@ -232,6 +236,7 @@ score::Result<bool> Kvs::KeyExists(const std::string_view key) const noexcept
 
     // unordered_map find() needs string and doesn't work with string_view.
     // C++20 heterogeneous lookup would avoid the copy (applies to more functions).
+    // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
     return kvs_.find(std::string(key)) != kvs_.end();
 }
 
@@ -284,7 +289,7 @@ score::Result<void> Kvs::SetValueToDefault(const std::string_view key) noexcept
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
-    kvs_.insert_or_assign(std::string(key), std::move(*default_value_result));
+    score::cpp::ignore = kvs_.insert_or_assign(std::string(key), std::move(*default_value_result));
     return {};
 }
 
@@ -299,10 +304,12 @@ score::Result<bool> Kvs::IsValueDefault(const std::string_view key) const noexce
     const std::string key_str{key};
     if (kvs_.find(key_str) != kvs_.end())
     {
+        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
         return false;
     }
     else if (default_values_.find(key_str) != default_values_.end())
     {
+        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
         return true;
     }
     else
@@ -333,7 +340,7 @@ score::Result<void> Kvs::SetValue(const std::string_view key, const KvsValue& va
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
-    kvs_.insert_or_assign(std::string(key), value);
+    score::cpp::ignore = kvs_.insert_or_assign(std::string(key), value);
     return {};
 }
 
@@ -415,6 +422,7 @@ score::Result<size_t> Kvs::SnapshotCount() const noexcept
         {
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
+        // codeql::misra_deviation_next_line(kvs-bool-ref-load)
         if (!*fname_exists_res)
         {
             break;
@@ -471,6 +479,7 @@ score::Result<score::filesystem::Path> Kvs::KvsFilePath(const SnapshotId& snapsh
     {
         return score::MakeUnexpected(static_cast<ErrorCode>(*fname_exists_res.error()));
     }
+    // codeql::misra_deviation_next_line(kvs-bool-ref-load)
     if (!*fname_exists_res)
     {
         return score::MakeUnexpected(ErrorCode::kFileNotFound);
@@ -488,6 +497,7 @@ score::Result<score::filesystem::Path> Kvs::HashFilePath(const SnapshotId& snaps
     {
         return score::MakeUnexpected(static_cast<ErrorCode>(*fname_exists_res.error()));
     }
+    // codeql::misra_deviation_next_line(kvs-bool-ref-load)
     if (!*fname_exists_res)
     {
         return score::MakeUnexpected(ErrorCode::kFileNotFound);
@@ -514,6 +524,10 @@ score::Result<size_t> Kvs::GetStorageFileSize() const noexcept
         {
             logger_->LogError() << "error: could not determine size of " << path << ": " << ec.message();
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
+        }
+        else
+        {
+            // A missing file counts as 0 bytes.
         }
     }
 
@@ -570,18 +584,20 @@ score::Result<void> Kvs::SnapshotRotate() const noexcept
 
         logger_->LogInfo() << "rotating:" << snap_old << "->" << snap_new;
         // Rename hash.
-        const int32_t hash_rename{std::rename(hash_old.CStr(), hash_new.CStr())};
-        if ((0 != hash_rename) && (errno != ENOENT))
+        const auto hash_rename{score::os::Stdio::instance().rename(hash_old.CStr(), hash_new.CStr())};
+        if ((!hash_rename.has_value()) && (hash_rename.error() != score::os::Error::Code::kNoSuchFileOrDirectory))
         {
-            logger_->LogError() << "error: could not rename hash file" << snap_old << "- Rename Errorcode" << errno;
+            logger_->LogError() << "error: could not rename hash file" << snap_old << "-"
+                                << hash_rename.error().ToString();
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
 
         // Rename snapshot.
-        const int32_t snap_rename{std::rename(snap_old.CStr(), snap_new.CStr())};
-        if ((0 != snap_rename) && (errno != ENOENT))
+        const auto snap_rename{score::os::Stdio::instance().rename(snap_old.CStr(), snap_new.CStr())};
+        if ((!snap_rename.has_value()) && (snap_rename.error() != score::os::Error::Code::kNoSuchFileOrDirectory))
         {
-            logger_->LogError() << "error: could not rename snapshot file" << snap_old << "- Rename Errorcode" << errno;
+            logger_->LogError() << "error: could not rename snapshot file" << snap_old << "-"
+                                << snap_rename.error().ToString();
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
     }
@@ -615,15 +631,15 @@ score::Result<KvsMap> Kvs::ParseJsonData(const std::string& data) const noexcept
     }
     KvsMap map;
     map.reserve(object->size());
-    for (const auto& [key, value] : *object)
+    for (const auto& member : *object)
     {
         // Validate key.
-        if (!IsKeyValid(key))
+        if (!IsKeyValid(member.first))
         {
-            logger_->LogError() << "Provided key is not valid" << key;
+            logger_->LogError() << "Provided key is not valid" << member.first;
             return score::MakeUnexpected(ErrorCode::kInvalidKey);
         }
-        map.emplace(key, value);
+        score::cpp::ignore = map.emplace(member.first, member.second);
     }
 
     return map;
@@ -709,6 +725,7 @@ score::Result<void> Kvs::WriteJsonData(const std::string& buf) const noexcept
     auto hash_res{WriteTempFile(hash_path, hash_bytes.data(), hash_bytes.size())};
     if (!hash_res.has_value())
     {
+        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
         score::cpp::ignore = RemoveIfExists(TempFilePath(json_path));
         return hash_res;
     }
@@ -717,6 +734,7 @@ score::Result<void> Kvs::WriteJsonData(const std::string& buf) const noexcept
     auto json_commit_res{CommitTempFile(json_path)};
     if (!json_commit_res.has_value())
     {
+        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
         score::cpp::ignore = RemoveIfExists(TempFilePath(hash_path));
         return json_commit_res;
     }
@@ -776,6 +794,7 @@ score::Result<void> Kvs::WriteTempFile(const score::filesystem::Path& path,
         return discard();
     }
 
+    // codeql::misra_deviation_next_line(kvs-write-byte-pointer)
     const auto* bytes{static_cast<const std::uint8_t*>(data)};
     std::size_t written{0U};
     while (written < size)
@@ -790,6 +809,10 @@ score::Result<void> Kvs::WriteTempFile(const score::filesystem::Path& path,
         {
             logger_->LogError() << "Failed to write to file" << tmp_path;
             return discard();
+        }
+        else
+        {
+            // The write was interrupted by a signal before any data was written, so it is retried.
         }
     }
 
@@ -816,6 +839,7 @@ score::Result<void> Kvs::CommitTempFile(const score::filesystem::Path& path) con
     if (!score::os::Stdio::instance().rename(tmp_path.CStr(), path.CStr()).has_value())
     {
         logger_->LogError() << "Failed to replace file" << path;
+        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
         score::cpp::ignore = RemoveIfExists(tmp_path);
         return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
