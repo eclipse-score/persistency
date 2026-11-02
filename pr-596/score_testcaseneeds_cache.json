@@ -182,9 +182,9 @@
     "FullyVerifies": "comp_req__kvs__value_reset"
   },
   {
-    "name": "TestResetSingleKey__test_valid[optional-rust]",
+    "name": "TestSetValueToDefault__test_valid[optional-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "470",
+    "line": "471",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -192,13 +192,13 @@
     "TestType": "requirements-based",
     "DerivationTechnique": "requirements-analysis",
     "result_text": "",
-    "PartiallyVerifies": "comp_req__kvs__value_default, comp_req__kvs__default_value_cfg",
+    "PartiallyVerifies": "comp_req__kvs__value_reset, comp_req__kvs__value_default, comp_req__kvs__default_value_cfg",
     "FullyVerifies": null
   },
   {
-    "name": "TestResetSingleKey__test_valid[required-rust]",
+    "name": "TestSetValueToDefault__test_valid[required-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "470",
+    "line": "471",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -206,13 +206,13 @@
     "TestType": "requirements-based",
     "DerivationTechnique": "requirements-analysis",
     "result_text": "",
-    "PartiallyVerifies": "comp_req__kvs__value_default, comp_req__kvs__default_value_cfg",
+    "PartiallyVerifies": "comp_req__kvs__value_reset, comp_req__kvs__value_default, comp_req__kvs__default_value_cfg",
     "FullyVerifies": null
   },
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[optional-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "550",
+    "line": "551",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -226,7 +226,7 @@
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[required-rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "550",
+    "line": "551",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -826,9 +826,9 @@
     "FullyVerifies": "comp_req__kvs__value_reset"
   },
   {
-    "name": "TestResetSingleKey__test_valid[optional-cpp]",
+    "name": "TestSetValueToDefault__test_valid[optional-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "470",
+    "line": "471",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -836,13 +836,13 @@
     "TestType": "requirements-based",
     "DerivationTechnique": "requirements-analysis",
     "result_text": "",
-    "PartiallyVerifies": "comp_req__kvs__value_default, comp_req__kvs__default_value_cfg",
+    "PartiallyVerifies": "comp_req__kvs__value_reset, comp_req__kvs__value_default, comp_req__kvs__default_value_cfg",
     "FullyVerifies": null
   },
   {
-    "name": "TestResetSingleKey__test_valid[required-cpp]",
+    "name": "TestSetValueToDefault__test_valid[required-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "470",
+    "line": "471",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -850,13 +850,13 @@
     "TestType": "requirements-based",
     "DerivationTechnique": "requirements-analysis",
     "result_text": "",
-    "PartiallyVerifies": "comp_req__kvs__value_default, comp_req__kvs__default_value_cfg",
+    "PartiallyVerifies": "comp_req__kvs__value_reset, comp_req__kvs__value_default, comp_req__kvs__default_value_cfg",
     "FullyVerifies": null
   },
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[optional-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "550",
+    "line": "551",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -870,7 +870,7 @@
   {
     "name": "TestChecksumOnProvidedDefaults__test_valid[required-cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_default_values.py",
-    "line": "550",
+    "line": "551",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
