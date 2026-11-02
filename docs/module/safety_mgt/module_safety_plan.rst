@@ -201,7 +201,7 @@ Component KVS Work products List
         * - :need:`wp__verification_comp_int_test`
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
-          - Bazel test suites ``//score/kvs/tests/test_cases:cit_cpp`` and ``//score/kvs/tests/test_cases:cit_rust``,
+          - Bazel test suite ``//:cit_tests``,
             results in :need:`mod_vrep__persistency__report`
 
 The KVS component is a new development, so no :need:`wp__sw_component_class` is planned for it.

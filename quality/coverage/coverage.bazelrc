@@ -30,6 +30,9 @@
 # https://eclipse-score.github.io/coverage_tool/main/manual/user_manual.html
 
 coverage:llvm_cov --nocache_test_results
+# ITF integration tests run the instrumented binaries in a container or VM,
+# their counters never reach the host. See //tools/integration_testing.
+coverage:llvm_cov --test_tag_filters=-integration-test
 # Instrument everything under //score. Left unset, Bazel guesses the filter
 # from the packages of the test targets (stripping only a trailing "/tests");
 # a library tested from a "test" subpackage is then compiled without counters

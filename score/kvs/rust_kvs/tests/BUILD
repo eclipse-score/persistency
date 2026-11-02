@@ -11,24 +11,27 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 load("@pip_score_persistency_venv_test//:requirements.bzl", "all_requirements")
-load("@score_tools//score_pytest:pytest.bzl", "score_pytest")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
+load("//tools/integration_testing:integration_testing.bzl", "integration_test")
 
-score_pytest(
+pkg_files(
+    name = "test_scenarios_pkg",
+    srcs = ["//score/kvs/rust_kvs/tests/test_scenarios"],
+    attributes = pkg_attributes(mode = "0755"),
+    prefix = "/opt/score_persistency",
+)
+
+integration_test(
     name = "cit_tests",
-    size = "small",
     srcs = ["//score/kvs/tests/test_cases:cit_files"],
     args = [
         "-m rust",
-        "--rust-target-path=$(rootpath //score/kvs/rust_kvs/tests/test_scenarios)",
+        "--rust-target-path=/opt/score_persistency/test_scenarios",
         "--traces=all",
         "--log-cli-level=DEBUG",
     ],
-    data = ["//score/kvs/rust_kvs/tests/test_scenarios"],
-    env = {
-        "RUST_BACKTRACE": "1",
-    },
+    filesystem = ":test_scenarios_pkg",
     pytest_config = "//:pyproject.toml",
-    target_compatible_with = ["@platforms//os:linux"],
     visibility = ["//:__pkg__"],
     deps = all_requirements,
 )

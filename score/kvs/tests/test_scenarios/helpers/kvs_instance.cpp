@@ -13,6 +13,9 @@
 
 #include "helpers/kvs_instance.h"
 
+#include <stdexcept>
+#include <string>
+
 #include "score/kvs/kvs_builder.h"
 
 using namespace score::kvs;
@@ -48,6 +51,6 @@ Kvs KvsInstance(const KvsParameters& params)
     }
     else
     {
-        throw std::runtime_error{"Failed to build KVS instance"};
+        throw std::runtime_error{"Failed to create KVS instance: " + std::string{build_result.error().Message()}};
     }
 }

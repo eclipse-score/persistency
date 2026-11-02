@@ -180,7 +180,13 @@ Run Component Integration Tests (grouped into single Test Suite):
 
 ```bash
 bazel test --config=score-linux-x86_64 //:cit_tests
+bazel test --config=score-qnx-x86_64 //:cit_tests
 ```
+
+Component Integration Tests run with [ITF](https://github.com/eclipse-score/itf) on a target system:
+a Docker container on Linux, a QEMU VM on QNX.
+They need a Docker daemon (Linux) or `qemu-system-x86_64` (QNX, KVM makes them much faster).
+The devcontainer has no Docker, skip them there with `--test_tag_filters=-integration-test`.
 
 ## Lint
 

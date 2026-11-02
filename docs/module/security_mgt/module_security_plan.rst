@@ -240,5 +240,5 @@ One set of work products for the module and one set for each component of the mo
           - :need:`gd_guidl__verification_guide`
           - :ndf:`copy('status', need_id='gd_guidl__verification_guide')`
           - <Link to issue>
-          - Bazel test suites ``//score/kvs/tests/test_cases:cit_cpp`` and ``//score/kvs/tests/test_cases:cit_rust``, results in :need:`mod_vrep__persistency__report`
+          - Bazel test suite ``//:cit_tests``, results in :need:`mod_vrep__persistency__report`
           - :ndf:`copy('status', need_id='mod_vrep__persistency__report')`
