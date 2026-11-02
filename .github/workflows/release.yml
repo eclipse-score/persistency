@@ -160,12 +160,12 @@ jobs:
 
       - name: Generate unified coverage report
         env:
-          # Report-only; see coverage.yml for the rationale on this threshold.
+          # Report-only; see coverage_report.yml for the rationale on this threshold.
           COVERAGE_THRESHOLD: "0"
         run: |
           set -euo pipefail
           bazel run --lockfile_mode=error @score_coverage//:generate_coverage_html -- \
-            --yaml quality/coverage/coverage_justifications.yaml \
+            --yaml tools/coverage/coverage_justifications.yaml \
             --testlogs-subdir score \
             --archive-dir coverage_artifact
 

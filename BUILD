@@ -129,7 +129,7 @@ exports_files([".clang-tidy"])
 
 exports_files(
     [
-        # Used by the @score_tooling coverage reporter to locate the workspace root.
+        # MODULE.bazel: the LLVM coverage pipeline (//tools/coverage) resolves the workspace root through it at report time.
         # MODULE.bazel is also the workspace marker for //tools:format.check.
         "MODULE.bazel",
         "pyproject.toml",

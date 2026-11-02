@@ -19,12 +19,12 @@ load("@score_coverage//:defs.bzl", "score_coverage_reporter", "score_coverage_sc
 # in-scope files appear in the report at exact 0% via the --empty-profile
 # baseline mechanism.
 #
-# Keep this list in sync with the module's shipped components; once the
-# module defines dependable elements, derive the scope from those instead.
+# .github/tools/check_coverage_scope.sh fails when a production cc_library / rust_library under //score/... is neither reachable from this scope nor listed in scope_exclusions.txt.
+# After adding or removing libraries, regenerate the universe with the query in that script.
 score_coverage_scope(
     name = "coverage_scope",
     testonly = True,
-    visibility = ["//quality/coverage:__subpackages__"],
+    visibility = ["//visibility:private"],
     deps = [
         "//score/kvs",
         "//score/kvs/rust_kvs",
@@ -42,4 +42,5 @@ score_coverage_reporter(
     llvm_cov = "@llvm_toolchain//:llvm-cov",
     llvm_cxxfilt = "@llvm_toolchain_llvm//:bin/llvm-cxxfilt",
     llvm_profdata = "@llvm_toolchain//:llvm-profdata",
+    visibility = ["//visibility:public"],
 )
