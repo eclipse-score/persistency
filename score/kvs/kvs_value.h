@@ -43,6 +43,7 @@ namespace score::kvs
 ///     double number = std::get<double>(number_value.GetValue());
 /// }
 /// @endcode
+// codeql::misra_deviation_next_line(kvs-special-members)
 class KvsValue final
 {
   public:
@@ -60,7 +61,7 @@ class KvsValue final
         std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>;
 
     /// @brief Type of the held value.
-    enum class Type
+    enum class Type : std::uint8_t
     {
         /// `int32_t`
         kI32 = 0,
@@ -110,7 +111,7 @@ class KvsValue final
         std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kNull), ValueVariant>, std::nullptr_t>);
     static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kArray), ValueVariant>, Array>);
     static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kObject), ValueVariant>, Object>);
-    static_assert(std::variant_size_v<ValueVariant> == static_cast<size_t>(Type::kObject) + 1U);
+    static_assert(std::variant_size_v<ValueVariant> == (static_cast<size_t>(Type::kObject) + 1U));
 
     /// @brief Constructs a value of type Type::kI32.
     explicit KvsValue(int32_t number) noexcept : value_{number} {}
@@ -123,6 +124,7 @@ class KvsValue final
     /// @brief Constructs a value of type Type::kF64.
     explicit KvsValue(double number) noexcept : value_{number} {}
     /// @brief Constructs a value of type Type::kBoolean.
+    // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
     explicit KvsValue(bool boolean) noexcept : value_{boolean} {}
     /// @brief Constructs a value of type Type::kString from a C string.
     explicit KvsValue(const char* str) noexcept;
@@ -155,15 +157,16 @@ class KvsValue final
     ~KvsValue() noexcept;
 
     /// @brief Copy assignment operator.
-    KvsValue& operator=(const KvsValue& other) noexcept;
+    KvsValue& operator=(const KvsValue& other) & noexcept;
 
     /// @brief Move assignment operator.
-    KvsValue& operator=(KvsValue&& other) noexcept;
+    KvsValue& operator=(KvsValue&& other) & noexcept;
 
     /// @brief Gets the type of the value.
     /// @return The type of the held value.
     Type GetType() const noexcept
     {
+        // codeql::misra_deviation_next_line(kvs-type-from-index)
         return static_cast<Type>(value_.index());
     }
 
@@ -172,9 +175,19 @@ class KvsValue final
     /// Use `std::get` to retrieve the value.
     ///
     /// @return The underlying variant.
-    const ValueVariant& GetValue() const noexcept
+    const ValueVariant& GetValue() const& noexcept
     {
         return value_;
+    }
+
+    /// @brief Moves the underlying value out of a temporary.
+    ///
+    /// Returning by value keeps the result valid after the temporary is destroyed.
+    ///
+    /// @return The underlying variant.
+    ValueVariant GetValue() && noexcept
+    {
+        return std::move(value_);
     }
 
     // Deprecated snake_case API.
