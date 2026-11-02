@@ -156,6 +156,7 @@ score::Result<void> WriteTempFile(const score::filesystem::Path& path,
     // Close and remove the temporary file on failure.
     const auto discard = [&unistd, &tmp_path, fd]() {
         score::cpp::ignore = unistd.close(fd);
+        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
         score::cpp::ignore = RemoveIfExists(tmp_path);
         return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     };
@@ -199,6 +200,7 @@ score::Result<void> WriteTempFile(const score::filesystem::Path& path,
     if (!unistd.close(fd).has_value())
     {
         GetLogger().LogError() << "Failed to close file" << tmp_path;
+        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
         score::cpp::ignore = RemoveIfExists(tmp_path);
         return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }

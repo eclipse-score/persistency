@@ -20,7 +20,7 @@ namespace score::kvs
 {
 
 /// @brief Log context of KVS.
-constexpr std::string_view kLogContext{"SKVS"};
+const std::string_view kLogContext{"SKVS"};
 
 /// @brief Returns the logger shared by all KVS instances.
 inline const score::mw::log::Logger& GetLogger() noexcept
