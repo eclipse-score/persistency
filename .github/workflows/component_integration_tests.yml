@@ -33,16 +33,7 @@ jobs:
     steps:
       - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
 
-      - name: Checkout repository (pull_request_target via workflow_call)
-        if: ${{ github.event_name == 'pull_request_target' }}
-        # TODO(#349): remove once secure fork-PR checkout is finalized.
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.head_ref || github.event.pull_request.head.ref || github.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-
       - name: Checkout repository
-        if: ${{ github.event_name != 'pull_request_target' }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Rust build environment
