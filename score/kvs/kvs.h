@@ -18,7 +18,6 @@
 #include "score/json/json_writer.h"
 #include "score/kvs/error.h"
 #include "score/kvs/kvs_value.h"
-#include "score/mw/log/logger.h"
 #include "score/result/result.h"
 #include <cstddef>
 #include <cstdint>
@@ -62,12 +61,14 @@ constexpr std::size_t kDefaultMaxSnapshots{3U};
 constexpr std::size_t KVS_DEFAULT_MAX_SNAPSHOTS{kDefaultMaxSnapshots};
 
 /// @brief Identifier of a KVS instance.
+// codeql::misra_deviation_next_line(kvs-special-members)
 struct InstanceId
 {
     /// @brief Constructs an instance identifier.
     ///
     /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(InstanceId(0))`.
     /// @param id Numeric value of the identifier.
+    // codeql::misra_deviation_next_line(kvs-id-implicit-ctor)
     InstanceId(size_t id) noexcept : id{id} {}
 
     /// Numeric value of the identifier.
@@ -75,12 +76,14 @@ struct InstanceId
 };
 
 /// @brief Identifier of a KVS snapshot.
+// codeql::misra_deviation_next_line(kvs-special-members)
 struct SnapshotId
 {
     /// @brief Constructs a snapshot identifier.
     ///
     /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(SnapshotId(0))`.
     /// @param id Numeric value of the identifier.
+    // codeql::misra_deviation_next_line(kvs-id-implicit-ctor)
     SnapshotId(size_t id) noexcept : id{id} {}
 
     /// Numeric value of the identifier.
@@ -149,6 +152,7 @@ enum class OpenJsonNeedFile : std::uint8_t
 /// - Snapshot management for persistence and restoration.
 ///
 /// @note A Kvs object is not copyable, but it can be moved.
+// codeql::misra_deviation_next_line(kvs-special-members)
 class Kvs final
 {
   public:
@@ -160,7 +164,7 @@ class Kvs final
     Kvs& operator=(const Kvs&) = delete;
 
     /// @brief Move assignment operator.
-    Kvs& operator=(Kvs&& other) noexcept;
+    Kvs& operator=(Kvs&& other) & noexcept;
 
     /// @brief Opens the key-value store with the specified instance ID and flags.
     ///
@@ -485,25 +489,8 @@ class Kvs final
     /// @brief Writes the provided data to the current JSON file and its hash file.
     score::Result<void> WriteJsonData(const std::string& buf) const noexcept;
 
-    /// @brief Writes data to the temporary file of a KVS file and ensures it reaches physical storage.
-    ///
-    /// The live file is not touched, it is replaced by CommitTempFile() once the data is on storage.
-    score::Result<void> WriteTempFile(const score::filesystem::Path& path,
-                                      const void* data,
-                                      const std::size_t size) const noexcept;
-
-    /// @brief Replaces a KVS file with its temporary file.
-    ///
-    /// The rename is atomic, the file is either old or new.
-    score::Result<void> CommitTempFile(const score::filesystem::Path& path) const noexcept;
-
     /// @brief Serializes the KVS and checks the projected total size against the storage limit.
     score::Result<std::string> SerializeAndCheck() const noexcept;
-
-    /// @brief Retrieves the size of one file in bytes.
-    ///
-    /// A missing file counts as 0 bytes.
-    score::Result<size_t> GetFileSize(const score::filesystem::Path& file_path) const noexcept;
 
     /// @brief Retrieves the current storage size of all persisted files (defaults and snapshots).
     score::Result<size_t> GetCurrentStorageSize() const noexcept;
@@ -532,9 +519,6 @@ class Kvs final
 
     /// JSON writer for writing KVS data.
     std::unique_ptr<score::json::IJsonWriter> writer_;
-
-    /// Logger of this instance.
-    std::unique_ptr<score::mw::log::Logger> logger_;
 
     /// Maximum storage limit in bytes.
     /// Unset means no limit is enforced.

@@ -132,6 +132,7 @@ enum class ErrorCode : score::result::ErrorCode
 };
 
 /// @brief Error domain translating `ErrorCode` codes to human-readable messages.
+// codeql::misra_deviation_next_line(kvs-special-members)
 class KvsErrorDomain final : public score::result::ErrorDomain
 {
   public:
