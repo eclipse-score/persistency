@@ -1,0 +1,130 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+# MISRA C++:2023 deviations for the C++ CodeQL job in .github/workflows/codeql.yml.
+# The job converts this file to coding-standards.xml and indexes it into the CodeQL database.
+# The MISRA pack then drops every result that a deviation or a disapplied rule covers.
+#
+# Paths are relative to this file and match by prefix.
+# A record applies to every query of its rule-id, and the query-id only has to belong to that rule.
+# A record with a code-identifier applies only where the source carries a marker:
+#   // codeql::misra_deviation_next_line(<code-identifier>)
+#   // codeql::misra_deviation_begin(<code-identifier>) ... // codeql::misra_deviation_end(<code-identifier>)
+# Keep the pack version in step with .github/workflows/codeql.yml.
+
+deviations:
+  # Path deviations: the rule is not checked anywhere in score/kvs.
+  # Each of these rules has a single query, so no other query is affected.
+  - rule-id: "RULE-8-20-1"
+    query-id: "cpp/misra/unsigned-operation-with-constant-operands-wraps"
+    justification: >-
+      Advisory rule. The flagged additions sum file sizes and serialized buffer sizes, which stay far below SIZE_MAX on the 64-bit targets of the KVS.
+      The Adler-32 sums are reduced modulo 65521 after at most 5552 bytes, which is the bound that keeps them from wrapping.
+      `communication` disapplies this rule for the same reason.
+    paths:
+      - "score/kvs"
+  - rule-id: "RULE-9-5-1"
+    query-id: "cpp/misra/legacy-for-statements-should-be-simple"
+    justification: >-
+      False positive. The query compares the declared type of the loop counter with the integral types without unwrapping typedefs.
+      It reports every `size_t` counter as "not of an integer type", although `size_t` is an unsigned integer type.
+    paths:
+      - "score/kvs"
+  - rule-id: "RULE-6-9-1"
+    query-id: "cpp/misra/type-aliases-declaration"
+    justification: >-
+      False positive. ParseJsonData, OpenJson and SerializeAndCheck spell the return type `score::Result<...>` identically in kvs.h and kvs.cpp.
+      The query treats the two uses of the `score::Result` alias template as different type aliases.
+    paths:
+      - "score/kvs"
+
+  # Code-identifier deviations: only the lines after a marker are covered.
+  - rule-id: "RULE-8-2-10"
+    query-id: "cpp/misra/functions-call-themselves-either-directly-or-indirectly"
+    code-identifier: "kvs-recursive-value"
+    scope: "The recursive calls in the KvsValue to JSON conversion, in HasUniqueKeys and in the KvsValue copy operations, in score/kvs/internal/kvs_helper.cpp and score/kvs/kvs_value.cpp."
+    justification: >-
+      KvsValue is a recursive type, as arrays and objects hold KvsValue elements.
+      Converting, validating and copying a value walks that structure, and the recursion depth equals the nesting depth of the value.
+      score::json does not limit the nesting depth of parsed files, so the depth is bounded only by the input.
+      KVS files are written by the KVS itself and checked against their hash before they are parsed.
+  - rule-id: "RULE-7-0-1"
+    query-id: "cpp/misra/no-conversion-from-bool"
+    code-identifier: "kvs-bool-ref-binding"
+    scope: "Lines in score/kvs/kvs.cpp and score/kvs/kvs_value.h where a bool is returned as score::Result<bool>, assigned to score::cpp::ignore or stored in the KvsValue variant."
+    justification: >-
+      False positive. No value is converted from bool.
+      The query reports binding a bool to a `bool&` or `bool&&` parameter of a constructor or assignment operator as a conversion.
+  - rule-id: "RULE-7-0-2"
+    query-id: "cpp/misra/no-implicit-bool-conversion"
+    code-identifier: "kvs-bool-ref-load"
+    scope: "Lines in score/kvs/kvs.cpp and score/kvs/internal/kvs_helper.cpp that read a bool through a reference, or test a Result inside the ObjectToAny template."
+    justification: >-
+      False positive. The flagged expressions already have type bool or are contextual conversions through an explicit operator bool.
+      The query does not strip references, so reading a `const bool&` is reported as a conversion to bool.
+      Inside the ObjectToAny template it reports the dependent types as `unknown`.
+  - rule-id: "RULE-15-1-3"
+    query-id: "cpp/misra/non-explicit-conversion-member"
+    code-identifier: "kvs-id-implicit-ctor"
+    scope: "The InstanceId and SnapshotId constructors in score/kvs/kvs.h."
+    justification: >-
+      The constructors are implicit by design and the public API documents it.
+      Callers write `Open(0, ...)` instead of `Open(InstanceId(0), ...)`, and making them explicit would break existing callers.
+      Both types only wrap a size_t, so the conversion loses nothing.
+  - rule-id: "RULE-15-0-1"
+    query-id: "cpp/misra/improperly-provided-special-member-functions"
+    code-identifier: "kvs-special-members"
+    scope: "The classes Kvs, KvsValue, InstanceId, SnapshotId and KvsErrorDomain in score/kvs/kvs.h, score/kvs/kvs_value.h and score/kvs/error.h."
+    justification: >-
+      Kvs customizes its move operations only to lock the source's mutex, and KvsValue customizes copy and move only to declare them noexcept.
+      C++17 does not allow defaulting them with a different exception specification.
+      Neither class owns a resource, so the defaulted destructor is correct.
+      A customized destructor would need an empty body, which clang-tidy's modernize-use-equals-default rejects.
+      For InstanceId, SnapshotId and KvsErrorDomain the audit query only reports that it cannot see their implicit destructors in the database.
+  - rule-id: "RULE-8-2-6"
+    query-id: "cpp/misra/int-to-pointer-cast-prohibited"
+    code-identifier: "kvs-write-byte-pointer"
+    scope: "The cast of the data pointer in WriteTempFile in score/kvs/kvs.cpp."
+    justification: >-
+      WriteTempFile writes both the JSON text and the hash bytes, so it takes `const void*`.
+      It casts to `const uint8_t*` to advance through the buffer after a partial write.
+      The pointer always comes from a valid buffer of at least `size` bytes.
+  - rule-id: "RULE-4-1-3"
+    query-id: "cpp/misra/out-of-range-enum-cast-critical-unspecified-behavior"
+    code-identifier: "kvs-type-from-index"
+    scope: "The cast in KvsValue::GetType in score/kvs/kvs_value.h."
+    justification: >-
+      std::variant::index() is in range 0 to 9, as static_asserts pin the variant size to Type::kObject + 1.
+      It could only be variant_npos for a valueless variant.
+      Every KvsValue operation is noexcept, so an exception during an assignment terminates instead of leaving the variant valueless.
+  - rule-id: "RULE-5-10-1"
+    query-id: "cpp/misra/poorly-formed-identifier"
+    code-identifier: "kvs-assert-macro"
+    scope: "The SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE call in score/kvs/kvs_value.cpp."
+    justification: >-
+      The identifier `__PRETTY_FUNCTION__` comes from the expansion of the baselibs precondition macro, not from KVS code.
+  - rule-id: "RULE-0-1-1"
+    query-id: "cpp/misra/unnecessary-write-to-local-object"
+    code-identifier: "kvs-raii-lock-guard"
+    scope: "The std::scoped_lock in Kvs::operator=(Kvs&&) in score/kvs/kvs.cpp."
+    justification: >-
+      The lock is an RAII guard that holds both mutexes for its scope.
+      It is never read by design.
+
+# Guideline recategorizations: the rule is not checked anywhere in the repo.
+guideline-recategorizations:
+  # MISRA C++:2023 Rule 21.6.1 (advisory) bans dynamic memory.
+  # The KVS stores keys and values in std::string, std::map and std::vector by design.
+  # MISRA Compliance allows an advisory rule to be disapplied.
+  - rule-id: "RULE-21-6-1"
+    category: "disapplied"

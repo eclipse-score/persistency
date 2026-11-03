@@ -12,32 +12,46 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-AoU Component Requirements KVS
-==============================
+KVS Assumptions of Use
+======================
 
-This page contains Assumption of Use requirement snippets that belong to the
-template repository.
+.. document:: KVS AoU
+   :id: doc__kvs_aou
+   :status: valid
+   :version: 1
+   :safety: ASIL_B
+   :security: NO
+   :realizes: wp__requirements_comp_aou[version==1]
+   :tags: Persistency KVS
+
+Assumptions of use resulting from :need:`doc__kvs_fmea` and :need:`doc__kvs_dfa`.
 
 Component AoU
 -------------
 
-.. code-block:: rst
+.. aou_req:: File System
+   :id: aou_req__kvs__filesystem
+   :reqtype: Process
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :tags: Persistency KVS, environment
 
-   .. aou_req:: Next Title
-      :id: aou_req__mod_temp_component_name__next_title
-      :reqtype: Process
-      :security: YES
-      :safety: ASIL_B
-      :status: invalid
+   The user shall ensure that the file system and storage used for the KVS directory provide deterministic
+   operations with a bounded execution time (open, read, write, ``fdatasync``, ``rename``, directory creation and
+   file queries) for the maximum storage size and the maximum number of snapshots configured for the KVS instance,
+   that they persist written data once ``fsync``/``fdatasync`` has returned, and keep renamed files consistent
+   across a reset, so that data reported as flushed survives a reset.
 
-      The Component User shall do xyz to use the component safely/securely
+.. aou_req:: KVS Limits Configuration
+   :id: aou_req__kvs__limits
+   :reqtype: Process
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :tags: Persistency KVS, environment
 
-   .. aou_req:: Another Title
-      :id: aou_req__mod_temp_component_name__another
-      :reqtype: Process
-      :security: YES
-      :safety: ASIL_B
-      :status: invalid
-      :tags: environment
-
-      The Component shall only be used in a xyz environment to ensure its proper functioning.
+   The user shall configure the maximum storage size and the maximum number of snapshots of each KVS instance, so
+   that the execution time of the KVS operations is bounded.

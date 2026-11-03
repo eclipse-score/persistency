@@ -34,7 +34,7 @@ bazel run @score_coverage//:generate_coverage_html -- \
 xdg-open coverage_linux/index.html
 ```
 
-> Do NOT combine `--config=llvm_cov` with `--config=per-x86_64-linux`:
+> Do NOT combine `--config=llvm_cov` with `--config=score-linux-x86_64`:
 > the GCC toolchain would win resolution and produce no coverage data.
 
 Untested in-scope files (e.g. `kvs_tool.rs`) appear at exact 0%; the gate

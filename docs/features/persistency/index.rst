@@ -21,10 +21,9 @@ Feature request can be found here: :need:`doc__persistency`
 .. toctree::
    architecture/index.rst
    architecture/chklst_arc_inspection.rst
+   safety_analysis/aou_requirements.rst
    safety_analysis/fmea.rst
    safety_analysis/dfa.rst
    safety_planning/index.rst
    security_planning/index.rst
    security_analysis/stride.rst
-
-

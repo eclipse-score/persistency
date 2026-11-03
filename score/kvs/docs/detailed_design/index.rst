@@ -149,5 +149,3 @@ In your source file, any programming language, here with C++:
    //!     :implements: <real_arc_int, real_arc_int_op>
    //!
    //!     This implements the ....
-
-

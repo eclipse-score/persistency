@@ -138,19 +138,19 @@ jobs:
           disk-cache-key: ${{ github.job }}
 
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@63c3e9c93df76d76a1baca18e407745ddaeb2fca # main branch (2026-10-12)
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@168b6f51b21b5f0ebe49808939db53557dca410c # main branch (2026-10-12)
 
       - name: Build via Bazel
         run: |
           set -euo pipefail
-          echo "Running: bazel build --lockfile_mode=error --config=per-x86_64-linux //score/..."
-          bazel build --lockfile_mode=error --config=per-x86_64-linux //score/...
+          echo "Running: bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/..."
+          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/...
 
       - name: Run Unit Tests via Bazel
         run: |
           set -euo pipefail
-          echo "Running: bazel test --lockfile_mode=error --config=per-x86_64-linux //:unit_tests"
-          bazel test --lockfile_mode=error --config=per-x86_64-linux //:unit_tests
+          echo "Running: bazel test --lockfile_mode=error --config=score-linux-x86_64 //:unit_tests"
+          bazel test --lockfile_mode=error --config=score-linux-x86_64 //:unit_tests
 
       - name: Run unified Rust + C++ coverage
         run: |
@@ -188,7 +188,7 @@ jobs:
         if: |
           github.event_name == 'release' ||
           (github.event_name == 'workflow_dispatch' && !inputs.dry_run)
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: >-
             ${{

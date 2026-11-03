@@ -10,8 +10,25 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_INTERNAL_LOGGER_H
+#define SCORE_KVS_INTERNAL_LOGGER_H
 
-#include "scenario.hpp"
+#include "score/mw/log/logger.h"
+#include <string_view>
 
-ScenarioGroup::Ptr default_values_group();
+namespace score::kvs
+{
+
+/// @brief Log context of KVS.
+const std::string_view kLogContext{"SKVS"};
+
+/// @brief Returns the logger shared by all KVS instances.
+inline const score::mw::log::Logger& GetLogger() noexcept
+{
+    static const score::mw::log::Logger instance{kLogContext};
+    return instance;
+}
+
+}  // namespace score::kvs
+
+#endif  // SCORE_KVS_INTERNAL_LOGGER_H

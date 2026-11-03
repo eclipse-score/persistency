@@ -1,0 +1,103 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+name: CodeQL
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+  merge_group:
+    types: [checks_requested]
+  schedule:
+    - cron: '0 2 * * 1' # weekly, also catches new CodeQL queries without code changes
+
+jobs:
+  # C++: default code scanning suite plus the MISRA C++:2023 query pack.
+  # The CLI is pinned to the only version the pack supports (see its supported_codeql_configs.json).
+  # A newer CLI breaks the control-flow graph of the precompiled pack and reports false positives.
+  # The MISRA deviations and disapplied rules live in coding-standards.yaml.
+  # The toolchain and tracing setup live in the `codeql` config in .bazelrc.
+  codeql-cpp:
+    name: Analyze (c-cpp)
+    runs-on: ubuntu-24.04
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    steps:
+      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          tools: https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.4/codeql-bundle-linux64.tar.gz
+          languages: c-cpp
+          build-mode: manual
+          packs: codeql/misra-cpp-coding-standards@2.62.0
+
+      # The MISRA pack reads deviations from coding-standards.xml in the database, not from the YAML.
+      # The script converts coding-standards.yaml and indexes the result into the database that init created.
+      - name: Index MISRA deviations
+        run: |
+          curl -sSL -o "$RUNNER_TEMP/cs.tar.gz" \
+            https://github.com/github/codeql-coding-standards/archive/refs/tags/v2.62.0.tar.gz
+          echo "2aa4f4c3efd87eb24fe33bbef7f982b616a6653ae4f2a67ece268ef50cdd1ff3  $RUNNER_TEMP/cs.tar.gz" | sha256sum -c
+          tar xzf "$RUNNER_TEMP/cs.tar.gz" -C "$RUNNER_TEMP"
+          pip install pyyaml
+          python3 "$RUNNER_TEMP/codeql-coding-standards-2.62.0/scripts/configuration/process_coding_standards_config.py" --working-dir=.
+
+      - name: Build
+        run: bazel build --lockfile_mode=error --config=codeql //score/kvs:kvs
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          category: "/language:c-cpp"
+          output: sarif-results.sarif
+
+      - name: Upload SARIF
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sarif-results.sarif
+          path: sarif-results.sarif
+
+  # Rust: CodeQL default code scanning suite, extracted from the Cargo workspace without a build.
+  codeql-rust:
+    name: Analyze (rust)
+    runs-on: ubuntu-24.04
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          languages: rust
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          category: "/language:rust"

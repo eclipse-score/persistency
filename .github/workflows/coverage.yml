@@ -35,13 +35,15 @@ jobs:
           disk-cache-key: ${{ github.job }}
 
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@63c3e9c93df76d76a1baca18e407745ddaeb2fca # main branch (2026-10-12)
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@168b6f51b21b5f0ebe49808939db53557dca410c # main branch (2026-10-12)
 
+      # The kvs_tool ITF tests run their binaries in a Docker container.
+      # Coverage data from the container never reaches Bazel, so they are excluded.
       - name: Run unified Rust + C++ coverage
         run: |
           set -euo pipefail
-          bazel coverage --lockfile_mode=error --config=llvm_cov \
-            //score/... --build_tests_only
+          bazel coverage --lockfile_mode=error --config=llvm_cov --build_tests_only -- \
+            //score/... -//score/kvs/rust_kvs_tool/tests/...
 
       - name: Generate unified coverage report
         env:

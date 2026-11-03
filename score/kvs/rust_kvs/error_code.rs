@@ -64,9 +64,6 @@ pub enum ErrorCode {
     /// Key not found
     KeyNotFound,
 
-    // Key has no default value
-    KeyDefaultNotFound,
-
     /// Serialization failed
     SerializationFailed(String),
 
@@ -87,6 +84,9 @@ pub enum ErrorCode {
 
     /// Instance parameters mismatch
     InstanceParametersMismatch,
+
+    /// Invalid value type
+    InvalidValueType,
 
     /// Key is not valid
     InvalidKey,

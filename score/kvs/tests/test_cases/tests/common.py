@@ -12,8 +12,8 @@
 # *******************************************************************************
 import logging
 import shutil
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
 from testing_utils import BazelTools, BuildTools, LogContainer, Scenario
@@ -65,7 +65,7 @@ class CommonScenario(Scenario):
     @pytest.fixture(scope="class")
     def build_tools(self, version: str) -> BuildTools:
         assert version in ("cpp", "rust")
-        return BazelTools(option_prefix=version, config="per-x86_64-linux")
+        return BazelTools(option_prefix=version, config="score-linux-x86_64")
 
     @pytest.fixture(scope="class")
     def temp_dir(self, tmp_path_factory: pytest.TempPathFactory, version: str) -> Generator[Path, None, None]:
@@ -133,4 +133,4 @@ class CommonScenario(Scenario):
                 raise RuntimeError(f'Invalid "--traces" value: {traces_param}')
 
         for trace in traces:
-            print(trace)
+            print(trace)  # noqa: T201  Traces are shown through pytest output capture.

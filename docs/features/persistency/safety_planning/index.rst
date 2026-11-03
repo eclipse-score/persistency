@@ -58,7 +58,7 @@ Safety Work Products List
     * - :need:`wp__requirements_feat_aou`
       - :need:`gd_temp__req_aou_req`
       - :ndf:`copy('status', need_id='gd_temp__req_aou_req')`
-      - :need:`doc__feature_persistency_requirements`
+      - :need:`doc__persistency_feat_aou`
 
     * - :need:`wp__feature_arch`
       - :need:`gd_temp__arch_feature`
@@ -120,8 +120,10 @@ Feature AoU Status
 ------------------
 
 .. needtable::
-   :filter: type == "aou_req" and id.startswith("aou_req__persistency__")
+   :filter: docname is not None and "persistency" in docname and "aou_requirements" in docname
    :style: table
+   :types: aou_req
+   :tags: persistency
    :columns: id;status
    :colwidths: 25,25
    :sort: title

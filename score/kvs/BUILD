@@ -30,12 +30,20 @@ cc_library(
     srcs = [
         "error.cpp",
         "internal/kvs_helper.cpp",
-        "internal/kvs_helper.hpp",
+        "internal/kvs_helper.h",
+        "internal/logger.h",
         "kvs.cpp",
-        "kvsbuilder.cpp",
-        "kvsvalue.cpp",
+        "kvs_builder.cpp",
+        "kvs_value.cpp",
     ],
     hdrs = [
+        "error.h",
+        "kvs.h",
+        "kvs_builder.h",
+        "kvs_value.h",
+        "deprecated_namespace.h",
+        # Deprecated forwarders to the headers above.
+        # They are kept for existing includes and warn when included.
         "error.hpp",
         "kvs.hpp",
         "kvsbuilder.hpp",
@@ -71,11 +79,13 @@ cc_test(
     size = "small",
     srcs = [
         "kvs_builder_test.cpp",
+        "kvs_deprecated_api_test.cpp",
         "kvs_error_test.cpp",
         "kvs_general_test.cpp",
-        "kvs_general_test.hpp",
+        "kvs_general_test.h",
         "kvs_helper_test.cpp",
         "kvs_test.cpp",
+        "kvs_value_test.cpp",
     ],
     visibility = ["//:__pkg__"],
     deps = [
@@ -84,11 +94,13 @@ cc_test(
         "@score_baselibs//score/filesystem",
         "@score_baselibs//score/filesystem:mock",
         "@score_baselibs//score/json:mock",
+        "@score_baselibs//score/language/futurecpp",
         "@score_baselibs//score/mw/log:backend_stub_testutil",
         "@score_baselibs//score/os:object_seam",
         "@score_baselibs//score/os:stat",
         "@score_baselibs//score/os/mocklib:fcntl_mock",
         "@score_baselibs//score/os/mocklib:stat_mock",
+        "@score_baselibs//score/quality/compiler_warnings",
         "@score_baselibs//score/result",
     ],
 )

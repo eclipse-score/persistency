@@ -13,9 +13,7 @@
 
 load("@score_docs_as_code//:docs.bzl", "docs")
 load("@score_sbom//:defs.bzl", "sbom")
-load("@score_tooling//:defs.bzl", "cli_helper", "dash_license_checker", "setup_starpls")
-load("@score_tooling//third_party/format:macros.bzl", "use_format_targets")
-load("@score_tools//cr_checker:cr_checker.bzl", "copyright_checker")
+load("@score_tooling//:defs.bzl", "setup_starpls")
 
 # Creates all documentation targets:
 # - `:docs` for building documentation at build-time
@@ -45,17 +43,10 @@ setup_starpls(
     visibility = ["//visibility:public"],
 )
 
-copyright_checker(
-    name = "copyright",
-    exclusion = "//:tools/copyright_exclusions.txt",
-    visibility = ["//visibility:public"],
-)
-
-dash_license_checker(
-    src = "//:Cargo.lock",
-    file_type = "cargo",
-    filter_keywords = ["github.com/eclipse-score/"],
-    visibility = ["//visibility:public"],
+# Exported for the Dash license check in //tools.
+exports_files(
+    ["Cargo.lock"],
+    visibility = ["//tools:__pkg__"],
 )
 
 # Generates the product SBOM (SPDX 2.3 + CycloneDX 1.6) for the KVS library.
@@ -93,27 +84,22 @@ sbom(
     visibility = ["//visibility:public"],
 )
 
-cli_helper(
-    name = "cli-help",
-    visibility = ["//visibility:public"],
-)
+# Lint config, consumed by //tools/lint:linters.bzl.
+exports_files([".clang-tidy"])
 
 exports_files(
     [
         # Used by the @score_tooling coverage reporter to locate the workspace root.
+        # MODULE.bazel is also the workspace marker for //tools:format.check.
         "MODULE.bazel",
         "pyproject.toml",
     ],
 )
 
-# Add target for formatting checks
-use_format_targets()
-
 alias(
     name = "kvs_cpp",
     actual = "//score/kvs",
     deprecation = "//:kvs_cpp is deprecated. Update your dependency to the //score/kvs label.",
-    tags = ["cli_help=Build KVS CPP [build]"],
     visibility = ["//visibility:public"],
 )
 

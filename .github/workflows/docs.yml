@@ -37,7 +37,7 @@ jobs:
 
   docs:
     needs: [cit-tests] # Test reports are needed for traceability links
-    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@8ab73967470fa41977dd1c1102d03719b2e2c7e2 # v0.0.3-32-g8ab7396
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@7e8ea4c61756b931622ff979835469b93b162920 # v0.0.3-43-7e8ea4c
     permissions:
       contents: read
     with:

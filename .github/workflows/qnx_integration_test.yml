@@ -34,7 +34,7 @@ jobs:
           disk-cache-key: ${{ github.job }}
 
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@63c3e9c93df76d76a1baca18e407745ddaeb2fca # main branch (2026-10-12)
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@168b6f51b21b5f0ebe49808939db53557dca410c # main branch (2026-10-12)
 
       - name: Setup QNX License
         env:
@@ -51,7 +51,7 @@ jobs:
           bazel build --lockfile_mode=error //score/kvs/tests/integration_test_scenarios:init \
             --platforms=@score_toolchains_rust//platforms:aarch64-unknown-qnx8_0 \
             --features=-dependency_file \
-            --credential_helper=*.qnx.com=${{ github.workspace }}/tools/qnx_credential_helper.py
+            --credential_helper=*.qnx.com=${{ github.workspace }}/.github/tools/qnx_credential_helper.py
 
       - name: Run QEMU Integration Test
         run: |

@@ -56,21 +56,9 @@ Assumptions of Use
 ------------------
 
 
-AoU Requirements
-################
-
-.. aou_req:: Persistency Error handling
-   :id: aou_req__persistency__error_handling
-   :reqtype: Functional
-   :security: NO
-   :safety: ASIL_B
-   :status: valid
-   :version: 2
-   :tags: persistency, environment
-
-   The application shall detect and handle the unavailability of the feature persistency.
-   Unavailability covers errors reported by the persistency API as well as persistency calls which do
-   not return or return too late (e.g. caused by blocked or delayed execution of the calling context).
+The assumptions of use of the feature are documented in :need:`doc__persistency_feat_aou`,
+the assumptions of use of the components in the respective component documentation.
+They are listed in the following sections.
 
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -79,6 +67,7 @@ Assumptions on the Environment
 | - file system access: open, read, write, flush and sync to the storage (``fdatasync``), rename and remove of files. The C++ implementation uses them via ``score::filesystem`` of the baselibs and the C standard library, the Rust implementation via the Rust standard library (``std::fs``);
 | - thread synchronization (mutex);
 | - heap memory allocation.
+| Beyond these OS services the module has no specific AoUs on its environment (OS, C/C++ standard library, HW).
 
 List of AoUs expected from the environment the module runs on:
 
@@ -91,7 +80,7 @@ List of AoUs expected from the environment the module runs on:
    results = []
 
    for need in needs.filter_types(["aou_req"]):
-      if need and "persistency" in need["tags"]:
+      if need and "persistency" in need["tags"] and need["safety"] != "QM":
          if need and "environment" in need["tags"]:
                 results.append(need)
 
@@ -118,7 +107,7 @@ For the feature Persistency the platform safety manual and this module safety ma
 
    for need in needs.filter_types(["aou_req"]):
       if need and "environment" not in need["tags"]:
-         if need and "persistency" in need["tags"]:
+         if need and "persistency" in need["tags"] and need["safety"] != "QM":
                 results.append(need)
 
 Safety concept of the SEooC

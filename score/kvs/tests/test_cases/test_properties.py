@@ -15,7 +15,7 @@ try:
 except ImportError:
     # Define no-op decorator if attribute_plugin is not available (outside bazel)
     # Keeps IDE debugging functionality
-    def add_test_properties(*args, **kwargs):
+    def add_test_properties(*_args, **_kwargs):
         def decorator(func):
             return func  # No-op decorator
 

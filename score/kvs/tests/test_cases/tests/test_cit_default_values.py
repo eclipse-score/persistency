@@ -12,8 +12,9 @@
 # *******************************************************************************
 import json
 import re
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 from zlib import adler32
 
 import pytest
@@ -33,12 +34,12 @@ def create_defaults_json(values: dict[str, TaggedValue]) -> str:
     Create JSON string containing default values.
     """
     # Create defaults.
-    json_value = dict()
+    json_value = {}
     for key, tagged_value in values.items():
         type_tag, value = tagged_value
         json_value[key] = {"t": type_tag, "v": value}
 
-    return json.dumps(json_value)
+    return json.dumps({"t": "obj", "v": json_value})
 
 
 def create_defaults_file(dir_path: Path, instance_id: int, values: dict[str, TaggedValue]) -> Path:
@@ -57,13 +58,13 @@ def create_defaults_file(dir_path: Path, instance_id: int, values: dict[str, Tag
     json_str = create_defaults_json(values)
 
     # Generate hash.
-    hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
+    defaults_hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
 
     # Save content and hash.
     with open(defaults_file_path, mode="w", encoding="UTF-8") as file:
         file.write(json_str)
     with open(defaults_hash_file_path, mode="wb") as file:
-        file.write(hash)
+        file.write(defaults_hash)
 
     return defaults_file_path
 
@@ -147,7 +148,7 @@ class TestDefaultValues(DefaultValuesScenario):
             # Check values before change.
             assert logs[0].value_is_default == "Ok(true)"
             assert logs[0].default_value == f"Ok(F64({self.VALUE}))"
-            assert logs[0].current_value == f"Err(KeyNotFound)"
+            assert logs[0].current_value == "Err(KeyNotFound)"
             # Check values after change.
             assert logs[1].value_is_default == "Ok(false)"
             assert logs[1].default_value == f"Ok(F64({self.VALUE}))"
@@ -298,13 +299,13 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         json_str = create_defaults_json({key: ("f64", value)})[:-2]
 
         # Generate hash.
-        hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
+        defaults_hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
 
         # Save content and hash.
         with open(defaults_file_path, mode="w", encoding="UTF-8") as file:
             file.write(json_str)
         with open(defaults_hash_file_path, mode="wb") as file:
-            file.write(hash)
+            file.write(defaults_hash)
 
         return defaults_file_path
 
@@ -427,6 +428,7 @@ class TestResetAllKeys(DefaultValuesScenario):
 
 @add_test_properties(
     partially_verifies=[
+        "comp_req__kvs__value_reset",
         "comp_req__kvs__value_default",
         "comp_req__kvs__default_value_cfg",
     ],
@@ -434,15 +436,15 @@ class TestResetAllKeys(DefaultValuesScenario):
     derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
-class TestResetSingleKey(DefaultValuesScenario):
-    """Checks that resetting single key restores it to its default value."""
+class TestSetValueToDefault(DefaultValuesScenario):
+    """Checks that setting a single key to default writes its default value."""
 
     NUM_VALUES = 5
-    RESET_INDEX = 2
+    DEFAULT_INDEX = 2
 
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
-        return "cit.default_values.reset_single_key"
+        return "cit.default_values.set_value_to_default"
 
     @pytest.fixture(scope="class")
     def test_config(self, temp_dir: Path, defaults: str, defaults_file: Path | None) -> dict[str, Any]:
@@ -479,7 +481,7 @@ class TestResetSingleKey(DefaultValuesScenario):
         for i in range(self.NUM_VALUES):
             logs = logs_info_level.get_logs("key", value=f"test_number_{i}")
 
-            if i == self.RESET_INDEX:
+            if i == self.DEFAULT_INDEX:
                 # Check values before set (no explicit value written yet, only a default).
                 assert logs[0].value_is_default == "Ok(true)"
                 assert logs[0].current_value == "Err(KeyNotFound)"
@@ -488,9 +490,9 @@ class TestResetSingleKey(DefaultValuesScenario):
                 assert logs[1].value_is_default == "Ok(false)"
                 assert logs[1].current_value == f"Ok(F64({123.4 * i:.1f}))"
 
-                # Check values after reset (explicit value removed again).
-                assert logs[2].value_is_default == "Ok(true)"
-                assert logs[2].current_value == "Err(KeyNotFound)"
+                # Check values after set to default (default value written as explicit value).
+                assert logs[2].value_is_default == "Ok(false)"
+                assert logs[2].current_value == f"Ok(F64({432.1 * i:.1f}))"
 
             else:
                 # Check values before set (no explicit value written yet, only a default).
@@ -501,7 +503,7 @@ class TestResetSingleKey(DefaultValuesScenario):
                 assert logs[1].value_is_default == "Ok(false)"
                 assert logs[1].current_value == f"Ok(F64({123.4 * i:.1f}))"
 
-                # Check values after reset (not reset, explicit value still present).
+                # Check values after set to default (not set to default, explicit value still present).
                 assert logs[2].value_is_default == "Ok(false)"
                 assert logs[2].current_value == f"Ok(F64({123.4 * i:.1f}))"
 

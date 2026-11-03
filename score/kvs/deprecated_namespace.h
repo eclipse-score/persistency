@@ -10,9 +10,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ********************************************************************************/
-#pragma once
+#ifndef SCORE_KVS_DEPRECATED_NAMESPACE_H
+#define SCORE_KVS_DEPRECATED_NAMESPACE_H
 
-#include <scenario.hpp>
+namespace score::kvs
+{
+}  // namespace score::kvs
 
-/// Create a group containing scenarios for CITs.
-ScenarioGroup::Ptr cit_scenario_group();
+namespace score::mw::per
+{
+
+/// @deprecated Use the `score::kvs` namespace instead.
+namespace kvs = ::score::kvs;
+
+}  // namespace score::mw::per
+
+#endif  // SCORE_KVS_DEPRECATED_NAMESPACE_H
