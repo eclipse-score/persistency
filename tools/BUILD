@@ -17,10 +17,6 @@ load("@score_tooling//:defs.bzl", "dash_license_checker")
 load("@score_tooling//third_party/format:macros.bzl", "use_format_targets")
 load("@score_tools//cr_checker:cr_checker.bzl", "copyright_checker")
 
-# The inner format.check test_suite is generated without a visibility.
-# The root test_suite //:format.check needs to see it.
-package(default_visibility = ["//:__pkg__"])
-
 copyright_checker(
     name = "copyright",
     exclusion = "copyright_exclusions.txt",

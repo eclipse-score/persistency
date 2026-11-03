@@ -49,46 +49,6 @@ exports_files(
     visibility = ["//tools:__pkg__"],
 )
 
-# cicd on-pr.yml detects these root labels with `bazel query`.
-# It skips a check when its root label is missing.
-# The targets live in //tools.
-alias(
-    name = "copyright.check",
-    actual = "//tools:copyright.check",
-    visibility = ["//visibility:public"],
-)
-
-alias(
-    name = "copyright.fix",
-    actual = "//tools:copyright.fix",
-    visibility = ["//visibility:public"],
-)
-
-# This is not an alias on purpose.
-# `bazel test` does not expand a test_suite behind an alias.
-# The cicd `bazel test //:format.check` would find no tests.
-# Tagged manual so that `bazel test //...` skips the format check.
-test_suite(
-    name = "format.check",
-    tags = ["manual"],
-    tests = ["//tools:format.check"],
-    visibility = ["//visibility:public"],
-)
-
-alias(
-    name = "format.fix",
-    actual = "//tools:format.fix",
-    visibility = ["//visibility:public"],
-)
-
-# cicd license-check.yml runs `bazel run //:license-check` (see .github/workflows/license_check.yml).
-# The target lives in //tools.
-alias(
-    name = "license-check",
-    actual = "//tools:license-check",
-    visibility = ["//visibility:public"],
-)
-
 # Generates the product SBOM (SPDX 2.3 + CycloneDX 1.6) for the KVS library.
 # - Rust crate licenses/suppliers come from the crates.io API via
 #   auto_crates_cache (network access required at build time).
