@@ -22,9 +22,9 @@ TEST(kvs_calculate_hash_adler32, calculate_hash_adler32)
     uint32_t calculated_hash{Adler32(test_data)};
     EXPECT_EQ(calculated_hash, CalculateHashAdler32(test_data));
 
-    std::array<uint8_t, 4> buf{};
+    std::array<uint8_t, 4> buffer{};
     std::istringstream stream{test_data};
-    stream.read(reinterpret_cast<char*>(buf.data()), buf.size());
+    stream.read(reinterpret_cast<char*>(buffer.data()), buffer.size());
 
     std::array<uint8_t, 4> value{uint8_t((calculated_hash >> 24) & 0xFF),
                                  uint8_t((calculated_hash >> 16) & 0xFF),
@@ -470,8 +470,8 @@ TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_object_with_invalid_value)
 
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_null)
 {
-    KvsValue null_val{nullptr};
-    auto result{KvsValueToAny(null_val)};
+    KvsValue null_value{nullptr};
+    auto result{KvsValueToAny(null_value)};
     ASSERT_TRUE(result);
     const auto& obj{result.value().As<score::json::Object>().value().get()};
     EXPECT_EQ(obj.at("t").As<std::string>().value().get(), "null");
@@ -480,8 +480,8 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_null)
 
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_boolean)
 {
-    KvsValue bool_val{true};
-    auto result{KvsValueToAny(bool_val)};
+    KvsValue bool_value{true};
+    auto result{KvsValueToAny(bool_value)};
     ASSERT_TRUE(result);
     const auto& obj{result.value().As<score::json::Object>().value().get()};
     EXPECT_EQ(obj.at("t").As<std::string>().value().get(), "bool");
@@ -490,8 +490,8 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_boolean)
 
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_i32)
 {
-    KvsValue i32_val{static_cast<int32_t>(42)};
-    auto result{KvsValueToAny(i32_val)};
+    KvsValue i32_value{static_cast<int32_t>(42)};
+    auto result{KvsValueToAny(i32_value)};
     ASSERT_TRUE(result);
     const auto& obj{result.value().As<score::json::Object>().value().get()};
     EXPECT_EQ(obj.at("t").As<std::string>().value().get(), "i32");
@@ -500,8 +500,8 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_i32)
 
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_u32)
 {
-    KvsValue u32_val{static_cast<uint32_t>(42)};
-    auto result{KvsValueToAny(u32_val)};
+    KvsValue u32_value{static_cast<uint32_t>(42)};
+    auto result{KvsValueToAny(u32_value)};
     ASSERT_TRUE(result);
     const auto& obj{result.value().As<score::json::Object>().value().get()};
     EXPECT_EQ(obj.at("t").As<std::string>().value().get(), "u32");
@@ -510,8 +510,8 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_u32)
 
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_i64)
 {
-    KvsValue i64_val{static_cast<int64_t>(42)};
-    auto result{KvsValueToAny(i64_val)};
+    KvsValue i64_value{static_cast<int64_t>(42)};
+    auto result{KvsValueToAny(i64_value)};
     ASSERT_TRUE(result);
     const auto& obj{result.value().As<score::json::Object>().value().get()};
     EXPECT_EQ(obj.at("t").As<std::string>().value().get(), "i64");
@@ -520,8 +520,8 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_i64)
 
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_u64)
 {
-    KvsValue u64_val{static_cast<uint64_t>(42)};
-    auto result{KvsValueToAny(u64_val)};
+    KvsValue u64_value{static_cast<uint64_t>(42)};
+    auto result{KvsValueToAny(u64_value)};
     ASSERT_TRUE(result);
     const auto& obj{result.value().As<score::json::Object>().value().get()};
     EXPECT_EQ(obj.at("t").As<std::string>().value().get(), "u64");
@@ -530,8 +530,8 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_u64)
 
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_f64)
 {
-    KvsValue f64_val{42.0};
-    auto result{KvsValueToAny(f64_val)};
+    KvsValue f64_value{42.0};
+    auto result{KvsValueToAny(f64_value)};
     ASSERT_TRUE(result);
     const auto& obj{result.value().As<score::json::Object>().value().get()};
     EXPECT_EQ(obj.at("t").As<std::string>().value().get(), "f64");
@@ -541,8 +541,8 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_f64)
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_string)
 {
     std::string str{"test"};
-    KvsValue string_val{str};
-    auto result{KvsValueToAny(string_val)};
+    KvsValue string_value{str};
+    auto result{KvsValueToAny(string_value)};
     ASSERT_TRUE(result);
     const auto& obj{result.value().As<score::json::Object>().value().get()};
     EXPECT_EQ(obj.at("t").As<std::string>().value().get(), "str");
@@ -555,25 +555,25 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_array)
     array.push_back(KvsValue(true));
     array.push_back(KvsValue(1.1));
     array.push_back(KvsValue(std::string("test")));
-    KvsValue array_val{array};
-    auto result{KvsValueToAny(array_val)};
+    KvsValue array_value{array};
+    auto result{KvsValueToAny(array_value)};
     ASSERT_TRUE(result);
     const auto& obj{result.value().As<score::json::Object>().value().get()};
     EXPECT_EQ(obj.at("t").As<std::string>().value().get(), "arr");
     const auto& list{obj.at("v").As<score::json::List>().value().get()};
     EXPECT_EQ(list.size(), 3);
 
-    const auto& elem0{list[0].As<score::json::Object>().value().get()};
-    EXPECT_EQ(elem0.at("t").As<std::string>().value().get(), "bool");
-    EXPECT_EQ(elem0.at("v").As<bool>().value(), true);
+    const auto& element0{list[0].As<score::json::Object>().value().get()};
+    EXPECT_EQ(element0.at("t").As<std::string>().value().get(), "bool");
+    EXPECT_EQ(element0.at("v").As<bool>().value(), true);
 
-    const auto& elem1{list[1].As<score::json::Object>().value().get()};
-    EXPECT_EQ(elem1.at("t").As<std::string>().value().get(), "f64");
-    EXPECT_EQ(elem1.at("v").As<double>().value(), 1.1);
+    const auto& element1{list[1].As<score::json::Object>().value().get()};
+    EXPECT_EQ(element1.at("t").As<std::string>().value().get(), "f64");
+    EXPECT_EQ(element1.at("v").As<double>().value(), 1.1);
 
-    const auto& elem2{list[2].As<score::json::Object>().value().get()};
-    EXPECT_EQ(elem2.at("t").As<std::string>().value().get(), "str");
-    EXPECT_EQ(elem2.at("v").As<std::string>().value().get(), "test");
+    const auto& element2{list[2].As<score::json::Object>().value().get()};
+    EXPECT_EQ(element2.at("t").As<std::string>().value().get(), "str");
+    EXPECT_EQ(element2.at("v").As<std::string>().value().get(), "test");
 }
 
 TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_object)
@@ -583,9 +583,9 @@ TEST(kvs_kvsvalue_to_any, kvsvalue_to_any_object)
     obj.emplace_back("flag", KvsValue(true));
     // F64.
     obj.emplace_back("count", KvsValue(42.0));
-    KvsValue obj_val{obj};
+    KvsValue obj_value{obj};
 
-    auto result{KvsValueToAny(obj_val)};
+    auto result{KvsValueToAny(obj_value)};
     ASSERT_TRUE(result);
 
     const auto& outer_obj{result.value().As<score::json::Object>().value().get()};

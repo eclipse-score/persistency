@@ -323,10 +323,10 @@ TEST(kvs_deprecated_api, kvsbuilder_wrappers)
     for (Kvs* kvs : {&built.first.value(), &built.second.value()})
     {
         // Snapshot 23 only loads if the builder passes the snapshot ID on.
-        auto snap_value{kvs->GetValue("snap")};
-        ASSERT_TRUE(snap_value);
-        ASSERT_EQ(snap_value.value().GetType(), KvsValue::Type::kI32);
-        EXPECT_EQ(std::get<int32_t>(snap_value.value().GetValue()), 23);
+        auto snapshot_value{kvs->GetValue("snap")};
+        ASSERT_TRUE(snapshot_value);
+        ASSERT_EQ(snapshot_value.value().GetType(), KvsValue::Type::kI32);
+        EXPECT_EQ(std::get<int32_t>(snapshot_value.value().GetValue()), 23);
 
         EXPECT_EQ(kvs->SnapshotMaxCount(), 2ul);
 

@@ -55,13 +55,13 @@ KvsParameters KvsParameters::FromJson(const std::string& json_str)
 {
     // Load and parse provided JSON string.
     JsonParser parser;
-    auto any_res{parser.FromBuffer(json_str)};
-    if (!any_res)
+    auto any_result{parser.FromBuffer(json_str)};
+    if (!any_result)
     {
-        throw score::result::Error(any_res.error());
+        throw score::result::Error(any_result.error());
     }
 
-    return KvsParameters::FromValue(any_res.value().As<Object>().value().get());
+    return KvsParameters::FromValue(any_result.value().As<Object>().value().get());
 }
 
 KvsParameters KvsParameters::FromValue(const Object& object)

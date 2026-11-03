@@ -279,36 +279,36 @@ score::Result<Kvs> Kvs::Open(const InstanceId& instance_id,
 
     Kvs kvs;
     kvs.max_storage_bytes_ = max_storage_bytes;
-    score::Result<KvsMap> default_res{};
+    score::Result<KvsMap> default_result{};
 
     if (defaults != KvsDefaults::kIgnored)
     {
-        default_res = kvs.OpenJson(
+        default_result = kvs.OpenJson(
             filename_default,
             (defaults == KvsDefaults::kRequired) ? OpenJsonNeedFile::kRequired : OpenJsonNeedFile::kOptional);
     }
 
-    if (!default_res)
+    if (!default_result)
     {
         // Dereference the Error class to its underlying code (see error.h).
-        return score::MakeUnexpected(static_cast<ErrorCode>(*default_res.error()));
+        return score::MakeUnexpected(static_cast<ErrorCode>(*default_result.error()));
     }
 
-    score::Result<KvsMap> kvs_res{};
+    score::Result<KvsMap> kvs_result{};
 
     if (kvs_load != KvsLoad::kIgnored)
     {
-        kvs_res = kvs.OpenJson(
+        kvs_result = kvs.OpenJson(
             filename_kvs, (kvs_load == KvsLoad::kRequired) ? OpenJsonNeedFile::kRequired : OpenJsonNeedFile::kOptional);
     }
 
-    if (!kvs_res)
+    if (!kvs_result)
     {
-        return score::MakeUnexpected(static_cast<ErrorCode>(*kvs_res.error()));
+        return score::MakeUnexpected(static_cast<ErrorCode>(*kvs_result.error()));
     }
 
-    kvs.kvs_ = std::move(*kvs_res);
-    kvs.default_values_ = std::move(*default_res);
+    kvs.kvs_ = std::move(*kvs_result);
+    kvs.default_values_ = std::move(*default_result);
     kvs.filename_prefix_ = filename_prefix;
 
     // comp_req__kvs__snapshot_max_num_cfg: the maximum is limited to the range 0..kMaxSnapshotsUpperBound.
@@ -527,13 +527,13 @@ score::Result<void> Kvs::DiscardPendingChanges() noexcept
     const score::filesystem::Path kvs_path{filename_prefix_.Native() + "_0"};
 
     // Optional: a KVS opened without an existing file and never flushed discards to empty.
-    auto data_res{OpenJson(kvs_path, OpenJsonNeedFile::kOptional)};
-    if (!data_res)
+    auto data_result{OpenJson(kvs_path, OpenJsonNeedFile::kOptional)};
+    if (!data_result)
     {
-        return score::MakeUnexpected(static_cast<ErrorCode>(*data_res.error()));
+        return score::MakeUnexpected(static_cast<ErrorCode>(*data_result.error()));
     }
 
-    kvs_ = std::move(*data_res);
+    kvs_ = std::move(*data_result);
     return {};
 }
 
@@ -557,22 +557,22 @@ score::Result<void> Kvs::Flush() noexcept
 score::Result<size_t> Kvs::SnapshotCount() const noexcept
 {
     size_t count{0U};
-    for (size_t idx{0U}; idx < max_snapshots_; ++idx)
+    for (size_t index{0U}; index < max_snapshots_; ++index)
     {
-        const score::filesystem::Path fname{filename_prefix_.Native() + "_" + std::to_string(idx) +
-                                            std::string{kJsonSuffix}};
-        const auto fname_exists_res{filesystem_->standard->Exists(fname)};
-        if (!fname_exists_res)
+        const score::filesystem::Path filename{filename_prefix_.Native() + "_" + std::to_string(index) +
+                                               std::string{kJsonSuffix}};
+        const auto filename_exists_result{filesystem_->standard->Exists(filename)};
+        if (!filename_exists_result)
         {
-            GetLogger().LogError() << "Failed to check if file exists" << fname;
+            GetLogger().LogError() << "Failed to check if file exists" << filename;
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
         // codeql::misra_deviation_next_line(kvs-bool-ref-load)
-        if (!*fname_exists_res)
+        if (!*filename_exists_result)
         {
             break;
         }
-        count = idx + 1;
+        count = index + 1;
     }
 
     return count;
@@ -592,27 +592,27 @@ score::Result<void> Kvs::SnapshotRestore(const SnapshotId& snapshot_id) noexcept
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
-    const auto snapshot_count_res{SnapshotCount()};
-    if (!snapshot_count_res)
+    const auto snapshot_count_result{SnapshotCount()};
+    if (!snapshot_count_result)
     {
-        return score::MakeUnexpected(static_cast<ErrorCode>(*snapshot_count_res.error()));
+        return score::MakeUnexpected(static_cast<ErrorCode>(*snapshot_count_result.error()));
     }
 
     // Fail if the snapshot ID is the current KVS or does not exist.
-    if ((0 == snapshot_id.id) || (*snapshot_count_res < snapshot_id.id))
+    if ((0 == snapshot_id.id) || (*snapshot_count_result < snapshot_id.id))
     {
         GetLogger().LogError() << "Invalid snapshot ID" << snapshot_id.id;
         return score::MakeUnexpected(ErrorCode::kInvalidSnapshotId);
     }
 
     const score::filesystem::Path restore_path{filename_prefix_.Native() + "_" + std::to_string(snapshot_id.id)};
-    auto data_res{OpenJson(restore_path, OpenJsonNeedFile::kRequired)};
-    if (!data_res)
+    auto data_result{OpenJson(restore_path, OpenJsonNeedFile::kRequired)};
+    if (!data_result)
     {
-        return score::MakeUnexpected(static_cast<ErrorCode>(*data_res.error()));
+        return score::MakeUnexpected(static_cast<ErrorCode>(*data_result.error()));
     }
 
-    kvs_ = std::move(*data_res);
+    kvs_ = std::move(*data_result);
     return {};
 }
 
@@ -621,14 +621,14 @@ score::Result<score::filesystem::Path> Kvs::KvsFilePath(const SnapshotId& snapsh
     score::filesystem::Path filename{filename_prefix_.Native() + "_" + std::to_string(snapshot_id.id) +
                                      std::string{kJsonSuffix}};
 
-    const auto fname_exists_res{filesystem_->standard->Exists(filename)};
-    if (!fname_exists_res)
+    const auto filename_exists_result{filesystem_->standard->Exists(filename)};
+    if (!filename_exists_result)
     {
         GetLogger().LogError() << "Failed to check if file exists" << filename;
         return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
     // codeql::misra_deviation_next_line(kvs-bool-ref-load)
-    if (!*fname_exists_res)
+    if (!*filename_exists_result)
     {
         GetLogger().LogError() << "File not found" << filename;
         return score::MakeUnexpected(ErrorCode::kFileNotFound);
@@ -641,14 +641,14 @@ score::Result<score::filesystem::Path> Kvs::HashFilePath(const SnapshotId& snaps
     score::filesystem::Path filename{filename_prefix_.Native() + "_" + std::to_string(snapshot_id.id) +
                                      std::string{kHashSuffix}};
 
-    const auto fname_exists_res{filesystem_->standard->Exists(filename)};
-    if (!fname_exists_res)
+    const auto filename_exists_result{filesystem_->standard->Exists(filename)};
+    if (!filename_exists_result)
     {
         GetLogger().LogError() << "Failed to check if file exists" << filename;
         return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
     // codeql::misra_deviation_next_line(kvs-bool-ref-load)
-    if (!*fname_exists_res)
+    if (!*filename_exists_result)
     {
         GetLogger().LogError() << "File not found" << filename;
         return score::MakeUnexpected(ErrorCode::kFileNotFound);
@@ -694,14 +694,14 @@ score::Result<size_t> Kvs::CalculatePotentialSize() const noexcept
     }
 
     // Re-calculate the size to return it, as SerializeAndCheck() only returns the buffer.
-    const std::string& buf{*result};
-    const auto current_size_res{GetCurrentStorageSize()};
-    if (!current_size_res)
+    const std::string& buffer{*result};
+    const auto current_size_result{GetCurrentStorageSize()};
+    if (!current_size_result)
     {
-        return score::MakeUnexpected<size_t>(current_size_res.error());
+        return score::MakeUnexpected<size_t>(current_size_result.error());
     }
 
-    return *current_size_res + buf.size() + kHashFileSize;
+    return *current_size_result + buffer.size() + kHashFileSize;
 }
 
 Kvs::Kvs() noexcept
@@ -722,33 +722,34 @@ score::Result<void> Kvs::SnapshotRotate() const noexcept
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
-    for (size_t idx{max_snapshots_}; idx > 0; --idx)
+    for (size_t index{max_snapshots_}; index > 0; --index)
     {
-        const score::filesystem::Path hash_old{filename_prefix_.Native() + "_" + std::to_string(idx - 1) +
+        const score::filesystem::Path hash_old{filename_prefix_.Native() + "_" + std::to_string(index - 1) +
                                                std::string{kHashSuffix}};
-        const score::filesystem::Path hash_new{filename_prefix_.Native() + "_" + std::to_string(idx) +
+        const score::filesystem::Path hash_new{filename_prefix_.Native() + "_" + std::to_string(index) +
                                                std::string{kHashSuffix}};
-        const score::filesystem::Path snap_old{filename_prefix_.Native() + "_" + std::to_string(idx - 1) +
-                                               std::string{kJsonSuffix}};
-        const score::filesystem::Path snap_new{filename_prefix_.Native() + "_" + std::to_string(idx) +
-                                               std::string{kJsonSuffix}};
+        const score::filesystem::Path snapshot_old{filename_prefix_.Native() + "_" + std::to_string(index - 1) +
+                                                   std::string{kJsonSuffix}};
+        const score::filesystem::Path snapshot_new{filename_prefix_.Native() + "_" + std::to_string(index) +
+                                                   std::string{kJsonSuffix}};
 
-        GetLogger().LogInfo() << "rotating:" << snap_old << "->" << snap_new;
+        GetLogger().LogInfo() << "rotating:" << snapshot_old << "->" << snapshot_new;
         // Rename hash.
         const auto hash_rename{score::os::Stdio::instance().rename(hash_old.CStr(), hash_new.CStr())};
         if ((!hash_rename.has_value()) && (hash_rename.error() != score::os::Error::Code::kNoSuchFileOrDirectory))
         {
-            GetLogger().LogError() << "error: could not rename hash file" << snap_old << "-"
+            GetLogger().LogError() << "error: could not rename hash file" << snapshot_old << "-"
                                    << hash_rename.error().ToString();
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
 
         // Rename snapshot.
-        const auto snap_rename{score::os::Stdio::instance().rename(snap_old.CStr(), snap_new.CStr())};
-        if ((!snap_rename.has_value()) && (snap_rename.error() != score::os::Error::Code::kNoSuchFileOrDirectory))
+        const auto snapshot_rename{score::os::Stdio::instance().rename(snapshot_old.CStr(), snapshot_new.CStr())};
+        if ((!snapshot_rename.has_value()) &&
+            (snapshot_rename.error() != score::os::Error::Code::kNoSuchFileOrDirectory))
         {
-            GetLogger().LogError() << "error: could not rename snapshot file" << snap_old << "-"
-                                   << snap_rename.error().ToString();
+            GetLogger().LogError() << "error: could not rename snapshot file" << snapshot_old << "-"
+                                   << snapshot_rename.error().ToString();
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
     }
@@ -758,27 +759,27 @@ score::Result<void> Kvs::SnapshotRotate() const noexcept
 
 score::Result<KvsMap> Kvs::ParseJsonData(const std::string& data) const noexcept
 {
-    auto any_res{parser_->FromBuffer(data)};
-    if (!any_res)
+    auto any_result{parser_->FromBuffer(data)};
+    if (!any_result)
     {
         GetLogger().LogError() << "Failed to parse JSON data";
         return score::MakeUnexpected(ErrorCode::kJsonParserError);
     }
 
-    score::json::Any root{std::move(*any_res)};
-    const auto conv{AnyToKvsValue(root)};
-    if (!conv)
+    score::json::Any root{std::move(*any_result)};
+    const auto converted{AnyToKvsValue(root)};
+    if (!converted)
     {
         GetLogger().LogError() << "Failed to convert JSON data";
-        return score::MakeUnexpected(static_cast<ErrorCode>(*conv.error()));
+        return score::MakeUnexpected(static_cast<ErrorCode>(*converted.error()));
     }
-    if (conv->GetType() != KvsValue::Type::kObject)
+    if (converted->GetType() != KvsValue::Type::kObject)
     {
         GetLogger().LogError() << "JSON root is not an object";
         return score::MakeUnexpected(ErrorCode::kJsonParserError);
     }
 
-    const auto* object{std::get_if<KvsValue::Object>(&conv->GetValue())};
+    const auto* object{std::get_if<KvsValue::Object>(&converted->GetValue())};
     if (object == nullptr)
     {
         return score::MakeUnexpected(ErrorCode::kJsonParserError);
@@ -821,18 +822,18 @@ score::Result<KvsMap> Kvs::OpenJson(const score::filesystem::Path& prefix,
         }
     }
 
-    std::ostringstream ss;
-    ss << in.rdbuf();
-    const std::string data{ss.str()};
+    std::ostringstream stream;
+    stream << in.rdbuf();
+    const std::string data{stream.str()};
 
     // Verify JSON hash.
-    std::ifstream hin{hash_file.CStr(), std::ios::binary};
-    if (!hin)
+    std::ifstream hash_stream{hash_file.CStr(), std::ios::binary};
+    if (!hash_stream)
     {
         GetLogger().LogError() << "error: hash file" << hash_file << "could not be read";
         return score::MakeUnexpected(ErrorCode::kKvsHashFileReadError);
     }
-    if (!CheckHash(data, hin))
+    if (!CheckHash(data, hash_stream))
     {
         GetLogger().LogError() << "error: KVS data corrupted:" << json_file << hash_file;
         return score::MakeUnexpected(ErrorCode::kValidationFailed);
@@ -840,17 +841,17 @@ score::Result<KvsMap> Kvs::OpenJson(const score::filesystem::Path& prefix,
     GetLogger().LogInfo() << "JSON data has valid hash";
 
     // Parse JSON data.
-    auto parse_res{ParseJsonData(data)};
-    if (!parse_res)
+    auto parse_result{ParseJsonData(data)};
+    if (!parse_result)
     {
         GetLogger().LogError() << "error: parsing JSON data failed";
-        return score::MakeUnexpected(static_cast<ErrorCode>(*parse_res.error()));
+        return score::MakeUnexpected(static_cast<ErrorCode>(*parse_result.error()));
     }
 
-    return std::move(*parse_res);
+    return std::move(*parse_result);
 }
 
-score::Result<void> Kvs::WriteJsonData(const std::string& buf) const noexcept
+score::Result<void> Kvs::WriteJsonData(const std::string& buffer) const noexcept
 {
     const score::filesystem::Path json_path{filename_prefix_.Native() + "_0" + std::string{kJsonSuffix}};
     const score::filesystem::Path hash_path{filename_prefix_.Native() + "_0" + std::string{kHashSuffix}};
@@ -861,43 +862,43 @@ score::Result<void> Kvs::WriteJsonData(const std::string& buf) const noexcept
         return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
 
-    const auto create_path_res{filesystem_->standard->CreateDirectories(dir)};
-    if (!create_path_res.has_value())
+    const auto create_path_result{filesystem_->standard->CreateDirectories(dir)};
+    if (!create_path_result.has_value())
     {
         GetLogger().LogError() << "Failed to create directory for KVS file" << json_path;
         return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
 
     // Write JSON and hash files to temporary files, the live files stay untouched.
-    auto json_res{WriteTempFile(json_path, buf.data(), buf.size())};
-    if (!json_res.has_value())
+    auto json_result{WriteTempFile(json_path, buffer.data(), buffer.size())};
+    if (!json_result.has_value())
     {
-        return json_res;
+        return json_result;
     }
 
-    const std::array<uint8_t, kHashSize> hash_bytes{GetHashBytes(buf)};
-    auto hash_res{WriteTempFile(hash_path, hash_bytes.data(), hash_bytes.size())};
-    if (!hash_res.has_value())
+    const std::array<uint8_t, kHashSize> hash_bytes{GetHashBytes(buffer)};
+    auto hash_result{WriteTempFile(hash_path, hash_bytes.data(), hash_bytes.size())};
+    if (!hash_result.has_value())
     {
         // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
         score::cpp::ignore = RemoveIfExists(TempFilePath(json_path));
-        return hash_res;
+        return hash_result;
     }
 
     // Replace live files with temporary files.
-    auto json_commit_res{CommitTempFile(json_path)};
-    if (!json_commit_res.has_value())
+    auto json_commit_result{CommitTempFile(json_path)};
+    if (!json_commit_result.has_value())
     {
         // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
         score::cpp::ignore = RemoveIfExists(TempFilePath(hash_path));
-        return json_commit_res;
+        return json_commit_result;
     }
 
-    auto hash_commit_res{CommitTempFile(hash_path)};
-    if (!hash_commit_res.has_value())
+    auto hash_commit_result{CommitTempFile(hash_path)};
+    if (!hash_commit_result.has_value())
     {
         GetLogger().LogError() << "KVS file and hash file are inconsistent" << json_path;
-        return hash_commit_res;
+        return hash_commit_result;
     }
 
     // Request the OS to commit the renames to physical storage.
@@ -923,36 +924,36 @@ score::Result<std::string> Kvs::SerializeAndCheck() const noexcept
             return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
         }
 
-        auto conv{KvsValueToAny(kvs_)};
-        if (!conv)
+        auto converted{KvsValueToAny(kvs_)};
+        if (!converted)
         {
             GetLogger().LogError() << "Failed to serialize KVS data";
-            return score::MakeUnexpected<std::string>(conv.error());
+            return score::MakeUnexpected<std::string>(converted.error());
         }
-        root_obj = std::move(*conv);
+        root_obj = std::move(*converted);
     }
 
-    auto buf_res{writer_->ToBuffer(root_obj)};
-    if (!buf_res)
+    auto buffer_result{writer_->ToBuffer(root_obj)};
+    if (!buffer_result)
     {
         GetLogger().LogError() << "Failed to generate JSON data";
         return score::MakeUnexpected(ErrorCode::kJsonGeneratorError);
     }
-    const std::string& buf{*buf_res};
+    const std::string& buffer{*buffer_result};
 
     // Without a configured limit there is nothing to check, so the persisted files are not measured at all.
     // Flush() then behaves exactly as it does without this feature: no extra file system calls, and no new way to fail.
     if (max_storage_bytes_.has_value())
     {
         // 2. Size of all other persisted files.
-        const auto current_size_res{GetCurrentStorageSize()};
-        if (!current_size_res)
+        const auto current_size_result{GetCurrentStorageSize()};
+        if (!current_size_result)
         {
-            return score::MakeUnexpected<std::string>(current_size_res.error());
+            return score::MakeUnexpected<std::string>(current_size_result.error());
         }
 
         // 3. Projected total after this flush.
-        const size_t total_size{*current_size_res + buf.size() + kHashFileSize};
+        const size_t total_size{*current_size_result + buffer.size() + kHashFileSize};
 
         // 4. Check against the limit.
         if (total_size > *max_storage_bytes_)
@@ -963,7 +964,7 @@ score::Result<std::string> Kvs::SerializeAndCheck() const noexcept
         }
     }
 
-    return buf;
+    return buffer;
 }
 
 score::Result<size_t> Kvs::GetCurrentStorageSize() const noexcept
