@@ -24,19 +24,14 @@ namespace
 /// @brief Converts a map to an `Object`.
 KvsValue::Object ToObject(const std::unordered_map<std::string, KvsValue>& map)
 {
-    KvsValue::Object entries;
-    entries.reserve(map.size());
-    for (const auto& [key, item] : map)
-    {
-        entries.emplace_back(key, item);
-    }
-    return entries;
+    return {map.cbegin(), map.cend()};
 }
 
 }  // namespace
 
 KvsValue::KvsValue(const char* str) noexcept : value_{nullptr}
 {
+    // codeql::misra_deviation_next_line(kvs-assert-macro)
     SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE(str != nullptr, "KvsValue: str must not be null");
     value_ = std::string(str);
 }
@@ -51,22 +46,24 @@ KvsValue::KvsValue(Object&& object) noexcept : value_{std::move(object)} {}
 
 KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) noexcept : value_{ToObject(object)} {}
 
+// codeql::misra_deviation_next_line(kvs-recursive-value)
 KvsValue::KvsValue(const KvsValue& other) noexcept : value_{other.value_} {}
 
 KvsValue::KvsValue(KvsValue&& other) noexcept : value_{std::move(other.value_)} {}
 
 KvsValue::~KvsValue() noexcept = default;
 
-KvsValue& KvsValue::operator=(const KvsValue& other) noexcept
+KvsValue& KvsValue::operator=(const KvsValue& other) & noexcept
 {
     if (this != &other)
     {
+        // codeql::misra_deviation_next_line(kvs-recursive-value)
         value_ = other.value_;
     }
     return *this;
 }
 
-KvsValue& KvsValue::operator=(KvsValue&& other) noexcept
+KvsValue& KvsValue::operator=(KvsValue&& other) & noexcept
 {
     if (this != &other)
     {
