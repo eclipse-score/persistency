@@ -16,7 +16,7 @@
 Persistency Security Work Products List
 #######################################
 
-.. document:: Persistency KVS Security WPs
+.. document:: Persistency Security WPs
    :id: doc__persistency_security_wp
    :status: valid
    :version: 2
@@ -63,7 +63,8 @@ Security Work Products List
     * - :need:`wp__feature_arch`
       - :need:`gd_temp__arch_feature`
       - :ndf:`copy('status', need_id='gd_temp__arch_feature')`
-      - :need:`doc__persistency_architecture`
+      - :need:`doc__persistency_architecture` (feature, logical interface) &
+        :need:`doc__persistency_kvs_architecture` (static and dynamic views)
 
     * - :need:`wp__feature_security_analysis`
       - :need:`gd_guidl__security_analysis`

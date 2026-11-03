@@ -12,8 +12,8 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-DFA (Dependent Failure Analysis)
-################################
+Persistency Dependent Failure Analysis
+######################################
 
 .. document:: Persistency DFA
    :id: doc__persistency_dfa
