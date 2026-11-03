@@ -14,6 +14,7 @@
 #include "score/kvs/kvs.h"
 
 #include "score/kvs/internal/kvs_helper.h"
+#include "score/kvs/internal/logger.h"
 #include "score/os/errno.h"
 #include "score/os/fcntl.h"
 #include "score/os/stat.h"
@@ -90,7 +91,138 @@ score::filesystem::Path TempFilePath(const score::filesystem::Path& path) noexce
 bool RemoveIfExists(const score::filesystem::Path& path) noexcept
 {
     const auto result{score::os::Unistd::instance().unlink(path.CStr())};
-    return result.has_value() || (result.error() == score::os::Error::Code::kNoSuchFileOrDirectory);
+    if (!result.has_value() && (result.error() != score::os::Error::Code::kNoSuchFileOrDirectory))
+    {
+        GetLogger().LogError() << "Failed to remove file" << path;
+        return false;
+    }
+    return true;
+}
+
+/// @brief Retrieves the size of one file in bytes.
+///
+/// A missing file counts as 0 bytes.
+score::Result<size_t> GetFileSize(const score::filesystem::Path& file_path) noexcept
+{
+    std::error_code ec;
+    const auto size{std::filesystem::file_size(file_path.CStr(), ec)};
+
+    if (ec)
+    {
+        // Check if the error is "file not found".
+        if (ec == std::errc::no_such_file_or_directory)
+        {
+            // File does not exist, its size is 0.
+            // This is not an error.
+            return 0;
+        }
+        else
+        {
+            GetLogger().LogError() << "Error: Could not get size of file" << file_path << ":" << ec.message();
+            return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
+        }
+    }
+
+    return size;
+}
+
+/// @brief Writes data to the temporary file of a KVS file and ensures it reaches physical storage.
+///
+/// The live file is not touched, it is replaced by CommitTempFile() once the data is on storage.
+score::Result<void> WriteTempFile(const score::filesystem::Path& path,
+                                  const void* data,
+                                  const std::size_t size) noexcept
+{
+    const score::os::Unistd& unistd{score::os::Unistd::instance()};
+    const score::filesystem::Path tmp_path{TempFilePath(path)};
+
+    // Remove a temporary file left behind by an interrupted write.
+    if (!RemoveIfExists(tmp_path))
+    {
+        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
+    }
+
+    // Create a new file: the mode is applied on creation and a file planted at the path is never opened.
+    using Open = score::os::Fcntl::Open;
+    const auto open_result{score::os::Fcntl::instance().open(
+        tmp_path.CStr(), Open::kWriteOnly | Open::kCreate | Open::kExclusive | Open::kCloseOnExec, kKvsFileMode)};
+    if (!open_result.has_value())
+    {
+        GetLogger().LogError() << "Failed to open file" << tmp_path;
+        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
+    }
+    const std::int32_t fd{*open_result};
+
+    // Close and remove the temporary file on failure.
+    const auto discard = [&unistd, &tmp_path, fd]() {
+        score::cpp::ignore = unistd.close(fd);
+        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
+        score::cpp::ignore = RemoveIfExists(tmp_path);
+        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
+    };
+
+    // Set the mode on the open file, the mode given on creation is restricted by umask.
+    if (!score::os::Stat::instance().fchmod(fd, kKvsFileMode).has_value())
+    {
+        GetLogger().LogError() << "Failed to set file permissions" << tmp_path;
+        return discard();
+    }
+
+    // codeql::misra_deviation_next_line(kvs-write-byte-pointer)
+    const auto* bytes{static_cast<const std::uint8_t*>(data)};
+    std::size_t written{0U};
+    while (written < size)
+    {
+        const auto write_result{unistd.write(fd, bytes + written, size - written)};
+        if (write_result.has_value() && (*write_result > 0))
+        {
+            written += static_cast<std::size_t>(*write_result);
+        }
+        else if (write_result.has_value() ||
+                 (write_result.error() != score::os::Error::Code::kOperationWasInterruptedBySignal))
+        {
+            GetLogger().LogError() << "Failed to write to file" << tmp_path;
+            return discard();
+        }
+        else
+        {
+            // The write was interrupted by a signal before any data was written, so it is retried.
+        }
+    }
+
+    // Request the OS to commit the data from its buffers to physical storage.
+    if (!unistd.fdatasync(fd).has_value())
+    {
+        GetLogger().LogError() << "Failed to sync file" << tmp_path;
+        return discard();
+    }
+
+    if (!unistd.close(fd).has_value())
+    {
+        GetLogger().LogError() << "Failed to close file" << tmp_path;
+        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
+        score::cpp::ignore = RemoveIfExists(tmp_path);
+        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
+    }
+
+    return {};
+}
+
+/// @brief Replaces a KVS file with its temporary file.
+///
+/// The rename is atomic, the file is either old or new.
+score::Result<void> CommitTempFile(const score::filesystem::Path& path) noexcept
+{
+    const score::filesystem::Path tmp_path{TempFilePath(path)};
+    if (!score::os::Stdio::instance().rename(tmp_path.CStr(), path.CStr()).has_value())
+    {
+        GetLogger().LogError() << "Failed to replace file" << path;
+        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
+        score::cpp::ignore = RemoveIfExists(tmp_path);
+        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
+    }
+
+    return {};
 }
 }  // namespace
 
@@ -101,7 +233,6 @@ Kvs::Kvs(Kvs&& other) noexcept
       filesystem_{std::move(other.filesystem_)},
       parser_{std::move(other.parser_)},
       writer_{std::move(other.writer_)},
-      logger_{std::move(other.logger_)},
       max_storage_bytes_{other.max_storage_bytes_}
 {
     {
@@ -128,7 +259,6 @@ Kvs& Kvs::operator=(Kvs&& other) & noexcept
         filesystem_ = std::move(other.filesystem_);
         parser_ = std::move(other.parser_);
         writer_ = std::move(other.writer_);
-        logger_ = std::move(other.logger_);
         max_storage_bytes_ = other.max_storage_bytes_;
     }
     return *this;
@@ -186,14 +316,14 @@ score::Result<Kvs> Kvs::Open(const InstanceId& instance_id,
     kvs.max_snapshots_ = snapshot_max_count;
     if (snapshot_max_count > kMaxSnapshotsUpperBound)
     {
-        kvs.logger_->LogWarn() << "snapshot_max_count" << snapshot_max_count << "exceeds upper bound"
-                               << kMaxSnapshotsUpperBound << "- clamped";
+        GetLogger().LogWarn() << "snapshot_max_count" << snapshot_max_count << "exceeds upper bound"
+                              << kMaxSnapshotsUpperBound << "- clamped";
         kvs.max_snapshots_ = kMaxSnapshotsUpperBound;
     }
 
-    kvs.logger_->LogInfo() << "[instance=" << instance_id.id << "]"
-                           << "[snapshot=" << snapshot_id.id << "]"
-                           << "[maxSnapshotCount=" << kvs.max_snapshots_ << "] KVS opened";
+    GetLogger().LogInfo() << "[instance=" << instance_id.id << "]"
+                          << "[snapshot=" << snapshot_id.id << "]"
+                          << "[maxSnapshotCount=" << kvs.max_snapshots_ << "] KVS opened";
     return kvs;
 }
 
@@ -202,6 +332,7 @@ score::Result<void> Kvs::Reset() noexcept
     std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
@@ -214,6 +345,7 @@ score::Result<std::vector<std::string>> Kvs::GetAllKeys() const noexcept
     std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
@@ -231,6 +363,7 @@ score::Result<bool> Kvs::KeyExists(const std::string_view key) const noexcept
     std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
@@ -245,12 +378,14 @@ score::Result<KvsValue> Kvs::GetValue(const std::string_view key) const noexcept
     std::unique_lock<std::mutex> lock_kvs{kvs_mutex_, std::try_to_lock};
     if (!lock_kvs.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
     const auto search_kvs{kvs_.find(std::string(key))};
     if (search_kvs == kvs_.end())
     {
+        GetLogger().LogError() << "Key not found" << key;
         return score::MakeUnexpected(ErrorCode::kKeyNotFound);
     }
     return search_kvs->second;
@@ -261,6 +396,7 @@ score::Result<KvsValue> Kvs::GetDefaultValue(const std::string_view key) const n
     const auto search{default_values_.find(std::string(key))};
     if (search == default_values_.end())
     {
+        GetLogger().LogError() << "Key not found" << key;
         return score::MakeUnexpected(ErrorCode::kKeyNotFound);
     }
     return search->second;
@@ -271,7 +407,7 @@ score::Result<void> Kvs::SetValueToDefault(const std::string_view key) noexcept
     // Validate key.
     if (!IsKeyValid(key))
     {
-        logger_->LogError() << "Provided key is not valid" << key;
+        GetLogger().LogError() << "Provided key is not valid" << key;
         return score::MakeUnexpected(ErrorCode::kInvalidKey);
     }
 
@@ -286,6 +422,7 @@ score::Result<void> Kvs::SetValueToDefault(const std::string_view key) noexcept
     std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
@@ -298,6 +435,7 @@ score::Result<bool> Kvs::IsValueDefault(const std::string_view key) const noexce
     std::unique_lock<std::mutex> lock(kvs_mutex_, std::try_to_lock);
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
@@ -314,6 +452,7 @@ score::Result<bool> Kvs::IsValueDefault(const std::string_view key) const noexce
     }
     else
     {
+        GetLogger().LogError() << "Key not found" << key;
         return score::MakeUnexpected(ErrorCode::kKeyNotFound);
     }
 }
@@ -323,20 +462,21 @@ score::Result<void> Kvs::SetValue(const std::string_view key, const KvsValue& va
     // Validate key.
     if (!IsKeyValid(key))
     {
-        logger_->LogError() << "Provided key is not valid" << key;
+        GetLogger().LogError() << "Provided key is not valid" << key;
         return score::MakeUnexpected(ErrorCode::kInvalidKey);
     }
 
     // Validate value.
     if (!HasUniqueKeys(value))
     {
-        logger_->LogError() << "Provided value has duplicate object keys" << key;
+        GetLogger().LogError() << "Provided value has duplicate object keys" << key;
         return score::MakeUnexpected(ErrorCode::kInvalidValueType);
     }
 
     std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
@@ -349,11 +489,13 @@ score::Result<void> Kvs::RemoveKey(const std::string_view key) noexcept
     std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
     if (kvs_.erase(std::string(key)) == 0U)
     {
+        GetLogger().LogError() << "Key not found" << key;
         return score::MakeUnexpected(ErrorCode::kKeyNotFound);
     }
     return {};
@@ -364,6 +506,7 @@ score::Result<void> Kvs::RemoveAllKeys() noexcept
     std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
@@ -376,6 +519,7 @@ score::Result<void> Kvs::DiscardPendingChanges() noexcept
     std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
@@ -420,6 +564,7 @@ score::Result<size_t> Kvs::SnapshotCount() const noexcept
         const auto fname_exists_res{filesystem_->standard->Exists(fname)};
         if (!fname_exists_res)
         {
+            GetLogger().LogError() << "Failed to check if file exists" << fname;
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
         // codeql::misra_deviation_next_line(kvs-bool-ref-load)
@@ -443,6 +588,7 @@ score::Result<void> Kvs::SnapshotRestore(const SnapshotId& snapshot_id) noexcept
     std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
@@ -455,6 +601,7 @@ score::Result<void> Kvs::SnapshotRestore(const SnapshotId& snapshot_id) noexcept
     // Fail if the snapshot ID is the current KVS or does not exist.
     if ((0 == snapshot_id.id) || (*snapshot_count_res < snapshot_id.id))
     {
+        GetLogger().LogError() << "Invalid snapshot ID" << snapshot_id.id;
         return score::MakeUnexpected(ErrorCode::kInvalidSnapshotId);
     }
 
@@ -477,11 +624,13 @@ score::Result<score::filesystem::Path> Kvs::KvsFilePath(const SnapshotId& snapsh
     const auto fname_exists_res{filesystem_->standard->Exists(filename)};
     if (!fname_exists_res)
     {
-        return score::MakeUnexpected(static_cast<ErrorCode>(*fname_exists_res.error()));
+        GetLogger().LogError() << "Failed to check if file exists" << filename;
+        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
     // codeql::misra_deviation_next_line(kvs-bool-ref-load)
     if (!*fname_exists_res)
     {
+        GetLogger().LogError() << "File not found" << filename;
         return score::MakeUnexpected(ErrorCode::kFileNotFound);
     }
     return filename;
@@ -495,11 +644,13 @@ score::Result<score::filesystem::Path> Kvs::HashFilePath(const SnapshotId& snaps
     const auto fname_exists_res{filesystem_->standard->Exists(filename)};
     if (!fname_exists_res)
     {
-        return score::MakeUnexpected(static_cast<ErrorCode>(*fname_exists_res.error()));
+        GetLogger().LogError() << "Failed to check if file exists" << filename;
+        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
     // codeql::misra_deviation_next_line(kvs-bool-ref-load)
     if (!*fname_exists_res)
     {
+        GetLogger().LogError() << "File not found" << filename;
         return score::MakeUnexpected(ErrorCode::kFileNotFound);
     }
     return filename;
@@ -522,7 +673,7 @@ score::Result<size_t> Kvs::GetStorageFileSize() const noexcept
         }
         else if (ec != std::errc::no_such_file_or_directory)
         {
-            logger_->LogError() << "error: could not determine size of " << path << ": " << ec.message();
+            GetLogger().LogError() << "error: could not determine size of " << path << ": " << ec.message();
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
         else
@@ -558,8 +709,7 @@ Kvs::Kvs() noexcept
       filesystem_{
           std::make_unique<score::filesystem::Filesystem>(score::filesystem::FilesystemFactory{}.CreateInstance())},
       parser_{std::make_unique<score::json::JsonParser>()},
-      writer_{std::make_unique<score::json::JsonWriter>()},
-      logger_{std::make_unique<score::mw::log::Logger>("SKVS")}
+      writer_{std::make_unique<score::json::JsonWriter>()}
 {
 }
 
@@ -568,6 +718,7 @@ score::Result<void> Kvs::SnapshotRotate() const noexcept
     std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
     if (!lock.owns_lock())
     {
+        GetLogger().LogWarn() << "Failed to lock KVS mutex";
         return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
     }
 
@@ -582,13 +733,13 @@ score::Result<void> Kvs::SnapshotRotate() const noexcept
         const score::filesystem::Path snap_new{filename_prefix_.Native() + "_" + std::to_string(idx) +
                                                std::string{kJsonSuffix}};
 
-        logger_->LogInfo() << "rotating:" << snap_old << "->" << snap_new;
+        GetLogger().LogInfo() << "rotating:" << snap_old << "->" << snap_new;
         // Rename hash.
         const auto hash_rename{score::os::Stdio::instance().rename(hash_old.CStr(), hash_new.CStr())};
         if ((!hash_rename.has_value()) && (hash_rename.error() != score::os::Error::Code::kNoSuchFileOrDirectory))
         {
-            logger_->LogError() << "error: could not rename hash file" << snap_old << "-"
-                                << hash_rename.error().ToString();
+            GetLogger().LogError() << "error: could not rename hash file" << snap_old << "-"
+                                   << hash_rename.error().ToString();
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
 
@@ -596,8 +747,8 @@ score::Result<void> Kvs::SnapshotRotate() const noexcept
         const auto snap_rename{score::os::Stdio::instance().rename(snap_old.CStr(), snap_new.CStr())};
         if ((!snap_rename.has_value()) && (snap_rename.error() != score::os::Error::Code::kNoSuchFileOrDirectory))
         {
-            logger_->LogError() << "error: could not rename snapshot file" << snap_old << "-"
-                                << snap_rename.error().ToString();
+            GetLogger().LogError() << "error: could not rename snapshot file" << snap_old << "-"
+                                   << snap_rename.error().ToString();
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
     }
@@ -610,6 +761,7 @@ score::Result<KvsMap> Kvs::ParseJsonData(const std::string& data) const noexcept
     auto any_res{parser_->FromBuffer(data)};
     if (!any_res)
     {
+        GetLogger().LogError() << "Failed to parse JSON data";
         return score::MakeUnexpected(ErrorCode::kJsonParserError);
     }
 
@@ -617,10 +769,12 @@ score::Result<KvsMap> Kvs::ParseJsonData(const std::string& data) const noexcept
     const auto conv{AnyToKvsValue(root)};
     if (!conv)
     {
+        GetLogger().LogError() << "Failed to convert JSON data";
         return score::MakeUnexpected(static_cast<ErrorCode>(*conv.error()));
     }
     if (conv->GetType() != KvsValue::Type::kObject)
     {
+        GetLogger().LogError() << "JSON root is not an object";
         return score::MakeUnexpected(ErrorCode::kJsonParserError);
     }
 
@@ -636,7 +790,7 @@ score::Result<KvsMap> Kvs::ParseJsonData(const std::string& data) const noexcept
         // Validate key.
         if (!IsKeyValid(member.first))
         {
-            logger_->LogError() << "Provided key is not valid" << member.first;
+            GetLogger().LogError() << "Provided key is not valid" << member.first;
             return score::MakeUnexpected(ErrorCode::kInvalidKey);
         }
         score::cpp::ignore = map.emplace(member.first, member.second);
@@ -657,12 +811,12 @@ score::Result<KvsMap> Kvs::OpenJson(const score::filesystem::Path& prefix,
     {
         if (need_file == OpenJsonNeedFile::kRequired)
         {
-            logger_->LogError() << "error: file" << json_file << "could not be read";
+            GetLogger().LogError() << "error: file" << json_file << "could not be read";
             return score::MakeUnexpected(ErrorCode::kKvsFileReadError);
         }
         else
         {
-            logger_->LogInfo() << "file" << json_file << "not found, using empty data";
+            GetLogger().LogInfo() << "file" << json_file << "not found, using empty data";
             return KvsMap{};
         }
     }
@@ -675,21 +829,21 @@ score::Result<KvsMap> Kvs::OpenJson(const score::filesystem::Path& prefix,
     std::ifstream hin{hash_file.CStr(), std::ios::binary};
     if (!hin)
     {
-        logger_->LogError() << "error: hash file" << hash_file << "could not be read";
+        GetLogger().LogError() << "error: hash file" << hash_file << "could not be read";
         return score::MakeUnexpected(ErrorCode::kKvsHashFileReadError);
     }
     if (!CheckHash(data, hin))
     {
-        logger_->LogError() << "error: KVS data corrupted:" << json_file << hash_file;
+        GetLogger().LogError() << "error: KVS data corrupted:" << json_file << hash_file;
         return score::MakeUnexpected(ErrorCode::kValidationFailed);
     }
-    logger_->LogInfo() << "JSON data has valid hash";
+    GetLogger().LogInfo() << "JSON data has valid hash";
 
     // Parse JSON data.
     auto parse_res{ParseJsonData(data)};
     if (!parse_res)
     {
-        logger_->LogError() << "error: parsing JSON data failed";
+        GetLogger().LogError() << "error: parsing JSON data failed";
         return score::MakeUnexpected(static_cast<ErrorCode>(*parse_res.error()));
     }
 
@@ -703,14 +857,14 @@ score::Result<void> Kvs::WriteJsonData(const std::string& buf) const noexcept
     const score::filesystem::Path dir{json_path.ParentPath()};
     if (dir.Empty())
     {
-        logger_->LogError() << "Provided directory path is empty" << json_path;
+        GetLogger().LogError() << "Provided directory path is empty" << json_path;
         return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
 
     const auto create_path_res{filesystem_->standard->CreateDirectories(dir)};
     if (!create_path_res.has_value())
     {
-        logger_->LogError() << "Failed to create directory for KVS file" << json_path;
+        GetLogger().LogError() << "Failed to create directory for KVS file" << json_path;
         return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
 
@@ -742,105 +896,14 @@ score::Result<void> Kvs::WriteJsonData(const std::string& buf) const noexcept
     auto hash_commit_res{CommitTempFile(hash_path)};
     if (!hash_commit_res.has_value())
     {
+        GetLogger().LogError() << "KVS file and hash file are inconsistent" << json_path;
         return hash_commit_res;
     }
 
     // Request the OS to commit the renames to physical storage.
     if (!filesystem_->utils->SyncDirectory(dir).has_value())
     {
-        logger_->LogError() << "Failed to sync directory" << dir;
-        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
-    }
-
-    return {};
-}
-
-score::Result<void> Kvs::WriteTempFile(const score::filesystem::Path& path,
-                                       const void* data,
-                                       const std::size_t size) const noexcept
-{
-    const score::os::Unistd& unistd{score::os::Unistd::instance()};
-    const score::filesystem::Path tmp_path{TempFilePath(path)};
-
-    // Remove a temporary file left behind by an interrupted write.
-    if (!RemoveIfExists(tmp_path))
-    {
-        logger_->LogError() << "Failed to remove stale temporary file" << tmp_path;
-        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
-    }
-
-    // Create a new file: the mode is applied on creation and a file planted at the path is never opened.
-    using Open = score::os::Fcntl::Open;
-    const auto open_result{score::os::Fcntl::instance().open(
-        tmp_path.CStr(), Open::kWriteOnly | Open::kCreate | Open::kExclusive | Open::kCloseOnExec, kKvsFileMode)};
-    if (!open_result.has_value())
-    {
-        logger_->LogError() << "Failed to open file" << tmp_path;
-        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
-    }
-    const std::int32_t fd{*open_result};
-
-    // Close and remove the temporary file on failure.
-    const auto discard = [&unistd, &tmp_path, fd]() {
-        score::cpp::ignore = unistd.close(fd);
-        score::cpp::ignore = unistd.unlink(tmp_path.CStr());
-        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
-    };
-
-    // Set the mode on the open file, the mode given on creation is restricted by umask.
-    if (!score::os::Stat::instance().fchmod(fd, kKvsFileMode).has_value())
-    {
-        logger_->LogError() << "Failed to set file permissions" << tmp_path;
-        return discard();
-    }
-
-    // codeql::misra_deviation_next_line(kvs-write-byte-pointer)
-    const auto* bytes{static_cast<const std::uint8_t*>(data)};
-    std::size_t written{0U};
-    while (written < size)
-    {
-        const auto write_result{unistd.write(fd, bytes + written, size - written)};
-        if (write_result.has_value() && (*write_result > 0))
-        {
-            written += static_cast<std::size_t>(*write_result);
-        }
-        else if (write_result.has_value() ||
-                 (write_result.error() != score::os::Error::Code::kOperationWasInterruptedBySignal))
-        {
-            logger_->LogError() << "Failed to write to file" << tmp_path;
-            return discard();
-        }
-        else
-        {
-            // The write was interrupted by a signal before any data was written, so it is retried.
-        }
-    }
-
-    // Request the OS to commit the data from its buffers to physical storage.
-    if (!unistd.fdatasync(fd).has_value())
-    {
-        logger_->LogError() << "Failed to sync file" << tmp_path;
-        return discard();
-    }
-
-    if (!unistd.close(fd).has_value())
-    {
-        logger_->LogError() << "Failed to close file" << tmp_path;
-        score::cpp::ignore = unistd.unlink(tmp_path.CStr());
-        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
-    }
-
-    return {};
-}
-
-score::Result<void> Kvs::CommitTempFile(const score::filesystem::Path& path) const noexcept
-{
-    const score::filesystem::Path tmp_path{TempFilePath(path)};
-    if (!score::os::Stdio::instance().rename(tmp_path.CStr(), path.CStr()).has_value())
-    {
-        logger_->LogError() << "Failed to replace file" << path;
-        // codeql::misra_deviation_next_line(kvs-bool-ref-binding)
-        score::cpp::ignore = RemoveIfExists(tmp_path);
+        GetLogger().LogError() << "Failed to sync directory" << dir;
         return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
 
@@ -856,12 +919,14 @@ score::Result<std::string> Kvs::SerializeAndCheck() const noexcept
         std::unique_lock<std::mutex> lock{kvs_mutex_, std::try_to_lock};
         if (!lock.owns_lock())
         {
+            GetLogger().LogWarn() << "Failed to lock KVS mutex";
             return score::MakeUnexpected(ErrorCode::kMutexLockFailed);
         }
 
         auto conv{KvsValueToAny(kvs_)};
         if (!conv)
         {
+            GetLogger().LogError() << "Failed to serialize KVS data";
             return score::MakeUnexpected<std::string>(conv.error());
         }
         root_obj = std::move(*conv);
@@ -870,6 +935,7 @@ score::Result<std::string> Kvs::SerializeAndCheck() const noexcept
     auto buf_res{writer_->ToBuffer(root_obj)};
     if (!buf_res)
     {
+        GetLogger().LogError() << "Failed to generate JSON data";
         return score::MakeUnexpected(ErrorCode::kJsonGeneratorError);
     }
     const std::string& buf{*buf_res};
@@ -891,37 +957,13 @@ score::Result<std::string> Kvs::SerializeAndCheck() const noexcept
         // 4. Check against the limit.
         if (total_size > *max_storage_bytes_)
         {
-            logger_->LogError() << "error: KVS storage limit would be exceeded. total_size:" << total_size
-                                << "max_storage_bytes:" << *max_storage_bytes_;
+            GetLogger().LogError() << "error: KVS storage limit would be exceeded. total_size:" << total_size
+                                   << "max_storage_bytes:" << *max_storage_bytes_;
             return score::MakeUnexpected(ErrorCode::kOutOfStorageSpace);
         }
     }
 
     return buf;
-}
-
-score::Result<size_t> Kvs::GetFileSize(const score::filesystem::Path& file_path) const noexcept
-{
-    std::error_code ec;
-    const auto size{std::filesystem::file_size(file_path.CStr(), ec)};
-
-    if (ec)
-    {
-        // Check if the error is "file not found".
-        if (ec == std::errc::no_such_file_or_directory)
-        {
-            // File does not exist, its size is 0.
-            // This is not an error.
-            return 0;
-        }
-        else
-        {
-            logger_->LogError() << "Error: Could not get size of file" << file_path << ":" << ec.message();
-            return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
-        }
-    }
-
-    return size;
 }
 
 score::Result<size_t> Kvs::GetCurrentStorageSize() const noexcept

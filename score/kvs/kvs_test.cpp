@@ -2462,7 +2462,8 @@ TEST(kvs_get_filename, get_kvs_filename_failure)
     kvs.value().filesystem_ = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     result = kvs.value().KvsFilePath(SnapshotId(1));
-    EXPECT_FALSE(result);
+    ASSERT_FALSE(result);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::kPhysicalStorageFailure);
 
     CleanupEnvironment();
 }
@@ -2526,7 +2527,8 @@ TEST(kvs_get_filename, get_hashname_failure)
     kvs.value().filesystem_ = std::make_unique<score::filesystem::Filesystem>(std::move(mock_filesystem));
 
     result = kvs.value().HashFilePath(SnapshotId(1));
-    EXPECT_FALSE(result);
+    ASSERT_FALSE(result);
+    EXPECT_EQ(static_cast<ErrorCode>(*result.error()), ErrorCode::kPhysicalStorageFailure);
 
     CleanupEnvironment();
 }
