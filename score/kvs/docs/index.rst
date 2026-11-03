@@ -22,7 +22,7 @@ KVS (Key Value Store)
    :status: valid
    :version: 1
    :safety: ASIL_B
-   :security: NO
+   :security: YES
    :realizes: wp__cmpt_request[version==1]
    :tags: Persistency KVS
 
