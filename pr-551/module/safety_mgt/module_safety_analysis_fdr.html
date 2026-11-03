@@ -482,7 +482,7 @@
                   
   <section id="persistency-safety-analysis-checklist">
 <h1>Persistency Safety Analysis Checklist<a class="headerlink" href="#persistency-safety-analysis-checklist" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-f4797f6b">
+<div class="need_container docutils container" id="SNCB-4670bc41">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_safety_analysis_fdr">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -536,8 +536,8 @@
 </ul>
 <p><strong>Checklist</strong></p>
 <p>Please note that it is mandatory to fill in the “passed” column with “yes” or “no” for each checklist item and additional to add in the remarks why it is passed or not passed. In case of “no” an issue link to the issue tracking system has to be added in the last column. See also <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/general_concepts/score_review_concept.html#doc_concept__wp_inspections">doc_concept__wp_inspections</a> for further information about reviews in general and inspection in particular.</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id6">
-<caption><span class="caption-number">Table 1 </span><span class="caption-text">General Checklist</span><a class="headerlink" href="#id6" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-number">Table 1 </span><span class="caption-text">General Checklist</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 10.0%" />
 <col style="width: 30.0%" />
@@ -556,56 +556,71 @@
 <tbody>
 <tr class="row-even"><td><p>Gen 1</p></td>
 <td><p>Are the safety analysis performed according to the defined process and templates? See <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/safety_analysis_process_reqs.html#gd_req__saf_structure">gd_req__saf_structure</a> and also <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/fmea_templates.html#gd_temp__feat_saf_fmea">gd_temp__feat_saf_fmea</a> and <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/dfa_templates.html#gd_temp__feat_saf_dfa">gd_temp__feat_saf_dfa</a></p></td>
-<td><p>YES</p></td>
+<td><p>NO</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_841">std_req__iso26262__analysis_841</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_849">std_req__iso26262__analysis_849</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_8410">std_req__iso26262__analysis_8410</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_748">std_req__iso26262__analysis_748</a></p></td>
-<td><p>The feature FMEA and DFA use the templates <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/fmea_templates.html#gd_temp__feat_saf_fmea">gd_temp__feat_saf_fmea</a> and <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/dfa_templates.html#gd_temp__feat_saf_dfa">gd_temp__feat_saf_dfa</a>. The
-component FMEA and DFA refer to the feature analyses with the rationale that KVS has no internal components (see
-tailoring notes in <a class="reference internal" href="module_safety_plan.html#doc__persistency_safety_plan" title="doc__persistency_safety_plan"><em class="xref need">Persistency Safety Plan (doc__persistency_safety_plan)</em></a>).</p></td>
+<td><p>The analyses use the templates and are located on feature level (<code class="docutils literal notranslate"><span class="pre">docs/features/persistency/safety_analysis</span></code>)
+and on component level (<code class="docutils literal notranslate"><span class="pre">score/kvs/docs/safety_analysis</span></code>) according to <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/safety_analysis_process_reqs.html#gd_req__saf_structure">gd_req__saf_structure</a>. Deviations:</p>
+<ul class="simple">
+<li><p>All four analyses have the status <code class="docutils literal notranslate"><span class="pre">valid</span></code>, although the verification is not finished and entries are rated
+<code class="docutils literal notranslate"><span class="pre">sufficient:</span> <span class="pre">no</span></code>. According to <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/documentation_management/guidance/documentation_guideline.html#gd_guidl__documentation">gd_guidl__documentation</a> (lifecycle model 2) and
+<a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/safety_analysis_getstrt.html#doc_getstrt__safety_analysis">doc_getstrt__safety_analysis</a> the status is <code class="docutils literal notranslate"><span class="pre">draft</span></code> until the verification is done and no issues are
+open.</p></li>
+<li><p>The tailoring in <a class="reference internal" href="module_safety_plan.html#doc__persistency_safety_plan" title="doc__persistency_safety_plan"><em class="xref need">Persistency Safety Plan (doc__persistency_safety_plan)</em></a> states that the component analyses refer to the feature
+analyses. <a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#doc__kvs_fmea" title="doc__kvs_fmea"><em class="xref need">KVS FMEA (doc__kvs_fmea)</em></a> and <a class="reference internal" href="../../components/kvs/safety_analysis/dfa.html#doc__kvs_dfa" title="doc__kvs_dfa"><em class="xref need">KVS DFA (doc__kvs_dfa)</em></a> contain an own analysis of the component mechanisms
+and refer back to this tailoring for their scope.</p></li>
+</ul>
+</td>
 </tr>
 <tr class="row-odd"><td><p>Gen 2</p></td>
 <td><p>Are the safety analysis performed in a systematic way to identify the potential dependent failures / failure modes and their effects? Are the failure effect and the mitigation described?</p></td>
-<td><p>NO</p></td>
+<td><p>YES</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_849">std_req__iso26262__analysis_849</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_8410">std_req__iso26262__analysis_8410</a></p></td>
-<td><p>The applicability of all fault models and failure initiators is documented in tables. Several “not applicable”
-rationales are generic (“Failure initiator not applicable at persistency, so no mitigation is needed.”) or argue with
-“developed fully deterministic” (e.g. FMEA EX_01_01, DFA CO_01_02), which does not exclude systematic faults. Rework
-in <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/481">#481</a>.</p></td>
+<td><p>All fault models and failure initiators are listed with applicability and a specific rationale on feature and
+component level. Each entry describes failure effect, root cause and mitigation in the content.</p></td>
 </tr>
 <tr class="row-even"><td><p>Gen 3</p></td>
 <td><p>Is the result of the safety analysis indicate if the safety requirements are complied?</p></td>
 <td><p>NO</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_842">std_req__iso26262__analysis_842</a></p></td>
-<td><p>Each FMEA and DFA entry states <code class="docutils literal notranslate"><span class="pre">sufficient:</span> <span class="pre">yes</span></code>, but the analyses contain no overall result statement whether the
-safety requirements of the feature are complied with. Rework in <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/481">#481</a>.</p></td>
+<td><p>Each entry is rated with <code class="docutils literal notranslate"><span class="pre">sufficient</span></code>, but none of the four analyses contains an overall result statement
+whether the safety requirements of the feature and the component are complied with.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Gen 4</p></td>
 <td><p>Are the mitigations effective and implemented?</p></td>
-<td><p>YES</p></td>
+<td><p>NO</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_844">std_req__iso26262__analysis_844</a></p></td>
-<td><p>All identified failures are mitigated by <a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__error_handling" title="aou_req__persistency__error_handling"><em class="xref need">Persistency Error handling (aou_req__persistency__error_handling)</em></a>. The API reports detected errors
-to the application (C++ <code class="docutils literal notranslate"><span class="pre">score::Result</span></code>, Rust <code class="docutils literal notranslate"><span class="pre">Result</span></code>), so the application can handle the unavailability as
-required by the AoU.</p></td>
+<td><p>Several entries are rated <code class="docutils literal notranslate"><span class="pre">sufficient:</span> <span class="pre">yes</span></code> with <code class="docutils literal notranslate"><span class="pre">mitigated_by</span></code>, while their content states that the
+mitigation is not implemented, e.g. <a class="reference internal" href="../../features/persistency/safety_analysis/dfa.html#feat_saf_dfa__persistency__multi_process" title="feat_saf_dfa__persistency__multi_process"><em class="xref need">Access to a KVS instance fr... (feat_saf_dfa__persistency__multi_process)</em></a>,
+<a class="reference internal" href="../../features/persistency/safety_analysis/fmea.html#feat_saf_fmea__persistency__constraint_max" title="feat_saf_fmea__persistency__constraint_max"><em class="xref need">Maximum constraint boundary... (feat_saf_fmea__persistency__constraint_max)</em></a>, <a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#comp_saf_fmea__kvs__flush_interrupted" title="comp_saf_fmea__kvs__flush_interrupted"><em class="xref need">Flush is interrupted (comp_saf_fmea__kvs__flush_interrupted)</em></a>,
+<a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#comp_saf_fmea__kvs__corrupt_on_open" title="comp_saf_fmea__kvs__corrupt_on_open"><em class="xref need">Corrupted storage at open, ... (comp_saf_fmea__kvs__corrupt_on_open)</em></a>, <a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#comp_saf_fmea__kvs__default_corrupt" title="comp_saf_fmea__kvs__default_corrupt"><em class="xref need">Default value file is corru... (comp_saf_fmea__kvs__default_corrupt)</em></a>,
+<a class="reference internal" href="../../components/kvs/safety_analysis/dfa.html#comp_saf_dfa__kvs__file_access" title="comp_saf_dfa__kvs__file_access"><em class="xref need">Storage files modified by o... (comp_saf_dfa__kvs__file_access)</em></a>, <a class="reference internal" href="../../components/kvs/safety_analysis/dfa.html#comp_saf_dfa__kvs__async_flush" title="comp_saf_dfa__kvs__async_flush"><em class="xref need">Concurrent modification dur... (comp_saf_dfa__kvs__async_flush)</em></a>,
+<a class="reference internal" href="../../components/kvs/safety_analysis/dfa.html#comp_saf_dfa__kvs__multi_process" title="comp_saf_dfa__kvs__multi_process"><em class="xref need">Access to a KVS instance fr... (comp_saf_dfa__kvs__multi_process)</em></a>, <a class="reference internal" href="../../components/kvs/safety_analysis/dfa.html#comp_saf_dfa__kvs__memory_depletion" title="comp_saf_dfa__kvs__memory_depletion"><em class="xref need">Memory depletion by the kvs (comp_saf_dfa__kvs__memory_depletion)</em></a>. According to
+<a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/safety_analysis_process_reqs.html#gd_req__saf_attr_mitigated_by">gd_req__saf_attr_mitigated_by</a> a mitigation which is not implemented is not linked via <code class="docutils literal notranslate"><span class="pre">mitigated_by</span></code>.
+The note in <a class="reference internal" href="../../features/persistency/safety_analysis/dfa.html#feat_saf_dfa__persistency__callback_deadlock" title="feat_saf_dfa__persistency__callback_deadlock"><em class="xref need">Deadlock by completion call... (feat_saf_dfa__persistency__callback_deadlock)</em></a> (runtime allocation) does not match the
+analysed deadlock.</p></td>
 </tr>
 <tr class="row-even"><td><p>Gen 5</p></td>
 <td><p>Are all AoU’s that are used as mitigation’s created and covered in the safety manual?</p></td>
-<td><p>YES</p></td>
+<td><p>NO</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_845">std_req__iso26262__analysis_845</a></p></td>
-<td><p><a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__error_handling" title="aou_req__persistency__error_handling"><em class="xref need">Persistency Error handling (aou_req__persistency__error_handling)</em></a> is part of <a class="reference internal" href="../manuals/safety_manual.html#doc__persistency_safety_manual" title="doc__persistency_safety_manual"><em class="xref need">Persistency Safety Manual (doc__persistency_safety_manual)</em></a>. It is tagged as
-assumption on the environment instead of on the user, correction in <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/541">#541</a>.</p></td>
+<td><p>The feature AoUs (<a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__error_handling" title="aou_req__persistency__error_handling"><em class="xref need">Persistency Error handling (aou_req__persistency__error_handling)</em></a>, <a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__flush" title="aou_req__persistency__flush"><em class="xref need">Flush of Safety Relevant Ch... (aou_req__persistency__flush)</em></a>,
+<a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__instance_separation" title="aou_req__persistency__instance_separation"><em class="xref need">Separate KVS Instances per ... (aou_req__persistency__instance_separation)</em></a>, <a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__start_without_data" title="aou_req__persistency__start_without_data"><em class="xref need">Start without Persisted Data (aou_req__persistency__start_without_data)</em></a>) are part of
+<a class="reference internal" href="../manuals/safety_manual.html#doc__persistency_safety_manual" title="doc__persistency_safety_manual"><em class="xref need">Persistency Safety Manual (doc__persistency_safety_manual)</em></a>. <a class="reference internal" href="../../components/kvs/safety_analysis/aou_requirements.html#aou_req__kvs__filesystem" title="aou_req__kvs__filesystem"><em class="xref need">File System (aou_req__kvs__filesystem)</em></a> (mitigation of
+<a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#comp_saf_fmea__kvs__unflushed_lost" title="comp_saf_fmea__kvs__unflushed_lost"><em class="xref need">Changes are lost by loss of... (comp_saf_fmea__kvs__unflushed_lost)</em></a>) is tagged <code class="docutils literal notranslate"><span class="pre">Persistency</span> <span class="pre">KVS</span></code> and therefore not selected by the AoU
+tables of the safety manual, which filter on the tag <code class="docutils literal notranslate"><span class="pre">persistency</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Gen 6</p></td>
 <td><p>Are additional safety-related test cases determined by potential results of the safety analyses?</p></td>
 <td><p>NO</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_847">std_req__iso26262__analysis_847</a></p></td>
-<td><p>No test cases are derived from the analyses. The safety mechanism integrity check
-(<a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__integrity_check">feat_req__persistency__integrity_check</a>, checksum of the persisted data) is not referenced as mitigation in
-the FMEA. Rework in <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/481">#481</a>.</p></td>
+<td><p>The safety mechanisms are linked as mitigations (e.g. <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__integrity_check">feat_req__persistency__integrity_check</a>), but no
+additional test cases are determined from the analyses.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="pst-scrollable-table-container"><table class="table" id="id7">
-<caption><span class="caption-number">Table 2 </span><span class="caption-text">DFA Checklist</span><a class="headerlink" href="#id7" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-number">Table 2 </span><span class="caption-text">DFA Checklist</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 10.0%" />
 <col style="width: 30.0%" />
@@ -626,55 +641,59 @@ the FMEA. Rework in <a class="reference external" href="https://github.com/eclip
 <td><p>Are the potential dependent failures identified by performing a DFA?</p></td>
 <td><p>YES</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_741">std_req__iso26262__analysis_741</a></p></td>
-<td><p>The DFA is performed on feature level (<a class="reference internal" href="../../features/persistency/safety_analysis/dfa.html#doc__persistency_dfa" title="doc__persistency_dfa"><em class="xref need">Persistency DFA (doc__persistency_dfa)</em></a>) with the failure initiators of
-<a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/dfa_failure_initiators.html#gd_guidl__dfa_failure_initiators">gd_guidl__dfa_failure_initiators</a>, the component DFA (<a class="reference internal" href="../../components/kvs/safety_analysis/dfa.html#doc__kvs_dfa" title="doc__kvs_dfa"><em class="xref need">KVS DFA (doc__kvs_dfa)</em></a>) refers to it.</p></td>
+<td><p>The DFA is performed on feature level (<a class="reference internal" href="../../features/persistency/safety_analysis/dfa.html#doc__persistency_dfa" title="doc__persistency_dfa"><em class="xref need">Persistency DFA (doc__persistency_dfa)</em></a>) against
+<a class="reference internal" href="../../features/persistency/architecture/index.html#feat_arc_sta__persistency__static" title="feat_arc_sta__persistency__static"><em class="xref need">Static Architecture (feat_arc_sta__persistency__static)</em></a> and on component level (<a class="reference internal" href="../../components/kvs/safety_analysis/dfa.html#doc__kvs_dfa" title="doc__kvs_dfa"><em class="xref need">KVS DFA (doc__kvs_dfa)</em></a>) against
+<a class="reference internal" href="../../components/kvs/architecture/component_architecture.html#comp_arc_sta__persistency_kvs__sv" title="comp_arc_sta__persistency_kvs__sv"><em class="xref need">KVS Static View (comp_arc_sta__persistency_kvs__sv)</em></a> with the failure initiators of <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/dfa_failure_initiators.html#gd_guidl__dfa_failure_initiators">gd_guidl__dfa_failure_initiators</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>DFA 2</p></td>
 <td><p>Is it plausible that each potential identified dependent failure that has been identified, will lead to a dependent failure which cause a violation of FFI?</p></td>
 <td><p>YES</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_742">std_req__iso26262__analysis_742</a></p></td>
-<td><p>The one identified dependent failure (<a class="reference internal" href="../../features/persistency/safety_analysis/dfa.html#feat_saf_dfa__persistency__execution_blocking" title="feat_saf_dfa__persistency__execution_blocking"><em class="xref need">Persistency execution blocking (feat_saf_dfa__persistency__execution_blocking)</em></a>) is plausible: persistency
-runs in the execution context of the calling application.</p></td>
+<td><p>The identified dependent failures (six on feature level, five on component level) are plausible, e.g. blocking of
+the calling context, shared instances within a process, access from multiple processes, memory depletion.</p></td>
 </tr>
 <tr class="row-even"><td><p>DFA 3</p></td>
 <td><p>Are applicable operational situations and operating modes considered?</p></td>
-<td><p>NO</p></td>
+<td><p>YES</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_743">std_req__iso26262__analysis_743</a></p></td>
-<td><p>Operating modes (startup with loading of the data and defaults, runtime access, flush, snapshot restore) are not
-considered explicitly in the DFA. Rework in <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/481">#481</a>.</p></td>
+<td><p>The operating modes open and reload, runtime access, flush (including the asynchronous flush) and snapshot
+restore are considered, e.g. <a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#comp_saf_fmea__kvs__corrupt_on_open" title="comp_saf_fmea__kvs__corrupt_on_open"><em class="xref need">Corrupted storage at open, ... (comp_saf_fmea__kvs__corrupt_on_open)</em></a>,
+<a class="reference internal" href="../../components/kvs/safety_analysis/dfa.html#comp_saf_dfa__kvs__async_flush" title="comp_saf_dfa__kvs__async_flush"><em class="xref need">Concurrent modification dur... (comp_saf_dfa__kvs__async_flush)</em></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>DFA 4</p></td>
 <td><p>Are the failure initiators <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/dfa_failure_initiators.html#gd_guidl__dfa_failure_initiators">gd_guidl__dfa_failure_initiators</a> suitable and applied?</p></td>
 <td><p>NO</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_744">std_req__iso26262__analysis_744</a></p></td>
-<td><p>The failure initiators are applied in tables. The shared resources (file system and storage, heap memory, baselibs)
-are declared not applicable on feature level and deferred to the platform DFA, which is not referenced. Several
-rationales are generic, see Gen 2.</p></td>
+<td><p>The failure initiators are applied with rationales. The shared resources (file system and storage, heap memory,
+used libraries, operating system) are deferred to the platform DFA without a reference to
+<a class="external_link reference external" href="https://eclipse-score.github.io/score/main/safety/platform_dfa.html#doc__score_platform_dfa">doc__score_platform_dfa</a>, which has the status <code class="docutils literal notranslate"><span class="pre">draft</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p>DFA 5</p></td>
 <td><p>Is a rationale provided for each identified potential dependent failure?</p></td>
 <td><p>YES</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_745">std_req__iso26262__analysis_745</a></p></td>
-<td><p>A rationale is given for the identified dependent failure <a class="reference internal" href="../../features/persistency/safety_analysis/dfa.html#feat_saf_dfa__persistency__execution_blocking" title="feat_saf_dfa__persistency__execution_blocking"><em class="xref need">Persistency execution blocking (feat_saf_dfa__persistency__execution_blocking)</em></a>.</p></td>
+<td><p>Each identified dependent failure has a rationale in its content.</p></td>
 </tr>
 <tr class="row-odd"><td><p>DFA 6</p></td>
 <td><p>Are measures defined to resolve the identified potential dependent failures?</p></td>
-<td><p>YES</p></td>
+<td><p>NO</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_746">std_req__iso26262__analysis_746</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_747">std_req__iso26262__analysis_747</a>, <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_843">std_req__iso26262__analysis_843</a></p></td>
-<td><p>The identified dependent failure is mitigated by <a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__error_handling" title="aou_req__persistency__error_handling"><em class="xref need">Persistency Error handling (aou_req__persistency__error_handling)</em></a>.</p></td>
+<td><p>Measures are linked for all identified dependent failures. <a class="reference internal" href="../../components/kvs/safety_analysis/dfa.html#comp_saf_dfa__kvs__callback_deadlock" title="comp_saf_dfa__kvs__callback_deadlock"><em class="xref need">Deadlock by callback (comp_saf_dfa__kvs__callback_deadlock)</em></a> is rated
+<code class="docutils literal notranslate"><span class="pre">sufficient:</span> <span class="pre">no</span></code> without <code class="docutils literal notranslate"><span class="pre">mitigation_issue</span></code> (<a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/safety_analysis_process_reqs.html#gd_req__saf_attr_mitigation_issue">gd_req__saf_attr_mitigation_issue</a>).</p></td>
 </tr>
 <tr class="row-even"><td><p>DFA 7</p></td>
 <td><p>Can be the required level of independence shown for the identified potential dependent failures?</p></td>
 <td><p>NO</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_748">std_req__iso26262__analysis_748</a></p></td>
-<td><p>Independence from other software elements using the same shared resources (e.g. other processes writing the persisted
-files) is not shown, as the shared resources are deferred to the platform DFA (see DFA 4).</p></td>
+<td><p>Independence from other processes is specified (<a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__multiple_app">feat_req__persistency__multiple_app</a>,
+<a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/requirements/index.html#feat_req__persistency__access_control">feat_req__persistency__access_control</a>), but not implemented (see Gen 4). The independence regarding the
+shared resources depends on the platform DFA (see DFA 4).</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="pst-scrollable-table-container"><table class="table" id="id8">
-<caption><span class="caption-number">Table 3 </span><span class="caption-text">FMEA Checklist</span><a class="headerlink" href="#id8" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id3">
+<caption><span class="caption-number">Table 3 </span><span class="caption-text">FMEA Checklist</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 10.0%" />
 <col style="width: 30.0%" />
@@ -695,15 +714,17 @@ files) is not shown, as the shared resources are deferred to the platform DFA (s
 <td><p>Are the fault models suitable and applied for the FMEA? See <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/fault_models_guideline.html#gd_guidl__fault_models">gd_guidl__fault_models</a> and also <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/safety_analysis_process_reqs.html#gd_req__saf_structure">gd_req__saf_structure</a></p></td>
 <td><p>YES</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_846">std_req__iso26262__analysis_846</a></p></td>
-<td><p>All fault models of <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/fault_models_guideline.html#gd_guidl__fault_models">gd_guidl__fault_models</a> (MF_01_01 to EX_01_06) are listed with applicability; the
-applicable ones are analysed against the dynamic feature architecture. For the quality of the rationales see Gen 2.</p></td>
+<td><p>All fault models of <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/fault_models_guideline.html#gd_guidl__fault_models">gd_guidl__fault_models</a> (MF_01_01 to EX_01_06) are listed with applicability on
+feature level against the dynamic views and on component level against the component mechanisms.</p></td>
 </tr>
 <tr class="row-odd"><td><p>FMEA 2</p></td>
 <td><p>Are measures defined to resolve the identified faults?</p></td>
-<td><p>YES</p></td>
+<td><p>NO</p></td>
 <td><p><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/standards/iso26262/iso26262.html#std_req__iso26262__analysis_843">std_req__iso26262__analysis_843</a></p></td>
-<td><p>All identified failure modes are mitigated by <a class="reference internal" href="../../features/persistency/safety_analysis/aou_requirements.html#aou_req__persistency__error_handling" title="aou_req__persistency__error_handling"><em class="xref need">Persistency Error handling (aou_req__persistency__error_handling)</em></a>. For the missing reference
-to the integrity check see Gen 6.</p></td>
+<td><p>Measures are linked for all identified failure modes. <a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#comp_saf_fmea__kvs__flush_skipped" title="comp_saf_fmea__kvs__flush_skipped"><em class="xref need">Flush does not write change... (comp_saf_fmea__kvs__flush_skipped)</em></a>,
+<a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#comp_saf_fmea__kvs__constraint_exceeded" title="comp_saf_fmea__kvs__constraint_exceeded"><em class="xref need">Constraint boundary is viol... (comp_saf_fmea__kvs__constraint_exceeded)</em></a>, <a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#comp_saf_fmea__kvs__constraint_cfg_wrong" title="comp_saf_fmea__kvs__constraint_cfg_wrong"><em class="xref need">Wrong constraint configurat... (comp_saf_fmea__kvs__constraint_cfg_wrong)</em></a>,
+<a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#comp_saf_fmea__kvs__migration_wrong" title="comp_saf_fmea__kvs__migration_wrong"><em class="xref need">Data migration produces wro... (comp_saf_fmea__kvs__migration_wrong)</em></a> and <a class="reference internal" href="../../components/kvs/safety_analysis/fmea.html#comp_saf_fmea__kvs__tool_wrong_output" title="comp_saf_fmea__kvs__tool_wrong_output"><em class="xref need">Kvs tool generates wrong st... (comp_saf_fmea__kvs__tool_wrong_output)</em></a> are rated
+<code class="docutils literal notranslate"><span class="pre">sufficient:</span> <span class="pre">no</span></code> without <code class="docutils literal notranslate"><span class="pre">mitigation_issue</span></code> (<a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/safety_analysis_process_reqs.html#gd_req__saf_attr_mitigation_issue">gd_req__saf_attr_mitigation_issue</a>).</p></td>
 </tr>
 </tbody>
 </table>
