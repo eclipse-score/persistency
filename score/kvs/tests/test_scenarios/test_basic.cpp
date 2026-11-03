@@ -46,11 +46,11 @@ void BasicScenario::run(const std::string& input) const
     KvsBuilder builder{instance_id};
     if (params.defaults.has_value())
     {
-        builder = builder.Defaults(*params.defaults);
+        builder.Defaults(*params.defaults);
     }
     if (params.kvs_load.has_value())
     {
-        builder = builder.KvsLoad(*params.kvs_load);
+        builder.KvsLoad(*params.kvs_load);
     }
 
     // Create KVS.

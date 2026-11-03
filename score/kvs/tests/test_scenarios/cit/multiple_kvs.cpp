@@ -25,7 +25,7 @@ namespace
 {
 const std::string kTargetName{"cpp_test_scenarios::multiple_kvs"};
 
-static void InfoLog(const std::string& instance, const std::string& keyname, double value)
+void InfoLog(const std::string& instance, const std::string& keyname, double value)
 {
     TRACING_INFO(kTargetName,
                  std::pair{std::string{"instance"}, instance},
@@ -99,19 +99,19 @@ class MultipleInstanceIds final : public Scenario
             auto kvs1{KvsInstance(params1)};
             auto kvs2{KvsInstance(params2)};
 
-            auto value1{kvs1.GetValue(keyname)};
-            if (!value1)
+            auto kvs1_value{kvs1.GetValue(keyname)};
+            if (!kvs1_value)
             {
                 throw std::runtime_error{"Failed to read value"};
             }
-            InfoLog("kvs1", keyname, std::get<double>(value1->GetValue()));
+            InfoLog("kvs1", keyname, std::get<double>(kvs1_value->GetValue()));
 
-            auto value2{kvs2.GetValue(keyname)};
-            if (!value2)
+            auto kvs2_value{kvs2.GetValue(keyname)};
+            if (!kvs2_value)
             {
                 throw std::runtime_error{"Failed to read value"};
             }
-            InfoLog("kvs2", keyname, std::get<double>(value2->GetValue()));
+            InfoLog("kvs2", keyname, std::get<double>(kvs2_value->GetValue()));
         }
     }
 };
@@ -244,19 +244,19 @@ class SameInstanceIdDifferentValue final : public Scenario
             auto kvs1{KvsInstance(params)};
             auto kvs2{KvsInstance(params)};
 
-            auto value1{kvs1.GetValue(keyname)};
-            if (!value1)
+            auto kvs1_value{kvs1.GetValue(keyname)};
+            if (!kvs1_value)
             {
                 throw std::runtime_error{"Failed to read value"};
             }
-            InfoLog("kvs1", keyname, std::get<double>(value1->GetValue()));
+            InfoLog("kvs1", keyname, std::get<double>(kvs1_value->GetValue()));
 
-            auto value2{kvs2.GetValue(keyname)};
-            if (!value2)
+            auto kvs2_value{kvs2.GetValue(keyname)};
+            if (!kvs2_value)
             {
                 throw std::runtime_error{"Failed to read value"};
             }
-            InfoLog("kvs2", keyname, std::get<double>(value2->GetValue()));
+            InfoLog("kvs2", keyname, std::get<double>(kvs2_value->GetValue()));
         }
     }
 };
