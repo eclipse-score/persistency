@@ -152,6 +152,8 @@ enum class OpenJsonNeedFile : std::uint8_t
 /// - Snapshot management for persistence and restoration.
 ///
 /// @note A Kvs object is not copyable, but it can be moved.
+/// A moved-from Kvs object must not be used.
+/// It may only be destroyed or assigned a new value.
 // codeql::misra_deviation_next_line(kvs-special-members)
 class Kvs final
 {
@@ -159,11 +161,15 @@ class Kvs final
     Kvs(const Kvs&) = delete;
 
     /// @brief Move constructor.
+    /// @param other The object to move from.
+    /// It must not be used afterwards, except to destroy it or assign a new value to it.
     Kvs(Kvs&& other) noexcept;
 
     Kvs& operator=(const Kvs&) = delete;
 
     /// @brief Move assignment operator.
+    /// @param other The object to move from.
+    /// It must not be used afterwards, except to destroy it or assign a new value to it.
     Kvs& operator=(Kvs&& other) & noexcept;
 
     /// @brief Opens the key-value store with the specified instance ID and flags.

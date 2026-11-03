@@ -258,14 +258,6 @@ TEST(kvs_constructor, move_constructor)
     EXPECT_EQ(default_value.value().GetType(), KvsValue::Type::kBoolean);
     EXPECT_EQ(std::get<bool>(default_value.value().GetValue()), true);
 
-    // - kvs_b is empty.
-    auto keys_b{kvs_b.GetAllKeys()};
-    ASSERT_TRUE(keys_b);
-    EXPECT_TRUE(keys_b.value().empty());
-    auto default_value_b{kvs_b.GetDefaultValue("test_default")};
-    ASSERT_FALSE(default_value_b);
-    EXPECT_EQ(default_value_b.error(), ErrorCode::kKeyNotFound);
-
     // - The file name prefix moved too, so kvs_a writes the files of the former kvs_b.
     ASSERT_TRUE(kvs_a.Flush());
     auto filename{kvs_a.KvsFilePath(SnapshotId{0ul})};
