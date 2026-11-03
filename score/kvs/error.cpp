@@ -18,8 +18,8 @@ namespace score::kvs
 
 namespace
 {
-constexpr KvsErrorDomain kKvsErrorDomain;
-}
+const KvsErrorDomain kKvsErrorDomain{};
+}  // namespace
 
 std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code) const noexcept
 {
