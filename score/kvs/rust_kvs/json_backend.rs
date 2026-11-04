@@ -43,10 +43,15 @@ impl TryFrom<JsonValue> for KvsValue {
                 // Type-tagged: { "t": ..., "v": ... }
                 if let (Some(JsonValue::String(type_str)), Some(value)) = (obj.remove("t"), obj.remove("v")) {
                     match (type_str.as_str(), value) {
-                        ("i32", JsonValue::Number(v)) => Ok(KvsValue::I32(v as i32)),
+                        ("u8", JsonValue::Number(v)) => Ok(KvsValue::U8(v as u8)),
+                        ("u16", JsonValue::Number(v)) => Ok(KvsValue::U16(v as u16)),
                         ("u32", JsonValue::Number(v)) => Ok(KvsValue::U32(v as u32)),
-                        ("i64", JsonValue::Number(v)) => Ok(KvsValue::I64(v as i64)),
                         ("u64", JsonValue::Number(v)) => Ok(KvsValue::U64(v as u64)),
+                        ("i8", JsonValue::Number(v)) => Ok(KvsValue::I8(v as i8)),
+                        ("i16", JsonValue::Number(v)) => Ok(KvsValue::I16(v as i16)),
+                        ("i32", JsonValue::Number(v)) => Ok(KvsValue::I32(v as i32)),
+                        ("i64", JsonValue::Number(v)) => Ok(KvsValue::I64(v as i64)),
+                        ("f32", JsonValue::Number(v)) => Ok(KvsValue::F32(v as f32)),
                         ("f64", JsonValue::Number(v)) => Ok(KvsValue::F64(v)),
                         ("bool", JsonValue::Boolean(v)) => Ok(KvsValue::Boolean(v)),
                         ("str", JsonValue::String(v)) => Ok(KvsValue::String(v)),
@@ -80,20 +85,40 @@ impl TryFrom<KvsValue> for JsonValue {
     fn try_from(val: KvsValue) -> Result<Self, Self::Error> {
         let mut obj = HashMap::new();
         match val {
-            KvsValue::I32(n) => {
-                obj.insert("t".to_string(), JsonValue::String("i32".to_string()));
+            KvsValue::U8(n) => {
+                obj.insert("t".to_string(), JsonValue::String("u8".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(n as f64));
+            },
+            KvsValue::U16(n) => {
+                obj.insert("t".to_string(), JsonValue::String("u16".to_string()));
                 obj.insert("v".to_string(), JsonValue::Number(n as f64));
             },
             KvsValue::U32(n) => {
                 obj.insert("t".to_string(), JsonValue::String("u32".to_string()));
                 obj.insert("v".to_string(), JsonValue::Number(n as f64));
             },
+            KvsValue::U64(n) => {
+                obj.insert("t".to_string(), JsonValue::String("u64".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(n as f64));
+            },
+            KvsValue::I8(n) => {
+                obj.insert("t".to_string(), JsonValue::String("i8".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(n as f64));
+            },
+            KvsValue::I16(n) => {
+                obj.insert("t".to_string(), JsonValue::String("i16".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(n as f64));
+            },
+            KvsValue::I32(n) => {
+                obj.insert("t".to_string(), JsonValue::String("i32".to_string()));
+                obj.insert("v".to_string(), JsonValue::Number(n as f64));
+            },
             KvsValue::I64(n) => {
                 obj.insert("t".to_string(), JsonValue::String("i64".to_string()));
                 obj.insert("v".to_string(), JsonValue::Number(n as f64));
             },
-            KvsValue::U64(n) => {
-                obj.insert("t".to_string(), JsonValue::String("u64".to_string()));
+            KvsValue::F32(n) => {
+                obj.insert("t".to_string(), JsonValue::String("f32".to_string()));
                 obj.insert("v".to_string(), JsonValue::Number(n as f64));
             },
             KvsValue::F64(n) => {

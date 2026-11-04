@@ -125,6 +125,16 @@ class SupportedDatatypesValues final : public Scenario
     {
         switch (value_.GetType())
         {
+            case KvsValue::Type::kI8:
+                return "i8";
+            case KvsValue::Type::kU8:
+                return "u8";
+            case KvsValue::Type::kI16:
+                return "i16";
+            case KvsValue::Type::kU16:
+                return "u16";
+            case KvsValue::Type::kF32:
+                return "f32";
             case KvsValue::Type::kI32:
                 return "i32";
             case KvsValue::Type::kU32:
@@ -177,9 +187,29 @@ class SupportedDatatypesValues final : public Scenario
     }
 
     // Factory functions for each value type scenario.
+    static Scenario::Ptr SupportedDatatypesI8()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int8_t>(-123)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesI16()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int16_t>(-12345)));
+    }
+
     static Scenario::Ptr SupportedDatatypesI32()
     {
         return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int32_t>(-321)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesU8()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<uint8_t>(123)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesU16()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<uint16_t>(12345)));
     }
 
     static Scenario::Ptr SupportedDatatypesU32()
@@ -195,6 +225,11 @@ class SupportedDatatypesValues final : public Scenario
     static Scenario::Ptr SupportedDatatypesU64()
     {
         return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<uint64_t>(123456789)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesF32()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(12.5F));
     }
 
     static Scenario::Ptr SupportedDatatypesF64()
@@ -233,10 +268,15 @@ class SupportedDatatypesValues final : public Scenario
 
     static ScenarioGroup::Ptr ValueTypesGroup()
     {
-        std::vector<Scenario::Ptr> scenarios{SupportedDatatypesI32(),
+        std::vector<Scenario::Ptr> scenarios{SupportedDatatypesU8(),
+                                             SupportedDatatypesU16(),
+                                             SupportedDatatypesI8(),
+                                             SupportedDatatypesI16(),
+                                             SupportedDatatypesI32(),
                                              SupportedDatatypesU32(),
                                              SupportedDatatypesI64(),
                                              SupportedDatatypesU64(),
+                                             SupportedDatatypesF32(),
                                              SupportedDatatypesF64(),
                                              SupportedDatatypesBool(),
                                              SupportedDatatypesString(),
@@ -250,6 +290,16 @@ class SupportedDatatypesValues final : public Scenario
     {
         switch (value.GetType())
         {
+            case KvsValue::Type::kI8:
+                return std::to_string(std::get<int8_t>(value.GetValue()));
+            case KvsValue::Type::kU8:
+                return std::to_string(std::get<uint8_t>(value.GetValue()));
+            case KvsValue::Type::kI16:
+                return std::to_string(std::get<int16_t>(value.GetValue()));
+            case KvsValue::Type::kU16:
+                return std::to_string(std::get<uint16_t>(value.GetValue()));
+            case KvsValue::Type::kF32:
+                return std::to_string(std::get<float>(value.GetValue()));
             case KvsValue::Type::kI32:
                 return std::to_string(std::get<int32_t>(value.GetValue()));
             case KvsValue::Type::kU32:
