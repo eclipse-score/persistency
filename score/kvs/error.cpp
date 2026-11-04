@@ -61,8 +61,6 @@ std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code
             return "Invalid snapshot ID";
         case ErrorCode::kConversionFailed:
             return "Conversion failed";
-        case ErrorCode::kMutexLockFailed:
-            return "Mutex failed";
         case ErrorCode::kInvalidValueType:
             return "Invalid value type";
         case ErrorCode::kInvalidKey:

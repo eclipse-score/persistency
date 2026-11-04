@@ -144,11 +144,11 @@ Unintended impacts to function due to various failures.
   * - UI_01_05
     - Livelocks
     - no
-    - No retry loops; a failed lock is reported (C++ ``MutexLockFailed``).
+    - No retry loops. Calls wait for the instance lock and do not retry.
   * - UI_01_06
     - Blocking of execution
     - no
-    - No component specific effect, see :need:`feat_saf_dfa__persistency__execution_blocking`.
+    - Calls wait for the instance lock held by another thread of the process. The effect is covered by :need:`feat_saf_dfa__persistency__execution_blocking`.
   * - UI_01_07
     - Incorrect allocation of execution time
     - no
