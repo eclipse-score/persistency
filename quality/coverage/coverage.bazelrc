@@ -31,7 +31,7 @@
 
 coverage:llvm_cov --nocache_test_results
 # ITF integration tests run the instrumented binaries in a container or VM,
-# their counters never reach the host. See //tools/integration_testing.
+# their counters never reach the host. They are tagged in score/kvs/tests/BUILD and score/kvs/rust_kvs/tests/BUILD.
 coverage:llvm_cov --test_tag_filters=-integration-test
 # Instrument everything under //score. Left unset, Bazel guesses the filter
 # from the packages of the test targets (stripping only a trailing "/tests");

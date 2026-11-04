@@ -39,7 +39,7 @@ jobs:
       matrix:
         config: ['score-qnx-x86_64', 'score-qnx-aarch64']
         include:
-          # Component integration tests run in a QNX x86_64 QEMU VM (see //tools/integration_testing).
+          # Component integration tests run in a QNX x86_64 QEMU VM (see //score/kvs/tests:cit_tests).
           - config: 'score-qnx-x86_64'
             test-target: '//:cit_tests'
     with:

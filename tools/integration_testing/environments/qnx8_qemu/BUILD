@@ -13,7 +13,7 @@
 
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
 
-# QNX 8 VM run by the ITF qemu plugin, see //tools/integration_testing:integration_testing.bzl.
+# QNX 8 VM for the ITF qemu plugin, used by //score/kvs/tests:cit_tests and //score/kvs/rust_kvs/tests:cit_tests.
 
 exports_files(
     [
