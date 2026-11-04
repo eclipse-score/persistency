@@ -265,10 +265,15 @@ class FlushValueTypes final : public Scenario
         }};
 
         const std::vector<std::pair<std::string, KvsValue>> values{
-            {"i32", KvsValue{std::int32_t{-321}}},
+            {"u8", KvsValue{std::uint8_t{123U}}},
+            {"u16", KvsValue{std::uint16_t{12345U}}},
             {"u32", KvsValue{std::uint32_t{1234U}}},
-            {"i64", KvsValue{std::int64_t{-123456789012}}},
             {"u64", KvsValue{std::uint64_t{123456789012U}}},
+            {"i8", KvsValue{std::int8_t{-123}}},
+            {"i16", KvsValue{std::int16_t{-12345}}},
+            {"i32", KvsValue{std::int32_t{-321}}},
+            {"i64", KvsValue{std::int64_t{-123456789012}}},
+            {"f32", KvsValue{12.5F}},
             {"f64", KvsValue{-5432.1}},
             {"bool", KvsValue{true}},
             {"null", KvsValue{nullptr}},

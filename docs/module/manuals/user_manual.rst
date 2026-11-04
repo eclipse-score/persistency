@@ -54,6 +54,10 @@ Module Configuration Details
 A KVS instance is configured via ``KvsBuilder`` (C++ and Rust), see `API Reference`_. The behavior of the
 component, including its configuration, is specified in :need:`doc__kvs_requirements`.
 
+In C++, a negative zero ``f32`` or ``f64`` value is loaded as positive zero after a flush.
+The JSON library writes negative zero as ``-0`` and parses that text as an integer, which has no sign.
+For the same reason, C++ rejects ``-0`` for an unsigned type tag, while Rust accepts it as ``0``.
+
 Configuration Effects
 ---------------------
 

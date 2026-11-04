@@ -69,10 +69,15 @@ FLUSH_COUNT = 4
 # Key-value pairs that the 'flush_value_types' scenario sets before the first flush, one per value type, in the KVS
 # file format (type-tagged values). The string value and the last key hold characters that JSON must escape.
 TYPED_VALUES = {
-    "i32": {"t": "i32", "v": -321},
+    "u8": {"t": "u8", "v": 123},
+    "u16": {"t": "u16", "v": 12345},
     "u32": {"t": "u32", "v": 1234},
-    "i64": {"t": "i64", "v": -123456789012},
     "u64": {"t": "u64", "v": 123456789012},
+    "i8": {"t": "i8", "v": -123},
+    "i16": {"t": "i16", "v": -12345},
+    "i32": {"t": "i32", "v": -321},
+    "i64": {"t": "i64", "v": -123456789012},
+    "f32": {"t": "f32", "v": 12.5},
     "f64": {"t": "f64", "v": -5432.1},
     "bool": {"t": "bool", "v": True},
     "null": {"t": "null", "v": None},
@@ -258,7 +263,9 @@ class TestStorageFilesFormatAndChecksum(CommonScenario):
         Steps:
         1. Create an empty working folder on the target and start the scenario program.
         2. Open the KVS (key-value store) with this folder as its storage, with the default of 3 snapshots.
-        3. Set one key per value type: "i32", "u32", "i64", "u64", "f64", "bool", "null", "str", "arr" and "obj".
+        3. Set one key per value type: "i8", "u8", "i16", "u16", "i32", "u32", "i64", "u64", "f32", "f64", "bool",
+           "null", "str", "arr" and "obj". The "f32" value is exactly representable, so both implementations write
+           the same number.
            The string holds a quote, a backslash, a slash, a newline, a tab, the control character 0x01 and the
            non-ASCII letter "ä". The array holds a value of several types, an empty string, an empty array and an
            empty object. The object holds a nested object. Also set the key `quote" backslash\\` to an I32 value.
