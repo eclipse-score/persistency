@@ -60,32 +60,55 @@ class KvsValue final
     using Object = std::vector<std::pair<std::string, KvsValue>>;
 
     /// @brief Variant holding the value.
-    using ValueVariant =
-        std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>;
+    using ValueVariant = std::variant<uint8_t,
+                                      uint16_t,
+                                      uint32_t,
+                                      uint64_t,
+                                      int8_t,
+                                      int16_t,
+                                      int32_t,
+                                      int64_t,
+                                      float,
+                                      double,
+                                      bool,
+                                      std::string,
+                                      std::nullptr_t,
+                                      Array,
+                                      Object>;
 
     /// @brief Type of the held value.
     enum class Type : std::uint8_t
     {
-        /// `int32_t`
-        kI32 = 0,
+        /// `uint8_t`
+        kU8 = 0,
+        /// `uint16_t`
+        kU16 = 1,
         /// `uint32_t`
-        kU32 = 1,
-        /// `int64_t`
-        kI64 = 2,
+        kU32 = 2,
         /// `uint64_t`
         kU64 = 3,
+        /// `int8_t`
+        kI8 = 4,
+        /// `int16_t`
+        kI16 = 5,
+        /// `int32_t`
+        kI32 = 6,
+        /// `int64_t`
+        kI64 = 7,
+        /// `float`
+        kF32 = 8,
         /// `double`
-        kF64 = 4,
+        kF64 = 9,
         /// `bool`
-        kBoolean = 5,
+        kBoolean = 10,
         /// `std::string`
-        kString = 6,
+        kString = 11,
         /// `std::nullptr_t`
-        kNull = 7,
+        kNull = 12,
         /// KvsValue::Array
-        kArray = 8,
+        kArray = 13,
         /// KvsValue::Object
-        kObject = 9,
+        kObject = 14,
 
         // Deprecated enumerators.
         // Each one is an alias of its k-prefixed replacement and is removed in a future release.
@@ -102,10 +125,15 @@ class KvsValue final
     };
 
     /// @brief The Type enumerators must match the order of the variant alternatives.
-    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kI32), ValueVariant>, int32_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kU8), ValueVariant>, uint8_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kU16), ValueVariant>, uint16_t>);
     static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kU32), ValueVariant>, uint32_t>);
-    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kI64), ValueVariant>, int64_t>);
     static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kU64), ValueVariant>, uint64_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kI8), ValueVariant>, int8_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kI16), ValueVariant>, int16_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kI32), ValueVariant>, int32_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kI64), ValueVariant>, int64_t>);
+    static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kF32), ValueVariant>, float>);
     static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kF64), ValueVariant>, double>);
     static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kBoolean), ValueVariant>, bool>);
     static_assert(
@@ -116,14 +144,24 @@ class KvsValue final
     static_assert(std::is_same_v<std::variant_alternative_t<static_cast<size_t>(Type::kObject), ValueVariant>, Object>);
     static_assert(std::variant_size_v<ValueVariant> == (static_cast<size_t>(Type::kObject) + 1U));
 
-    /// @brief Constructs a value of type Type::kI32.
-    explicit KvsValue(int32_t number) noexcept : value_{number} {}
+    /// @brief Constructs a value of type Type::kU8.
+    explicit KvsValue(uint8_t number) noexcept : value_{number} {}
+    /// @brief Constructs a value of type Type::kU16.
+    explicit KvsValue(uint16_t number) noexcept : value_{number} {}
     /// @brief Constructs a value of type Type::kU32.
     explicit KvsValue(uint32_t number) noexcept : value_{number} {}
-    /// @brief Constructs a value of type Type::kI64.
-    explicit KvsValue(int64_t number) noexcept : value_{number} {}
     /// @brief Constructs a value of type Type::kU64.
     explicit KvsValue(uint64_t number) noexcept : value_{number} {}
+    /// @brief Constructs a value of type Type::kI8.
+    explicit KvsValue(int8_t number) noexcept : value_{number} {}
+    /// @brief Constructs a value of type Type::kI16.
+    explicit KvsValue(int16_t number) noexcept : value_{number} {}
+    /// @brief Constructs a value of type Type::kI32.
+    explicit KvsValue(int32_t number) noexcept : value_{number} {}
+    /// @brief Constructs a value of type Type::kI64.
+    explicit KvsValue(int64_t number) noexcept : value_{number} {}
+    /// @brief Constructs a value of type Type::kF32.
+    explicit KvsValue(float number) noexcept : value_{number} {}
     /// @brief Constructs a value of type Type::kF64.
     explicit KvsValue(double number) noexcept : value_{number} {}
     /// @brief Constructs a value of type Type::kBoolean.

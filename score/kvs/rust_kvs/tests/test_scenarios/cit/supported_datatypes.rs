@@ -75,10 +75,15 @@ impl Scenario for SupportedDatatypesValues {
     fn name(&self) -> &str {
         // Set scenario name based on provided value.
         match self.value {
-            KvsValue::I32(_) => "i32",
+            KvsValue::U8(_) => "u8",
+            KvsValue::U16(_) => "u16",
             KvsValue::U32(_) => "u32",
-            KvsValue::I64(_) => "i64",
             KvsValue::U64(_) => "u64",
+            KvsValue::I8(_) => "i8",
+            KvsValue::I16(_) => "i16",
+            KvsValue::I32(_) => "i32",
+            KvsValue::I64(_) => "i64",
+            KvsValue::F32(_) => "f32",
             KvsValue::F64(_) => "f64",
             KvsValue::Boolean(_) => "bool",
             KvsValue::String(_) => "str",
@@ -105,9 +110,33 @@ impl Scenario for SupportedDatatypesValues {
     }
 }
 
+fn supported_datatypes_i8() -> Box<dyn Scenario> {
+    Box::new(SupportedDatatypesValues {
+        value: KvsValue::I8(-123),
+    })
+}
+
+fn supported_datatypes_i16() -> Box<dyn Scenario> {
+    Box::new(SupportedDatatypesValues {
+        value: KvsValue::I16(-12345),
+    })
+}
+
 fn supported_datatypes_i32() -> Box<dyn Scenario> {
     Box::new(SupportedDatatypesValues {
         value: KvsValue::I32(-321),
+    })
+}
+
+fn supported_datatypes_u8() -> Box<dyn Scenario> {
+    Box::new(SupportedDatatypesValues {
+        value: KvsValue::U8(123),
+    })
+}
+
+fn supported_datatypes_u16() -> Box<dyn Scenario> {
+    Box::new(SupportedDatatypesValues {
+        value: KvsValue::U16(12345),
     })
 }
 
@@ -126,6 +155,12 @@ fn supported_datatypes_i64() -> Box<dyn Scenario> {
 fn supported_datatypes_u64() -> Box<dyn Scenario> {
     Box::new(SupportedDatatypesValues {
         value: KvsValue::U64(123456789),
+    })
+}
+
+fn supported_datatypes_f32() -> Box<dyn Scenario> {
+    Box::new(SupportedDatatypesValues {
+        value: KvsValue::F32(12.5),
     })
 }
 
@@ -173,10 +208,15 @@ fn value_types_group() -> Box<dyn ScenarioGroup> {
     let group = ScenarioGroupImpl::new(
         "values",
         vec![
-            supported_datatypes_i32(),
+            supported_datatypes_u8(),
+            supported_datatypes_u16(),
             supported_datatypes_u32(),
-            supported_datatypes_i64(),
             supported_datatypes_u64(),
+            supported_datatypes_i8(),
+            supported_datatypes_i16(),
+            supported_datatypes_i32(),
+            supported_datatypes_i64(),
+            supported_datatypes_f32(),
             supported_datatypes_f64(),
             supported_datatypes_bool(),
             supported_datatypes_string(),
