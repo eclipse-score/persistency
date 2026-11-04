@@ -33,6 +33,54 @@ use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
 //   "my_null": { "t": "null", "v": null }
 // }
 
+/// Integer types stored as JSON numbers.
+trait JsonInteger: Sized {
+    /// Converts JSON number to `Self`.
+    /// Number must be equal to a value of `Self` converted to `f64`.
+    fn from_json_number(value: f64) -> Option<Self>;
+}
+
+macro_rules! impl_json_integer {
+    ($($t:ty),*) => {
+        $(impl JsonInteger for $t {
+            fn from_json_number(value: f64) -> Option<Self> {
+                // `as` saturates, so fractional, non-finite and out-of-range values don't round-trip.
+                // `MAX` of 64-bit types is not representable in `f64` and is written rounded up (e.g., 2^64),
+                // which saturates back to `MAX`.
+                let converted = value as $t;
+                (converted as f64 == value).then_some(converted)
+            }
+        })*
+    };
+}
+
+impl_json_integer!(u8, u16, u32, u64, i8, i16, i32, i64);
+
+/// Converts JSON number to integer type `T`.
+fn checked_integer<T: JsonInteger>(value: f64) -> Result<T, ErrorCode> {
+    T::from_json_number(value).ok_or(ErrorCode::InvalidValueType)
+}
+
+/// Converts JSON number to `f32`.
+/// Number must round to a finite `f32` value.
+/// Text representation of `f32::MAX` (e.g., written by C++ with `max_digits10`) might be parsed
+/// to `f64` slightly larger than `f32::MAX`, but still rounds back to `f32::MAX`.
+fn checked_f32(value: f64) -> Result<f32, ErrorCode> {
+    let converted = value as f32;
+    if converted.is_finite() {
+        Ok(converted)
+    } else {
+        Err(ErrorCode::InvalidValueType)
+    }
+}
+
+fn tagged_number(tag: &str, value: f64) -> JsonValue {
+    let mut obj = HashMap::new();
+    obj.insert("t".to_string(), JsonValue::String(tag.to_string()));
+    obj.insert("v".to_string(), JsonValue::Number(value));
+    JsonValue::Object(obj)
+}
+
 /// Backend-specific JsonValue -> KvsValue conversion.
 impl TryFrom<JsonValue> for KvsValue {
     type Error = ErrorCode;
@@ -43,11 +91,16 @@ impl TryFrom<JsonValue> for KvsValue {
                 // Type-tagged: { "t": ..., "v": ... }
                 if let (Some(JsonValue::String(type_str)), Some(value)) = (obj.remove("t"), obj.remove("v")) {
                     match (type_str.as_str(), value) {
-                        ("i32", JsonValue::Number(v)) => Ok(KvsValue::I32(v as i32)),
-                        ("u32", JsonValue::Number(v)) => Ok(KvsValue::U32(v as u32)),
-                        ("i64", JsonValue::Number(v)) => Ok(KvsValue::I64(v as i64)),
-                        ("u64", JsonValue::Number(v)) => Ok(KvsValue::U64(v as u64)),
-                        ("f64", JsonValue::Number(v)) => Ok(KvsValue::F64(v)),
+                        ("u8", JsonValue::Number(v)) => checked_integer(v).map(KvsValue::U8),
+                        ("u16", JsonValue::Number(v)) => checked_integer(v).map(KvsValue::U16),
+                        ("u32", JsonValue::Number(v)) => checked_integer(v).map(KvsValue::U32),
+                        ("u64", JsonValue::Number(v)) => checked_integer(v).map(KvsValue::U64),
+                        ("i8", JsonValue::Number(v)) => checked_integer(v).map(KvsValue::I8),
+                        ("i16", JsonValue::Number(v)) => checked_integer(v).map(KvsValue::I16),
+                        ("i32", JsonValue::Number(v)) => checked_integer(v).map(KvsValue::I32),
+                        ("i64", JsonValue::Number(v)) => checked_integer(v).map(KvsValue::I64),
+                        ("f32", JsonValue::Number(v)) => checked_f32(v).map(KvsValue::F32),
+                        ("f64", JsonValue::Number(v)) if v.is_finite() => Ok(KvsValue::F64(v)),
                         ("bool", JsonValue::Boolean(v)) => Ok(KvsValue::Boolean(v)),
                         ("str", JsonValue::String(v)) => Ok(KvsValue::String(v)),
                         ("null", JsonValue::Null) => Ok(KvsValue::Null),
@@ -80,26 +133,16 @@ impl TryFrom<KvsValue> for JsonValue {
     fn try_from(val: KvsValue) -> Result<Self, Self::Error> {
         let mut obj = HashMap::new();
         match val {
-            KvsValue::I32(n) => {
-                obj.insert("t".to_string(), JsonValue::String("i32".to_string()));
-                obj.insert("v".to_string(), JsonValue::Number(n as f64));
-            },
-            KvsValue::U32(n) => {
-                obj.insert("t".to_string(), JsonValue::String("u32".to_string()));
-                obj.insert("v".to_string(), JsonValue::Number(n as f64));
-            },
-            KvsValue::I64(n) => {
-                obj.insert("t".to_string(), JsonValue::String("i64".to_string()));
-                obj.insert("v".to_string(), JsonValue::Number(n as f64));
-            },
-            KvsValue::U64(n) => {
-                obj.insert("t".to_string(), JsonValue::String("u64".to_string()));
-                obj.insert("v".to_string(), JsonValue::Number(n as f64));
-            },
-            KvsValue::F64(n) => {
-                obj.insert("t".to_string(), JsonValue::String("f64".to_string()));
-                obj.insert("v".to_string(), JsonValue::Number(n));
-            },
+            KvsValue::U8(n) => return Ok(tagged_number("u8", n as f64)),
+            KvsValue::U16(n) => return Ok(tagged_number("u16", n as f64)),
+            KvsValue::U32(n) => return Ok(tagged_number("u32", n as f64)),
+            KvsValue::U64(n) => return Ok(tagged_number("u64", n as f64)),
+            KvsValue::I8(n) => return Ok(tagged_number("i8", n as f64)),
+            KvsValue::I16(n) => return Ok(tagged_number("i16", n as f64)),
+            KvsValue::I32(n) => return Ok(tagged_number("i32", n as f64)),
+            KvsValue::I64(n) => return Ok(tagged_number("i64", n as f64)),
+            KvsValue::F32(n) => return Ok(tagged_number("f32", n as f64)),
+            KvsValue::F64(n) => return Ok(tagged_number("f64", n)),
             KvsValue::Boolean(b) => {
                 obj.insert("t".to_string(), JsonValue::String("bool".to_string()));
                 obj.insert("v".to_string(), JsonValue::Boolean(b));
@@ -585,6 +628,169 @@ mod json_value_to_kvs_value_conversion_tests {
     use std::collections::HashMap;
     use tinyjson::JsonValue;
 
+    fn tagged(tag: &str, value: JsonValue) -> JsonValue {
+        JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String(tag.to_string())),
+            ("v".to_string(), value),
+        ]))
+    }
+
+    /// Exact power of two. Precision of `powi` is unspecified and Miri randomizes it.
+    fn pow2(exp: i32) -> f64 {
+        f64::from_bits(((1023 + exp) as u64) << 52)
+    }
+
+    fn assert_number_ok(tag: &str, value: f64, expected: KvsValue) {
+        assert_eq!(
+            KvsValue::try_from(tagged(tag, JsonValue::Number(value))),
+            Ok(expected),
+            "{tag}: {value}"
+        );
+    }
+
+    fn assert_number_invalid(tag: &str, value: f64) {
+        assert_eq!(
+            KvsValue::try_from(tagged(tag, JsonValue::Number(value))),
+            Err(ErrorCode::InvalidValueType),
+            "{tag}: {value}"
+        );
+    }
+
+    macro_rules! integer_range_tests {
+        ($mod_name:ident, $t:ty, $tag:literal, $variant:ident) => {
+            mod $mod_name {
+                use super::*;
+
+                #[test]
+                fn test_in_range_ok() {
+                    for value in [<$t>::MIN, <$t>::MIN / 3, 0, 1, <$t>::MAX / 3, <$t>::MAX] {
+                        assert_number_ok($tag, value as f64, KvsValue::$variant(value));
+                    }
+                }
+
+                #[test]
+                fn test_out_of_range() {
+                    assert_number_invalid($tag, <$t>::MIN as f64 - 1.0);
+                    assert_number_invalid($tag, <$t>::MAX as f64 + 1.0);
+                }
+
+                #[test]
+                fn test_fractional() {
+                    assert_number_invalid($tag, 1.5);
+                    assert_number_invalid($tag, (<$t>::MAX / 3) as f64 + 0.5);
+                }
+
+                #[test]
+                fn test_non_finite() {
+                    assert_number_invalid($tag, f64::NAN);
+                    assert_number_invalid($tag, f64::INFINITY);
+                    assert_number_invalid($tag, f64::NEG_INFINITY);
+                }
+
+                #[test]
+                fn test_invalid_type() {
+                    let jv = tagged($tag, JsonValue::String("1".to_string()));
+                    assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
+                }
+            }
+        };
+    }
+
+    integer_range_tests!(u8_tests, u8, "u8", U8);
+    integer_range_tests!(u16_tests, u16, "u16", U16);
+    integer_range_tests!(u32_tests, u32, "u32", U32);
+    integer_range_tests!(i8_tests, i8, "i8", I8);
+    integer_range_tests!(i16_tests, i16, "i16", I16);
+    integer_range_tests!(i32_tests, i32, "i32", I32);
+
+    #[test]
+    fn test_u64_range() {
+        for value in [u64::MIN, 1, 1 << 53, u64::MAX - 2047] {
+            assert_number_ok("u64", value as f64, KvsValue::U64(value));
+        }
+        assert_number_invalid("u64", -1.0);
+        // Next `f64` above `u64::MAX as f64` (2^64).
+        assert_number_invalid("u64", pow2(64) + pow2(12));
+        assert_number_invalid("u64", 1.5);
+        assert_number_invalid("u64", f64::INFINITY);
+    }
+
+    #[test]
+    fn test_i64_range() {
+        for value in [i64::MIN, -(1 << 53), 0, 1 << 53, i64::MAX - 1023] {
+            assert_number_ok("i64", value as f64, KvsValue::I64(value));
+        }
+        assert_number_invalid("i64", -pow2(63) - pow2(11));
+        // Next `f64` above `i64::MAX as f64` (2^63).
+        assert_number_invalid("i64", pow2(63) + pow2(11));
+        assert_number_invalid("i64", -1.5);
+        assert_number_invalid("i64", f64::NEG_INFINITY);
+    }
+
+    #[test]
+    fn test_u64_max() {
+        // `u64::MAX` is written as 2^64.
+        assert_number_ok("u64", pow2(64), KvsValue::U64(u64::MAX));
+    }
+
+    #[test]
+    fn test_i64_max() {
+        // `i64::MAX` is written as 2^63.
+        assert_number_ok("i64", pow2(63), KvsValue::I64(i64::MAX));
+    }
+
+    #[test]
+    fn test_f32_range() {
+        for value in [
+            f32::MIN,
+            -1.5,
+            -f32::MIN_POSITIVE,
+            0.0,
+            0.1,
+            f32::MIN_POSITIVE,
+            12.5,
+            f32::MAX,
+        ] {
+            assert_number_ok("f32", value as f64, KvsValue::F32(value));
+        }
+    }
+
+    #[test]
+    fn test_f32_max_written_by_cpp() {
+        // C++ writes `f32::MAX` with `max_digits10`, parsed value is slightly above `f32::MAX`.
+        let parsed: f64 = "3.40282347e+38".parse().unwrap();
+        assert!(parsed > f32::MAX as f64);
+        assert_number_ok("f32", parsed, KvsValue::F32(f32::MAX));
+        assert_number_ok("f32", -parsed, KvsValue::F32(f32::MIN));
+    }
+
+    #[test]
+    fn test_f32_out_of_range() {
+        // `f32::MAX + ulp / 2` is the smallest value rounding to infinity.
+        let limit = f32::MAX as f64 + pow2(103);
+        assert_number_ok("f32", limit - pow2(80), KvsValue::F32(f32::MAX));
+        assert_number_invalid("f32", limit);
+        assert_number_invalid("f32", -limit);
+        assert_number_invalid("f32", f64::MAX);
+        assert_number_invalid("f32", f64::NAN);
+        assert_number_invalid("f32", f64::INFINITY);
+    }
+
+    #[test]
+    fn test_f32_invalid_type() {
+        let jv = tagged("f32", JsonValue::String("1.5".to_string()));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
+    }
+
+    #[test]
+    fn test_f64_range() {
+        for value in [f64::MIN, -432.1, 0.0, f64::MIN_POSITIVE, 0.1, f64::MAX] {
+            assert_number_ok("f64", value, KvsValue::F64(value));
+        }
+        assert_number_invalid("f64", f64::NAN);
+        assert_number_invalid("f64", f64::INFINITY);
+    }
+
     #[test]
     fn test_i32_ok() {
         let jv = JsonValue::from(HashMap::from([
@@ -977,6 +1183,26 @@ mod kvs_value_to_json_value_conversion_tests {
     use std::collections::HashMap;
     use tinyjson::JsonValue;
 
+    fn assert_tagged_number(kv: KvsValue, tag: &str, value: f64) {
+        assert_eq!(
+            JsonValue::try_from(kv).unwrap(),
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String(tag.to_string())),
+                ("v".to_string(), JsonValue::Number(value)),
+            ]))
+        );
+    }
+
+    #[test]
+    fn test_new_numeric_types_ok() {
+        assert_tagged_number(KvsValue::U8(u8::MAX), "u8", 255.0);
+        assert_tagged_number(KvsValue::U16(u16::MAX), "u16", 65535.0);
+        assert_tagged_number(KvsValue::I8(i8::MIN), "i8", -128.0);
+        assert_tagged_number(KvsValue::I16(i16::MIN), "i16", -32768.0);
+        assert_tagged_number(KvsValue::F32(12.5), "f32", 12.5);
+        assert_tagged_number(KvsValue::F32(f32::MAX), "f32", f32::MAX as f64);
+    }
+
     #[test]
     fn test_i32_ok() {
         let kv = KvsValue::I32(-123);
@@ -1191,6 +1417,61 @@ mod kvs_value_to_json_value_conversion_tests {
 
         let jv = JsonValue::try_from(kv.clone()).unwrap();
         assert_eq!(KvsValue::try_from(jv).unwrap(), kv);
+    }
+}
+
+#[cfg(test)]
+mod json_text_round_trip_tests {
+    use crate::kvs_value::KvsValue;
+    use tinyjson::JsonValue;
+
+    fn round_trip(kv: KvsValue) -> KvsValue {
+        let text = JsonValue::try_from(kv).unwrap().stringify().unwrap();
+        let parsed: JsonValue = text.parse().unwrap();
+        KvsValue::try_from(parsed).unwrap_or_else(|e| panic!("{text}: {e:?}"))
+    }
+
+    macro_rules! round_trip_test {
+        ($name:ident, $t:ty, $variant:ident, [$($value:expr),*]) => {
+            #[test]
+            fn $name() {
+                let values: &[$t] = &[$($value),*];
+                for &value in values {
+                    assert_eq!(round_trip(KvsValue::$variant(value)), KvsValue::$variant(value));
+                }
+            }
+        };
+    }
+
+    round_trip_test!(test_u8, u8, U8, [u8::MIN, 123, u8::MAX]);
+    round_trip_test!(test_u16, u16, U16, [u16::MIN, 12345, u16::MAX]);
+    round_trip_test!(test_u32, u32, U32, [u32::MIN, 1234567, u32::MAX]);
+    round_trip_test!(test_u64, u64, U64, [u64::MIN, 123456789, 1 << 53]);
+    round_trip_test!(test_i8, i8, I8, [i8::MIN, -123, 0, i8::MAX]);
+    round_trip_test!(test_i16, i16, I16, [i16::MIN, -12345, 0, i16::MAX]);
+    round_trip_test!(test_i32, i32, I32, [i32::MIN, -1234567, 0, i32::MAX]);
+    round_trip_test!(test_i64, i64, I64, [i64::MIN, -123456789, 0, 1 << 53]);
+    round_trip_test!(
+        test_f32,
+        f32,
+        F32,
+        [f32::MIN, -12.5, 0.0, 0.1, f32::MIN_POSITIVE, f32::MAX]
+    );
+    round_trip_test!(
+        test_f64,
+        f64,
+        F64,
+        [f64::MIN, -5432.1, 0.0, 0.1, f64::MIN_POSITIVE, f64::MAX]
+    );
+
+    #[test]
+    fn test_u64_max() {
+        assert_eq!(round_trip(KvsValue::U64(u64::MAX)), KvsValue::U64(u64::MAX));
+    }
+
+    #[test]
+    fn test_i64_max() {
+        assert_eq!(round_trip(KvsValue::I64(i64::MAX)), KvsValue::I64(i64::MAX));
     }
 }
 

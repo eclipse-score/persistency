@@ -95,7 +95,7 @@ impl KvsDeserialize for IpAddrWrapper {
 
 /// Main example struct.
 /// - Types defined by `KvsValue`.
-/// - `u8` - additional type not defined by `KvsValue`.
+/// - `usize` - additional type not defined by `KvsValue`, stored as `u64`.
 /// - `nested` - nested serializable object.
 /// - `ip` - external type serialized to `KvsValue`.
 #[derive(Debug)]
@@ -109,7 +109,7 @@ struct Example {
     string: String,
     vec: Vec<KvsValue>,
     object: KvsMap,
-    u8: u8,
+    usize: usize,
     nested: Point,
     ip: IpAddr,
 }
@@ -129,7 +129,7 @@ impl KvsSerialize for Example {
         map.insert("string".to_string(), self.string.to_kvs()?);
         map.insert("vec".to_string(), self.vec.to_kvs()?);
         map.insert("object".to_string(), self.object.to_kvs()?);
-        map.insert("u8".to_string(), self.u8.to_kvs()?);
+        map.insert("usize".to_string(), self.usize.to_kvs()?);
 
         // Nested serializable object.
         map.insert("nested".to_string(), self.nested.to_kvs()?);
@@ -183,8 +183,8 @@ impl KvsDeserialize for Example {
                     map.get("object")
                         .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
                 )?,
-                u8: u8::from_kvs(
-                    map.get("u8")
+                usize: usize::from_kvs(
+                    map.get("usize")
                         .ok_or(ErrorCode::DeserializationFailed("Field not found".to_string()))?,
                 )?,
                 nested: Point::from_kvs(
@@ -225,7 +225,7 @@ fn main() -> Result<(), ErrorCode> {
             ("second".to_string(), KvsValue::from(321u32)),
             ("third".to_string(), KvsValue::String("map_example".to_string())),
         ]),
-        u8: 200,
+        usize: 200,
         nested: Point { x: 432.1, y: 654.3 },
         ip: "127.0.0.1".parse().unwrap(),
     };

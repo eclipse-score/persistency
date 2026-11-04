@@ -26,6 +26,11 @@ fn store_scenario(working_dir: PathBuf) {
         .build()
         .unwrap();
 
+    assert_eq!(kvs.get_value_as::<i8>("i8").unwrap(), -123i8);
+    assert_eq!(kvs.get_value_as::<u8>("u8").unwrap(), 123u8);
+    assert_eq!(kvs.get_value_as::<i16>("i16").unwrap(), -12345i16);
+    assert_eq!(kvs.get_value_as::<u16>("u16").unwrap(), 12345u16);
+    assert_eq!(kvs.get_value_as::<f32>("f32").unwrap(), 12.5f32);
     assert_eq!(kvs.get_value_as::<f64>("number").unwrap(), 123.0f64);
     assert!(kvs.get_value_as::<bool>("bool").unwrap());
     assert_eq!(kvs.get_value_as::<String>("string").unwrap(), "First");
@@ -62,6 +67,11 @@ fn load_scenario(working_dir: PathBuf) {
         .build()
         .unwrap();
 
+    kvs.set_value("i8", -123i8).unwrap();
+    kvs.set_value("u8", 123u8).unwrap();
+    kvs.set_value("i16", -12345i16).unwrap();
+    kvs.set_value("u16", 12345u16).unwrap();
+    kvs.set_value("f32", 12.5f32).unwrap();
     kvs.set_value("i32", -123i32).unwrap();
     kvs.set_value("u32", 123u32).unwrap();
     kvs.set_value("i64", -12345i64).unwrap();
@@ -74,6 +84,24 @@ fn load_scenario(working_dir: PathBuf) {
         .unwrap();
     kvs.set_value("object", HashMap::from([("f64-in-object".into(), 123.456f64.into())]))
         .unwrap();
+
+    // Boundary values.
+    kvs.set_value("i8-min", i8::MIN).unwrap();
+    kvs.set_value("i8-max", i8::MAX).unwrap();
+    kvs.set_value("u8-max", u8::MAX).unwrap();
+    kvs.set_value("i16-min", i16::MIN).unwrap();
+    kvs.set_value("i16-max", i16::MAX).unwrap();
+    kvs.set_value("u16-max", u16::MAX).unwrap();
+    kvs.set_value("i32-min", i32::MIN).unwrap();
+    kvs.set_value("i32-max", i32::MAX).unwrap();
+    kvs.set_value("u32-max", u32::MAX).unwrap();
+    kvs.set_value("i64-min", i64::MIN).unwrap();
+    kvs.set_value("i64-max", i64::MAX).unwrap();
+    kvs.set_value("u64-max", u64::MAX).unwrap();
+    kvs.set_value("f32-min", f32::MIN).unwrap();
+    kvs.set_value("f32-max", f32::MAX).unwrap();
+    kvs.set_value("f64-min", f64::MIN).unwrap();
+    kvs.set_value("f64-max", f64::MAX).unwrap();
 
     kvs.flush().unwrap();
 }
