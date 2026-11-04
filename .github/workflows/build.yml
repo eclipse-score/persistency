@@ -31,7 +31,7 @@ jobs:
       (github.event_name == 'pull_request' &&
         github.actor != 'dependabot[bot]' &&
         github.event.pull_request.head.repo.full_name == github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@7e8ea4c61756b931622ff979835469b93b162920 # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@d768523bcb4ce716e2e56f9a8e3b2c25fcd30b06 # v0.0.3-43-7e8ea4c
     permissions:
       contents: read
       pull-requests: read
