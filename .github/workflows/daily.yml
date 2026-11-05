@@ -31,4 +31,4 @@ on:
 
 jobs:
   maintenance:
-    uses: eclipse-score/cicd-workflows/.github/workflows/daily.yml@7e8ea4c61756b931622ff979835469b93b162920 # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/daily.yml@d768523bcb4ce716e2e56f9a8e3b2c25fcd30b06 # v0.0.3-43-7e8ea4c
