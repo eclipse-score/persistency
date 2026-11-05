@@ -44,6 +44,8 @@ concurrency:
 jobs:
   verify:
     name: Build, test and coverage
+    # Fail fast: a real run without release note must not spend the verification time.
+    needs: [release-note]
     runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
     permissions:
       contents: read
@@ -137,6 +139,7 @@ jobs:
 
   cit:
     # Its test report is traceability input of the docs build.
+    needs: [release-note]
     permissions:
       contents: read
     uses: ./.github/workflows/component_integration_tests.yml
