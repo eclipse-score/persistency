@@ -35,7 +35,7 @@ jobs:
           disk-cache-key: ${{ github.job }}
 
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@168b6f51b21b5f0ebe49808939db53557dca410c # main branch (2026-10-12)
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@28233566af2525acf84b3c66cfa66ae2583e4236 # main branch (2026-10-12)
 
       # The kvs_tool ITF tests run their binaries in a Docker container.
       # Coverage data from the container never reaches Bazel, so they are excluded.
