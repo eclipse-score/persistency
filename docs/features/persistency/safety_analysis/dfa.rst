@@ -18,7 +18,7 @@ Persistency Dependent Failure Analysis
 .. document:: Persistency DFA
    :id: doc__persistency_dfa
    :status: valid
-   :version: 1
+   :version: 2
    :safety: ASIL_B
    :security: NO
    :realizes: wp__feature_dfa[version==1]
