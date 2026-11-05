@@ -37,9 +37,6 @@ filterwarnings = [
     'ignore:record_xml_attribute is an experimental feature:pytest.PytestExperimentalApiWarning',
 ]
 
-[tool.pytest_env]
-RUST_BACKTRACE =  {value = "1", skip_if_set = true}
-
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
 exclude = [

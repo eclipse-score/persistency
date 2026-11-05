@@ -15,7 +15,8 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from common import CommonScenario, ResultCode, temp_dir_common
+from common import CommonScenario, ResultCode, path_exists, temp_dir_common
+from score.itf.plugins.core import Target
 from test_properties import add_test_properties
 from testing_utils import LogContainer, ScenarioResult
 
@@ -30,14 +31,14 @@ class MaxSnapshotsScenario(CommonScenario):
     @pytest.fixture(scope="class")
     def temp_dir(
         self,
-        tmp_path_factory: pytest.TempPathFactory,
+        target: Target,
         version: str,
         snapshot_max_count: int,
     ) -> Generator[Path, None, None]:
         """
         Create temporary directory and remove it after test.
         """
-        yield from temp_dir_common(tmp_path_factory, self.__class__.__name__, version, str(snapshot_max_count))
+        yield from temp_dir_common(target, self.__class__.__name__, version, str(snapshot_max_count))
 
 
 @add_test_properties(
@@ -273,6 +274,7 @@ class TestSnapshotPathsExist(CommonScenario):
 
     def test_ok(
         self,
+        target: Target,
         temp_dir: Path,
         results: ScenarioResult,
         logs_info_level: LogContainer,
@@ -282,9 +284,9 @@ class TestSnapshotPathsExist(CommonScenario):
         paths_log = logs_info_level.find_log("kvs_path")
         assert paths_log is not None
         assert paths_log.kvs_path == f"{temp_dir}/kvs_1_1.json"
-        assert Path(paths_log.kvs_path).exists()
+        assert path_exists(target, Path(paths_log.kvs_path))
         assert paths_log.hash_path == f"{temp_dir}/kvs_1_1.hash"
-        assert Path(paths_log.hash_path).exists()
+        assert path_exists(target, Path(paths_log.hash_path))
 
 
 @add_test_properties(
@@ -309,6 +311,7 @@ class TestSnapshotPathsNonexistent(CommonScenario):
 
     def test_error(
         self,
+        target: Target,
         temp_dir: Path,
         results: ScenarioResult,
         logs_info_level: LogContainer,
@@ -318,6 +321,6 @@ class TestSnapshotPathsNonexistent(CommonScenario):
         paths_log = logs_info_level.find_log("kvs_path")
         assert paths_log is not None
         assert paths_log.kvs_path == f"{temp_dir}/kvs_1_2.json"
-        assert not Path(paths_log.kvs_path).exists()
+        assert not path_exists(target, Path(paths_log.kvs_path))
         assert paths_log.hash_path == f"{temp_dir}/kvs_1_2.hash"
-        assert not Path(paths_log.hash_path).exists()
+        assert not path_exists(target, Path(paths_log.hash_path))

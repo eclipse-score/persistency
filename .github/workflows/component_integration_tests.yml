@@ -36,11 +36,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Setup Rust build environment
-        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch (2026-10-16)
-        with:
-          toolchain: 1.90.0
-
       - name: Setup Bazel with shared caching
         uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
         with:
@@ -49,30 +44,7 @@ jobs:
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
       - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@28233566af2525acf84b3c66cfa66ae2583e4236 # main branch (2026-10-12)
 
-      - name: Build C++ test scenarios with Bazel
-        run: |
-          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/kvs/tests/test_scenarios
-
-      - name: Build Rust test scenarios with Bazel
-        run: |
-          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/kvs/rust_kvs/tests/test_scenarios
-
-      - name: Set up Python 3
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        with:
-          python-version: "3.12"
-
-      - name: Set up Python virtual environment
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install -r score/kvs/tests/test_cases/requirements.txt
-
-      - name: Run Python tests with pytest
-        run: |
-          source .venv/bin/activate
-          python -m pytest --traces=all --log-cli-level=DEBUG
-
+      # Test scenarios run in a Docker container started by ITF.
       - name: Run Python tests with bazel
         run: |
           bazel test --lockfile_mode=error --config=score-linux-x86_64 //:cit_tests

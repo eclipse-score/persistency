@@ -38,11 +38,18 @@ jobs:
     strategy:
       matrix:
         config: ['score-qnx-x86_64', 'score-qnx-aarch64']
+        include:
+          # Component integration tests run in a QNX x86_64 QEMU VM (see //score/kvs/tests:cit_tests).
+          - config: 'score-qnx-x86_64'
+            test-target: '//:cit_tests'
     with:
       bazel-target: >-
         //score/kvs //score/kvs/rust_kvs:rust_kvs //score/kvs/rust_kvs_tool:kvs_tool
       bazel-config: ${{ matrix.config }}
       extra-bazel-flags: '--lockfile_mode=error'
+      bazel-test-target: ${{ matrix.test-target }}
+      extra-bazel-test-flags: '--lockfile_mode=error'
+      test-log-artifact-name: qnx-testlogs-${{ matrix.config }}
       environment-name: 'workflow-approval'
     secrets:
       score-qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
