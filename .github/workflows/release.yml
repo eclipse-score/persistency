@@ -21,6 +21,10 @@ run-name: Release ${{ inputs.tag }}${{ inputs.dry_run && ' (dry run)' || '' }}
 # Precondition (release management process, gd_guidl__rel_management): the module
 # release note docs/module/release/release_note.rst names the tag and its PR was
 # approved by a project lead. A real release refuses to start otherwise.
+#
+# Publishing the draft also adds the version to eclipse-score/bazel_registry within
+# about 30 minutes (periodic-pull); pre-releases included, so never publish test releases.
+# If it does not appear, run "Check for Module Updates" there with module score_persistency.
 on:
   workflow_dispatch:
     inputs:
@@ -157,25 +161,3 @@ jobs:
       docs-tests-report-artifact: tests-report
       bazel-asset-targets: //:sbom_product
       bazel-flags: --lockfile_mode=error --config=score-linux-x86_64
-
-  next-steps:
-    name: Next steps
-    needs: [release]
-    if: ${{ !inputs.dry_run }}
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
-    permissions: {}
-    steps:
-      - name: Summary
-        env:
-          TAG: ${{ needs.release.outputs.tag }}
-          URL: ${{ needs.release.outputs.release-url }}
-        run: |
-          {
-            echo "### Next steps"
-            echo ""
-            echo "1. Review the draft ${URL} and publish it."
-            echo "2. About 30 minutes after publishing, \`eclipse-score/bazel_registry\` adds \`${TAG}\` of \`score_persistency\` itself (\`periodic-pull\`). Check for the bot commit or PR there."
-            echo "   If it does not show up, run the \"Check for Module Updates\" workflow in \`bazel_registry\` with module \`score_persistency\`."
-            echo ""
-            echo "Publishing triggers the registry for every release, pre-releases included. Do not publish test releases."
-          } >> "$GITHUB_STEP_SUMMARY"
