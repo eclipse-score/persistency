@@ -72,7 +72,7 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="DFA (Dependent Failure Analysis)" href="dfa.html" />
+    <link rel="next" title="Persistency Dependent Failure Analysis" href="dfa.html" />
     <link rel="prev" title="Persistency Assumptions of Use" href="aou_requirements.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
@@ -406,12 +406,12 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Persistency KVS Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">Persistency Feature Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture/chklst_arc_inspection.html">Persistency Architecture Inspection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="aou_requirements.html">Persistency Assumptions of Use</a></li>
 <li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Persistency Failure Modes and Effects Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dfa.html">DFA (Dependent Failure Analysis)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../safety_planning/index.html">Feature Safety Work Products List</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dfa.html">Persistency Dependent Failure Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../safety_planning/index.html">Persistency Safety Work Products List</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../security_planning/index.html">Persistency Security Work Products List</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../security_analysis/stride.html">Persistency STRIDE</a></li>
 </ul>
@@ -476,7 +476,7 @@
                   
   <section id="persistency-failure-modes-and-effects-analysis">
 <h1>Persistency Failure Modes and Effects Analysis<a class="headerlink" href="#persistency-failure-modes-and-effects-analysis" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-e038b107">
+<div class="need_container docutils container" id="SNCB-a07c56c3">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_fmea">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -496,7 +496,7 @@
 </tr>
 <tr class="meta row-even"><td class="meta" colspan="3"><div class="needs_meta_left line-block">
 <div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">persistency</span></span></span></div>
-<div class="line"><span class="needs_version"><span class="needs_label">version: </span>1</span></div>
+<div class="line"><span class="needs_version"><span class="needs_label">version: </span>2</span></div>
 </span></span></div>
 <div class="line"><span><div class="line">realizes: <span class="realizes"><span><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/safety_analysis_workproducts.html#wp__feature_fmea">wp__feature_fmea</a></span></span></div>
 </span></div>
@@ -521,11 +521,11 @@
 </div>
 </div>
 <p>The FMEA applies the fault models of <a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/guidance/fault_models_guideline.html#gd_guidl__fault_models">gd_guidl__fault_models</a> to the dynamic views of
-<a class="reference internal" href="../architecture/index.html#doc__persistency_kvs_architecture" title="doc__persistency_kvs_architecture"><em class="xref need">Persistency KVS Feature Arc... (doc__persistency_kvs_architecture)</em></a>.</p>
+<a class="reference internal" href="../architecture/index.html#doc__persistency_kvs_architecture" title="doc__persistency_kvs_architecture"><em class="xref need">Persistency Feature Archite... (doc__persistency_kvs_architecture)</em></a>.</p>
 <section id="failure-mode-list">
 <h2>Failure Mode List<a class="headerlink" href="#failure-mode-list" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="table" id="id1">
-<caption><span class="caption-number">Table 18 </span><span class="caption-text">Fault Models for sequence diagrams</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<caption><span class="caption-number">Table 17 </span><span class="caption-text">Fault Models for sequence diagrams</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 16.7%" />
 <col style="width: 33.3%" />
@@ -621,7 +621,7 @@
 </section>
 <section id="fmea">
 <h2>FMEA<a class="headerlink" href="#fmea" title="Link to this heading">#</a></h2>
-<div class="need_container docutils container" id="SNCB-5b98593a">
+<div class="need_container docutils container" id="SNCB-0ad69375">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_fmea table" id="feat_saf_fmea__persistency__msg_not_received">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -672,7 +672,7 @@ an unavailability of the persistency (call does not return), which the applicati
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-44a9a8ea">
+<div class="need_container docutils container" id="SNCB-7ccd0304">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_fmea table" id="feat_saf_fmea__persistency__late_message">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -723,7 +723,7 @@ avoids blocking for time consuming operations.</p></td>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-e69a676c">
+<div class="need_container docutils container" id="SNCB-49fd4b1d">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_fmea table" id="feat_saf_fmea__persistency__corrupted_message">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -774,7 +774,7 @@ Reported errors are handled by <a class="reference internal" href="aou_requireme
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-41221b0e">
+<div class="need_container docutils container" id="SNCB-e9d955e9">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_fmea table" id="feat_saf_fmea__persistency__corrupt_load">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -828,7 +828,7 @@ only default values; the application configures whether this is accepted
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-5b285dac">
+<div class="need_container docutils container" id="SNCB-216a1075">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_fmea table" id="feat_saf_fmea__persistency__corrupt_store">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -881,7 +881,7 @@ The application considers changes as persisted only after a flush without error
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-15c3d105">
+<div class="need_container docutils container" id="SNCB-0f978412">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_fmea table" id="feat_saf_fmea__persistency__not_sent">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -931,7 +931,7 @@ reported as Physical-Storage-Failure.</p></td>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-5a52c044">
+<div class="need_container docutils container" id="SNCB-d42bcc5b">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_fmea table" id="feat_saf_fmea__persistency__constraint_max">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -983,7 +983,7 @@ Physical-Storage-Failure; persisted data and snapshots remain unchanged.</p>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-100dd207">
+<div class="need_container docutils container" id="SNCB-3fed2aa8">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_feat_saf_fmea table" id="feat_saf_fmea__persistency__err_handl">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -1061,7 +1061,7 @@ flush is covered by <a class="reference internal" href="#feat_saf_fmea__persiste
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">DFA (Dependent Failure Analysis)</p>
+        <p class="prev-next-title">Persistency Dependent Failure Analysis</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
