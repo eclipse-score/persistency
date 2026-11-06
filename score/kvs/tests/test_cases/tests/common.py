@@ -10,16 +10,19 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
+import json
 import logging
 import shlex
 import tempfile
 import uuid
 from collections.abc import Generator
+from datetime import timedelta
 from pathlib import Path
+from typing import Any
 
 import pytest
 from score.itf.plugins.core import Target
-from testing_utils import BuildTools, LogContainer, Scenario, ScenarioResult
+from testing_utils import BuildTools, LogContainer, ResultEntry, Scenario, ScenarioResult
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +82,75 @@ def write_file_on_target(target: Target, path: Path, content: bytes) -> None:
         target.upload(str(local_path), str(path))
 
 
+def run_scenario_on_target(target: Target, command: list[str], execution_timeout: float) -> ScenarioResult:
+    """
+    Execute test scenario executable on the target and return results.
+
+    Parameters
+    ----------
+    target : Target
+        Target to execute test scenario on.
+    command : list[str]
+        Command to invoke.
+    execution_timeout : float
+        Test execution timeout in seconds.
+    """
+    # Stderr is redirected to a file to keep it apart from stdout.
+    stderr_path = TARGET_TMP_DIR / f"scenario-{uuid.uuid4().hex}.stderr"
+    # A hanging scenario is killed with SIGKILL, it might ignore SIGTERM.
+    target_command = (
+        f"cd {TARGET_TMP_DIR} && RUST_BACKTRACE=1 timeout -s KILL {execution_timeout} {shlex.join(command)} "
+        f"2>{stderr_path}"
+    )
+    logger.info("Running command: `%s`", target_command)
+    exit_code, stdout = target.execute(target_command)
+    stderr = execute_checked(target, f"cat {stderr_path} && rm -f {stderr_path}")
+    logger.debug("Command finished with exit code %d, stderr:\n%s", exit_code, stderr)
+
+    # Shell reports a process killed by signal N as 128 + N.
+    return_code = 128 - exit_code if exit_code > 128 else exit_code
+    hang = return_code == ResultCode.SIGKILL
+    if hang:
+        logger.warning("Command timed out after %ss", execution_timeout)
+    return ScenarioResult(stdout.decode(), stderr, return_code, hang)
+
+
+def scenario_command(target_path: Path, scenario_name: str, test_config: dict[str, Any]) -> list[str]:
+    """Command that runs a test scenario with the given configuration."""
+    return [str(target_path), "--name", scenario_name, "--input", json.dumps(test_config)]
+
+
+def run_named_scenario(
+    target: Target,
+    target_path: Path,
+    scenario_name: str,
+    test_config: dict[str, Any],
+    execution_timeout: float,
+) -> ScenarioResult:
+    """
+    Run a test scenario in a new process on the target and return results.
+
+    Used for processes other than the one of the 'results' fixture, e.g. a restart.
+    """
+    return run_scenario_on_target(target, scenario_command(target_path, scenario_name, test_config), execution_timeout)
+
+
+def logs_from_stdout(stdout: str) -> LogContainer:
+    """
+    Structured logs of a test scenario run, parsed from its stdout.
+
+    Mirrors the parsing of 'testing_utils.Scenario.logs' for processes other than the one of the 'results'
+    fixture: lines that are not JSON objects are skipped, timestamps are converted from microseconds
+    to 'timedelta' and logs are sorted chronologically.
+    """
+    lines = (line for line in stdout.strip().split("\n") if line.startswith("{") and line.endswith("}"))
+    messages = [json.loads(line) for line in lines]
+    for message in messages:
+        message["timestamp"] = timedelta(microseconds=int(message["timestamp"]))
+    messages.sort(key=lambda message: message["timestamp"])
+    return LogContainer([ResultEntry(message) for message in messages])
+
+
 def temp_dir_common(target: Target, base_name: str, *args: str) -> Generator[Path, None, None]:
     """
     Create temporary directory on the target and remove it after test.
@@ -135,37 +207,14 @@ class CommonScenario(Scenario):
         return target_path
 
     @pytest.fixture(scope="class")
+    def command(self, target_path: Path, scenario_name: str, test_config: dict[str, Any]) -> list[str]:
+        """Command to invoke, see 'scenario_command'."""
+        return scenario_command(target_path, scenario_name, test_config)
+
+    @pytest.fixture(scope="class")
     def results(self, target: Target, command: list[str], execution_timeout: float) -> ScenarioResult:
-        """
-        Execute test scenario executable on the target and return results.
-
-        Parameters
-        ----------
-        target : Target
-            Target to execute test scenario on.
-        command : list[str]
-            Command to invoke.
-        execution_timeout : float
-            Test execution timeout in seconds.
-        """
-        # Stderr is redirected to a file to keep it apart from stdout.
-        stderr_path = TARGET_TMP_DIR / f"scenario-{uuid.uuid4().hex}.stderr"
-        # A hanging scenario is killed with SIGKILL, it might ignore SIGTERM.
-        target_command = (
-            f"cd {TARGET_TMP_DIR} && RUST_BACKTRACE=1 timeout -s KILL {execution_timeout} {shlex.join(command)} "
-            f"2>{stderr_path}"
-        )
-        logger.info("Running command: `%s`", target_command)
-        exit_code, stdout = target.execute(target_command)
-        stderr = execute_checked(target, f"cat {stderr_path} && rm -f {stderr_path}")
-        logger.debug("Command finished with exit code %d, stderr:\n%s", exit_code, stderr)
-
-        # Shell reports a process killed by signal N as 128 + N.
-        return_code = 128 - exit_code if exit_code > 128 else exit_code
-        hang = return_code == ResultCode.SIGKILL
-        if hang:
-            logger.warning("Command timed out after %ss", execution_timeout)
-        return ScenarioResult(stdout.decode(), stderr, return_code, hang)
+        """Execute test scenario executable on the target and return results."""
+        return run_scenario_on_target(target, command, execution_timeout)
 
     @pytest.fixture(scope="class")
     def temp_dir(self, target: Target, version: str) -> Generator[Path, None, None]:
