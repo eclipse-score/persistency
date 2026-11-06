@@ -23,12 +23,10 @@
 #include "score/utility.hpp"
 #include <algorithm>
 #include <array>
-#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <sstream>
 #include <string>
-#include <system_error>
 
 namespace score::kvs
 {
@@ -102,28 +100,32 @@ bool RemoveIfExists(const score::filesystem::Path& path) noexcept
 /// @brief Retrieves the size of one file in bytes.
 ///
 /// A missing file counts as 0 bytes.
-score::Result<size_t> GetFileSize(const score::filesystem::Path& file_path) noexcept
+score::Result<size_t> GetFileSize(const score::filesystem::Path& file_path,
+                                  const score::filesystem::IStandardFilesystem& filesystem) noexcept
 {
-    std::error_code ec;
-    const auto size{std::filesystem::file_size(file_path.CStr(), ec)};
-
-    if (ec)
+    score::os::StatBuffer stat_buffer{};
+    const auto stat_result{score::os::Stat::instance().stat(file_path.CStr(), stat_buffer)};
+    if (!stat_result)
     {
-        // Check if the error is "file not found".
-        if (ec == std::errc::no_such_file_or_directory)
+        if (stat_result.error() == score::os::Error::Code::kNoSuchFileOrDirectory)
         {
-            // File does not exist, its size is 0.
-            // This is not an error.
-            return 0;
+            return 0UL;
         }
-        else
-        {
-            GetLogger().LogError() << "Error: Could not get size of file" << file_path << ":" << ec.message();
-            return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
-        }
+
+        GetLogger().LogError() << "Error: Could not get size of file" << file_path << ":"
+                               << stat_result.error().ToString();
+        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
     }
 
-    return size;
+    const auto is_regular_file{filesystem.IsRegularFile(file_path)};
+    // codeql::misra_deviation_next_line(kvs-bool-ref-load)
+    if (!is_regular_file || !*is_regular_file || (stat_buffer.st_size < 0))
+    {
+        GetLogger().LogError() << "Error: Could not get size of regular file" << file_path;
+        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
+    }
+
+    return static_cast<size_t>(stat_buffer.st_size);
 }
 
 /// @brief Writes data to the temporary file of a KVS file and ensures it reaches physical storage.
@@ -612,21 +614,12 @@ score::Result<size_t> Kvs::GetStorageFileSize() const noexcept
     size_t total_size{0U};
     for (const auto& path : paths)
     {
-        std::error_code ec;
-        const auto size{std::filesystem::file_size(path.CStr(), ec)};
-        if (!ec)
+        const auto size_result{GetFileSize(path, *filesystem_->standard)};
+        if (!size_result)
         {
-            total_size += static_cast<size_t>(size);
-        }
-        else if (ec != std::errc::no_such_file_or_directory)
-        {
-            GetLogger().LogError() << "error: could not determine size of " << path << ": " << ec.message();
             return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
         }
-        else
-        {
-            // A missing file counts as 0 bytes.
-        }
+        total_size += *size_result;
     }
 
     return total_size;
@@ -908,7 +901,7 @@ score::Result<size_t> Kvs::GetCurrentStorageSize() const noexcept
     for (const std::string_view extension : file_extensions)
     {
         const score::filesystem::Path file_path{filename_prefix_.Native() + default_suffix + std::string{extension}};
-        auto size_result{GetFileSize(file_path)};
+        auto size_result{GetFileSize(file_path, *filesystem_->standard)};
         if (!size_result)
         {
             return size_result;
@@ -925,7 +918,7 @@ score::Result<size_t> Kvs::GetCurrentStorageSize() const noexcept
         {
             const score::filesystem::Path file_path{filename_prefix_.Native() + snapshot_suffix +
                                                     std::string{extension}};
-            auto size_result{GetFileSize(file_path)};
+            auto size_result{GetFileSize(file_path, *filesystem_->standard)};
             if (!size_result)
             {
                 return size_result;
