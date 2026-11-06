@@ -12,11 +12,35 @@
 // *******************************************************************************
 use crate::helpers::kvs_instance::kvs_instance;
 use crate::helpers::kvs_parameters::KvsParameters;
-use crate::helpers::{kvs_hash_paths, to_str};
 use rust_kvs::prelude::*;
+use std::fs;
+use std::hash::{DefaultHasher, Hash, Hasher};
+use std::path::Path;
 use test_scenarios_rust::scenario::{Scenario, ScenarioGroup, ScenarioGroupImpl};
 use tracing::info;
 
+/// Every file in the directory as "name=fingerprint", sorted and joined with ','.
+///
+/// The fingerprint is a hash of the file content, comparable within one run only.
+fn storage_fingerprints(dir: &Path) -> String {
+    let mut entries: Vec<String> = fs::read_dir(dir)
+        .expect("Failed to read working directory")
+        .map(|entry| {
+            let entry = entry.expect("Failed to read directory entry");
+            let mut hasher = DefaultHasher::new();
+            fs::read(entry.path()).expect("Failed to read file").hash(&mut hasher);
+            format!("{}={}", entry.file_name().to_string_lossy(), hasher.finish())
+        })
+        .collect();
+    entries.sort();
+    entries.join(",")
+}
+
+/// Change the KVS, flush it twice, change it again without flush, then drop the KVS object.
+///
+/// The second flush overwrites and removes keys already in storage.
+/// The changes after it end with a snapshot restore, which replaces the in-memory data.
+/// Logs the files in the working directory with their fingerprints after each step.
 struct ExplicitFlush;
 
 impl Scenario for ExplicitFlush {
@@ -25,47 +49,60 @@ impl Scenario for ExplicitFlush {
     }
 
     fn run(&self, input: &str) -> Result<(), String> {
-        // List of keys and corresponding values.
-        let num_values = 5;
-        let mut key_values = Vec::new();
-        for i in 0..num_values {
-            let key = format!("test_number_{i}");
-            let value = 12.3 * i as f64;
-            key_values.push((key, value));
-        }
-
-        // Check parameters.
         let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
-        let working_dir = params.dir.clone().expect("Working directory must be set");
-        {
-            // First KVS instance object - used for setting and flushing data.
-            let kvs = kvs_instance(params.clone()).expect("Failed to create KVS instance");
+        let dir = params.dir.clone().expect("Working directory must be set");
 
-            // Set values.
-            for (key, value) in key_values.iter() {
-                kvs.set_value(key, *value).expect("Failed to set value");
-            }
+        // Panics if the step failed, then logs the files in the working directory with their fingerprints.
+        let step = |name: &str, result: Result<(), ErrorCode>| {
+            result.unwrap_or_else(|e| panic!("Failed to {name}: {e:?}"));
+            info!(step = name, storage = storage_fingerprints(&dir));
+        };
 
-            // Explicit flush.
-            kvs.flush().expect("Failed to flush");
-        }
+        let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+        step("open", Ok(()));
 
-        {
-            // Second KVS instance object - used for flush check.
-            let kvs = kvs_instance(params).expect("Failed to create KVS instance");
-            let (kvs_path, hash_path) = kvs_hash_paths(&working_dir, kvs.parameters().instance_id, SnapshotId(0));
-            info!(
-                kvs_path = to_str(&kvs_path),
-                kvs_path_exists = kvs_path.exists(),
-                hash_path = to_str(&hash_path),
-                hash_path_exists = hash_path.exists(),
-            );
+        // Changes before the first flush, on empty storage: set.
+        step("set", kvs.set_value("kept", 1));
+        step("set", kvs.set_value("overwritten", 1));
+        step("set", kvs.set_value("removed", 3));
+        step("flush", kvs.flush());
 
-            // Get values.
-            for (key, _) in key_values.iter() {
-                let value = kvs.get_value(key);
-                info!(key, value = to_str(&value));
-            }
+        // Changes to stored keys, then the second flush: overwrite, remove.
+        step("set", kvs.set_value("overwritten", 2));
+        step("remove", kvs.remove_key("removed"));
+        step("flush", kvs.flush());
+
+        // Changes after the last flush, never flushed: overwrite, remove, reset, set, snapshot restore.
+        // Snapshot 1 holds the state of the first flush.
+        step("set", kvs.set_value("overwritten", 20));
+        step("remove", kvs.remove_key("kept"));
+        step("reset", kvs.reset());
+        step("set", kvs.set_value("added", 4));
+        step("restore", kvs.snapshot_restore(SnapshotId(1)));
+
+        // The KVS object is dropped: a file written now was written by the drop.
+        drop(kvs);
+        step("drop", Ok(()));
+
+        Ok(())
+    }
+}
+
+/// Open the KVS and log every written key with its I32 value.
+struct StoredValues;
+
+impl Scenario for StoredValues {
+    fn name(&self) -> &str {
+        "stored_values"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
+        let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+
+        for key in kvs.get_all_keys().expect("Failed to get keys") {
+            let value: i32 = kvs.get_value_as(&key).expect("Failed to read value as I32");
+            info!(key = key.as_str(), value);
         }
 
         Ok(())
@@ -75,7 +112,7 @@ impl Scenario for ExplicitFlush {
 pub fn persistency_group() -> Box<dyn ScenarioGroup> {
     Box::new(ScenarioGroupImpl::new(
         "persistency",
-        vec![Box::new(ExplicitFlush)],
+        vec![Box::new(ExplicitFlush), Box::new(StoredValues)],
         vec![],
     ))
 }
