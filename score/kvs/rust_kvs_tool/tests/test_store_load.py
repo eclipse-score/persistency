@@ -40,6 +40,11 @@ def test_load(target, deployed_package: Path, impl: str, data_dir: Path):
         assert f"Key '{key}' exists!" in out
         assert f"Key Value: {expected_value}" in out
 
+    get_key("i8", "I8(-123)")
+    get_key("u8", "U8(123)")
+    get_key("i16", "I16(-12345)")
+    get_key("u16", "U16(12345)")
+    get_key("f32", "F32(12.5)")
     get_key("i32", "I32(-123)")
     get_key("u32", "U32(123)")
     get_key("i64", "I64(-12345)")

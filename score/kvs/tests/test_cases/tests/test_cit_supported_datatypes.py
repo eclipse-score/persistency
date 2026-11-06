@@ -141,6 +141,46 @@ class TestSupportedDatatypesValues(CommonScenario):
         assert act_value == self.exp_tagged()
 
 
+class TestSupportedDatatypesValues_I8(TestSupportedDatatypesValues):
+    def exp_key(self) -> str:
+        return "i8"
+
+    def exp_value(self) -> Any:
+        return -123
+
+
+class TestSupportedDatatypesValues_U8(TestSupportedDatatypesValues):
+    def exp_key(self) -> str:
+        return "u8"
+
+    def exp_value(self) -> Any:
+        return 123
+
+
+class TestSupportedDatatypesValues_I16(TestSupportedDatatypesValues):
+    def exp_key(self) -> str:
+        return "i16"
+
+    def exp_value(self) -> Any:
+        return -12345
+
+
+class TestSupportedDatatypesValues_U16(TestSupportedDatatypesValues):
+    def exp_key(self) -> str:
+        return "u16"
+
+    def exp_value(self) -> Any:
+        return 12345
+
+
+class TestSupportedDatatypesValues_F32(TestSupportedDatatypesValues):
+    def exp_key(self) -> str:
+        return "f32"
+
+    def exp_value(self) -> Any:
+        return 12.5
+
+
 class TestSupportedDatatypesValues_I32(TestSupportedDatatypesValues):
     def exp_key(self) -> str:
         return "i32"

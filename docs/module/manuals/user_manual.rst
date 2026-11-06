@@ -72,6 +72,75 @@ Logical interface: :need:`logic_arc_int__persistency__interface`. The API is doc
 (C++: `score/kvs <https://github.com/eclipse-score/persistency/tree/main/score/kvs>`__, Rust: crate ``rust_kvs``,
 ``cargo doc -p rust_kvs``).
 
+Numeric Values
+--------------
+
+``KvsValue`` preserves the numeric type supplied by the application, including after flushing and reloading storage.
+The following numeric types are supported in both languages:
+
+.. list-table:: Numeric value types
+   :header-rows: 1
+
+   * - C++ type
+     - C++ type enumerator
+     - Rust type and variant
+     - JSON type tag
+   * - ``std::int8_t``
+     - ``kI8``
+     - ``i8`` / ``I8``
+     - ``i8``
+   * - ``std::uint8_t``
+     - ``kU8``
+     - ``u8`` / ``U8``
+     - ``u8``
+   * - ``std::int16_t``
+     - ``kI16``
+     - ``i16`` / ``I16``
+     - ``i16``
+   * - ``std::uint16_t``
+     - ``kU16``
+     - ``u16`` / ``U16``
+     - ``u16``
+   * - ``std::int32_t``
+     - ``kI32``
+     - ``i32`` / ``I32``
+     - ``i32``
+   * - ``std::uint32_t``
+     - ``kU32``
+     - ``u32`` / ``U32``
+     - ``u32``
+   * - ``std::int64_t``
+     - ``kI64``
+     - ``i64`` / ``I64``
+     - ``i64``
+   * - ``std::uint64_t``
+     - ``kU64``
+     - ``u64`` / ``U64``
+     - ``u64``
+   * - ``float``
+     - ``kF32``
+     - ``f32`` / ``F32``
+     - ``f32``
+   * - ``double``
+     - ``kF64``
+     - ``f64`` / ``F64``
+     - ``f64``
+
+In C++, construct values with an explicitly typed argument, such as ``KvsValue{std::int8_t{-42}}`` or ``KvsValue{0.5F}``, and retrieve them with ``std::get<std::int8_t>(value.GetValue())`` or ``std::get<float>(value.GetValue())``.
+In Rust, use ``KvsValue::from(-42i8)`` or ``KvsValue::from(0.5f32)``, and retrieve them with ``get::<i8>()``, ``TryFrom<&KvsValue>``, or the KVS ``get_value_as`` API.
+The same types can be used inside arrays and objects and in tagged default-value files.
+For example, ``{"t":"i8","v":-42}`` represents an 8-bit signed integer.
+
+The ``i8``, ``u8``, ``i16`` and ``u16`` tags require integral JSON numbers within the corresponding type's range.
+The ``f32`` tag accepts finite JSON numbers within the finite ``f32`` range, rounded to the nearest representable value using the platform's floating-point conversion.
+Subnormal values are supported; sufficiently small magnitudes can round to zero.
+Non-finite ``f32`` values cannot be persisted in JSON.
+
+Earlier Rust versions serialized ``i8`` and ``i16`` as ``I32``, ``u8`` and ``u16`` as ``U32``, and ``f32`` as ``F64``.
+Typed Rust deserialization continues to accept these legacy variants; integer narrowing remains range-checked.
+Direct ``KvsValue`` extraction with ``get`` or ``TryFrom`` requires the exact variant.
+Existing storage tags are unchanged, but older versions cannot read files containing the new tags.
+
 Performance Considerations
 ==========================
 
