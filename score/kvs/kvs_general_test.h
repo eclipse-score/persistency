@@ -29,6 +29,7 @@
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
 #include "score/kvs/internal/kvs_helper.h"
+#include "score/kvs/internal/kvs_instance_state.h"
 #include "score/kvs/kvs_builder.h"
 using namespace score::kvs;
 
@@ -70,6 +71,8 @@ inline void PrepareEnvironment(const std::string& dir,
                                const std::string& default_data,
                                TSnapshots&&... snapshots)
 {
+    KvsInstanceStateRegistry::GetInstance().Reset();
+
     mkdir(dir.c_str(), 0777);
 
     const std::string path{dir + "/" + prefix + std::to_string(instance_id)};
@@ -83,7 +86,7 @@ inline void PrepareEnvironment(const std::string& dir,
 
 // Default data used in unit tests.
 
-const std::uint32_t kInstance{123U};
+const std::uint32_t kInstance{3u};
 const InstanceId kInstanceId{kInstance};
 const SnapshotId kSnapshotId{0ul};
 

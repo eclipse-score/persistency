@@ -25,6 +25,9 @@ namespace score::kvs
 /// This class configures the options for opening a KVS instance.
 /// For example, whether default values are required or whether the KVS data must already exist.
 ///
+/// @note Opening the same instance ID more than once shares its state between the returned `Kvs` objects.
+/// See Build() for details.
+///
 /// @note You don't need to include any other header files to use the KVS.
 /// For documentation of the KVS functions, refer to the kvs.h documentation.
 ///
@@ -85,6 +88,7 @@ class KvsBuilder final
 
     /// @brief Specifies the maximum storage size for the KVS in bytes.
     /// @param max_storage_bytes The maximum allowed total storage size in bytes.
+    /// The limit applies to the files of this KVS instance only, not to other instances.
     /// When this option is not used, no storage limit is enforced.
     /// @return Reference to this builder (for chaining).
     KvsBuilder& MaxStorageBytes(const std::optional<size_t>& max_storage_bytes) noexcept;
@@ -104,9 +108,17 @@ class KvsBuilder final
 
     /// @brief Builds and opens the Kvs instance with the configured options.
     ///
-    /// Internally calls Kvs::Open() with the selected flags and directory.
+    /// The internal state of each instance is shared by all `Kvs` objects opened for the same instance ID.
+    /// The first successful `Build()` for an instance ID loads its data from disk and creates the shared state.
+    /// Subsequent `Build()` calls for the same instance ID return a new `Kvs` handle to that same state
+    /// and do not read the files again. The `Defaults()` and `KvsLoad()` options only apply to the first build.
+    /// Snapshot ID, `MaxStorageBytes()` and `SnapshotMaxCount()` must match the shared state, otherwise the
+    /// build fails with `kInstanceParametersMismatch`.
+    ///
+    /// The shared state is never dropped after initialization, so it stays valid for the lifetime of the process.
     ///
     /// @return The opened store on success, or an ErrorCode on failure.
+    /// Returns `kResourceBusy` if the instance ID is out of range.
     score::Result<Kvs> Build() const noexcept;
 
     // Deprecated snake_case API.
