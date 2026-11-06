@@ -21,10 +21,10 @@
 #include <unistd.h>
 #include <cstdio>
 #include <cstdlib>
-#include <filesystem>
 #include <fstream>
 #include <string>
 
+#include "score/filesystem/filesystem.h"
 #include "score/filesystem/filesystem_mock.h"
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
@@ -37,6 +37,17 @@ void PrepareEnvironment();
 void CleanupEnvironment();
 void CleanupEnvironment(const std::string& dir);
 void Store(const std::string& file_path, const std::string& hash_path, const std::string& data);
+
+namespace filesystem_test
+{
+bool Exists(const std::string& path);
+bool Remove(const std::string& path);
+void RemoveAll(const std::string& path);
+void CreateDirectory(const std::string& path);
+void CreateDirectories(const std::string& path);
+void SetPermissions(const std::string& path, score::filesystem::Perms permissions);
+std::size_t FileSize(const std::string& path);
+}  // namespace filesystem_test
 
 inline void PrepareKvs(const std::string& dir,
                        const std::string& prefix,
