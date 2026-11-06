@@ -46,6 +46,36 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  release-note:
+    name: Check module release note
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Release note names the tag
+        env:
+          TAG: ${{ inputs.tag }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          RELEASE_NOTE: docs/module/release/release_note.rst
+        run: |
+          set -euo pipefail
+          if grep -qxF "| **Release Tag:** ${TAG}" "$RELEASE_NOTE"; then
+            exit 0
+          fi
+          msg="$RELEASE_NOTE does not name release tag '$TAG'. Merge the approved release note first."
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "::warning::$msg"
+          else
+            echo "::error::$msg"
+            exit 1
+          fi
+
   verify:
     name: Build, test and coverage
     # Fail fast: a real run without release note must not spend the verification time.
@@ -62,6 +92,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
+          persist-credentials: false
 
       - name: Setup Bazel with shared caching
         uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
@@ -110,36 +141,6 @@ jobs:
         with:
           name: verification-report
           path: verification-report
-
-  release-note:
-    name: Check module release note
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.sha }}
-          persist-credentials: false
-
-      - name: Release note names the tag
-        env:
-          TAG: ${{ inputs.tag }}
-          DRY_RUN: ${{ inputs.dry_run }}
-          RELEASE_NOTE: docs/module/release/release_note.rst
-        run: |
-          set -euo pipefail
-          if grep -qxF "| **Release Tag:** ${TAG}" "$RELEASE_NOTE"; then
-            exit 0
-          fi
-          msg="$RELEASE_NOTE does not name release tag '$TAG'. Merge the approved release note first."
-          if [[ "$DRY_RUN" == "true" ]]; then
-            echo "::warning::$msg"
-          else
-            echo "::error::$msg"
-            exit 1
-          fi
 
   cit:
     # Its test report is traceability input of the docs build.
