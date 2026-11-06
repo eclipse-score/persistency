@@ -76,8 +76,8 @@ jobs:
             exit 1
           fi
 
-  verify:
-    name: Build, test and coverage
+  build-test:
+    name: Build and unit tests
     # Fail fast: a real run without release note must not spend the verification time.
     needs: [release-note]
     runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
@@ -112,35 +112,11 @@ jobs:
           set -euo pipefail
           bazel test --lockfile_mode=error --config=score-linux-x86_64 //:unit_tests
 
-      - name: Run unified Rust + C++ coverage
-        run: |
-          set -euo pipefail
-          bazel coverage --lockfile_mode=error --config=llvm_cov \
-            //score/... --build_tests_only
-
-      - name: Generate unified coverage report
-        env:
-          # Report-only; see coverage.yml for the rationale on this threshold.
-          COVERAGE_THRESHOLD: "0"
-        run: |
-          set -euo pipefail
-          bazel run --lockfile_mode=error @score_coverage//:generate_coverage_html -- \
-            --yaml quality/coverage/coverage_justifications.yaml \
-            --testlogs-subdir score \
-            --archive-dir coverage_artifact
-
-      - name: Collect verification report
-        run: |
-          set -euo pipefail
-          mkdir -p verification-report
-          find bazel-testlogs/score/ -name 'test.xml' -print0 | xargs -0 -I{} cp --parents {} verification-report/
-          cp -r coverage_artifact verification-report/
-
-      - name: Upload verification report
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: verification-report
-          path: verification-report
+  coverage:
+    needs: [release-note]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/coverage.yml
 
   cit:
     # Its test report is traceability input of the docs build.
@@ -150,14 +126,14 @@ jobs:
     uses: ./.github/workflows/component_integration_tests.yml
 
   release:
-    needs: [verify, release-note, cit]
+    needs: [release-note, build-test, coverage, cit]
     uses: ./.github/workflows/release_core.yml
     permissions:
       contents: write
     with:
       tag: ${{ inputs.tag }}
       dry-run: ${{ inputs.dry_run }}
-      artifact-name: verification-report
+      artifact-name: ${{ needs.coverage.outputs.artifact-name }}
       docs-bazel-target: "--lockfile_mode=error //:docs"
       docs-tests-report-artifact: tests-report
       bazel-asset-targets: //:sbom_product
