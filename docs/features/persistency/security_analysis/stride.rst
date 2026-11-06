@@ -15,7 +15,7 @@
 Persistency STRIDE
 ##################
 
-.. document:: STRIDE
+.. document:: Persistency STRIDE
    :id: doc__persistency_stride
    :status: valid
    :version: 1

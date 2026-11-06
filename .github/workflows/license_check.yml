@@ -16,8 +16,6 @@ name: License check preparation
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-  pull_request_target:
-    types: [opened, reopened, synchronize]
   merge_group:
     types: [checks_requested]
 
@@ -29,12 +27,11 @@ jobs:
   license-check:
     # Run merge groups ||
     # same-repository PRs without approval ||
-    # fork PRs through pull_request_target for approval
     if: >-
-      (github.event_name == 'merge_group') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/license-check.yml@58cb0ec5a80441d593464d3af09d634ab91247e0 # v0.0.3-32-g8ab7396
+      (github.event_name == 'merge_group') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+    uses: eclipse-score/cicd-workflows/.github/workflows/license-check.yml@4c70b38c9cb40c96ec63320190b9db9091648968 # v0.0.3-43-7e8ea4c
     with:
       repo-url: "${{ github.server_url }}/${{ github.repository }}"
-      bazel-target: "run --lockfile_mode=error //:license-check"
+      bazel-target: "run --lockfile_mode=error //tools:license-check"
     secrets:
       dash-api-token: ${{ secrets.ECLIPSE_GITLAB_API_TOKEN }}

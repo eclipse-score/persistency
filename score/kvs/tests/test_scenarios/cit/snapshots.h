@@ -15,6 +15,6 @@
 
 #include <scenario.hpp>
 
-ScenarioGroup::Ptr snapshots_group();
+ScenarioGroup::Ptr SnapshotsGroup();
 
 #endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SNAPSHOTS_H

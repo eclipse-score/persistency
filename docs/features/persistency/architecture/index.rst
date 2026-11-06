@@ -12,10 +12,10 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-Persistency KVS Architecture
-============================
+Persistency Feature Architecture
+================================
 
-.. document:: Persistency KVS Feature Architecture
+.. document:: Persistency Feature Architecture
    :id: doc__persistency_kvs_architecture
    :status: valid
    :version: 1

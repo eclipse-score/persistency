@@ -15,48 +15,55 @@
 
 #include "score/assert.hpp"
 
-namespace score::mw::per::kvs
+namespace score::kvs
 {
 
-KvsValue::KvsValue(const char* str) noexcept : value_(nullptr)
+namespace
 {
-    SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE(str != nullptr, "KvsValue: str must not be null");
-    value_ = std::string(str);
+
+/// @brief Converts a map to an `Object`.
+KvsValue::Object ToObject(const std::unordered_map<std::string, KvsValue>& map)
+{
+    return {map.cbegin(), map.cend()};
 }
 
-KvsValue::KvsValue(const Array& array) noexcept : value_(array) {}
+}  // namespace
 
-KvsValue::KvsValue(Array&& array) noexcept : value_(std::move(array)) {}
-
-KvsValue::KvsValue(const Object& object) noexcept : value_(object) {}
-
-KvsValue::KvsValue(Object&& object) noexcept : value_(std::move(object)) {}
-
-KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) noexcept
+KvsValue::KvsValue(const char* value) noexcept : value_{nullptr}
 {
-    Object entries;
-    entries.reserve(object.size());
-    for (const auto& [key, item] : object)
-    {
-        entries.emplace_back(key, item);
-    }
-    value_ = std::move(entries);
+    // codeql::misra_deviation_next_line(kvs-assert-macro)
+    SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE(value != nullptr, "KvsValue: str must not be null");
+    value_ = std::string(value);
 }
 
-KvsValue::KvsValue(const KvsValue& other) noexcept : value_(other.value_) {}
+KvsValue::KvsValue(const Array& array) noexcept : value_{array} {}
 
-KvsValue::KvsValue(KvsValue&& other) noexcept : value_(std::move(other.value_)) {}
+KvsValue::KvsValue(Array&& array) noexcept : value_{std::move(array)} {}
 
-KvsValue& KvsValue::operator=(const KvsValue& other) noexcept
+KvsValue::KvsValue(const Object& object) noexcept : value_{object} {}
+
+KvsValue::KvsValue(Object&& object) noexcept : value_{std::move(object)} {}
+
+KvsValue::KvsValue(const std::unordered_map<std::string, KvsValue>& object) noexcept : value_{ToObject(object)} {}
+
+// codeql::misra_deviation_next_line(kvs-recursive-value)
+KvsValue::KvsValue(const KvsValue& other) noexcept : value_{other.value_} {}
+
+KvsValue::KvsValue(KvsValue&& other) noexcept : value_{std::move(other.value_)} {}
+
+KvsValue::~KvsValue() noexcept = default;
+
+KvsValue& KvsValue::operator=(const KvsValue& other) & noexcept
 {
     if (this != &other)
     {
+        // codeql::misra_deviation_next_line(kvs-recursive-value)
         value_ = other.value_;
     }
     return *this;
 }
 
-KvsValue& KvsValue::operator=(KvsValue&& other) noexcept
+KvsValue& KvsValue::operator=(KvsValue&& other) & noexcept
 {
     if (this != &other)
     {
@@ -65,6 +72,4 @@ KvsValue& KvsValue::operator=(KvsValue&& other) noexcept
     return *this;
 }
 
-KvsValue::~KvsValue() noexcept = default;
-
-}  // namespace score::mw::per::kvs
+}  // namespace score::kvs

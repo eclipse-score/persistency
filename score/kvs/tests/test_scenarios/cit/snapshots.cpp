@@ -18,7 +18,7 @@
 #include "helpers/kvs_parameters.h"
 #include <tracing.hpp>
 
-using namespace score::mw::per::kvs;
+using namespace score::kvs;
 using namespace score::json;
 
 namespace
@@ -26,7 +26,7 @@ namespace
 const std::string kTargetName{"cpp_test_scenarios::snapshots::count"};
 
 template <typename T>
-T get_field(const Object& obj, const std::string& field)
+T GetField(const Object& obj, const std::string& field)
 {
     auto it{obj.find(field)};
     if (it == obj.end())
@@ -36,7 +36,7 @@ T get_field(const Object& obj, const std::string& field)
     return it->second.As<T>().value();
 }
 
-Object get_object(const std::string& data)
+Object GetObject(const std::string& data)
 {
     JsonParser parser;
     auto from_buffer_result{parser.FromBuffer(data)};
@@ -67,21 +67,21 @@ class SnapshotCount final : public Scenario
 
     void run(const std::string& input) const final
     {
-        auto obj{get_object(input)};
-        auto count{get_field<int32_t>(obj, "count")};
-        auto params{KvsParameters::from_json(input)};
+        auto obj{GetObject(input)};
+        auto count{GetField<int32_t>(obj, "count")};
+        auto params{KvsParameters::FromJson(input)};
 
         // Create snapshots.
         for (int32_t i{0}; i < count; ++i)
         {
-            auto kvs{kvs_instance(params)};
-            auto set_result{kvs.set_value("counter", KvsValue{i})};
+            auto kvs{KvsInstance(params)};
+            auto set_result{kvs.SetValue("counter", KvsValue{i})};
             if (!set_result)
             {
                 throw std::runtime_error{"Failed to set value"};
             }
 
-            auto count_result{kvs.snapshot_count()};
+            auto count_result{kvs.SnapshotCount()};
             if (!count_result)
             {
                 throw std::runtime_error{"Unable to get snapshot count"};
@@ -90,7 +90,7 @@ class SnapshotCount final : public Scenario
             TRACING_INFO(kTargetName, std::pair{std::string{"snapshot_count"}, count_result.value()});
 
             // Flush KVS.
-            auto flush_result{kvs.flush()};
+            auto flush_result{kvs.Flush()};
             if (!flush_result)
             {
                 throw std::runtime_error{"Failed to flush"};
@@ -98,8 +98,8 @@ class SnapshotCount final : public Scenario
         }
 
         {
-            auto kvs{kvs_instance(params)};
-            auto count_result{kvs.snapshot_count()};
+            auto kvs{KvsInstance(params)};
+            auto count_result{kvs.SnapshotCount()};
             if (!count_result)
             {
                 throw std::runtime_error{"Unable to get snapshot count"};
@@ -121,10 +121,10 @@ class SnapshotMaxCount final : public Scenario
 
     void run(const std::string& input) const final
     {
-        auto params{KvsParameters::from_json(input)};
+        auto params{KvsParameters::FromJson(input)};
 
-        auto kvs{kvs_instance(params)};
-        TRACING_INFO(kTargetName, std::pair{std::string{"max_count"}, kvs.snapshot_max_count()});
+        auto kvs{KvsInstance(params)};
+        TRACING_INFO(kTargetName, std::pair{std::string{"max_count"}, kvs.SnapshotMaxCount()});
     }
 };
 
@@ -140,23 +140,23 @@ class SnapshotRestore final : public Scenario
 
     void run(const std::string& input) const final
     {
-        auto obj{get_object(input)};
-        auto count{get_field<int32_t>(obj, "count")};
-        auto snapshot_id{get_field<uint64_t>(obj, "snapshot_id")};
-        auto params{KvsParameters::from_json(input)};
+        auto obj{GetObject(input)};
+        auto count{GetField<int32_t>(obj, "count")};
+        auto snapshot_id{GetField<uint64_t>(obj, "snapshot_id")};
+        auto params{KvsParameters::FromJson(input)};
 
         // Create snapshots.
         for (int32_t i{0}; i < count; ++i)
         {
-            auto kvs{kvs_instance(params)};
-            auto set_result{kvs.set_value("counter", KvsValue{i})};
+            auto kvs{KvsInstance(params)};
+            auto set_result{kvs.SetValue("counter", KvsValue{i})};
             if (!set_result)
             {
                 throw std::runtime_error{"Failed to set value"};
             }
 
             // Flush KVS.
-            auto flush_result{kvs.flush()};
+            auto flush_result{kvs.Flush()};
             if (!flush_result)
             {
                 throw std::runtime_error{"Failed to flush"};
@@ -164,21 +164,21 @@ class SnapshotRestore final : public Scenario
         }
 
         {
-            auto kvs{kvs_instance(params)};
+            auto kvs{KvsInstance(params)};
 
-            auto restore_result{kvs.snapshot_restore(snapshot_id)};
+            auto restore_result{kvs.SnapshotRestore(snapshot_id)};
             TRACING_INFO(kTargetName,
                          std::pair{std::string{"result"}, restore_result ? "Ok(())" : "Err(InvalidSnapshotId)"});
 
             if (restore_result)
             {
-                auto get_result{kvs.get_value("counter")};
+                auto get_result{kvs.GetValue("counter")};
                 if (!get_result)
                 {
                     throw std::runtime_error{"Failed to read value"};
                 }
 
-                auto value{std::get<int32_t>(get_result.value().getValue())};
+                auto value{std::get<int32_t>(get_result.value().GetValue())};
                 TRACING_INFO(kTargetName, std::pair{std::string{"value"}, value});
             }
         }
@@ -197,25 +197,25 @@ class SnapshotPaths final : public Scenario
 
     void run(const std::string& input) const final
     {
-        auto obj{get_object(input)};
-        auto count{get_field<int32_t>(obj, "count")};
-        auto snapshot_id{get_field<uint64_t>(obj, "snapshot_id")};
-        auto params{KvsParameters::from_json(input)};
+        auto obj{GetObject(input)};
+        auto count{GetField<int32_t>(obj, "count")};
+        auto snapshot_id{GetField<uint64_t>(obj, "snapshot_id")};
+        auto params{KvsParameters::FromJson(input)};
         auto working_dir{*params.dir};
         auto instance_id{params.instance_id};
 
         // Create snapshots.
         for (int32_t i{0}; i < count; ++i)
         {
-            auto kvs{kvs_instance(params)};
-            auto set_result{kvs.set_value("counter", KvsValue{i})};
+            auto kvs{KvsInstance(params)};
+            auto set_result{kvs.SetValue("counter", KvsValue{i})};
             if (!set_result)
             {
                 throw std::runtime_error{"Failed to set value"};
             }
 
             // Flush KVS.
-            auto flush_result{kvs.flush()};
+            auto flush_result{kvs.Flush()};
             if (!flush_result)
             {
                 throw std::runtime_error{"Failed to flush"};
@@ -223,7 +223,7 @@ class SnapshotPaths final : public Scenario
         }
 
         {
-            auto [kvs_path, hash_path] = kvs_hash_paths(working_dir, instance_id, snapshot_id);
+            auto [kvs_path, hash_path]{KvsHashPaths(working_dir, instance_id, snapshot_id)};
             TRACING_INFO(kTargetName,
                          std::make_pair(std::string{"kvs_path"}, kvs_path),
                          std::make_pair(std::string{"hash_path"}, hash_path));
@@ -231,7 +231,7 @@ class SnapshotPaths final : public Scenario
     }
 };
 
-ScenarioGroup::Ptr snapshots_group()
+ScenarioGroup::Ptr SnapshotsGroup()
 {
     return ScenarioGroup::Ptr{new ScenarioGroupImpl{"snapshots",
                                                     {std::make_shared<SnapshotCount>(),

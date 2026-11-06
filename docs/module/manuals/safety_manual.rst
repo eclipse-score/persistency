@@ -55,6 +55,11 @@ Assumed Platform Safety Requirements
 Assumptions of Use
 ------------------
 
+
+The assumptions of use of the feature are documented in :need:`doc__persistency_feat_aou`,
+the assumptions of use of the components in the respective component documentation.
+They are listed in the following sections.
+
 Assumptions on the Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 | Generally the assumption of the S-CORE platform SEooC is that it is integrated in a safe system, i.e. the POSIX OS it runs on is qualified and also the HW related failures are taken into account by the system integrator, if not otherwise stated in the module's safety concept.
@@ -75,7 +80,7 @@ List of AoUs expected from the environment the module runs on:
    results = []
 
    for need in needs.filter_types(["aou_req"]):
-      if need and "persistency" in need["tags"]:
+      if need and "persistency" in need["tags"] and need["safety"] != "QM":
          if need and "environment" in need["tags"]:
                 results.append(need)
 
@@ -102,7 +107,7 @@ For the feature Persistency the platform safety manual and this module safety ma
 
    for need in needs.filter_types(["aou_req"]):
       if need and "environment" not in need["tags"]:
-         if need and "persistency" in need["tags"]:
+         if need and "persistency" in need["tags"] and need["safety"] != "QM":
                 results.append(need)
 
 Safety concept of the SEooC

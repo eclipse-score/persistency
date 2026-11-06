@@ -31,6 +31,7 @@ cc_library(
         "error.cpp",
         "internal/kvs_helper.cpp",
         "internal/kvs_helper.h",
+        "internal/logger.h",
         "kvs.cpp",
         "kvs_builder.cpp",
         "kvs_value.cpp",
@@ -40,6 +41,7 @@ cc_library(
         "kvs.h",
         "kvs_builder.h",
         "kvs_value.h",
+        "deprecated_namespace.h",
         # Deprecated forwarders to the headers above.
         # They are kept for existing includes and warn when included.
         "error.hpp",
@@ -77,6 +79,7 @@ cc_test(
     size = "small",
     srcs = [
         "kvs_builder_test.cpp",
+        "kvs_deprecated_api_test.cpp",
         "kvs_error_test.cpp",
         "kvs_general_test.cpp",
         "kvs_general_test.h",
@@ -97,6 +100,7 @@ cc_test(
         "@score_baselibs//score/os:stat",
         "@score_baselibs//score/os/mocklib:fcntl_mock",
         "@score_baselibs//score/os/mocklib:stat_mock",
+        "@score_baselibs//score/quality/compiler_warnings",
         "@score_baselibs//score/result",
     ],
 )

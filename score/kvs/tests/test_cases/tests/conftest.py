@@ -11,14 +11,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 import json
-import logging
-import os
+import shlex
 from pathlib import Path
 
 import pytest
-from testing_utils import BazelTools
 
-logger = logging.getLogger(__name__)
 FAILED_CONFIGS = []
 
 
@@ -34,37 +31,14 @@ def pytest_addoption(parser):
         '"all" - show all traces. ',
     )
     parser.addoption(
-        "--cpp-target-name",
-        type=str,
-        default="//score/kvs/tests/test_scenarios",
-        help="C++ test scenario executable target.",
-    )
-    parser.addoption(
-        "--rust-target-name",
-        type=str,
-        default="//score/kvs/rust_kvs/tests/test_scenarios",
-        help="Rust test scenario executable target.",
-    )
-    parser.addoption(
         "--cpp-target-path",
         type=Path,
-        help="C++ test scenario executable target.",
+        help="Path to C++ test scenario executable on the target.",
     )
     parser.addoption(
         "--rust-target-path",
         type=Path,
-        help="Rust test scenario executable target.",
-    )
-    parser.addoption(
-        "--build-scenarios",
-        action="store_true",
-        help="Build test scenarios executables.",
-    )
-    parser.addoption(
-        "--build-scenarios-timeout",
-        type=float,
-        default=180.0,
-        help="Build command timeout in seconds. Default: %(default)s",
+        help="Path to Rust test scenario executable on the target.",
     )
     parser.addoption(
         "--default-execution-timeout",
@@ -75,31 +49,6 @@ def pytest_addoption(parser):
 
 
 # Hooks
-@pytest.hookimpl(tryfirst=True)
-def pytest_sessionstart(session):
-    try:
-        # Build scenarios.
-        if session.config.getoption("--build-scenarios"):
-            build_timeout = session.config.getoption("--build-scenarios-timeout")
-
-            # Build Rust test scenarios.
-            logger.info("Building Rust test scenarios executable...")
-            rust_build_tools = BazelTools(
-                option_prefix="rust", build_timeout=build_timeout, config="score-linux-x86_64"
-            )
-            rust_target_name = session.config.getoption("--rust-target-name")
-            rust_build_tools.build(rust_target_name)
-
-            # Build C++ test scenarios.
-            logger.info("Building C++ test scenarios executable...")
-            cpp_build_tools = BazelTools(option_prefix="cpp", build_timeout=build_timeout, config="score-linux-x86_64")
-            cpp_target_name = session.config.getoption("--cpp-target-name")
-            cpp_build_tools.build(cpp_target_name)
-
-    except Exception as e:
-        pytest.exit(str(e), returncode=1)
-
-
 def pytest_html_report_title(report):
     # Change report title
     report.title = "Component Integration Tests Report"
@@ -133,22 +82,7 @@ def pytest_runtest_makereport(item):
     report.scenario = item.funcargs.get("scenario_name", "")
     report.input = item.funcargs.get("test_config", "")
 
-    command = []
-    for token in item.funcargs.get("command", ""):
-        if " " in token:
-            command.append(f"'{token}'")
-        else:
-            command.append(token)
-    report.command = " ".join(command)
-    # If bazel is used, modify command
-    if "BAZEL_VERSION" in os.environ:
-        report.command = report.command.replace(
-            "score/kvs/tests/",
-            "bazel run //score/kvs/tests/",
-        ).replace(
-            " --name",
-            "-- --name",
-        )
+    report.command = shlex.join(item.funcargs.get("command", []))
 
     # Store failed command for printing in summary
     if report.failed:
@@ -165,7 +99,7 @@ def pytest_terminal_summary(terminalreporter):
         return
     # Print failed scenarios info
     terminalreporter.write_sep("=", "Failed tests reproduction info")
-    terminalreporter.write_line("Run failed scenarios from the repo root working directory\n")
+    terminalreporter.write_line("Run failed scenarios on the target\n")
 
     for entry in FAILED_CONFIGS:
         terminalreporter.write_line(f"{entry['nodeid']} | Run command:\n{entry['command']}\n")

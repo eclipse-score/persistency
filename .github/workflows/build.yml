@@ -15,8 +15,6 @@ name: QNX8 Build
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-  pull_request_target:
-    types: [opened, reopened, synchronize]
   push:
     branches:
       - main
@@ -27,27 +25,31 @@ jobs:
     # 1. pushes to main
     # 2. manual dispatch (e.g. on a Dependabot branch, which gets no secrets itself)
     # 3. same-repository PRs without approval, except Dependabot (no access to Actions secrets)
-    # 4. fork PRs through pull_request_target for approval
     if: |-
       github.event_name == 'push' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'pull_request' &&
         github.actor != 'dependabot[bot]' &&
-        github.event.pull_request.head.repo.full_name == github.repository) ||
-      (github.event_name == 'pull_request_target' &&
-        github.event.pull_request.head.repo.full_name != github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@58cb0ec5a80441d593464d3af09d634ab91247e0 # v0.0.3-32-g8ab7396
+        github.event.pull_request.head.repo.full_name == github.repository)
+    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@7e8ea4c61756b931622ff979835469b93b162920 # v0.0.3-43-7e8ea4c
     permissions:
       contents: read
       pull-requests: read
     strategy:
       matrix:
         config: ['score-qnx-x86_64', 'score-qnx-aarch64']
+        include:
+          # Component integration tests run in a QNX x86_64 QEMU VM (see //score/kvs/tests:cit_tests).
+          - config: 'score-qnx-x86_64'
+            test-target: '//:cit_tests'
     with:
       bazel-target: >-
         //score/kvs //score/kvs/rust_kvs:rust_kvs //score/kvs/rust_kvs_tool:kvs_tool
       bazel-config: ${{ matrix.config }}
       extra-bazel-flags: '--lockfile_mode=error'
+      bazel-test-target: ${{ matrix.test-target }}
+      extra-bazel-test-flags: '--lockfile_mode=error'
+      test-log-artifact-name: qnx-testlogs-${{ matrix.config }}
       environment-name: 'workflow-approval'
     secrets:
       score-qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}

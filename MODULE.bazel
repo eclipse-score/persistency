@@ -20,9 +20,9 @@ bazel_dep(name = "rules_rust", version = "0.68.2-score")
 # External dependencies for production (alphabetically sorted)
 bazel_dep(name = "platforms", version = "1.1.0")
 bazel_dep(name = "score_bazel_platforms", version = "1.1.0")
-bazel_dep(name = "score_baselibs", version = "0.2.16")
+bazel_dep(name = "score_baselibs", version = "0.2.17")
 bazel_dep(name = "score_crates", version = "0.0.13")
-bazel_dep(name = "score_docs_as_code", version = "8.5.1")
+bazel_dep(name = "score_docs_as_code", version = "8.6.0")
 bazel_dep(name = "score_logging", version = "0.2.4")
 
 # Pinned past v0.2.4 compatibility with baselibs > 0.2.13
@@ -32,10 +32,10 @@ git_override(
     remote = "https://github.com/eclipse-score/logging",
 )
 
-bazel_dep(name = "score_platform", version = "0.7.3")
-bazel_dep(name = "score_process_description", version = "2.2.1")
+bazel_dep(name = "score_platform", version = "0.7.4")
+bazel_dep(name = "score_process_description", version = "2.2.2")
 bazel_dep(name = "score_test_scenarios", version = "0.5.0")
-bazel_dep(name = "score_tooling", version = "3.0.1")
+bazel_dep(name = "score_tooling", version = "3.0.2")
 
 # LLVM source-based coverage pipeline (C++ + Rust): the qualified S-CORE
 # coverage tool, successor of @score_tooling//coverage. See quality/coverage/.
@@ -48,20 +48,16 @@ bazel_dep(name = "score_coverage", version = "0.4.2", dev_dependency = True)
 bazel_dep(name = "aspect_rules_lint", version = "2.5.2", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "8.5.1.3", dev_dependency = True)
 bazel_dep(name = "googletest", version = "1.18.0", dev_dependency = True)
+bazel_dep(name = "rules_oci", version = "2.3.0", dev_dependency = True)
+bazel_dep(name = "rules_pkg", version = "1.2.0", dev_dependency = True)
 bazel_dep(name = "score_bazel_cpp_toolchains", version = "1.0.5", dev_dependency = True)
 bazel_dep(name = "score_cpp_policies", version = "0.1.2", dev_dependency = True)
+bazel_dep(name = "score_itf", version = "0.7.0", dev_dependency = True)
 bazel_dep(name = "score_sbom", version = "0.1.1", dev_dependency = True)
 bazel_dep(name = "score_rules_imagefs", version = "0.1.0", dev_dependency = True)
 bazel_dep(name = "score_rust_policies", version = "0.0.5", dev_dependency = True)
 bazel_dep(name = "score_toolchains_rust", version = "0.10.0", dev_dependency = True)
-bazel_dep(name = "score_tools", version = "0.0.3", dev_dependency = True)
-
-# Pinned past v0.0.3 for the `$(locations)` fix in score_pytest.
-git_override(
-    module_name = "score_tools",
-    commit = "4b48cec400c67be75cfc3fa4658ac6a0489bf7a8",
-    remote = "https://github.com/eclipse-score/tools",
-)
+bazel_dep(name = "score_tools", version = "0.0.4", dev_dependency = True)
 
 # Python toolchain configuration
 PYTHON_VERSION = "3.12"
@@ -174,6 +170,16 @@ use_repo(
 # SBOM metadata: tracks module versions used by the //:sbom target
 # (see root BUILD file).
 sbom_ext = use_extension("@score_sbom//:extensions.bzl", "sbom_metadata", dev_dependency = True)
+
+# score_baselibs is the only C++ module dependency of the product targets.
+# Its version is read from its own MODULE.bazel.
+# Its license is not part of the bundled cpp_metadata.json cache of score_sbom.
+sbom_ext.track_module(name = "score_baselibs")
+sbom_ext.license(
+    name = "score_baselibs",
+    license = "Apache-2.0",
+    supplier = "Eclipse Foundation",
+)
 use_repo(sbom_ext, "sbom_metadata")
 
 # *******************************************************************************
@@ -208,13 +214,13 @@ llvm.toolchain(
 )
 use_repo(llvm, "llvm_toolchain", "llvm_toolchain_llvm")
 
-# Experimental dev tools
-bazel_dep(name = "custom_qemu", version = "1.0.0", dev_dependency = True)
-archive_override(
-    module_name = "custom_qemu",
-    integrity = "sha256-3V2d+p7nP0tsbrVWOPYUSJogLNal43CIAHEto6Vjdfg=",
-    strip_prefix = "third_party",  # matches top-level dir in the tar
-    urls = [
-        "https://github.com/qorix-group/custom-qemu/releases/download/1.0.0/custom_qemu.tar.gz",
-    ],
+# ITF - base image of the docker backend.
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci", dev_dependency = True)
+oci.pull(
+    name = "ubuntu",
+    digest = "sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55",
+    image = "docker.io/library/ubuntu",
+    platforms = ["linux/amd64"],
+    tag = "24.04",
 )
+use_repo(oci, "ubuntu", "ubuntu_linux_amd64")

@@ -4,7 +4,9 @@ members = [
     "score/kvs/rust_kvs",
     "score/kvs/rust_kvs_tool",
     "score/kvs/rust_kvs/tests/test_scenarios",
+    "score/kvs/rust_kvs_tool/tests/rust_test_utility",
 ]
+default_members = ["score/kvs/rust_kvs", "score/kvs/rust_kvs_tool"]
 
 [workspace.package]
 version = "0.1.0"

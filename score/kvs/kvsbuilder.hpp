@@ -15,7 +15,7 @@
 
 #include "score/kvs/kvs_builder.h"
 
-namespace score::mw::per::kvs::deprecated_headers
+namespace score::kvs::deprecated_headers
 {
 
 /// @deprecated Include `score/kvs/kvs_builder.h` instead.
@@ -25,6 +25,6 @@ using KvsBuilderHpp [[deprecated("score/kvs/kvsbuilder.hpp is deprecated. Includ
 // Referencing the alias emits the deprecation warning in every translation unit that includes this header.
 static_assert(sizeof(KvsBuilderHpp) > 0, "");
 
-}  // namespace score::mw::per::kvs::deprecated_headers
+}  // namespace score::kvs::deprecated_headers
 
 #endif  // SCORE_LIB_KVS_KVSBUILDER_HPP

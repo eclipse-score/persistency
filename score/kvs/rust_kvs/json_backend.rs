@@ -34,42 +34,50 @@ use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
 // }
 
 /// Backend-specific JsonValue -> KvsValue conversion.
-impl From<JsonValue> for KvsValue {
-    fn from(val: JsonValue) -> KvsValue {
-        match val {
+impl TryFrom<JsonValue> for KvsValue {
+    type Error = ErrorCode;
+
+    fn try_from(value: JsonValue) -> Result<Self, Self::Error> {
+        match value {
             JsonValue::Object(mut obj) => {
                 // Type-tagged: { "t": ..., "v": ... }
                 if let (Some(JsonValue::String(type_str)), Some(value)) = (obj.remove("t"), obj.remove("v")) {
-                    return match (type_str.as_str(), value) {
-                        ("i32", JsonValue::Number(v)) => KvsValue::I32(v as i32),
-                        ("u32", JsonValue::Number(v)) => KvsValue::U32(v as u32),
-                        ("i64", JsonValue::Number(v)) => KvsValue::I64(v as i64),
-                        ("u64", JsonValue::Number(v)) => KvsValue::U64(v as u64),
-                        ("f64", JsonValue::Number(v)) => KvsValue::F64(v),
-                        ("bool", JsonValue::Boolean(v)) => KvsValue::Boolean(v),
-                        ("str", JsonValue::String(v)) => KvsValue::String(v),
-                        ("null", JsonValue::Null) => KvsValue::Null,
-                        ("arr", JsonValue::Array(v)) => KvsValue::Array(v.into_iter().map(KvsValue::from).collect()),
-                        ("obj", JsonValue::Object(v)) => {
-                            KvsValue::Object(v.into_iter().map(|(k, v)| (k, KvsValue::from(v))).collect())
+                    match (type_str.as_str(), value) {
+                        ("i32", JsonValue::Number(v)) => Ok(KvsValue::I32(v as i32)),
+                        ("u32", JsonValue::Number(v)) => Ok(KvsValue::U32(v as u32)),
+                        ("i64", JsonValue::Number(v)) => Ok(KvsValue::I64(v as i64)),
+                        ("u64", JsonValue::Number(v)) => Ok(KvsValue::U64(v as u64)),
+                        ("f64", JsonValue::Number(v)) => Ok(KvsValue::F64(v)),
+                        ("bool", JsonValue::Boolean(v)) => Ok(KvsValue::Boolean(v)),
+                        ("str", JsonValue::String(v)) => Ok(KvsValue::String(v)),
+                        ("null", JsonValue::Null) => Ok(KvsValue::Null),
+                        ("arr", JsonValue::Array(v)) => {
+                            let converted_result = v.into_iter().map(KvsValue::try_from).collect::<Result<Vec<_>, _>>();
+                            Ok(KvsValue::Array(converted_result?))
                         },
-                        // Remaining types can be handled with Null.
-                        _ => KvsValue::Null,
-                    };
+                        ("obj", JsonValue::Object(v)) => {
+                            let converted_result = v
+                                .into_iter()
+                                .map(|(k, v)| KvsValue::try_from(v).map(|v| (k, v)))
+                                .collect::<Result<KvsMap, _>>();
+                            Ok(KvsValue::Object(converted_result?))
+                        },
+                        _ => Err(ErrorCode::InvalidValueType),
+                    }
+                } else {
+                    Err(ErrorCode::ConversionFailed)
                 }
-                // If not a t-tagged object, treat as a map of key-value pairs (KvsMap)
-                let map: KvsMap = obj.into_iter().map(|(k, v)| (k, KvsValue::from(v))).collect();
-                KvsValue::Object(map)
             },
-            // Remaining types can be handled with Null.
-            _ => KvsValue::Null,
+            _ => Err(ErrorCode::ConversionFailed),
         }
     }
 }
 
 /// Backend-specific KvsValue -> JsonValue conversion.
-impl From<KvsValue> for JsonValue {
-    fn from(val: KvsValue) -> JsonValue {
+impl TryFrom<KvsValue> for JsonValue {
+    type Error = ErrorCode;
+
+    fn try_from(val: KvsValue) -> Result<Self, Self::Error> {
         let mut obj = HashMap::new();
         match val {
             KvsValue::I32(n) => {
@@ -106,20 +114,23 @@ impl From<KvsValue> for JsonValue {
             },
             KvsValue::Array(arr) => {
                 obj.insert("t".to_string(), JsonValue::String("arr".to_string()));
-                obj.insert(
-                    "v".to_string(),
-                    JsonValue::Array(arr.into_iter().map(JsonValue::from).collect()),
-                );
+                obj.insert("v".to_string(), {
+                    let converted_result = arr.into_iter().map(JsonValue::try_from).collect::<Result<Vec<_>, _>>();
+                    JsonValue::Array(converted_result?)
+                });
             },
             KvsValue::Object(map) => {
                 obj.insert("t".to_string(), JsonValue::String("obj".to_string()));
-                obj.insert(
-                    "v".to_string(),
-                    JsonValue::Object(map.into_iter().map(|(k, v)| (k, JsonValue::from(v))).collect()),
-                );
+                obj.insert("v".to_string(), {
+                    let converted_result = map
+                        .into_iter()
+                        .map(|(k, v)| JsonValue::try_from(v).map(|v| (k, v)))
+                        .collect::<Result<HashMap<_, _>, _>>();
+                    JsonValue::Object(converted_result?)
+                });
             },
         }
-        JsonValue::Object(obj)
+        Ok(JsonValue::Object(obj))
     }
 }
 
@@ -318,7 +329,7 @@ impl JsonBackend {
 
         // Cast from `JsonValue` to `KvsValue`.
         debug!("Converting JSON values to KVS values");
-        let kvs_value = KvsValue::from(json_value);
+        let kvs_value = KvsValue::try_from(json_value)?;
         if let KvsValue::Object(kvs_map) = kvs_value {
             // Validate keys.
             if let Some(key) = kvs_map.keys().find(|key| !is_key_valid(key)) {
@@ -430,7 +441,7 @@ impl JsonBackend {
         // Cast from `KvsValue` to `JsonValue`.
         debug!("Converting KVS values to JSON values");
         let kvs_value = KvsValue::Object(kvs_map.clone());
-        let json_value = JsonValue::from(kvs_value);
+        let json_value = JsonValue::try_from(kvs_value)?;
 
         // Stringify `JsonValue` and save to temporary KVS file.
         debug!("Stringifying KVS file: {:?}", kvs_path);
@@ -569,6 +580,7 @@ impl KvsBackend for JsonBackend {
 
 #[cfg(test)]
 mod json_value_to_kvs_value_conversion_tests {
+    use crate::error_code::ErrorCode;
     use crate::kvs_value::{KvsMap, KvsValue};
     use std::collections::HashMap;
     use tinyjson::JsonValue;
@@ -579,7 +591,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("i32".to_string())),
             ("v".to_string(), JsonValue::Number(-123.0)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::I32(-123));
     }
 
@@ -589,8 +601,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("i32".to_string())),
             ("v".to_string(), JsonValue::String("-123.0".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -599,7 +610,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("u32".to_string())),
             ("v".to_string(), JsonValue::Number(123.0)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::U32(123));
     }
 
@@ -609,8 +620,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("u32".to_string())),
             ("v".to_string(), JsonValue::String("123.0".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -619,7 +629,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("i64".to_string())),
             ("v".to_string(), JsonValue::Number(-123.0)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::I64(-123));
     }
 
@@ -629,8 +639,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("i64".to_string())),
             ("v".to_string(), JsonValue::String("-123.0".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -639,7 +648,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("u64".to_string())),
             ("v".to_string(), JsonValue::Number(123.0)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::U64(123));
     }
 
@@ -649,8 +658,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("u64".to_string())),
             ("v".to_string(), JsonValue::String("123.0".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -659,7 +667,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("f64".to_string())),
             ("v".to_string(), JsonValue::Number(-432.1)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::F64(-432.1));
     }
 
@@ -669,8 +677,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("f64".to_string())),
             ("v".to_string(), JsonValue::String("-432.1".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -679,7 +686,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("bool".to_string())),
             ("v".to_string(), JsonValue::Boolean(true)),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::Boolean(true));
     }
 
@@ -689,8 +696,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("bool".to_string())),
             ("v".to_string(), JsonValue::String("true".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -699,7 +705,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("str".to_string())),
             ("v".to_string(), JsonValue::String("example".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::String("example".to_string()));
     }
 
@@ -709,8 +715,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("str".to_string())),
             ("v".to_string(), JsonValue::Number(123.4)),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -719,7 +724,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("null".to_string())),
             ("v".to_string(), JsonValue::Null),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::Null);
     }
 
@@ -729,8 +734,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("null".to_string())),
             ("v".to_string(), JsonValue::Number(123.4)),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -747,7 +751,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("arr".to_string())),
             ("v".to_string(), JsonValue::Array(vec![entry1, entry2])),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(kv, KvsValue::Array(vec![KvsValue::I32(-123), KvsValue::F64(555.5)]));
     }
 
@@ -757,8 +761,7 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("arr".to_string())),
             ("v".to_string(), JsonValue::String("example".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
     }
 
     #[test]
@@ -781,12 +784,47 @@ mod json_value_to_kvs_value_conversion_tests {
                 ])),
             ),
         ]));
-        let kv = KvsValue::from(jv);
+        let kv = KvsValue::try_from(jv).unwrap();
         assert_eq!(
             kv,
             KvsValue::Object(KvsMap::from([
-                ("entry1".to_string(), KvsValue::from(entry1)),
-                ("entry2".to_string(), KvsValue::from(entry2))
+                ("entry1".to_string(), KvsValue::try_from(entry1).unwrap()),
+                ("entry2".to_string(), KvsValue::try_from(entry2).unwrap())
+            ]))
+        );
+    }
+
+    #[test]
+    fn test_object_with_t_v_keys() {
+        // "t" and "v" are valid user keys inside a type-tagged object.
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("obj".to_string())),
+            (
+                "v".to_string(),
+                JsonValue::Object(HashMap::from([
+                    (
+                        "t".to_string(),
+                        JsonValue::from(HashMap::from([
+                            ("t".to_string(), JsonValue::String("str".to_string())),
+                            ("v".to_string(), JsonValue::String("obj".to_string())),
+                        ])),
+                    ),
+                    (
+                        "v".to_string(),
+                        JsonValue::from(HashMap::from([
+                            ("t".to_string(), JsonValue::String("i32".to_string())),
+                            ("v".to_string(), JsonValue::Number(5.0)),
+                        ])),
+                    ),
+                ])),
+            ),
+        ]));
+        let kv = KvsValue::try_from(jv).unwrap();
+        assert_eq!(
+            kv,
+            KvsValue::Object(KvsMap::from([
+                ("t".to_string(), KvsValue::String("obj".to_string())),
+                ("v".to_string(), KvsValue::I32(5)),
             ]))
         );
     }
@@ -797,15 +835,139 @@ mod json_value_to_kvs_value_conversion_tests {
             ("t".to_string(), JsonValue::String("obj".to_string())),
             ("v".to_string(), JsonValue::String("example".to_string())),
         ]));
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
+    }
+
+    #[test]
+    fn test_array_empty_ok() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("arr".to_string())),
+            ("v".to_string(), JsonValue::Array(vec![])),
+        ]));
+        let kv = KvsValue::try_from(jv).unwrap();
+        assert_eq!(kv, KvsValue::Array(vec![]));
+    }
+
+    #[test]
+    fn test_array_invalid_element() {
+        let entry1 = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("i32".to_string())),
+            ("v".to_string(), JsonValue::Number(-123.0)),
+        ]));
+        let entry2 = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("i32".to_string())),
+            ("v".to_string(), JsonValue::String("example".to_string())),
+        ]));
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("arr".to_string())),
+            ("v".to_string(), JsonValue::Array(vec![entry1, entry2])),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
+    }
+
+    #[test]
+    fn test_array_untagged_element() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("arr".to_string())),
+            ("v".to_string(), JsonValue::Array(vec![JsonValue::Number(123.0)])),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_object_empty_ok() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("obj".to_string())),
+            ("v".to_string(), JsonValue::Object(HashMap::new())),
+        ]));
+        let kv = KvsValue::try_from(jv).unwrap();
+        assert_eq!(kv, KvsValue::Object(KvsMap::new()));
+    }
+
+    #[test]
+    fn test_object_invalid_entry() {
+        let entry = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("bool".to_string())),
+            ("v".to_string(), JsonValue::Number(1.0)),
+        ]));
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("obj".to_string())),
+            (
+                "v".to_string(),
+                JsonValue::Object(HashMap::from([("entry".to_string(), entry)])),
+            ),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
+    }
+
+    #[test]
+    fn test_object_untagged_entry() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("obj".to_string())),
+            (
+                "v".to_string(),
+                JsonValue::Object(HashMap::from([(
+                    "entry".to_string(),
+                    JsonValue::String("example".to_string()),
+                )])),
+            ),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_unknown_type_tag() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("xyz".to_string())),
+            ("v".to_string(), JsonValue::Number(1.0)),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::InvalidValueType));
+    }
+
+    #[test]
+    fn test_type_tag_not_string() {
+        let jv = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::Number(5.0)),
+            ("v".to_string(), JsonValue::Number(1.0)),
+        ]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_missing_type_tag() {
+        let jv = JsonValue::from(HashMap::from([("v".to_string(), JsonValue::Number(1.0))]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_missing_value() {
+        let jv = JsonValue::from(HashMap::from([("t".to_string(), JsonValue::String("i32".to_string()))]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_untagged_object() {
+        // Plain key-value maps are no longer accepted, values must be type-tagged.
+        let entry = JsonValue::from(HashMap::from([
+            ("t".to_string(), JsonValue::String("i32".to_string())),
+            ("v".to_string(), JsonValue::Number(1.0)),
+        ]));
+        let jv = JsonValue::from(HashMap::from([("k1".to_string(), entry)]));
+        assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
     }
 
     #[test]
     fn test_non_json_value_object() {
-        let jv = JsonValue::Number(123.0);
-        let kv = KvsValue::from(jv);
-        assert_eq!(kv, KvsValue::Null);
+        let values = [
+            JsonValue::Number(123.0),
+            JsonValue::String("example".to_string()),
+            JsonValue::Boolean(true),
+            JsonValue::Null,
+            JsonValue::Array(vec![JsonValue::Number(123.0)]),
+        ];
+        for jv in values {
+            assert!(KvsValue::try_from(jv).is_err_and(|e| e == ErrorCode::ConversionFailed));
+        }
     }
 }
 
@@ -818,7 +980,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_i32_ok() {
         let kv = KvsValue::I32(-123);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -832,7 +994,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_u32_ok() {
         let kv = KvsValue::U32(123);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -846,7 +1008,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_i64_ok() {
         let kv = KvsValue::I64(-123);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -860,7 +1022,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_u64_ok() {
         let kv = KvsValue::U64(123);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -874,7 +1036,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_f64_ok() {
         let kv = KvsValue::F64(-432.1);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -888,7 +1050,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_bool_ok() {
         let kv = KvsValue::Boolean(true);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -902,7 +1064,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_string_ok() {
         let kv = KvsValue::String("example".to_string());
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -916,7 +1078,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_null_ok() {
         let kv = KvsValue::Null;
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         assert_eq!(
             jv,
@@ -930,7 +1092,7 @@ mod kvs_value_to_json_value_conversion_tests {
     #[test]
     fn test_array_ok() {
         let kv = KvsValue::Array(vec![KvsValue::I32(-123), KvsValue::F64(555.5)]);
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         let exp_entry1 = JsonValue::from(HashMap::from([
             ("t".to_string(), JsonValue::String("i32".to_string())),
@@ -959,10 +1121,10 @@ mod kvs_value_to_json_value_conversion_tests {
         ]));
 
         let kv = KvsValue::Object(KvsMap::from([
-            ("entry1".to_string(), KvsValue::from(entry1.clone())),
-            ("entry2".to_string(), KvsValue::from(entry2.clone())),
+            ("entry1".to_string(), KvsValue::try_from(entry1.clone()).unwrap()),
+            ("entry2".to_string(), KvsValue::try_from(entry2.clone()).unwrap()),
         ]));
-        let jv = JsonValue::from(kv);
+        let jv = JsonValue::try_from(kv).unwrap();
 
         let exp_jv = JsonValue::from(HashMap::from([
             ("t".to_string(), JsonValue::String("obj".to_string())),
@@ -975,6 +1137,60 @@ mod kvs_value_to_json_value_conversion_tests {
             ),
         ]));
         assert_eq!(jv, exp_jv);
+    }
+
+    #[test]
+    fn test_array_empty_ok() {
+        let kv = KvsValue::Array(vec![]);
+        let jv = JsonValue::try_from(kv).unwrap();
+
+        assert_eq!(
+            jv,
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String("arr".to_string())),
+                ("v".to_string(), JsonValue::Array(vec![])),
+            ]))
+        );
+    }
+
+    #[test]
+    fn test_object_empty_ok() {
+        let kv = KvsValue::Object(KvsMap::new());
+        let jv = JsonValue::try_from(kv).unwrap();
+
+        assert_eq!(
+            jv,
+            JsonValue::Object(HashMap::from([
+                ("t".to_string(), JsonValue::String("obj".to_string())),
+                ("v".to_string(), JsonValue::Object(HashMap::new())),
+            ]))
+        );
+    }
+
+    #[test]
+    fn test_round_trip() {
+        let nested = KvsMap::from([
+            ("t".to_string(), KvsValue::String("obj".to_string())),
+            ("v".to_string(), KvsValue::I32(5)),
+        ]);
+        let kv = KvsValue::Object(KvsMap::from([
+            ("i32".to_string(), KvsValue::I32(-123)),
+            ("u32".to_string(), KvsValue::U32(123)),
+            ("i64".to_string(), KvsValue::I64(-456)),
+            ("u64".to_string(), KvsValue::U64(456)),
+            ("f64".to_string(), KvsValue::F64(-432.1)),
+            ("bool".to_string(), KvsValue::Boolean(true)),
+            ("str".to_string(), KvsValue::String("example".to_string())),
+            ("null".to_string(), KvsValue::Null),
+            (
+                "arr".to_string(),
+                KvsValue::Array(vec![KvsValue::I32(1), KvsValue::Array(vec![KvsValue::Null])]),
+            ),
+            ("obj".to_string(), KvsValue::Object(nested)),
+        ]));
+
+        let jv = JsonValue::try_from(kv.clone()).unwrap();
+        assert_eq!(KvsValue::try_from(jv).unwrap(), kv);
     }
 }
 
@@ -999,35 +1215,31 @@ mod error_code_tests {
 
 #[cfg(test)]
 mod json_backend_builder_tests {
+    use crate::json_backend::{JsonBackend, JsonBackendBuilder};
+    use crate::kvs_api::{InstanceId, SnapshotId};
+    use crate::prelude::KvsBackend;
     use crate::test_utils::tempdir;
-    use crate::{json_backend::JsonBackendBuilder, prelude::KvsBackend};
-    use std::path::PathBuf;
+    use std::path::{Path, PathBuf};
+
+    /// Get the working directory of a backend from the parent of its KVS file path.
+    fn working_dir_of(backend: &JsonBackend) -> Option<PathBuf> {
+        backend
+            .kvs_file_path(InstanceId(0), SnapshotId(0))
+            .parent()
+            .map(Path::to_path_buf)
+    }
 
     #[test]
     fn test_new_ok() {
-        let builder = JsonBackendBuilder::new();
-
-        // Assert builder params.
-        assert_eq!(builder.working_dir, PathBuf::new());
-        assert_eq!(builder.snapshot_max_count, 3);
-
-        // Build and assert backend params.
-        let backend = builder.build();
-        assert_eq!(backend.working_dir, PathBuf::new());
+        let backend = JsonBackendBuilder::new().build();
+        assert_eq!(working_dir_of(&backend), Some(PathBuf::new()));
         assert_eq!(backend.snapshot_max_count(), 3);
     }
 
     #[test]
     fn test_default_ok() {
-        let builder = JsonBackendBuilder::default();
-
-        // Assert builder params.
-        assert_eq!(builder.working_dir, PathBuf::new());
-        assert_eq!(builder.snapshot_max_count, 3);
-
-        // Build and assert backend params.
-        let backend = builder.build();
-        assert_eq!(backend.working_dir, PathBuf::new());
+        let backend = JsonBackendBuilder::default().build();
+        assert_eq!(working_dir_of(&backend), Some(PathBuf::new()));
         assert_eq!(backend.snapshot_max_count(), 3);
     }
 
@@ -1035,29 +1247,15 @@ mod json_backend_builder_tests {
     fn test_working_dir_ok() {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
-        let builder = JsonBackendBuilder::new().working_dir(dir_path.clone());
-
-        // Assert builder params.
-        assert_eq!(builder.working_dir, dir_path.clone());
-        assert_eq!(builder.snapshot_max_count, 3);
-
-        // Build and assert backend params.
-        let backend = builder.build();
-        assert_eq!(backend.working_dir, dir_path);
+        let backend = JsonBackendBuilder::new().working_dir(dir_path.clone()).build();
+        assert_eq!(working_dir_of(&backend), Some(dir_path));
         assert_eq!(backend.snapshot_max_count(), 3);
     }
 
     #[test]
     fn test_snapshot_max_count_ok() {
-        let builder = JsonBackendBuilder::new().snapshot_max_count(10);
-
-        // Assert builder params.
-        assert_eq!(builder.working_dir, PathBuf::new());
-        assert_eq!(builder.snapshot_max_count, 10);
-
-        // Build and assert backend params.
-        let backend = builder.build();
-        assert_eq!(backend.working_dir, PathBuf::new());
+        let backend = JsonBackendBuilder::new().snapshot_max_count(10).build();
+        assert_eq!(working_dir_of(&backend), Some(PathBuf::new()));
         assert_eq!(backend.snapshot_max_count(), 10);
     }
 
@@ -1065,18 +1263,19 @@ mod json_backend_builder_tests {
     fn test_chained_ok() {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
-        let builder = JsonBackendBuilder::new()
+        let backend = JsonBackendBuilder::new()
             .working_dir(dir_path.clone())
-            .snapshot_max_count(10);
-
-        // Assert builder params.
-        assert_eq!(builder.working_dir, dir_path.clone());
-        assert_eq!(builder.snapshot_max_count, 10);
-
-        // Build and assert backend params.
-        let backend = builder.build();
-        assert_eq!(backend.working_dir, dir_path);
+            .snapshot_max_count(10)
+            .build();
+        assert_eq!(working_dir_of(&backend), Some(dir_path.clone()));
         assert_eq!(backend.snapshot_max_count(), 10);
+
+        // Setter order must not matter.
+        let reversed = JsonBackendBuilder::new()
+            .snapshot_max_count(10)
+            .working_dir(dir_path)
+            .build();
+        assert_eq!(backend, reversed);
     }
 }
 
@@ -1084,7 +1283,8 @@ mod json_backend_builder_tests {
 mod json_backend_tests {
     use crate::error_code::ErrorCode;
     use crate::json_backend::{JsonBackend, JsonBackendBuilder};
-    use crate::kvs_api::{InstanceId, SnapshotId, KVS_MAX_KEY_LENGTH_BYTES};
+    use crate::kvs_api::{InstanceId, SnapshotId, MAX_KEY_LENGTH_BYTES};
+    use crate::kvs_backend::KvsBackend;
     use crate::kvs_value::{KvsMap, KvsValue};
     use crate::test_utils::tempdir;
     use std::os::unix::fs::PermissionsExt;
@@ -1093,42 +1293,69 @@ mod json_backend_tests {
     /// Expected permissions of KVS JSON and hash files: 0640.
     const EXPECTED_FILE_MODE: u32 = 0o640;
 
+    const INSTANCE_ID: InstanceId = InstanceId(1);
+    const SNAPSHOT_ID: SnapshotId = SnapshotId(0);
+
     fn file_mode(path: &Path) -> u32 {
         std::fs::metadata(path).unwrap().permissions().mode() & 0o777
     }
 
-    fn create_kvs_files(working_dir: &Path) -> (PathBuf, PathBuf) {
+    fn temp_file_path(path: &Path) -> PathBuf {
+        PathBuf::from(format!("{}.tmp", path.display()))
+    }
+
+    fn single_snapshot_backend(working_dir: &Path) -> JsonBackend {
+        // One snapshot means `flush` always overwrites snapshot 0 and never rotates.
+        JsonBackendBuilder::new()
+            .working_dir(working_dir.to_path_buf())
+            .snapshot_max_count(1)
+            .build()
+    }
+
+    fn create_kvs_files(backend: &JsonBackend) -> (PathBuf, PathBuf) {
         let kvs_map = KvsMap::from([
             ("k1".to_string(), KvsValue::from("v1")),
             ("k2".to_string(), KvsValue::from(true)),
             ("k3".to_string(), KvsValue::from(123.4)),
         ]);
-        let kvs_path = working_dir.join("kvs.json");
-        let hash_path = working_dir.join("kvs.hash");
-        JsonBackend::save(&kvs_map, &kvs_path, &hash_path).unwrap();
-        (kvs_path, hash_path)
+        backend.flush(INSTANCE_ID, &kvs_map).unwrap();
+        (
+            backend.kvs_file_path(INSTANCE_ID, SNAPSHOT_ID),
+            backend.hash_file_path(INSTANCE_ID, SNAPSHOT_ID),
+        )
+    }
+
+    /// Write `contents` as the KVS file with its valid hash.
+    fn write_kvs_files(backend: &JsonBackend, contents: &str) {
+        let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
+        std::fs::write(backend.kvs_file_path(INSTANCE_ID, SNAPSHOT_ID), contents).unwrap();
+        std::fs::write(backend.hash_file_path(INSTANCE_ID, SNAPSHOT_ID), hash.to_be_bytes()).unwrap();
     }
 
     #[test]
     fn test_load_ok() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        let backend = single_snapshot_backend(dir.path());
+        create_kvs_files(&backend);
 
-        let kvs_map = JsonBackend::load(&kvs_path, &hash_path).unwrap();
+        let kvs_map = backend.load_kvs(INSTANCE_ID, SNAPSHOT_ID).unwrap();
         assert_eq!(kvs_map.len(), 3);
     }
 
     #[test]
     fn test_load_kvs_not_found() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        let backend = single_snapshot_backend(dir.path());
+        let (kvs_path, _hash_path) = create_kvs_files(&backend);
         std::fs::remove_file(&kvs_path).unwrap();
 
-        assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::FileNotFound));
+        assert!(backend
+            .load_kvs(INSTANCE_ID, SNAPSHOT_ID)
+            .is_err_and(|e| e == ErrorCode::FileNotFound));
     }
 
+    // Public paths always end in `.json` and `.hash`, so `check_path_extensions` can't fail through `load_kvs` or `flush`.
+    // The extension tests call `load` and `save` directly.
     #[test]
     fn test_load_kvs_invalid_extension() {
         let dir = tempdir().unwrap();
@@ -1142,11 +1369,13 @@ mod json_backend_tests {
     #[test]
     fn test_load_hash_not_found() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        let backend = single_snapshot_backend(dir.path());
+        let (_kvs_path, hash_path) = create_kvs_files(&backend);
         std::fs::remove_file(&hash_path).unwrap();
 
-        assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::FileNotFound));
+        assert!(backend
+            .load_kvs(INSTANCE_ID, SNAPSHOT_ID)
+            .is_err_and(|e| e == ErrorCode::FileNotFound));
     }
 
     #[test]
@@ -1160,47 +1389,95 @@ mod json_backend_tests {
     }
 
     #[test]
+    fn test_load_t_v_keys() {
+        let dir = tempdir().unwrap();
+        let backend = single_snapshot_backend(dir.path());
+
+        // "t" and "v" are valid user keys inside the type-tagged root object.
+        let contents = r#"{"t":"obj","v":{"t":{"t":"str","v":"obj"},"v":{"t":"i32","v":5}}}"#;
+        write_kvs_files(&backend, contents);
+
+        let kvs_map = backend.load_kvs(INSTANCE_ID, SNAPSHOT_ID).unwrap();
+        assert_eq!(
+            kvs_map,
+            KvsMap::from([
+                ("t".to_string(), KvsValue::String("obj".to_string())),
+                ("v".to_string(), KvsValue::I32(5)),
+            ])
+        );
+    }
+
+    #[test]
     fn test_load_malformed_json() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let kvs_path = dir_path.join("kvs.json");
-        let hash_path = dir_path.join("kvs.hash");
+        let backend = single_snapshot_backend(dir.path());
+        write_kvs_files(&backend, "{\"malformed_json\"}");
 
-        let contents = "{\"malformed_json\"}";
-        let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
-        std::fs::write(kvs_path.clone(), contents).unwrap();
-        std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
-
-        assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::JsonParserError));
+        assert!(backend
+            .load_kvs(INSTANCE_ID, SNAPSHOT_ID)
+            .is_err_and(|e| e == ErrorCode::JsonParserError));
     }
 
     #[test]
     fn test_load_invalid_data() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let kvs_path = dir_path.join("kvs.json");
-        let hash_path = dir_path.join("kvs.hash");
+        let backend = single_snapshot_backend(dir.path());
+        write_kvs_files(&backend, "[123.4, 567.8]");
 
-        let contents = "[123.4, 567.8]";
-        let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
-        std::fs::write(kvs_path.clone(), contents).unwrap();
-        std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
+        assert!(backend
+            .load_kvs(INSTANCE_ID, SNAPSHOT_ID)
+            .is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
 
-        assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::JsonParserError));
+    #[test]
+    fn test_load_empty_ok() {
+        let dir = tempdir().unwrap();
+        let backend = single_snapshot_backend(dir.path());
+
+        let contents = r#"{"t":"obj","v":{}}"#;
+        write_kvs_files(&backend, contents);
+
+        let kvs_map = backend.load_kvs(INSTANCE_ID, SNAPSHOT_ID).unwrap();
+        assert_eq!(kvs_map, KvsMap::new());
+    }
+
+    #[test]
+    fn test_load_untagged_root() {
+        let dir = tempdir().unwrap();
+        let backend = single_snapshot_backend(dir.path());
+
+        // Root object without type tag is no longer accepted.
+        let contents = r#"{"k1":{"t":"str","v":"v1"}}"#;
+        write_kvs_files(&backend, contents);
+
+        assert!(backend
+            .load_kvs(INSTANCE_ID, SNAPSHOT_ID)
+            .is_err_and(|e| e == ErrorCode::ConversionFailed));
+    }
+
+    #[test]
+    fn test_load_tagged_non_object_root() {
+        let dir = tempdir().unwrap();
+        let backend = single_snapshot_backend(dir.path());
+
+        let contents = r#"{"t":"i32","v":5}"#;
+        write_kvs_files(&backend, contents);
+
+        assert!(backend
+            .load_kvs(INSTANCE_ID, SNAPSHOT_ID)
+            .is_err_and(|e| e == ErrorCode::JsonParserError));
     }
 
     #[test]
     fn test_load_invalid_key() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let kvs_path = dir_path.join("kvs.json");
-        let hash_path = dir_path.join("kvs.hash");
+        let backend = single_snapshot_backend(dir.path());
 
         // Key that is not valid found while loading means the file is invalid/corrupted.
         // Keys are placed in JSON as-is - control characters must be escaped.
         let invalid_keys = vec![
             String::new(),
-            "k".repeat(KVS_MAX_KEY_LENGTH_BYTES + 1),
+            "k".repeat(MAX_KEY_LENGTH_BYTES + 1),
             "\\u001f".to_string(),
             "\\u007f".to_string(),
             "tab\\tkey".to_string(),
@@ -1209,62 +1486,78 @@ mod json_backend_tests {
         ];
         for invalid_key in invalid_keys {
             let contents = format!(
-                "{{\"valid_key\": {{\"t\": \"i32\", \"v\": 42}}, \"{invalid_key}\": {{\"t\": \"i32\", \"v\": 7}}}}"
+                "{{\"t\": \"obj\", \"v\": {{\"valid_key\": {{\"t\": \"i32\", \"v\": 42}}, \"{invalid_key}\": {{\"t\": \"i32\", \"v\": 7}}}}}}"
             );
-            let hash = adler32::RollingAdler32::from_buffer(contents.as_bytes()).hash();
-            std::fs::write(kvs_path.clone(), contents).unwrap();
-            std::fs::write(hash_path.clone(), hash.to_be_bytes()).unwrap();
+            write_kvs_files(&backend, &contents);
 
             assert!(
-                JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::InvalidKey),
+                backend
+                    .load_kvs(INSTANCE_ID, SNAPSHOT_ID)
+                    .is_err_and(|e| e == ErrorCode::InvalidKey),
                 "key: {invalid_key:?}"
             );
         }
     }
 
     #[test]
+    fn test_load_invalid_value_type() {
+        let dir = tempdir().unwrap();
+        let backend = single_snapshot_backend(dir.path());
+
+        let contents = r#"{"t":"obj","v":{"k1":{"t":"i32","v":"x"}}}"#;
+        write_kvs_files(&backend, contents);
+
+        assert!(backend
+            .load_kvs(INSTANCE_ID, SNAPSHOT_ID)
+            .is_err_and(|e| e == ErrorCode::InvalidValueType));
+    }
+
+    #[test]
     fn test_load_invalid_hash_content() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
-        std::fs::write(hash_path.clone(), vec![0x12, 0x34, 0x56, 0x78]).unwrap();
+        let backend = single_snapshot_backend(dir.path());
+        let (_kvs_path, hash_path) = create_kvs_files(&backend);
+        std::fs::write(hash_path, vec![0x12, 0x34, 0x56, 0x78]).unwrap();
 
-        assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::ValidationFailed));
+        assert!(backend
+            .load_kvs(INSTANCE_ID, SNAPSHOT_ID)
+            .is_err_and(|e| e == ErrorCode::ValidationFailed));
     }
 
     #[test]
     fn test_load_invalid_hash_len() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
-        std::fs::write(hash_path.clone(), vec![0x12, 0x34, 0x56]).unwrap();
+        let backend = single_snapshot_backend(dir.path());
+        let (_kvs_path, hash_path) = create_kvs_files(&backend);
+        std::fs::write(hash_path, vec![0x12, 0x34, 0x56]).unwrap();
 
-        assert!(JsonBackend::load(&kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::ValidationFailed));
+        assert!(backend
+            .load_kvs(INSTANCE_ID, SNAPSHOT_ID)
+            .is_err_and(|e| e == ErrorCode::ValidationFailed));
     }
 
     #[test]
     fn test_save_ok() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
+        let backend = single_snapshot_backend(dir.path());
 
         let kvs_map = KvsMap::from([
             ("k1".to_string(), KvsValue::from("v1")),
             ("k2".to_string(), KvsValue::from(true)),
             ("k3".to_string(), KvsValue::from(123.4)),
         ]);
-        let kvs_path = dir_path.join("kvs.json");
-        let hash_path = dir_path.join("kvs.hash");
-        JsonBackend::save(&kvs_map, &kvs_path, &hash_path).unwrap();
+        backend.flush(INSTANCE_ID, &kvs_map).unwrap();
 
-        assert!(kvs_path.exists());
+        assert!(backend.kvs_file_path(INSTANCE_ID, SNAPSHOT_ID).exists());
+        assert!(backend.hash_file_path(INSTANCE_ID, SNAPSHOT_ID).exists());
     }
 
     #[cfg_attr(miri, ignore)]
     #[test]
     fn test_save_sets_file_permissions() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        let backend = single_snapshot_backend(dir.path());
+        let (kvs_path, hash_path) = create_kvs_files(&backend);
 
         assert_eq!(file_mode(&kvs_path), EXPECTED_FILE_MODE);
         assert_eq!(file_mode(&hash_path), EXPECTED_FILE_MODE);
@@ -1274,8 +1567,8 @@ mod json_backend_tests {
     #[test]
     fn test_save_overrides_existing_file_permissions() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        let backend = single_snapshot_backend(dir.path());
+        let (kvs_path, hash_path) = create_kvs_files(&backend);
 
         // Widen permissions of existing files.
         let all_perms = 0o777;
@@ -1286,64 +1579,67 @@ mod json_backend_tests {
 
         // Save again.
         let kvs_map = KvsMap::from([("k1".to_string(), KvsValue::from("v1"))]);
-        JsonBackend::save(&kvs_map, &kvs_path, &hash_path).unwrap();
+        backend.flush(INSTANCE_ID, &kvs_map).unwrap();
 
         assert_eq!(file_mode(&kvs_path), EXPECTED_FILE_MODE);
         assert_eq!(file_mode(&hash_path), EXPECTED_FILE_MODE);
+        // The same files were rewritten, not rotated to snapshot 1.
+        assert_eq!(backend.snapshot_count(INSTANCE_ID), 1);
+        assert!(!backend.kvs_file_path(INSTANCE_ID, SnapshotId(1)).exists());
+        assert!(!backend.hash_file_path(INSTANCE_ID, SnapshotId(1)).exists());
     }
 
     #[cfg_attr(miri, ignore)]
     #[test]
     fn test_save_replaces_stale_temp_file() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let kvs_path = dir_path.join("kvs.json");
-        let hash_path = dir_path.join("kvs.hash");
+        let backend = single_snapshot_backend(dir.path());
+        let kvs_path = backend.kvs_file_path(INSTANCE_ID, SNAPSHOT_ID);
 
         // Create temporary file left behind by an interrupted write.
-        let kvs_tmp_path = dir_path.join("kvs.json.tmp");
+        let kvs_tmp_path = temp_file_path(&kvs_path);
         std::fs::write(&kvs_tmp_path, "stale").unwrap();
         std::fs::set_permissions(&kvs_tmp_path, std::fs::Permissions::from_mode(0o777)).unwrap();
 
         let kvs_map = KvsMap::from([("k1".to_string(), KvsValue::from("v1"))]);
-        JsonBackend::save(&kvs_map, &kvs_path, &hash_path).unwrap();
+        backend.flush(INSTANCE_ID, &kvs_map).unwrap();
 
         assert!(!kvs_tmp_path.exists());
-        assert_eq!(JsonBackend::load(&kvs_path, &hash_path).unwrap(), kvs_map);
+        assert_eq!(backend.load_kvs(INSTANCE_ID, SNAPSHOT_ID).unwrap(), kvs_map);
         assert_eq!(file_mode(&kvs_path), EXPECTED_FILE_MODE);
     }
 
     #[test]
     fn test_save_leaves_no_temp_files() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        create_kvs_files(&dir_path);
+        let backend = single_snapshot_backend(dir.path());
+        let (kvs_path, hash_path) = create_kvs_files(&backend);
 
-        assert!(!dir_path.join("kvs.json.tmp").exists());
-        assert!(!dir_path.join("kvs.hash.tmp").exists());
+        assert!(!temp_file_path(&kvs_path).exists());
+        assert!(!temp_file_path(&hash_path).exists());
     }
 
     #[test]
     fn test_save_staging_failure_keeps_previous_file() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        let backend = single_snapshot_backend(dir.path());
+        let (kvs_path, hash_path) = create_kvs_files(&backend);
         let previous_kvs = std::fs::read(&kvs_path).unwrap();
         let previous_hash = std::fs::read(&hash_path).unwrap();
 
         // Temporary file path is occupied by a non-empty directory - it cannot be removed or created.
-        let kvs_tmp_path = dir_path.join("kvs.json.tmp");
+        let kvs_tmp_path = temp_file_path(&kvs_path);
         std::fs::create_dir(&kvs_tmp_path).unwrap();
         std::fs::write(kvs_tmp_path.join("file"), "data").unwrap();
 
         let kvs_map = KvsMap::from([("k1".to_string(), KvsValue::from("v1"))]);
-        assert!(
-            JsonBackend::save(&kvs_map, &kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::PhysicalStorageFailure)
-        );
+        assert!(backend
+            .flush(INSTANCE_ID, &kvs_map)
+            .is_err_and(|e| e == ErrorCode::PhysicalStorageFailure));
 
         assert_eq!(std::fs::read(&kvs_path).unwrap(), previous_kvs);
         assert_eq!(std::fs::read(&hash_path).unwrap(), previous_hash);
-        assert!(!dir_path.join("kvs.hash.tmp").exists());
+        assert!(!temp_file_path(&hash_path).exists());
     }
 
     #[cfg_attr(miri, ignore)]
@@ -1351,7 +1647,8 @@ mod json_backend_tests {
     fn test_save_read_only_dir_physical_storage_failure() {
         let dir = tempdir().unwrap();
         let dir_path = dir.path().to_path_buf();
-        let (kvs_path, hash_path) = create_kvs_files(&dir_path);
+        let backend = single_snapshot_backend(&dir_path);
+        let (kvs_path, hash_path) = create_kvs_files(&backend);
         let previous_kvs = std::fs::read(&kvs_path).unwrap();
         let previous_hash = std::fs::read(&hash_path).unwrap();
 
@@ -1363,7 +1660,7 @@ mod json_backend_tests {
         }
 
         let kvs_map = KvsMap::from([("k1".to_string(), KvsValue::from("v1"))]);
-        let result = JsonBackend::save(&kvs_map, &kvs_path, &hash_path);
+        let result = backend.flush(INSTANCE_ID, &kvs_map);
         std::fs::set_permissions(&dir_path, std::fs::Permissions::from_mode(0o700)).unwrap();
 
         assert!(result.is_err_and(|e| e == ErrorCode::PhysicalStorageFailure));
@@ -1374,27 +1671,23 @@ mod json_backend_tests {
     #[test]
     fn test_save_overwrite_round_trip() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
-        let kvs_path = dir_path.join("kvs.json");
-        let hash_path = dir_path.join("kvs.hash");
+        let backend = single_snapshot_backend(dir.path());
 
         let first = KvsMap::from([("k1".to_string(), KvsValue::from("a much longer first value"))]);
-        JsonBackend::save(&first, &kvs_path, &hash_path).unwrap();
+        backend.flush(INSTANCE_ID, &first).unwrap();
         let second = KvsMap::from([("k1".to_string(), KvsValue::from("v2"))]);
-        JsonBackend::save(&second, &kvs_path, &hash_path).unwrap();
+        backend.flush(INSTANCE_ID, &second).unwrap();
 
-        let loaded = JsonBackend::load(&kvs_path, &hash_path).unwrap();
+        let loaded = backend.load_kvs(INSTANCE_ID, SNAPSHOT_ID).unwrap();
         assert_eq!(loaded, second);
     }
 
     #[test]
     fn test_save_missing_dir() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().join("missing");
-        let kvs_path = dir_path.join("kvs.json");
-        let hash_path = dir_path.join("kvs.hash");
+        let backend = single_snapshot_backend(&dir.path().join("missing"));
 
-        let result = JsonBackend::save(&KvsMap::new(), &kvs_path, &hash_path);
+        let result = backend.flush(INSTANCE_ID, &KvsMap::new());
         assert!(result.is_err_and(|e| e == ErrorCode::PhysicalStorageFailure));
     }
 
@@ -1425,13 +1718,13 @@ mod json_backend_tests {
     #[test]
     fn test_save_impossible_str() {
         let dir = tempdir().unwrap();
-        let dir_path = dir.path().to_path_buf();
+        let backend = single_snapshot_backend(dir.path());
 
         let kvs_map = KvsMap::from([("inf".to_string(), KvsValue::from(f64::INFINITY))]);
-        let kvs_path = dir_path.join("kvs.json");
-        let hash_path = dir_path.join("kvs.hash");
 
-        assert!(JsonBackend::save(&kvs_map, &kvs_path, &hash_path).is_err_and(|e| e == ErrorCode::JsonGeneratorError));
+        assert!(backend
+            .flush(INSTANCE_ID, &kvs_map)
+            .is_err_and(|e| e == ErrorCode::JsonGeneratorError));
     }
 
     #[test]
@@ -1538,16 +1831,24 @@ mod kvs_backend_tests {
     }
 
     fn create_kvs_files(backend: &JsonBackend, instance_id: InstanceId, snapshot_id: SnapshotId) {
+        assert!(snapshot_id.0 < backend.snapshot_max_count());
         let kvs_map = KvsMap::from([
             ("k1".to_string(), KvsValue::from("v1")),
             ("k2".to_string(), KvsValue::from(true)),
             ("k3".to_string(), KvsValue::from(123.4)),
         ]);
-        let kvs_path = backend.kvs_file_path(instance_id, snapshot_id);
-        let hash_path = backend.hash_file_path(instance_id, snapshot_id);
-        JsonBackend::save(&kvs_map, &kvs_path, &hash_path).unwrap();
+        // Each `flush` rotates the existing snapshots up by one.
+        for _ in 0..=snapshot_id.0 {
+            backend.flush(instance_id, &kvs_map).unwrap();
+        }
+        // Remove the lower snapshots, so only the requested snapshot can be loaded.
+        for idx in 0..snapshot_id.0 {
+            fs::remove_file(backend.kvs_file_path(instance_id, SnapshotId(idx))).unwrap();
+            fs::remove_file(backend.hash_file_path(instance_id, SnapshotId(idx))).unwrap();
+        }
     }
 
+    // There is no public writer for the defaults file, so this helper calls `save` directly.
     fn create_defaults_file(backend: &JsonBackend, instance_id: InstanceId) {
         let kvs_map = KvsMap::from([
             ("k4".to_string(), KvsValue::from("v4")),

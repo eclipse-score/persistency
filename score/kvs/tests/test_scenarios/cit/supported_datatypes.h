@@ -15,6 +15,6 @@
 
 #include <scenario.hpp>
 
-ScenarioGroup::Ptr supported_datatypes_group();
+ScenarioGroup::Ptr SupportedDatatypesGroup();
 
 #endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_SUPPORTED_DATATYPES_H

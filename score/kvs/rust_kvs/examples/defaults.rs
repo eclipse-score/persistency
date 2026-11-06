@@ -12,7 +12,7 @@
 // *******************************************************************************
 //! Example for default values.
 //! - Creating KVS instance using `KvsBuilder` with `defaults` modes.
-//! - Default-specific APIs: `get_default_value`, `is_value_default`.
+//! - Default-specific APIs: `get_default_value`, `is_value_default`, `set_value_to_default`.
 //! - Key-value operations behavior on defaults available.
 
 use rust_kvs::prelude::*;
@@ -34,7 +34,7 @@ fn create_defaults_file(dir_path: PathBuf, instance_id: InstanceId) -> Result<()
         ("k2".to_string(), KvsValue::U64(654321u64)),
         ("k3".to_string(), KvsValue::String("example".to_string())),
     ]));
-    let json_value = JsonValue::from(kvs_value);
+    let json_value = JsonValue::try_from(kvs_value)?;
 
     // Stringify and save to file.
     let json_str = json_value.stringify()?;
@@ -109,7 +109,7 @@ fn main() -> Result<(), ErrorCode> {
         println!("All KVS keys: {all_keys:?}");
 
         let k3_key = "k3";
-        let k3_value = kvs.get_value(k3_key)?;
+        let k3_value = kvs.get_value(k3_key);
         println!("{k3_key:?} = {k3_value:?}");
 
         if !kvs.key_exists(k3_key)? {
@@ -120,15 +120,17 @@ fn main() -> Result<(), ErrorCode> {
     }
 
     {
-        println!("-> `reset_key` usage");
+        println!("-> `set_value_to_default` usage");
 
         let k1_key = "k1";
-        kvs.reset_key(k1_key)?;
-        if !kvs.key_exists(k1_key)? {
-            println!("{k1_key} key not found");
+        kvs.set_value_to_default(k1_key)?;
+        let k1_value = kvs.get_value(k1_key)?;
+        println!("{k1_key:?} = {k1_value:?}");
+        if kvs.key_exists(k1_key)? {
+            println!("{k1_key} key exists");
         }
-        if kvs.is_value_default(k1_key)? {
-            println!("{k1_key} default available");
+        if !kvs.is_value_default(k1_key)? {
+            println!("{k1_key} is not default");
         }
 
         println!();

@@ -15,6 +15,6 @@
 
 #include <scenario.hpp>
 
-ScenarioGroup::Ptr default_values_group();
+ScenarioGroup::Ptr DefaultValuesGroup();
 
 #endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_CIT_DEFAULT_VALUES_H
