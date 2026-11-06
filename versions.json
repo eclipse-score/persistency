@@ -122,5 +122,9 @@
   {
     "version": "pr-673",
     "url": "https://eclipse-score.github.io/persistency/pr-673/"
+  },
+  {
+    "version": "pr-671",
+    "url": "https://eclipse-score.github.io/persistency/pr-671/"
   }
 ]
