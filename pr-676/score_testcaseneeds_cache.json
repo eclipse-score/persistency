@@ -282,7 +282,7 @@
   {
     "name": "TestExplicitFlush__test_storage_written_only_at_flush[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-    "line": "125",
+    "line": "122",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -296,7 +296,7 @@
   {
     "name": "TestExplicitFlush__test_flushed_state_loaded_after_restart[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-    "line": "139",
+    "line": "166",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -940,7 +940,7 @@
   {
     "name": "TestExplicitFlush__test_storage_written_only_at_flush[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-    "line": "125",
+    "line": "122",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -954,7 +954,7 @@
   {
     "name": "TestExplicitFlush__test_flushed_state_loaded_after_restart[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-    "line": "139",
+    "line": "166",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",

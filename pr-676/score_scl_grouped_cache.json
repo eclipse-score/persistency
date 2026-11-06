@@ -1415,7 +1415,7 @@
         {
           "name": "TestExplicitFlush__test_storage_written_only_at_flush[rust]",
           "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-          "line": 125,
+          "line": 122,
           "need": "comp_req__kvs__explicit_flush",
           "verify_type": "fully",
           "result": "passed",
@@ -1427,7 +1427,7 @@
         {
           "name": "TestExplicitFlush__test_flushed_state_loaded_after_restart[rust]",
           "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-          "line": 139,
+          "line": 166,
           "need": "comp_req__kvs__explicit_flush",
           "verify_type": "fully",
           "result": "passed",
@@ -1439,7 +1439,7 @@
         {
           "name": "TestExplicitFlush__test_storage_written_only_at_flush[cpp]",
           "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-          "line": 125,
+          "line": 122,
           "need": "comp_req__kvs__explicit_flush",
           "verify_type": "fully",
           "result": "passed",
@@ -1451,7 +1451,7 @@
         {
           "name": "TestExplicitFlush__test_flushed_state_loaded_after_restart[cpp]",
           "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-          "line": 139,
+          "line": 166,
           "need": "comp_req__kvs__explicit_flush",
           "verify_type": "fully",
           "result": "passed",
