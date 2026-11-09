@@ -33,6 +33,6 @@ jobs:
       contents: read
     with:
       test-targets: //:cit_tests
-      bazel-args: --lockfile_mode=error --config=score-linux-x86_64
+      bazel-configs: score-linux-x86_64
       cache-key: component-integration-tests
       artifact-name: tests-report

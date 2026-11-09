@@ -64,7 +64,7 @@ jobs:
     with:
       build-targets: //score/...
       test-targets: //:unit_tests
-      bazel-args: --lockfile_mode=error --config=score-linux-x86_64
+      bazel-configs: score-linux-x86_64
       cache-key: build-test
       disk-space-level: 4
 
