@@ -16,7 +16,6 @@
 #include <unistd.h>
 #include <cstdio>
 #include <cstdlib>
-#include <filesystem>
 #include <fstream>
 #include <string>
 
@@ -325,8 +324,8 @@ TEST(kvs_open, storage_corrupted_all_kvs_open_modes)
     // Prepare KVS on disk.
     // Make sure files have been created.
     PrepareEnvironment(dir, prefix, instance_id.id, default_data, snapshot_data_0);
-    ASSERT_TRUE(std::filesystem::exists(dir + prefix + std::to_string(instance_id.id) + "_0.json"));
-    ASSERT_TRUE(std::filesystem::exists(dir + prefix + std::to_string(instance_id.id) + "_0.hash"));
+    ASSERT_TRUE(filesystem_test::Exists(dir + prefix + std::to_string(instance_id.id) + "_0.json"));
+    ASSERT_TRUE(filesystem_test::Exists(dir + prefix + std::to_string(instance_id.id) + "_0.hash"));
 
     // Corrupt JSON file.
     {
@@ -404,10 +403,10 @@ TEST(kvs_open, hash_missing_all_kvs_open_modes)
     // Prepare KVS on disk.
     // Make sure files have been created.
     PrepareEnvironment(dir, prefix, instance_id.id, default_data, snapshot_data_0);
-    ASSERT_TRUE(std::filesystem::exists(dir + prefix + std::to_string(instance_id.id) + "_0.json"));
-    ASSERT_TRUE(std::filesystem::exists(dir + prefix + std::to_string(instance_id.id) + "_0.hash"));
+    ASSERT_TRUE(filesystem_test::Exists(dir + prefix + std::to_string(instance_id.id) + "_0.json"));
+    ASSERT_TRUE(filesystem_test::Exists(dir + prefix + std::to_string(instance_id.id) + "_0.hash"));
     // Remove hash file.
-    ASSERT_TRUE(std::filesystem::remove(dir + prefix + std::to_string(instance_id.id) + "_0.hash"));
+    ASSERT_TRUE(filesystem_test::Remove(dir + prefix + std::to_string(instance_id.id) + "_0.hash"));
 
     // Required.
     {
@@ -469,8 +468,8 @@ TEST(kvs_open, selected_snapshot)
     // Prepare KVS on disk with two snapshots.
     // Make sure files have been created.
     PrepareEnvironment(dir, prefix, instance_id.id, default_data, snapshot_data_0, snapshot_data_1);
-    EXPECT_TRUE(std::filesystem::exists(dir + prefix + std::to_string(instance_id.id) + "_0.json"));
-    EXPECT_TRUE(std::filesystem::exists(dir + prefix + std::to_string(instance_id.id) + "_1.json"));
+    EXPECT_TRUE(filesystem_test::Exists(dir + prefix + std::to_string(instance_id.id) + "_0.json"));
+    EXPECT_TRUE(filesystem_test::Exists(dir + prefix + std::to_string(instance_id.id) + "_1.json"));
 
     // First instance, load snapshot 0.
     {
@@ -1434,8 +1433,8 @@ TEST(kvs_write_json_data, write_json_data_success)
 
     ASSERT_TRUE(kvs->SetValue("booltest", KvsValue(true)));
     ASSERT_TRUE(kvs->Flush());
-    EXPECT_TRUE(std::filesystem::exists(kKvsPrefix + ".json"));
-    EXPECT_TRUE(std::filesystem::exists(kKvsPrefix + ".hash"));
+    EXPECT_TRUE(filesystem_test::Exists(kKvsPrefix + ".json"));
+    EXPECT_TRUE(filesystem_test::Exists(kKvsPrefix + ".hash"));
 
     // The hash file holds the big-endian Adler-32 of the JSON file.
     const std::string json_content{FileContent(score::filesystem::Path{kKvsPrefix + ".json"})};
@@ -1680,8 +1679,8 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success)
         plant_generation(i);
         EXPECT_EQ(result.value().SnapshotCount().value(), i + 1);
     }
-    ASSERT_FALSE(std::filesystem::exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".json"));
-    ASSERT_FALSE(std::filesystem::exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".hash"));
+    ASSERT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".json"));
+    ASSERT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".hash"));
 
     // Flush() rotates the snapshots, then writes a new snapshot 0.
     ASSERT_TRUE(result.value().Flush());
@@ -1733,8 +1732,8 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_max_snapshots)
     // Check if no ID higher than kDefaultMaxSnapshots exists.
     ASSERT_TRUE(result.value().Flush());
     EXPECT_EQ(generation_json(kDefaultMaxSnapshots), generation_tag(kDefaultMaxSnapshots - 1U));
-    EXPECT_FALSE(std::filesystem::exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".json"));
-    EXPECT_FALSE(std::filesystem::exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".hash"));
+    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".json"));
+    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".hash"));
 
     CleanupEnvironment();
 }
@@ -1827,10 +1826,10 @@ TEST(kvs_flush, flush_success_data)
     ASSERT_TRUE(flush_result);
 
     // Check if files were created correctly.
-    EXPECT_TRUE(std::filesystem::exists(kKvsPrefix + ".json"));
-    EXPECT_TRUE(std::filesystem::exists(kKvsPrefix + ".hash"));
-    EXPECT_FALSE(std::filesystem::exists(kFilenamePrefix + "_1.json"));
-    EXPECT_FALSE(std::filesystem::exists(kFilenamePrefix + "_1.hash"));
+    EXPECT_TRUE(filesystem_test::Exists(kKvsPrefix + ".json"));
+    EXPECT_TRUE(filesystem_test::Exists(kKvsPrefix + ".hash"));
+    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.json"));
+    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.hash"));
 
     // A second KVS loads the flushed data.
     auto reopened{Kvs::Open(kInstanceId,
@@ -1865,8 +1864,8 @@ TEST(kvs_flush, flush_success_snapshot_rotate)
                           std::nullopt,
                           kDefaultMaxSnapshots)};
     ASSERT_TRUE(result);
-    EXPECT_FALSE(std::filesystem::exists(kFilenamePrefix + "_1.json"));
-    EXPECT_FALSE(std::filesystem::exists(kFilenamePrefix + "_1.hash"));
+    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.json"));
+    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.hash"));
 
     // Initial flush -> snapshot ID 0.
     score::cpp::ignore = result.value().Flush();
@@ -1874,8 +1873,8 @@ TEST(kvs_flush, flush_success_snapshot_rotate)
     // Check if SnapshotRotate was triggered on second flush --> one snapshot should be available afterwards.
     auto flush_result{result.value().Flush()};
     ASSERT_TRUE(flush_result);
-    EXPECT_TRUE(std::filesystem::exists(kFilenamePrefix + "_1.json"));
-    EXPECT_TRUE(std::filesystem::exists(kFilenamePrefix + "_1.hash"));
+    EXPECT_TRUE(filesystem_test::Exists(kFilenamePrefix + "_1.json"));
+    EXPECT_TRUE(filesystem_test::Exists(kFilenamePrefix + "_1.hash"));
 
     CleanupEnvironment();
 }
@@ -1919,7 +1918,7 @@ TEST(kvs_flush, flush_failure_rotate_snapshots)
     PrepareEnvironment();
     // Test folder for permission handling.
     std::string permissions_dir{kDataDir + "permissions/"};
-    std::filesystem::create_directories(permissions_dir);
+    filesystem_test::CreateDirectories(permissions_dir);
     auto result{Kvs::Open(kInstanceId,
                           kSnapshotId,
                           KvsDefaults::kOptional,
@@ -1929,8 +1928,7 @@ TEST(kvs_flush, flush_failure_rotate_snapshots)
                           kDefaultMaxSnapshots)};
     ASSERT_TRUE(result);
 
-    std::filesystem::permissions(
-        permissions_dir, std::filesystem::perms::owner_read, std::filesystem::perm_options::replace);
+    filesystem_test::SetPermissions(permissions_dir, score::filesystem::Perms::kReadUser);
     auto flush_result{result.value().Flush()};
 
     ASSERT_FALSE(flush_result);
@@ -2574,8 +2572,8 @@ TEST(kvs_get_storage_file_size, size_matches_files_on_disk)
                        kDefaultMaxSnapshots)};
     ASSERT_TRUE(kvs);
 
-    const auto expected{std::filesystem::file_size(kKvsPrefix + ".json") +
-                        std::filesystem::file_size(kKvsPrefix + ".hash")};
+    const auto expected{filesystem_test::FileSize(kKvsPrefix + ".json") +
+                        filesystem_test::FileSize(kKvsPrefix + ".hash")};
 
     auto result{kvs.value().GetStorageFileSize()};
     ASSERT_TRUE(result);
@@ -2653,7 +2651,7 @@ TEST(kvs_get_storage_file_size, size_failure_unreadable_path)
 
     // A directory in place of the data file cannot be sized as a regular file.
     system(("rm -rf " + kKvsPrefix + ".json").c_str());
-    std::filesystem::create_directory(kKvsPrefix + ".json");
+    filesystem_test::CreateDirectory(kKvsPrefix + ".json");
 
     auto result{kvs.value().GetStorageFileSize()};
     EXPECT_FALSE(result);
@@ -2667,7 +2665,7 @@ TEST(kvs_max_storage_bytes, flush_succeeds_without_configured_limit)
     // The builder default is an unset optional, meaning no limit is enforced.
     // Data far larger than kTestMaxStorageBytes must therefore still flush.
     const std::string test_dir{"./kvs_no_limit_test/"};
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 
     KvsBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
@@ -2682,13 +2680,13 @@ TEST(kvs_max_storage_bytes, flush_succeeds_without_configured_limit)
     auto flush_result{kvs.Flush()};
     EXPECT_TRUE(flush_result);
 
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 }
 
 TEST(kvs_max_storage_bytes, flush_fails_when_storage_limit_exceeded)
 {
     const std::string test_dir{"./kvs_storage_test/"};
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 
     KvsBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
@@ -2718,13 +2716,13 @@ TEST(kvs_max_storage_bytes, flush_fails_when_storage_limit_exceeded)
     ASSERT_FALSE(flush_result2);
     EXPECT_EQ(static_cast<ErrorCode>(*flush_result2.error()), ErrorCode::kOutOfStorageSpace);
 
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 }
 
 TEST(kvs_check_size, check_size_within_limit_succeeds)
 {
     const std::string test_dir{"./kvs_check_size_within_test/"};
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 
     KvsBuilder builder{InstanceId(1)};
     builder.WorkingDir(std::string(test_dir));
@@ -2741,13 +2739,13 @@ TEST(kvs_check_size, check_size_within_limit_succeeds)
     EXPECT_GT(check_result.value(), 0U);
     EXPECT_LT(check_result.value(), kTestMaxStorageBytes);
 
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 }
 
 TEST(kvs_check_size, check_size_exceeding_limit_fails)
 {
     const std::string test_dir{"./kvs_check_size_exceeding_test/"};
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 
     KvsBuilder builder{InstanceId(2)};
     builder.WorkingDir(std::string(test_dir));
@@ -2764,7 +2762,7 @@ TEST(kvs_check_size, check_size_exceeding_limit_fails)
     ASSERT_FALSE(check_result) << "CalculatePotentialSize should fail when the storage limit is exceeded";
     EXPECT_EQ(static_cast<ErrorCode>(*check_result.error()), ErrorCode::kOutOfStorageSpace);
 
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 }
 
 TEST(kvs_max_storage_bytes, flush_without_limit_does_not_measure_storage)
@@ -2774,7 +2772,7 @@ TEST(kvs_max_storage_bytes, flush_without_limit_does_not_measure_storage)
     // A directory placed where a defaults file is expected makes any size measurement fail.
     // A successful flush here proves that no measurement happened.
     const std::string test_dir{"./kvs_no_limit_no_measure_test/"};
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 
     KvsBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
@@ -2783,7 +2781,7 @@ TEST(kvs_max_storage_bytes, flush_without_limit_does_not_measure_storage)
     Kvs kvs{std::move(open_result.value())};
 
     // Obstruct the measurement only after opening, so Open() itself is unaffected.
-    std::filesystem::create_directories(test_dir + "kvs_" + std::to_string(kInstance) + "_default.hash");
+    filesystem_test::CreateDirectories(test_dir + "kvs_" + std::to_string(kInstance) + "_default.hash");
 
     auto set_result{kvs.SetValue("key", KvsValue("value"))};
     ASSERT_TRUE(set_result);
@@ -2791,7 +2789,7 @@ TEST(kvs_max_storage_bytes, flush_without_limit_does_not_measure_storage)
     auto flush_result{kvs.Flush()};
     EXPECT_TRUE(flush_result);
 
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 }
 
 TEST(kvs_max_storage_bytes, flush_with_limit_measures_storage)
@@ -2801,7 +2799,7 @@ TEST(kvs_max_storage_bytes, flush_with_limit_measures_storage)
     // Without this test, the one above could pass for the wrong reason.
     // The limit is far above the data size, so the limit itself is not reached.
     const std::string test_dir{"./kvs_limit_measures_test/"};
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 
     KvsBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
@@ -2810,7 +2808,7 @@ TEST(kvs_max_storage_bytes, flush_with_limit_measures_storage)
     ASSERT_TRUE(open_result);
     Kvs kvs{std::move(open_result.value())};
 
-    std::filesystem::create_directories(test_dir + "kvs_" + std::to_string(kInstance) + "_default.hash");
+    filesystem_test::CreateDirectories(test_dir + "kvs_" + std::to_string(kInstance) + "_default.hash");
 
     auto set_result{kvs.SetValue("key", KvsValue("value"))};
     ASSERT_TRUE(set_result);
@@ -2819,7 +2817,7 @@ TEST(kvs_max_storage_bytes, flush_with_limit_measures_storage)
     ASSERT_FALSE(flush_result);
     EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::kPhysicalStorageFailure);
 
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 }
 
 TEST(kvs_check_size, check_size_without_limit_reports_size)
@@ -2828,7 +2826,7 @@ TEST(kvs_check_size, check_size_without_limit_reports_size)
     // Skipping the measurement there when no limit is set must not stop the dry run from reporting a size.
     // Without a limit, it measures on its own and returns a real, non-zero size.
     const std::string test_dir{"./kvs_check_size_no_limit_test/"};
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 
     KvsBuilder builder{InstanceId(3)};
     builder.WorkingDir(std::string(test_dir));
@@ -2843,7 +2841,7 @@ TEST(kvs_check_size, check_size_without_limit_reports_size)
     ASSERT_TRUE(check_result) << "CalculatePotentialSize should succeed when no limit is configured";
     EXPECT_GT(check_result.value(), 0U);
 
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 }
 
 // comp_req__kvs__snapshot_max_num_cfg:
@@ -2907,8 +2905,8 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_respects_configured_max)
 
     // No snapshot beyond the configured maximum may be created.
     // If rotation used the compile-time default instead of the configured value, _1 would have been rotated into _2.
-    EXPECT_FALSE(std::filesystem::exists(kFilenamePrefix + "_" + std::to_string(configured_max + 1U) + ".json"));
-    EXPECT_FALSE(std::filesystem::exists(kFilenamePrefix + "_" + std::to_string(configured_max + 1U) + ".hash"));
+    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(configured_max + 1U) + ".json"));
+    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(configured_max + 1U) + ".hash"));
 
     CleanupEnvironment();
 }
@@ -2961,14 +2959,14 @@ TEST(kvs_flush, flush_zero_snapshots_still_persists_current_data)
     // The current KVS is persisted ...
     auto flush_result{result.value().Flush()};
     EXPECT_TRUE(flush_result);
-    EXPECT_TRUE(std::filesystem::exists(kKvsPrefix + ".json"));
-    EXPECT_TRUE(std::filesystem::exists(kKvsPrefix + ".hash"));
+    EXPECT_TRUE(filesystem_test::Exists(kKvsPrefix + ".json"));
+    EXPECT_TRUE(filesystem_test::Exists(kKvsPrefix + ".hash"));
 
     // ... but no previous generation is ever created ...
     auto second_flush_result{result.value().Flush()};
     EXPECT_TRUE(second_flush_result);
-    EXPECT_FALSE(std::filesystem::exists(kFilenamePrefix + "_1.json"));
-    EXPECT_FALSE(std::filesystem::exists(kFilenamePrefix + "_1.hash"));
+    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.json"));
+    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.hash"));
 
     // ... and no snapshot is reported.
     auto count{result.value().SnapshotCount()};
@@ -3078,7 +3076,7 @@ TEST(kvs_snapshot_max_count, snapshot_max_count_clamped_to_upper_bound)
     }
     ASSERT_TRUE(result.value().Flush());
     EXPECT_FALSE(
-        std::filesystem::exists(kFilenamePrefix + "_" + std::to_string(kMaxSnapshotsUpperBound + 1U) + ".json"));
+        filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kMaxSnapshotsUpperBound + 1U) + ".json"));
 
     CleanupEnvironment();
 }
@@ -3090,7 +3088,7 @@ TEST(kvs_max_storage_bytes, storage_size_counts_only_configured_snapshots)
     // So it must not count against the limit.
     // Counting the default number of snapshots instead of the configured one would reject this flush although it fits.
     const std::string test_dir{"./kvs_storage_configured_snapshots_test/"};
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 
     KvsBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
@@ -3101,7 +3099,7 @@ TEST(kvs_max_storage_bytes, storage_size_counts_only_configured_snapshots)
     Kvs kvs{std::move(open_result.value())};
 
     // A large file in snapshot slot 1, which the next rotation overwrites.
-    std::filesystem::create_directories(test_dir);
+    filesystem_test::CreateDirectories(test_dir);
     std::ofstream(test_dir + "kvs_" + std::to_string(kInstance) + "_1.json") << std::string(kTestMaxStorageBytes, 'x');
 
     auto set_result{kvs.SetValue("key", KvsValue("value"))};
@@ -3110,7 +3108,7 @@ TEST(kvs_max_storage_bytes, storage_size_counts_only_configured_snapshots)
     auto flush_result{kvs.Flush()};
     EXPECT_TRUE(flush_result);
 
-    std::filesystem::remove_all(test_dir);
+    filesystem_test::RemoveAll(test_dir);
 }
 
 TEST(kvs_kvsvalue, const_char_ptr_nullptr_precondition)
