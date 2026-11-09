@@ -13,16 +13,18 @@
 
 name: Docs Publish
 
-# Privileged publishing of the artifact built by the unprivileged "Documentation CI" workflow.
+# Privileged publishing of the artifact built by the unprivileged "PR Checks" workflow.
 on:
   workflow_run:
-    workflows: ["Docs Build"] # must match the name in docs.yml
+    workflows: ["PR Checks"] # must match the name in on-pr.yml
     types: [completed]
 
 jobs:
   docs-publish:
-    if: github.event.workflow_run.conclusion == 'success'
-    uses: eclipse-score/cicd-workflows/.github/workflows/docs-publish.yml@4c70b38c9cb40c96ec63320190b9db9091648968 # v0.0.3-43-7e8ea4c
+    if: contains(fromJSON('["success", "failure"]'), github.event.workflow_run.conclusion)
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs-publish.yml@central-workflow
+    with:
+      allow-failed-workflow: true
     permissions:
       actions: read
       contents: write

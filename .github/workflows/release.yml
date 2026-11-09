@@ -160,7 +160,7 @@ jobs:
 
       - name: Generate unified coverage report
         env:
-          # Report-only; see coverage.yml for the rationale on this threshold.
+          # Report-only while tests and coverage justifications are introduced.
           COVERAGE_THRESHOLD: "0"
         run: |
           set -euo pipefail

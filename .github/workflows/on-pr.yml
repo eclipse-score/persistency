@@ -11,6 +11,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 
+# The publishing workflow follows this run and deploys its github-pages artifact.
 name: PR Checks
 
 on:
@@ -18,11 +19,18 @@ on:
     types: [opened, reopened, synchronize]
   merge_group:
     types: [checks_requested]
+  push:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
+  workflow_call:
 
 jobs:
   common:
-    uses: eclipse-score/cicd-workflows/.github/workflows/on-pr.yml@6bcfd5dabc202bf1237d34c90bad5dda6f0f0629 # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/on-pr.yml@central-workflow
     with:
+      workflow-config-yaml: .github/ci.yml
       format-target: "//tools:format.check"
       copyright-target: "//tools:copyright.check"
     permissions:
