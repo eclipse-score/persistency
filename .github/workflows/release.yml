@@ -58,34 +58,15 @@ jobs:
     name: Build and unit tests
     # Fail fast: a wrong tag or a missing release note must not spend the verification time.
     needs: [precheck]
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@bazel-workflow
     permissions:
       contents: read
-    steps:
-      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
-        with:
-          level: 4
-
-      - name: Checkout Repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Setup Bazel with shared caching
-        uses: eclipse-score/cicd-actions/setup-bazel-cache@e2a2a587a759b681632040ec1e1294015a0405f5 # setup-bazel-cache/v0.1.0
-        with:
-          disk-cache-key: ${{ github.job }}
-
-      # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@28233566af2525acf84b3c66cfa66ae2583e4236 # main branch (2026-10-12)
-
-      - name: Build via Bazel
-        run: |
-          set -euo pipefail
-          bazel build --lockfile_mode=error --config=score-linux-x86_64 //score/...
-
-      - name: Run Unit Tests via Bazel
-        run: |
-          set -euo pipefail
-          bazel test --lockfile_mode=error --config=score-linux-x86_64 //:unit_tests
+    with:
+      build-targets: //score/...
+      test-targets: //:unit_tests
+      bazel-args: --lockfile_mode=error --config=score-linux-x86_64
+      cache-key: build-test
+      disk-space-level: 4
 
   coverage:
     needs: [precheck]
