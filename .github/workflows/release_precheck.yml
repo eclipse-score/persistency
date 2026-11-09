@@ -1,0 +1,100 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+name: Release Precheck
+
+# Checks the preconditions of a release before any expensive job starts, so a wrong
+# tag or a missing release note fails in seconds instead of after the verification.
+# Call it first and let the verification jobs and release_execution.yml wait for it.
+# Free of persistency specifics so it can be proposed to eclipse-score/cicd-workflows
+# later; inputs are added when a caller needs them.
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Release tag in the form vX.Y.Z. Must not exist yet.
+        required: true
+        type: string
+      dry-run:
+        description: Only warn about a missing release note and allow any branch.
+        required: false
+        default: false
+        type: boolean
+      release-note-file:
+        description: >-
+          File in the repository that must name the release tag as (the module release note).
+          Empty skips the check.
+        required: false
+        default: docs/module/release/release_note.rst
+        type: string
+
+jobs:
+  precheck:
+    name: Check release preconditions
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    permissions:
+      contents: read
+    steps:
+      - name: Validate tag and ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+          DRY_RUN: ${{ inputs.dry-run }}
+          REF: ${{ github.ref }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          # Dry runs may use any branch, e.g. to test the release workflows before they are merged.
+          # Compare the full ref: a tag named like the default branch has the same ref_name.
+          if [[ "$DRY_RUN" != "true" && "$REF" != "refs/heads/$DEFAULT_BRANCH" ]]; then
+            echo "::error::Real releases must run on 'refs/heads/$DEFAULT_BRANCH', not '$REF'. Use a dry run."
+            exit 1
+          fi
+
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag '$TAG' does not have the form vX.Y.Z."
+            exit 1
+          fi
+
+          refs="$(gh api "repos/${GH_REPO}/git/matching-refs/tags/${TAG}" --jq '.[].ref')"
+          if grep -qx "refs/tags/${TAG}" <<< "$refs"; then
+            echo "::error::Tag '$TAG' already exists."
+            exit 1
+          fi
+
+      - name: Release note names the tag
+        if: inputs.release-note-file != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          TAG: ${{ inputs.tag }}
+          DRY_RUN: ${{ inputs.dry-run }}
+          RELEASE_NOTE: ${{ inputs.release-note-file }}
+        run: |
+          set -euo pipefail
+          note="$(gh api -H 'Accept: application/vnd.github.raw+json' \
+            "repos/${GH_REPO}/contents/${RELEASE_NOTE}?ref=${SHA}")"
+          if grep -qxF "| **Release Tag:** ${TAG}" <<< "$note"; then
+            exit 0
+          fi
+          msg="$RELEASE_NOTE does not name release tag '$TAG'. Merge the approved release note first."
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "::warning::$msg"
+          else
+            echo "::error::$msg"
+            exit 1
+          fi
