@@ -21,15 +21,7 @@ bazel_dep(name = "rules_rust", version = "0.68.2-score")
 bazel_dep(name = "score_baselibs", version = "0.2.17")
 bazel_dep(name = "score_crates", version = "0.0.13")
 bazel_dep(name = "score_docs_as_code", version = "8.7.0")
-bazel_dep(name = "score_logging", version = "0.2.4")
-
-# Pinned past v0.2.4 compatibility with baselibs > 0.2.13
-git_override(
-    module_name = "score_logging",
-    commit = "359df78e36f6bf1a3a0830cb61525302b0bd3460",
-    remote = "https://github.com/eclipse-score/logging",
-)
-
+bazel_dep(name = "score_logging", version = "0.2.6")
 bazel_dep(name = "score_platform", version = "0.7.4")
 bazel_dep(name = "score_process_description", version = "2.2.3")
 bazel_dep(name = "score_test_scenarios", version = "0.5.0")
