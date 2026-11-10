@@ -1,6 +1,6 @@
 ..
    # *******************************************************************************
-   # Copyright (c) 2025 Contributors to the Eclipse Foundation
+   # Copyright (c) 2026 Contributors to the Eclipse Foundation
    #
    # See the NOTICE file(s) distributed with this work for additional
    # information regarding copyright ownership.
@@ -15,6 +15,8 @@
 Persistency Release Note
 ========================
 
+.. note:: Document header
+
 .. document:: Persistency Release Note
    :id: doc__persistency_release_note
    :status: valid
@@ -26,15 +28,15 @@ Persistency Release Note
 
 
 | **Module Name:** Persistency
-| **Release Tag:** v0.4.0
-| **Origin Release Tag:** v0.3.5
-| **Release Date:** TBD (set on tagging)
+| **Release Tag:** v0.4.1
+| **Origin Release Tag:** v0.4.0
+| **Release Date:** 2026-11-10
 
 
 Overview
 ^^^^^^^^
 
-This document provides an overview of the changes, improvements, and bug fixes included in the software module release version v0.4.0
+This document provides an overview of the changes, improvements, and bug fixes included in the software module release version v0.4.1
 as compared to the module's origin release (which is usually the previous release).
 
 Disclaimer
@@ -47,45 +49,38 @@ being a non-profit and open source organization, can not take over any liability
 Changes to the Module
 ^^^^^^^^^^^^^^^^^^^^^
 
-The complete list of changes is available in the
-`GitHub comparison v0.3.5...v0.4.0 <https://github.com/eclipse-score/persistency/compare/v0.3.5...v0.4.0>`_.
+The release description contains the generated changelog, including the complete list of merged pull requests and dependency updates:
+`GitHub releases <https://github.com/eclipse-score/persistency/releases>`_.
+This note focuses on behavior and compatibility changes relevant to module users.
 
 New Features
 ------------
 
-- **Maximum storage size** configurable at compile time (`#165`_).
-- **Maximum number of snapshots** configurable (C++), :need:`comp_req__kvs__snapshot_max_num_cfg` (`#383`_).
-- **Load a selected snapshot** or start empty, :need:`comp_req__kvs__snapshot_restore_api` (`#464`_, `#484`_).
-- **New C++ APIs** ``remove_all_keys()``, ``get_storage_file_size()``, ``discard_pending_changes()``,
-  :need:`comp_req__kvs__discard_pending_changes_api` (`#421`_).
-- **Key validation** with new error ``InvalidKey``, :need:`comp_req__kvs__key_length`, :need:`comp_req__kvs__key_encoding`
-  (`#308`_, `#508`_, `#509`_).
-- **SBOM generation** (SPDX 2.3, CycloneDX 1.6) via ``score_sbom`` (`#430`_).
+No new KVS operations or storage capabilities were introduced in this maintenance release.
 
 Improvements
 ------------
 
-- **Durable flush (Rust):** data and hash file synced to storage, :need:`comp_req__kvs__explicit_flush` (`#489`_).
-- **C++ implementation:** ``vajson`` JSON library, pointer-free array/object types, reorganised library,
-  migration to ``score::Result<void>`` (`#428`_, `#437`_, `#461`_, `#455`_).
+- **Instance locking:** operations on the same KVS instance now wait for the lock instead of failing immediately;
+  the C++ ``KMutexLockFailed`` error was removed.
+- **C++ filesystem access:** the implementation now uses ``score::filesystem`` instead of ``std::filesystem``.
+- **Logging:** KVS instances share a logger and emit more informative messages.
 
 Bug Fixes
 ---------
 
-- ``get_value()`` returns an error for non-existing keys (C++), :need:`comp_req__kvs__value_get_api` (`#417`_).
-- Duplicate spaces in KVS log messages removed (C++) (`#403`_).
+No additional user-visible bug fixes are called out separately from the generated changelog.
 
 Other changes by Label
 ----------------------
 
-- **Documentation:** Requirements, architecture, safety and security documents updated; :need:`doc__persistency_user_manual` added.
-- **Refactor / Build / CI:** see the GitHub comparison above.
+- **Integration testing:** C++ and Rust component integration tests now run through ITF on Linux (Docker) and QNX x86_64 (QEMU).
+- **Documentation and build/CI maintenance:** see the generated changelog in the GitHub release description.
 
 Compatibility
 ^^^^^^^^^^^^^
 
-- **Dependencies:** as declared in ``MODULE.bazel`` of tag v0.4.0, main dependencies ``score_baselibs`` 0.2.13,
-  ``score_logging`` 0.2.4, ``score_platform`` 0.7.3, ``score_process_description`` 2.1.2, ``score_docs_as_code`` 8.4.0.
+- **Dependencies:** as declared in ``MODULE.bazel`` of tag v0.4.1
   The full dependency inventory is provided by the SBOM (``//:sbom_*``).
 
 Performed Verification
@@ -99,7 +94,6 @@ Known Issues
 
 - **Non-atomic storage of data and hash file** (`#515`_), :need:`comp_req__kvs__atomic_store`:
   an interrupted write is detected as checksum mismatch on the next load (:need:`comp_req__kvs__pers_data_csum_vrfy`).
-- **Booleans stored as 0/1 by C++** (`#495`_): the Rust-based KVS tool cannot determine the type of these values.
 - **Large 64-bit integers rounded in JSON (Rust)** (`#204`_): exact storage is only given within the IEEE 754 double integer range.
 - **No protection against multi-process access** (`#494`_), :need:`comp_req__kvs__single_process_access`:
   exclusive access per KVS instance has to be ensured by the user.
@@ -112,32 +106,13 @@ Known Vulnerabilities
 Upgrade Instructions
 ^^^^^^^^^^^^^^^^^^^^
 
-1. **C++ Bazel labels:** use ``//score/kvs`` instead of the deprecated ``//:kvs_cpp`` and ``//score/kvs:kvs_cpp``.
-2. **C++ includes:** use full include paths (e.g. ``score/kvs/kvs.hpp``); ``includes = ["."]`` was dropped.
-3. **C++ API:** replace ``score::ResultBlank`` by ``score::Result<void>`` and ``KVS_MAX_SNAPSHOTS`` by ``KvsBuilder::snapshot_max_count()``;
-   handle the error of ``get_value()`` for non-existing keys.
-4. **Keys (C++ and Rust):** keys must comply with :need:`comp_req__kvs__key_length` and :need:`comp_req__kvs__key_encoding`;
-   storage files with invalid keys are rejected on load with ``InvalidKey``.
+1. **C++ API:** remove handling for ``KMutexLockFailed``; contending calls now wait for the instance lock.
+2. **C++ API:** assignments to rvalue ``Kvs`` or ``KvsValue`` objects are no longer supported.
+3. **C++ API:** ``KvsValue::GetValue()`` on a temporary now returns by value.
+4. **C++ ABI:** ``KvsValue::Type`` now has underlying type ``std::uint8_t``; rebuild C++ consumers.
 
 For any questions or support, please contact the *Project lead* or raise an issue/discussion.
 
-.. _#165: https://github.com/eclipse-score/persistency/pull/165
 .. _#204: https://github.com/eclipse-score/persistency/issues/204
-.. _#308: https://github.com/eclipse-score/persistency/pull/308
-.. _#383: https://github.com/eclipse-score/persistency/pull/383
-.. _#403: https://github.com/eclipse-score/persistency/pull/403
-.. _#417: https://github.com/eclipse-score/persistency/pull/417
-.. _#421: https://github.com/eclipse-score/persistency/pull/421
-.. _#428: https://github.com/eclipse-score/persistency/pull/428
-.. _#430: https://github.com/eclipse-score/persistency/pull/430
-.. _#437: https://github.com/eclipse-score/persistency/pull/437
-.. _#455: https://github.com/eclipse-score/persistency/pull/455
-.. _#461: https://github.com/eclipse-score/persistency/pull/461
-.. _#464: https://github.com/eclipse-score/persistency/pull/464
-.. _#484: https://github.com/eclipse-score/persistency/pull/484
-.. _#489: https://github.com/eclipse-score/persistency/pull/489
 .. _#494: https://github.com/eclipse-score/persistency/issues/494
-.. _#495: https://github.com/eclipse-score/persistency/issues/495
-.. _#508: https://github.com/eclipse-score/persistency/pull/508
-.. _#509: https://github.com/eclipse-score/persistency/pull/509
 .. _#515: https://github.com/eclipse-score/persistency/issues/515
