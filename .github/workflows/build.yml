@@ -31,10 +31,9 @@ jobs:
       (github.event_name == 'pull_request' &&
         github.actor != 'dependabot[bot]' &&
         github.event.pull_request.head.repo.full_name == github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@7d688a1f67201f9267bd31374d293c1ebda58732 # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@bazel-workflow
     permissions:
       contents: read
-      pull-requests: read
     strategy:
       matrix:
         config: ['score-qnx-x86_64', 'score-qnx-aarch64']
@@ -43,15 +42,18 @@ jobs:
           - config: 'score-qnx-x86_64'
             test-target: '//:cit_tests'
     with:
-      bazel-target: >-
+      build-targets: >-
         //score/kvs //score/kvs/rust_kvs:rust_kvs //score/kvs/rust_kvs_tool:kvs_tool
-      bazel-config: ${{ matrix.config }}
-      extra-bazel-flags: '--lockfile_mode=error'
-      bazel-test-target: ${{ matrix.test-target }}
-      extra-bazel-test-flags: '--lockfile_mode=error'
-      test-log-artifact-name: qnx-testlogs-${{ matrix.config }}
-      environment-name: 'workflow-approval'
+      bazel-configs: ${{ matrix.config }}
+      test-targets: ${{ matrix.test-target || '' }}
+      setup-qnx-sdp: true
+      # Only x86_64 runs tests in a VM; AArch64 builds the selected binaries.
+      setup-qemu: ${{ matrix.test-target != '' }}
+      # Each architecture keeps its own build and test cache.
+      cache-key: qnx-build-${{ matrix.config }}
+      disk-space-level: 4
+      artifact-name: qnx-testlogs-${{ matrix.config }}
     secrets:
-      score-qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
-      score-qnx-user: ${{ secrets.SCORE_QNX_USER }}
-      score-qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}
+      qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
+      qnx-user: ${{ secrets.SCORE_QNX_USER }}
+      qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}
