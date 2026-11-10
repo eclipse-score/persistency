@@ -23,7 +23,7 @@ on:
   workflow_call:
     outputs:
       artifact-name:
-        description: Artifact with the test reports (test.xml and test.log files).
+        description: Name of the uploaded XML and log report for downstream jobs, or empty if no files were uploaded.
         value: ${{ jobs.component-integration-tests.outputs.artifact-name }}
 
 jobs:
@@ -35,4 +35,5 @@ jobs:
       test-targets: //:cit_tests
       bazel-configs: score-linux-x86_64
       cache-key: component-integration-tests
+      # Docs downloads these test results through the artifact-name output above.
       artifact-name: tests-report

@@ -56,7 +56,7 @@ jobs:
 
   build-test:
     name: Build and unit tests
-    # Fail fast: a wrong tag or a missing release note must not spend the verification time.
+    # Check the tag and release notes before spending time on builds and tests.
     needs: [precheck]
     uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@bazel-workflow
     permissions:
@@ -75,7 +75,7 @@ jobs:
     uses: ./.github/workflows/coverage.yml
 
   cit-and-docs:
-    # The docs workflow runs the component integration tests first; their report is input of the docs build.
+    # Docs runs the component integration tests and includes their results in the documentation.
     needs: [precheck]
     permissions:
       contents: read

@@ -15,11 +15,10 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
   workflow_dispatch:
-  # Reusable by other workflows
   workflow_call:
     outputs:
       artifact-name:
-        description: Artifact with the complete coverage archive (reports and justifications).
+        description: Name of the uploaded coverage report for release packaging, or empty if no files were uploaded.
         value: ${{ jobs.llvm_coverage.outputs.artifact-name }}
 
 jobs:
@@ -30,11 +29,11 @@ jobs:
     with:
       test-command: coverage
       bazel-configs: llvm_cov
-      # ITF binaries run in Docker; their coverage data does not reach Bazel.
+      # Integration tests run in Docker, so Bazel cannot collect their coverage.
       test-targets: //score/... -//score/kvs/rust_kvs_tool/tests/...
       test-args: --build_tests_only
       coverage-justifications: quality/coverage/coverage_justifications.yaml
-      # Report-only until the module raises its effective coverage threshold.
+      # Collect reports without a minimum coverage percentage; test and reporter errors still fail.
       coverage-threshold: 0
       artifact-name: ${{ github.event.repository.name }}_coverage_report
       disk-space-level: 4
