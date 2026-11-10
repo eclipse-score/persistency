@@ -472,7 +472,11 @@
                   
   <section id="persistency-release-note">
 <h1>Persistency Release Note<a class="headerlink" href="#persistency-release-note" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-bbe624b3">
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Document header</p>
+</div>
+<div class="need_container docutils container" id="SNCB-fb8baf8c">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_release_note">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -518,13 +522,13 @@
 </div>
 <div class="line-block">
 <div class="line"><strong>Module Name:</strong> Persistency</div>
-<div class="line"><strong>Release Tag:</strong> v0.4.0</div>
-<div class="line"><strong>Origin Release Tag:</strong> v0.3.5</div>
-<div class="line"><strong>Release Date:</strong> TBD (set on tagging)</div>
+<div class="line"><strong>Release Tag:</strong> v0.4.1</div>
+<div class="line"><strong>Origin Release Tag:</strong> v0.4.0</div>
+<div class="line"><strong>Release Date:</strong> 2026-11-10</div>
 </div>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>This document provides an overview of the changes, improvements, and bug fixes included in the software module release version v0.4.0
+<p>This document provides an overview of the changes, improvements, and bug fixes included in the software module release version v0.4.1
 as compared to the module’s origin release (which is usually the previous release).</p>
 <section id="disclaimer">
 <h3>Disclaimer<a class="headerlink" href="#disclaimer" title="Link to this heading">#</a></h3>
@@ -535,49 +539,38 @@ being a non-profit and open source organization, can not take over any liability
 </section>
 <section id="changes-to-the-module">
 <h2>Changes to the Module<a class="headerlink" href="#changes-to-the-module" title="Link to this heading">#</a></h2>
-<p>The complete list of changes is available in the
-<a class="reference external" href="https://github.com/eclipse-score/persistency/compare/v0.3.5...v0.4.0">GitHub comparison v0.3.5…v0.4.0</a>.</p>
+<p>The release description contains the generated changelog, including the complete list of merged pull requests and dependency updates:
+<a class="reference external" href="https://github.com/eclipse-score/persistency/releases">GitHub releases</a>.
+This note focuses on behavior and compatibility changes relevant to module users.</p>
 <section id="new-features">
 <h3>New Features<a class="headerlink" href="#new-features" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p><strong>Maximum storage size</strong> configurable at compile time (<a class="reference external" href="https://github.com/eclipse-score/persistency/pull/165">#165</a>).</p></li>
-<li><p><strong>Maximum number of snapshots</strong> configurable (C++), <a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__snapshot_max_num_cfg" title="comp_req__kvs__snapshot_max_num_cfg"><em class="xref need">Maximum Number of Snapshots (comp_req__kvs__snapshot_max_num_cfg)</em></a> (<a class="reference external" href="https://github.com/eclipse-score/persistency/pull/383">#383</a>).</p></li>
-<li><p><strong>Load a selected snapshot</strong> or start empty, <a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__snapshot_restore_api" title="comp_req__kvs__snapshot_restore_api"><em class="xref need">Snapshot Restore API (comp_req__kvs__snapshot_restore_api)</em></a> (<a class="reference external" href="https://github.com/eclipse-score/persistency/pull/464">#464</a>, <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/484">#484</a>).</p></li>
-<li><p><strong>New C++ APIs</strong> <code class="docutils literal notranslate"><span class="pre">remove_all_keys()</span></code>, <code class="docutils literal notranslate"><span class="pre">get_storage_file_size()</span></code>, <code class="docutils literal notranslate"><span class="pre">discard_pending_changes()</span></code>,
-<a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__discard_pending_changes_api" title="comp_req__kvs__discard_pending_changes_api"><em class="xref need">Discard Pending Changes (comp_req__kvs__discard_pending_changes_api)</em></a> (<a class="reference external" href="https://github.com/eclipse-score/persistency/pull/421">#421</a>).</p></li>
-<li><p><strong>Key validation</strong> with new error <code class="docutils literal notranslate"><span class="pre">InvalidKey</span></code>, <a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__key_length" title="comp_req__kvs__key_length"><em class="xref need">Key Length (comp_req__kvs__key_length)</em></a>, <a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__key_encoding" title="comp_req__kvs__key_encoding"><em class="xref need">Key Encoding (comp_req__kvs__key_encoding)</em></a>
-(<a class="reference external" href="https://github.com/eclipse-score/persistency/pull/308">#308</a>, <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/508">#508</a>, <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/509">#509</a>).</p></li>
-<li><p><strong>SBOM generation</strong> (SPDX 2.3, CycloneDX 1.6) via <code class="docutils literal notranslate"><span class="pre">score_sbom</span></code> (<a class="reference external" href="https://github.com/eclipse-score/persistency/pull/430">#430</a>).</p></li>
-</ul>
+<p>No new KVS operations or storage capabilities were introduced in this maintenance release.</p>
 </section>
 <section id="improvements">
 <h3>Improvements<a class="headerlink" href="#improvements" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><strong>Durable flush (Rust):</strong> data and hash file synced to storage, <a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__explicit_flush" title="comp_req__kvs__explicit_flush"><em class="xref need">Explicit Flush (comp_req__kvs__explicit_flush)</em></a> (<a class="reference external" href="https://github.com/eclipse-score/persistency/pull/489">#489</a>).</p></li>
-<li><p><strong>C++ implementation:</strong> <code class="docutils literal notranslate"><span class="pre">vajson</span></code> JSON library, pointer-free array/object types, reorganised library,
-migration to <code class="docutils literal notranslate"><span class="pre">score::Result&lt;void&gt;</span></code> (<a class="reference external" href="https://github.com/eclipse-score/persistency/pull/428">#428</a>, <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/437">#437</a>, <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/461">#461</a>, <a class="reference external" href="https://github.com/eclipse-score/persistency/pull/455">#455</a>).</p></li>
+<li><p><strong>Instance locking:</strong> operations on the same KVS instance now wait for the lock instead of failing immediately;
+the C++ <code class="docutils literal notranslate"><span class="pre">KMutexLockFailed</span></code> error was removed.</p></li>
+<li><p><strong>C++ filesystem access:</strong> the implementation now uses <code class="docutils literal notranslate"><span class="pre">score::filesystem</span></code> instead of <code class="docutils literal notranslate"><span class="pre">std::filesystem</span></code>.</p></li>
+<li><p><strong>Logging:</strong> KVS instances share a logger and emit more informative messages.</p></li>
 </ul>
 </section>
 <section id="bug-fixes">
 <h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">get_value()</span></code> returns an error for non-existing keys (C++), <a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__value_get_api" title="comp_req__kvs__value_get_api"><em class="xref need">Value Retrieval (comp_req__kvs__value_get_api)</em></a> (<a class="reference external" href="https://github.com/eclipse-score/persistency/pull/417">#417</a>).</p></li>
-<li><p>Duplicate spaces in KVS log messages removed (C++) (<a class="reference external" href="https://github.com/eclipse-score/persistency/pull/403">#403</a>).</p></li>
-</ul>
+<p>No additional user-visible bug fixes are called out separately from the generated changelog.</p>
 </section>
 <section id="other-changes-by-label">
 <h3>Other changes by Label<a class="headerlink" href="#other-changes-by-label" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><strong>Documentation:</strong> Requirements, architecture, safety and security documents updated; <a class="reference internal" href="../manuals/user_manual.html#doc__persistency_user_manual" title="doc__persistency_user_manual"><em class="xref need">Persistency User Manual (doc__persistency_user_manual)</em></a> added.</p></li>
-<li><p><strong>Refactor / Build / CI:</strong> see the GitHub comparison above.</p></li>
+<li><p><strong>Integration testing:</strong> C++ and Rust component integration tests now run through ITF on Linux (Docker) and QNX x86_64 (QEMU).</p></li>
+<li><p><strong>Documentation and build/CI maintenance:</strong> see the generated changelog in the GitHub release description.</p></li>
 </ul>
 </section>
 </section>
 <section id="compatibility">
 <h2>Compatibility<a class="headerlink" href="#compatibility" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>Dependencies:</strong> as declared in <code class="docutils literal notranslate"><span class="pre">MODULE.bazel</span></code> of tag v0.4.0, main dependencies <code class="docutils literal notranslate"><span class="pre">score_baselibs</span></code> 0.2.13,
-<code class="docutils literal notranslate"><span class="pre">score_logging</span></code> 0.2.4, <code class="docutils literal notranslate"><span class="pre">score_platform</span></code> 0.7.3, <code class="docutils literal notranslate"><span class="pre">score_process_description</span></code> 2.1.2, <code class="docutils literal notranslate"><span class="pre">score_docs_as_code</span></code> 8.4.0.
+<li><p><strong>Dependencies:</strong> as declared in <code class="docutils literal notranslate"><span class="pre">MODULE.bazel</span></code> of tag v0.4.1
 The full dependency inventory is provided by the SBOM (<code class="docutils literal notranslate"><span class="pre">//:sbom_*</span></code>).</p></li>
 </ul>
 </section>
@@ -590,7 +583,6 @@ The full dependency inventory is provided by the SBOM (<code class="docutils lit
 <ul class="simple">
 <li><p><strong>Non-atomic storage of data and hash file</strong> (<a class="reference external" href="https://github.com/eclipse-score/persistency/issues/515">#515</a>), <a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__atomic_store" title="comp_req__kvs__atomic_store"><em class="xref need">Atomic Store (comp_req__kvs__atomic_store)</em></a>:
 an interrupted write is detected as checksum mismatch on the next load (<a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__pers_data_csum_vrfy" title="comp_req__kvs__pers_data_csum_vrfy"><em class="xref need">Persistent Data Storage Che... (comp_req__kvs__pers_data_csum_vrfy)</em></a>).</p></li>
-<li><p><strong>Booleans stored as 0/1 by C++</strong> (<a class="reference external" href="https://github.com/eclipse-score/persistency/issues/495">#495</a>): the Rust-based KVS tool cannot determine the type of these values.</p></li>
 <li><p><strong>Large 64-bit integers rounded in JSON (Rust)</strong> (<a class="reference external" href="https://github.com/eclipse-score/persistency/issues/204">#204</a>): exact storage is only given within the IEEE 754 double integer range.</p></li>
 <li><p><strong>No protection against multi-process access</strong> (<a class="reference external" href="https://github.com/eclipse-score/persistency/issues/494">#494</a>), <a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__single_process_access" title="comp_req__kvs__single_process_access"><em class="xref need">Single Process Access (comp_req__kvs__single_process_access)</em></a>:
 exclusive access per KVS instance has to be ensured by the user.</p></li>
@@ -606,12 +598,10 @@ exclusive access per KVS instance has to be ensured by the user.</p></li>
 <section id="upgrade-instructions">
 <h2>Upgrade Instructions<a class="headerlink" href="#upgrade-instructions" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p><strong>C++ Bazel labels:</strong> use <code class="docutils literal notranslate"><span class="pre">//score/kvs</span></code> instead of the deprecated <code class="docutils literal notranslate"><span class="pre">//:kvs_cpp</span></code> and <code class="docutils literal notranslate"><span class="pre">//score/kvs:kvs_cpp</span></code>.</p></li>
-<li><p><strong>C++ includes:</strong> use full include paths (e.g. <code class="docutils literal notranslate"><span class="pre">score/kvs/kvs.hpp</span></code>); <code class="docutils literal notranslate"><span class="pre">includes</span> <span class="pre">=</span> <span class="pre">[&quot;.&quot;]</span></code> was dropped.</p></li>
-<li><p><strong>C++ API:</strong> replace <code class="docutils literal notranslate"><span class="pre">score::ResultBlank</span></code> by <code class="docutils literal notranslate"><span class="pre">score::Result&lt;void&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">KVS_MAX_SNAPSHOTS</span></code> by <code class="docutils literal notranslate"><span class="pre">KvsBuilder::snapshot_max_count()</span></code>;
-handle the error of <code class="docutils literal notranslate"><span class="pre">get_value()</span></code> for non-existing keys.</p></li>
-<li><p><strong>Keys (C++ and Rust):</strong> keys must comply with <a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__key_length" title="comp_req__kvs__key_length"><em class="xref need">Key Length (comp_req__kvs__key_length)</em></a> and <a class="reference internal" href="../../components/kvs/requirements/requirements.html#comp_req__kvs__key_encoding" title="comp_req__kvs__key_encoding"><em class="xref need">Key Encoding (comp_req__kvs__key_encoding)</em></a>;
-storage files with invalid keys are rejected on load with <code class="docutils literal notranslate"><span class="pre">InvalidKey</span></code>.</p></li>
+<li><p><strong>C++ API:</strong> remove handling for <code class="docutils literal notranslate"><span class="pre">KMutexLockFailed</span></code>; contending calls now wait for the instance lock.</p></li>
+<li><p><strong>C++ API:</strong> assignments to rvalue <code class="docutils literal notranslate"><span class="pre">Kvs</span></code> or <code class="docutils literal notranslate"><span class="pre">KvsValue</span></code> objects are no longer supported.</p></li>
+<li><p><strong>C++ API:</strong> <code class="docutils literal notranslate"><span class="pre">KvsValue::GetValue()</span></code> on a temporary now returns by value.</p></li>
+<li><p><strong>C++ ABI:</strong> <code class="docutils literal notranslate"><span class="pre">KvsValue::Type</span></code> now has underlying type <code class="docutils literal notranslate"><span class="pre">std::uint8_t</span></code>; rebuild C++ consumers.</p></li>
 </ol>
 <p>For any questions or support, please contact the <em>Project lead</em> or raise an issue/discussion.</p>
 </section>
