@@ -29,6 +29,8 @@
 #include "score/os/stat.h"
 #include "score/utility.hpp"
 
+using namespace score::kvs;
+
 namespace
 {
 using score::filesystem::Perms;
@@ -67,10 +69,10 @@ std::string FileContent(const score::filesystem::Path& path)
 }
 
 /// @brief Writes the defaults file and the snapshot 0 file with valid hashes, then opens the KVS.
-score::Result<Kvs> open_crafted(const std::string& defaults,
-                                const std::string& kvs_data,
-                                KvsDefaults need_defaults = KvsDefaults::kRequired,
-                                KvsLoad need_kvs = KvsLoad::kRequired)
+score::Result<Kvs> OpenCrafted(const std::string& defaults,
+                               const std::string& kvs_data,
+                               KvsDefaults need_defaults = KvsDefaults::kRequired,
+                               KvsLoad need_kvs = KvsLoad::kRequired)
 {
     PrepareEnvironment();
     Store(kDefaultPrefix + ".json", kDefaultPrefix + ".hash", defaults);
@@ -81,20 +83,20 @@ score::Result<Kvs> open_crafted(const std::string& defaults,
 
 /// @brief Writes the defaults file with a valid hash.
 /// Call it before Kvs::Open(), because Open() reads the defaults once.
-void seed_defaults(const std::string& json)
+void SeedDefaults(const std::string& json)
 {
     Store(kDefaultPrefix + ".json", kDefaultPrefix + ".hash", json);
 }
 
 /// @brief Returns one i32 entry of a KVS file.
 /// The key is JSON text without the quotes, so escape sequences in it stay as they are.
-std::string entry(const std::string& json_escaped_key, int value)
+std::string Entry(const std::string& json_escaped_key, int value)
 {
     return "\"" + json_escaped_key + "\":{\"t\":\"i32\",\"v\":" + std::to_string(value) + "}";
 }
 
 /// @brief Returns the content of a KVS file: the type-tagged root object with the given entries.
-std::string kvs_file(const std::string& entries)
+std::string KvsFile(const std::string& entries)
 {
     return "{\"t\":\"obj\",\"v\":{" + entries + "}}";
 }
@@ -140,7 +142,7 @@ Kvs OpenTestKvs()
 }
 
 /// @brief Opens the KVS like OpenTestKvs() and replaces its data with "new_key".
-Kvs open_test_kvs_with_new_key()
+Kvs OpenTestKvsWithNewKey()
 {
     auto kvs{OpenTestKvs()};
     EXPECT_TRUE(kvs.RemoveAllKeys());
@@ -150,7 +152,7 @@ Kvs open_test_kvs_with_new_key()
 
 /// @brief Checks that the stored KVS holds only "new_key".
 /// A second KVS loads the files, so a wrong hash fails here with kValidationFailed.
-void expect_only_new_key()
+void ExpectOnlyNewKey()
 {
     auto kvs{Kvs::Open(InstanceId(kInstanceId),
                        kSnapshotId,
@@ -169,26 +171,26 @@ void expect_only_new_key()
     EXPECT_EQ(std::get<int32_t>(value.value().GetValue()), 1);
 }
 
-/// @brief Returns the JSON content that plant_generation() writes for snapshot `index`.
-std::string generation_tag(std::size_t index)
+/// @brief Returns the JSON content that PlantGeneration() writes for snapshot `index`.
+std::string GenerationTag(std::size_t index)
 {
     return "{\"gen\":" + std::to_string(index) + "}";
 }
 
 /// @brief Writes the JSON and hash files of snapshot `index`, tagged with the index.
 /// The hash is never read, so a tag is enough.
-void plant_generation(std::size_t index)
+void PlantGeneration(std::size_t index)
 {
-    std::ofstream(kFilenamePrefix + "_" + std::to_string(index) + ".json") << generation_tag(index);
+    std::ofstream(kFilenamePrefix + "_" + std::to_string(index) + ".json") << GenerationTag(index);
     std::ofstream(kFilenamePrefix + "_" + std::to_string(index) + ".hash") << "h" << index;
 }
 
-std::string generation_json(std::size_t index)
+std::string GenerationJson(std::size_t index)
 {
     return FileContent(score::filesystem::Path{kFilenamePrefix + "_" + std::to_string(index) + ".json"});
 }
 
-std::string generation_hash(std::size_t index)
+std::string GenerationHash(std::size_t index)
 {
     return FileContent(score::filesystem::Path{kFilenamePrefix + "_" + std::to_string(index) + ".hash"});
 }
@@ -197,7 +199,7 @@ std::string generation_hash(std::size_t index)
 TEST(kvs_constructor, move_constructor)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"t": "obj", "v": {"test_default": {"t": "bool", "v": true}}})");
+    SeedDefaults(R"({"t": "obj", "v": {"test_default": {"t": "bool", "v": true}}})");
     const std::uint32_t instance_b{5U};
 
     // Create object A.
@@ -271,10 +273,10 @@ TEST(kvs_TEST, parse_json_data_success)
 {
     // The real parser reads the file through Open().
     // This also covers the Optional mode with an existing file.
-    auto kvs{open_crafted(kDefaultJson,
-                          R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})",
-                          KvsDefaults::kOptional,
-                          KvsLoad::kOptional)};
+    auto kvs{OpenCrafted(kDefaultJson,
+                         R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})",
+                         KvsDefaults::kOptional,
+                         KvsLoad::kOptional)};
     ASSERT_TRUE(kvs);
 
     auto value{kvs->GetValue("kvs")};
@@ -288,23 +290,23 @@ TEST(kvs_TEST, parse_json_data_success)
 TEST(kvs_TEST, parse_json_data_failure)
 {
     // JSON parser failure.
-    auto kvs{open_crafted(kDefaultJson, "{ invalid json }")};
+    auto kvs{OpenCrafted(kDefaultJson, "{ invalid json }")};
     ASSERT_FALSE(kvs);
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kJsonParserError);
 
     // The root is valid JSON, but not a type-tagged value.
-    kvs = open_crafted(kDefaultJson, "42");
+    kvs = OpenCrafted(kDefaultJson, "42");
     ASSERT_FALSE(kvs);
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kInvalidValueType);
 
     // AnyToKvsValue error.
-    kvs = open_crafted(kDefaultJson, R"({"t": "obj", "v": {"kvs": {"t": "invalid", "v": 42}}})");
+    kvs = OpenCrafted(kDefaultJson, R"({"t": "obj", "v": {"kvs": {"t": "invalid", "v": 42}}})");
     ASSERT_FALSE(kvs);
     // Error is passed from AnyToKvsValue.
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kInvalidValueType);
 
     // Tagged root that is not an object.
-    kvs = open_crafted(kDefaultJson, R"({"t": "i32", "v": 5})");
+    kvs = OpenCrafted(kDefaultJson, R"({"t": "i32", "v": 5})");
     ASSERT_FALSE(kvs);
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kJsonParserError);
 
@@ -563,13 +565,13 @@ TEST(kvs_TEST, parse_json_data_rejects_over_length_key)
     const std::string too_long_key(kMaxKeyLengthBytes + 1U, 'b');
 
     // A key of the maximum length loads.
-    auto kvs{open_crafted(kDefaultJson, kvs_file(entry(valid_key, 42)))};
+    auto kvs{OpenCrafted(kDefaultJson, KvsFile(Entry(valid_key, 42)))};
     ASSERT_TRUE(kvs);
     auto exists{kvs->KeyExists(valid_key)};
     ASSERT_TRUE(exists);
     EXPECT_TRUE(exists.value());
 
-    kvs = open_crafted(kDefaultJson, kvs_file(entry(valid_key, 42) + "," + entry(too_long_key, 7)));
+    kvs = OpenCrafted(kDefaultJson, KvsFile(Entry(valid_key, 42) + "," + Entry(too_long_key, 7)));
     ASSERT_FALSE(kvs);
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kInvalidKey);
 
@@ -581,8 +583,8 @@ TEST(kvs_TEST, parse_json_data_rejects_empty_key)
     // comp_req__kvs__key_length: an empty key found while loading means the file is invalid or corrupted.
     // Loading must halt with an error.
     // The JSON parser already rejects an empty key, before the key check of the KVS.
-    auto kvs{open_crafted(kDefaultJson,
-                          R"({"t": "obj", "v": {"valid_key": {"t": "i32", "v": 42}, "": {"t": "i32", "v": 7}}})")};
+    auto kvs{OpenCrafted(kDefaultJson,
+                         R"({"t": "obj", "v": {"valid_key": {"t": "i32", "v": 42}, "": {"t": "i32", "v": 7}}})")};
     ASSERT_FALSE(kvs);
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kJsonParserError);
 
@@ -599,7 +601,7 @@ TEST(kvs_TEST, parse_json_data_rejects_invalid_characters_key)
     for (const auto& invalid_key : invalid_keys)
     {
         SCOPED_TRACE(invalid_key);
-        auto kvs{open_crafted(kDefaultJson, kvs_file(entry("valid_key", 42) + "," + entry(invalid_key, 7)))};
+        auto kvs{OpenCrafted(kDefaultJson, KvsFile(Entry("valid_key", 42) + "," + Entry(invalid_key, 7)))};
         ASSERT_FALSE(kvs);
         EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kInvalidKey);
     }
@@ -612,7 +614,7 @@ TEST(kvs_TEST, parse_json_data_accepts_over_length_nested_key)
     // comp_req__kvs__key_length applies to root keys only.
     // Keys of nested objects are value data.
     const std::string long_key(kMaxKeyLengthBytes + 1U, 'b');
-    auto kvs{open_crafted(kDefaultJson, kvs_file(R"("cfg":{"t":"obj","v":{)" + entry(long_key, 7) + "}}"))};
+    auto kvs{OpenCrafted(kDefaultJson, KvsFile(R"("cfg":{"t":"obj","v":{)" + Entry(long_key, 7) + "}}"))};
     ASSERT_TRUE(kvs);
 
     auto cfg{kvs->GetValue("cfg")};
@@ -630,7 +632,7 @@ TEST(kvs_TEST, parse_json_data_accepts_over_length_nested_key)
 TEST(kvs_open_json, open_json_json_invalid)
 {
     // An invalid defaults file fails in ParseJsonData().
-    auto kvs{open_crafted("{ invalid json }", kKvsJson)};
+    auto kvs{OpenCrafted("{ invalid json }", kKvsJson)};
     ASSERT_FALSE(kvs);
     // Error code passed by ParseJsonData().
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kJsonParserError);
@@ -735,7 +737,7 @@ TEST(kvs_key_exists, key_exists_success)
 TEST(kvs_get_value, get_value_success)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})");
+    SeedDefaults(R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})");
 
     auto result{Kvs::Open(kInstanceId,
                           kSnapshotId,
@@ -788,7 +790,7 @@ TEST(kvs_get_value, get_value_failure)
 TEST(kvs_get_default_value, get_default_value_success)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})");
+    SeedDefaults(R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})");
 
     auto result{Kvs::Open(kInstanceId,
                           kSnapshotId,
@@ -837,7 +839,7 @@ TEST(kvs_get_default_value, get_default_value_failure)
 TEST(kvs_set_value_to_default, set_value_to_default_success)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"t": "obj", "v": {"default": {"t": "i32", "v": 5}, "kvs": {"t": "f64", "v": 42.0}}})");
+    SeedDefaults(R"({"t": "obj", "v": {"default": {"t": "i32", "v": 5}, "kvs": {"t": "f64", "v": 42.0}}})");
 
     auto result{Kvs::Open(kInstanceId,
                           kSnapshotId,
@@ -953,7 +955,7 @@ TEST(kvs_set_value_to_default, set_value_to_default_failure_invalid_key)
 TEST(kvs_is_value_default, is_value_default)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"t": "obj", "v": {"default": {"t": "f64", "v": 42.0}}})");
+    SeedDefaults(R"({"t": "obj", "v": {"default": {"t": "f64", "v": 42.0}}})");
 
     auto result{Kvs::Open(kInstanceId,
                           kSnapshotId,
@@ -976,23 +978,23 @@ TEST(kvs_is_value_default, is_value_default)
 
     // Check non-default value.
     {
-        auto result{kvs.IsValueDefault("not-default")};
-        ASSERT_TRUE(result);
-        ASSERT_FALSE(result.value());
+        auto not_default_result{kvs.IsValueDefault("not-default")};
+        ASSERT_TRUE(not_default_result);
+        ASSERT_FALSE(not_default_result.value());
     }
 
     // Check default value.
     {
-        auto result{kvs.IsValueDefault("default")};
-        ASSERT_TRUE(result);
-        ASSERT_TRUE(result.value());
+        auto default_result{kvs.IsValueDefault("default")};
+        ASSERT_TRUE(default_result);
+        ASSERT_TRUE(default_result.value());
     }
 
     // Check key not found.
     {
-        auto result{kvs.IsValueDefault("non_existing_key")};
-        ASSERT_FALSE(result);
-        ASSERT_EQ(result.error(), ErrorCode::kKeyNotFound);
+        auto missing_result{kvs.IsValueDefault("non_existing_key")};
+        ASSERT_FALSE(missing_result);
+        ASSERT_EQ(missing_result.error(), ErrorCode::kKeyNotFound);
     }
 
     CleanupEnvironment();
@@ -1509,7 +1511,7 @@ TEST(kvs_write_json_data, write_json_data_open_failure)
     const score::filesystem::Path json_path{kKvsPrefix + ".json"};
     const score::filesystem::Path hash_path{kKvsPrefix + ".hash"};
     const std::string previous_hash{FileContent(hash_path)};
-    auto kvs{open_test_kvs_with_new_key()};
+    auto kvs{OpenTestKvsWithNewKey()};
 
     {
         score::os::MockGuard<::testing::NiceMock<score::os::FcntlMock>> fcntl_mock;
@@ -1534,7 +1536,7 @@ TEST(kvs_write_json_data, write_json_data_set_permissions_failure)
     const score::filesystem::Path json_path{kKvsPrefix + ".json"};
     const score::filesystem::Path hash_path{kKvsPrefix + ".hash"};
     const std::string previous_hash{FileContent(hash_path)};
-    auto kvs{open_test_kvs_with_new_key()};
+    auto kvs{OpenTestKvsWithNewKey()};
 
     {
         score::os::MockGuard<::testing::NiceMock<score::os::StatMock>> stat_mock;
@@ -1566,7 +1568,7 @@ TEST(kvs_write_json_data, write_json_data_staging_failure_keeps_previous_file)
     const auto fs{RealFilesystem()};
     ASSERT_TRUE(fs.standard->CreateDirectory(json_tmp_path));
     std::ofstream{json_tmp_path.Native() + "/file"} << "data";
-    auto kvs{open_test_kvs_with_new_key()};
+    auto kvs{OpenTestKvsWithNewKey()};
 
     auto result{kvs.Flush()};
     ASSERT_FALSE(result);
@@ -1589,11 +1591,11 @@ TEST(kvs_write_json_data, write_json_data_replaces_stale_temp_file)
     constexpr Perms all_permissions{Perms::kReadWriteExecUser | Perms::kReadWriteExecGroup |
                                     Perms::kReadWriteExecOthers};
     ASSERT_TRUE(fs.standard->Permissions(json_tmp_path, all_permissions));
-    auto kvs{open_test_kvs_with_new_key()};
+    auto kvs{OpenTestKvsWithNewKey()};
 
     ASSERT_TRUE(kvs.Flush());
     EXPECT_FALSE(FileExists(json_tmp_path));
-    expect_only_new_key();
+    ExpectOnlyNewKey();
     EXPECT_EQ(FilePermissions(json_path), static_cast<std::uint32_t>(kExpectedFilePermissions));
 
     CleanupEnvironment();
@@ -1603,10 +1605,10 @@ TEST(kvs_write_json_data, write_json_data_leaves_no_temp_files)
 {
     PrepareEnvironment();
     // Test temporary files are renamed to the JSON and hash files.
-    auto kvs{open_test_kvs_with_new_key()};
+    auto kvs{OpenTestKvsWithNewKey()};
 
     ASSERT_TRUE(kvs.Flush());
-    expect_only_new_key();
+    ExpectOnlyNewKey();
     EXPECT_FALSE(FileExists(score::filesystem::Path{kKvsPrefix + ".json.tmp"}));
     EXPECT_FALSE(FileExists(score::filesystem::Path{kKvsPrefix + ".hash.tmp"}));
 
@@ -1652,7 +1654,7 @@ TEST(kvs_write_json_data, write_json_data_overrides_existing_file_permissions)
     ASSERT_EQ(FilePermissions(hash_path), static_cast<std::uint32_t>(all_permissions));
 
     // With a maximum of 0 snapshots, Flush() replaces these files instead of rotating them to snapshot 1.
-    auto kvs{open_test_kvs_with_new_key()};
+    auto kvs{OpenTestKvsWithNewKey()};
     ASSERT_TRUE(kvs.Flush());
     EXPECT_EQ(FilePermissions(json_path), static_cast<std::uint32_t>(kExpectedFilePermissions));
     EXPECT_EQ(FilePermissions(hash_path), static_cast<std::uint32_t>(kExpectedFilePermissions));
@@ -1676,7 +1678,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success)
     // Create test snapshot files, tagged with their index.
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
-        plant_generation(i);
+        PlantGeneration(i);
         EXPECT_EQ(result.value().SnapshotCount().value(), i + 1);
     }
     ASSERT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".json"));
@@ -1689,12 +1691,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success)
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
         SCOPED_TRACE(i);
-        EXPECT_EQ(generation_json(i + 1), generation_tag(i));
-        EXPECT_EQ(generation_hash(i + 1), "h" + std::to_string(i));
+        EXPECT_EQ(GenerationJson(i + 1), GenerationTag(i));
+        EXPECT_EQ(GenerationHash(i + 1), "h" + std::to_string(i));
     }
 
     // Snapshot 0 holds the new data with a valid hash.
-    EXPECT_NE(generation_json(0), generation_tag(0));
+    EXPECT_NE(GenerationJson(0), GenerationTag(0));
     auto reopened{Kvs::Open(kInstanceId,
                             kSnapshotId,
                             KvsDefaults::kOptional,
@@ -1723,15 +1725,15 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_max_snapshots)
     // Create test snapshot files, tagged with their index.
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
-        plant_generation(i);
+        PlantGeneration(i);
         EXPECT_EQ(result.value().SnapshotCount().value(), i + 1);
     }
     // Also fill the last ID, so that a rotation one step too far has a file to move.
-    plant_generation(kDefaultMaxSnapshots);
+    PlantGeneration(kDefaultMaxSnapshots);
 
     // Check if no ID higher than kDefaultMaxSnapshots exists.
     ASSERT_TRUE(result.value().Flush());
-    EXPECT_EQ(generation_json(kDefaultMaxSnapshots), generation_tag(kDefaultMaxSnapshots - 1U));
+    EXPECT_EQ(GenerationJson(kDefaultMaxSnapshots), GenerationTag(kDefaultMaxSnapshots - 1U));
     EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".json"));
     EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".hash"));
 
@@ -1754,7 +1756,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_json)
     // Create test snapshot files, tagged with their index.
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
-        plant_generation(i);
+        PlantGeneration(i);
         EXPECT_EQ(result.value().SnapshotCount().value(), i + 1);
     }
 
@@ -1765,7 +1767,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_json)
     ASSERT_FALSE(flush_result);
     EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::kPhysicalStorageFailure);
     // The rotation failed, so Flush() did not write a new snapshot 0.
-    EXPECT_EQ(generation_json(0), generation_tag(0));
+    EXPECT_EQ(GenerationJson(0), GenerationTag(0));
 
     CleanupEnvironment();
 }
@@ -1786,7 +1788,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_hash)
     // Create test snapshot files, tagged with their index.
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
-        plant_generation(i);
+        PlantGeneration(i);
         EXPECT_EQ(result.value().SnapshotCount().value(), i + 1);
     }
 
@@ -1797,7 +1799,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_hash)
     ASSERT_FALSE(flush_result);
     EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::kPhysicalStorageFailure);
     // The rotation failed, so Flush() did not write a new snapshot 0.
-    EXPECT_EQ(generation_json(0), generation_tag(0));
+    EXPECT_EQ(GenerationJson(0), GenerationTag(0));
 
     CleanupEnvironment();
 }
@@ -2266,7 +2268,6 @@ TEST(kvs_get_filename, get_hashname_success)
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
         auto hashname{result.value().HashFilePath(SnapshotId(i))};
-        system("ls -l ./data_folder/");
         EXPECT_TRUE(hashname);
         EXPECT_EQ(hashname.value().CStr(), kFilenamePrefix + "_" + std::to_string(i) + ".hash");
     }
@@ -2372,7 +2373,7 @@ TEST(kvs_remove_all_keys, remove_all_keys_empty_kvs)
 TEST(kvs_remove_all_keys, remove_all_keys_keeps_defaults)
 {
     PrepareEnvironment();
-    seed_defaults(R"({"t": "obj", "v": {"defaulted": {"t": "f64", "v": 42.0}}})");
+    SeedDefaults(R"({"t": "obj", "v": {"defaulted": {"t": "f64", "v": 42.0}}})");
 
     auto kvs{Kvs::Open(kInstanceId,
                        kSnapshotId,
@@ -2891,7 +2892,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_respects_configured_max)
     // Tag them, so that the rotation can be followed by content and not only by existence.
     for (std::size_t i{0U}; i <= configured_max; i++)
     {
-        plant_generation(i);
+        PlantGeneration(i);
     }
 
     ASSERT_TRUE(result.value().Flush());
@@ -2899,9 +2900,9 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_respects_configured_max)
     // Rotation happened: the previous snapshot 0 moved into the first snapshot slot.
     // Flush() then wrote a new snapshot 0.
     // Without this the test would also pass if nothing rotated.
-    EXPECT_EQ(generation_json(1), generation_tag(0));
+    EXPECT_EQ(GenerationJson(1), GenerationTag(0));
     EXPECT_TRUE(FileExists(score::filesystem::Path{kFilenamePrefix + "_0.json"}));
-    EXPECT_NE(generation_json(0), generation_tag(0));
+    EXPECT_NE(GenerationJson(0), GenerationTag(0));
 
     // No snapshot beyond the configured maximum may be created.
     // If rotation used the compile-time default instead of the configured value, _1 would have been rotated into _2.

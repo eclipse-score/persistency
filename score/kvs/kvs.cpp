@@ -409,7 +409,7 @@ score::Result<void> Kvs::SetValueToDefault(const std::string_view key) noexcept
 
 score::Result<bool> Kvs::IsValueDefault(const std::string_view key) const noexcept
 {
-    std::lock_guard<std::mutex> lock(kvs_mutex_);
+    std::lock_guard<std::mutex> lock{kvs_mutex_};
 
     const std::string key_str{key};
     if (kvs_.find(key_str) != kvs_.end())
@@ -548,7 +548,7 @@ score::Result<void> Kvs::SnapshotRestore(const SnapshotId& snapshot_id) noexcept
     }
 
     // Fail if the snapshot ID is the current KVS or does not exist.
-    if ((0 == snapshot_id.id) || (*snapshot_count_result < snapshot_id.id))
+    if ((snapshot_id.id == 0U) || (*snapshot_count_result < snapshot_id.id))
     {
         GetLogger().LogError() << "Invalid snapshot ID" << snapshot_id.id;
         return score::MakeUnexpected(ErrorCode::kInvalidSnapshotId);
