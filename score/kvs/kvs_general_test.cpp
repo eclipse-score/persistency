@@ -15,6 +15,8 @@
 
 #include "score/os/stat.h"
 
+using namespace score::kvs;
+
 namespace
 {
 score::filesystem::Filesystem RealFilesystem()

@@ -87,7 +87,7 @@ jobs:
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
       - name: Unblock user namespaces for the Linux sandbox
         if: inputs.bazel-asset-targets != ''
-        uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@28233566af2525acf84b3c66cfa66ae2583e4236 # main branch (2026-10-12)
+        uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@f9604aebcc16982b1fa598a951870a6485042b2b # main branch (2026-10-12)
 
       - name: Build Bazel assets
         if: inputs.bazel-asset-targets != ''

@@ -105,7 +105,7 @@ py_itf_test(
     }),
     pytest_config = "//:pyproject.toml",
     # block-network: a private network namespace, so parallel QEMU VMs don't clash on the forwarded SSH port.
-    # integration-test: excluded from coverage, see quality/coverage/coverage.bazelrc.
+    # integration-test: excluded from coverage, see tools/coverage/coverage.bazelrc.
     tags = [
         "block-network",
         "integration-test",

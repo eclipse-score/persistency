@@ -13,6 +13,8 @@
 
 #include "score/kvs/kvs_general_test.h"
 
+using namespace score::kvs;
+
 namespace
 {
 constexpr score::kvs::KvsErrorDomain kKvsErrorDomain;

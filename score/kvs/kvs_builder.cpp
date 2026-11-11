@@ -29,7 +29,7 @@ KvsBuilder::KvsBuilder(const InstanceId& instance_id) noexcept
 
 KvsBuilder& KvsBuilder::Snapshot(const SnapshotId& snapshot_id) noexcept
 {
-    this->snapshot_id_ = snapshot_id;
+    snapshot_id_ = snapshot_id;
     return *this;
 }
 
@@ -47,26 +47,26 @@ KvsBuilder& KvsBuilder::KvsLoad(const score::kvs::KvsLoad& mode) noexcept
 
 KvsBuilder& KvsBuilder::WorkingDir(const std::string& working_dir) noexcept
 {
-    this->working_dir_ = working_dir;
+    working_dir_ = working_dir;
     return *this;
 }
 
 KvsBuilder& KvsBuilder::MaxStorageBytes(const std::optional<size_t>& max_storage_bytes) noexcept
 {
-    this->maximum_storage_bytes_ = max_storage_bytes;
+    maximum_storage_bytes_ = max_storage_bytes;
     return *this;
 }
 
 KvsBuilder& KvsBuilder::SnapshotMaxCount(const std::size_t max_count) noexcept
 {
-    this->max_snapshots_ = max_count;
+    max_snapshots_ = max_count;
     return *this;
 }
 
 score::Result<Kvs> KvsBuilder::Build() const noexcept
 {
     // Use current directory if empty.
-    const std::string working_dir = working_dir_.empty() ? std::string{"./"} : working_dir_;
+    const std::string working_dir{working_dir_.empty() ? std::string{"./"} : working_dir_};
 
     return Kvs::Open(
         instance_id_, snapshot_id_, defaults_, kvs_load_, working_dir, maximum_storage_bytes_, max_snapshots_);

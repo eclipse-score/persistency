@@ -28,7 +28,7 @@ bazel_dep(name = "score_test_scenarios", version = "0.5.0")
 bazel_dep(name = "score_tooling", version = "3.0.2")
 
 # LLVM source-based coverage pipeline (C++ + Rust): the qualified S-CORE
-# coverage tool, successor of @score_tooling//coverage. See quality/coverage/.
+# coverage tool, successor of @score_tooling//coverage. See tools/coverage/.
 bazel_dep(name = "score_coverage", version = "0.4.2", dev_dependency = True)
 
 # Development dependencies (alphabetically sorted)
@@ -65,7 +65,7 @@ use_repo(pip, "pip_score_persistency_venv_test")
 # Toolchain dependencies.
 bazel_dep(name = "score_bazel_cpp_toolchains", version = "1.0.5", dev_dependency = True)
 
-bazel_dep(name = "score_bazel_platforms", version = "1.1.0")
+bazel_dep(name = "score_bazel_platforms", version = "1.3.0")
 bazel_dep(name = "platforms", version = "1.1.0")
 
 bazel_dep(name = "score_toolchains_rust", version = "0.10.0", dev_dependency = True)
@@ -183,14 +183,13 @@ use_repo(sbom_ext, "sbom_metadata")
 
 # *******************************************************************************
 # Coverage toolchain (LLVM source-based coverage pipeline from
-# @score_coverage, see quality/coverage/). Only active during
+# @score_coverage, see tools/coverage/). Only active during
 # `bazel coverage --config=llvm_cov` runs.
 #
 # C++ needs the hermetic Clang toolchain below (covmap instrumentation).
-# Rust needs nothing extra: the standard @score_toolchains_rust//toolchains/
-# ferrocene toolchain registered in score.bazelrc/score_toolchain.bazelrc
-# ships llvm-cov/llvm-profdata since score_toolchains_rust 0.10.0, which
-# activates Rust coverage instrumentation under `bazel coverage`.
+# Rust uses the standard @score_toolchains_rust//toolchains/ferrocene toolchain.
+# tools/coverage/coverage.bazelrc registers it explicitly for llvm_cov.
+# It ships llvm-cov/llvm-profdata since score_toolchains_rust 0.10.0.
 # *******************************************************************************
 bazel_dep(name = "toolchains_llvm", version = "1.11.1", dev_dependency = True)
 
@@ -223,3 +222,15 @@ oci.pull(
     tag = "24.04",
 )
 use_repo(oci, "ubuntu", "ubuntu_linux_amd64")
+
+# Hedron's Compile Commands Extractor for Bazel
+# https://github.com/hedronvision/bazel-compile-commands-extractor
+bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
+git_override(
+    module_name = "hedron_compile_commands",
+    commit = "abb61a688167623088f8768cc9264798df6a9d10",
+    patch_strip = 1,
+    # Patch for support for Bazel 8.6.0.
+    patches = ["//patches:hedron_compile_commands_env_vars.patch"],
+    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+)

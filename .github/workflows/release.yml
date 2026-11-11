@@ -72,7 +72,7 @@ jobs:
     needs: [precheck]
     permissions:
       contents: read
-    uses: ./.github/workflows/coverage.yml
+    uses: ./.github/workflows/coverage_report.yml
 
   cit-and-docs:
     # Docs runs the component integration tests and includes their results in the documentation.
