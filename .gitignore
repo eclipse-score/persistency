@@ -65,3 +65,10 @@ __pycache__/
 devenv.local.nix
 .direnv
 target
+
+# Project information.
+compile_commands.json
+rust-project.json
+
+# VS Code config.
+.vscode/settings.json
