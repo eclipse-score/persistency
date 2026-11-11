@@ -56,11 +56,27 @@ jobs:
     runs-on: ${{ vars.runner_labels_ghub_standard_x64 && fromJSON(vars.runner_labels_ghub_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
     permissions: {}
     steps:
-      - name: Configure fast APT mirror
-        uses: vegardit/fast-apt-mirror.sh@806c59276adfff2df420124ad5e4587f018c358a # v1.4.5
-        with:
-          exclude-current: true
-          configure-mirror: true
+      - name: Configure APT mirror fallback
+        run: |
+          set -euo pipefail
+          sources_file=/etc/apt/sources.list.d/ubuntu.sources
+          mirror_list="$RUNNER_TEMP/ubuntu-mirrors.txt"
+
+          if [[ ! -f "$sources_file" ]]; then
+            echo "Expected Ubuntu sources file not found: $sources_file" >&2
+            exit 1
+          fi
+
+          printf '%s\tpriority:1\n%s\tpriority:2\n' \
+            'https://mirror.pilotfiber.com/ubuntu/' \
+            'http://mirror.arizona.edu/ubuntu/' > "$mirror_list"
+
+          sudo sed -i -E "s|^URIs:.*$|URIs: mirror+file:$mirror_list|" "$sources_file"
+          printf 'Acquire::Retries "3";\n' |
+            sudo tee /etc/apt/apt.conf.d/80-acquire-retries >/dev/null
+
+          grep '^URIs:' "$sources_file"
+          cat "$mirror_list"
 
       - name: Install Graphviz
         run: |
