@@ -60,7 +60,7 @@ jobs:
         run: |
           set -euo pipefail
           sources_file=/etc/apt/sources.list.d/ubuntu.sources
-          mirror_list="$RUNNER_TEMP/ubuntu-mirrors.txt"
+          mirror_list=/etc/apt/apt-mirrors.txt
 
           if [[ ! -f "$sources_file" ]]; then
             echo "Expected Ubuntu sources file not found: $sources_file" >&2
@@ -69,9 +69,11 @@ jobs:
 
           printf '%s\tpriority:1\n%s\tpriority:2\n' \
             'https://mirror.pilotfiber.com/ubuntu/' \
-            'http://mirror.arizona.edu/ubuntu/' > "$mirror_list"
+            'http://mirror.arizona.edu/ubuntu/' |
+            sudo tee "$mirror_list" >/dev/null
 
           sudo sed -i -E "s|^URIs:.*$|URIs: mirror+file:$mirror_list|" "$sources_file"
+          sudo -u _apt test -r "$mirror_list"
           printf 'Acquire::Retries "3";\n' |
             sudo tee /etc/apt/apt.conf.d/80-acquire-retries >/dev/null
 
