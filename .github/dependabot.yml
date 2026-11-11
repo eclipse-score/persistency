@@ -20,6 +20,9 @@ updates:
       prefix: chore
       include: scope
     groups:
+      cicd-workflows:
+        patterns:
+          - "eclipse-score/cicd-workflows/.github/workflows/*"
       github-actions:
         patterns:
           - "*"
