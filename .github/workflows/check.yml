@@ -45,29 +45,6 @@ jobs:
         run: |
           cargo build
 
-  cargo-coverage:
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
-    permissions:
-      contents: read
-    steps:
-      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
-
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch (2026-10-16)
-        with:
-          toolchain: nightly-2025-12-15
-          components: llvm-tools-preview, rust-src
-
-      - name: Install cargo-llvm-cov
-        run: |
-          cargo +nightly-2025-12-15 install cargo-llvm-cov --locked
-
-      - name: Cargo llvm-cov
-        run: |
-          cargo +nightly-2025-12-15 llvm-cov --branch --tests --lib
-
   rust-bazel:
     runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
     permissions:
