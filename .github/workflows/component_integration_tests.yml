@@ -50,7 +50,7 @@ jobs:
           disk-cache-key: ${{ github.job }}
 
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@28233566af2525acf84b3c66cfa66ae2583e4236 # main branch (2026-10-12)
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@f540b4ba52b0ea29cd81e5a5b80b2088a39dfb98 # main branch (2026-10-12)
 
       # Test scenarios run in a Docker container started by ITF.
       - name: Run Python tests with bazel
