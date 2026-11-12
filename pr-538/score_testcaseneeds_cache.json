@@ -268,7 +268,7 @@
   {
     "name": "TestSameInstanceIdDifferentValue__test_ok[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_multiple_kvs.py",
-    "line": "122",
+    "line": "123",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -912,7 +912,7 @@
   {
     "name": "TestSameInstanceIdDifferentValue__test_ok[cpp]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_multiple_kvs.py",
-    "line": "122",
+    "line": "123",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
