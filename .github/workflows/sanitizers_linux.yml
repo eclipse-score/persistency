@@ -39,7 +39,7 @@ jobs:
         with:
           disk-cache-key: ${{ github.job }}
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@f9604aebcc16982b1fa598a951870a6485042b2b # main branch (2026-10-12)
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@eec4d9a282df73385c31dd2a032b23adb51c085f # main branch (2026-10-12)
       # ITF and kvs_tool tests run their binaries in a Docker container.
       # The sanitizer wrapper doesn't reach the container, so they are excluded.
       - name: Bazel test with sanitizers (ASan + UBSan + LSan)
