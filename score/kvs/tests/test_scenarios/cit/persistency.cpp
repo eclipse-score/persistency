@@ -60,6 +60,41 @@ std::string StorageFingerprints(const std::string& dir)
     }
     return storage;
 }
+
+/// @brief Logs every written key of the KVS with its I32 value.
+void LogStoredValues(const Kvs& kvs)
+{
+    const auto keys{kvs.GetAllKeys()};
+    if (!keys)
+    {
+        throw std::runtime_error{"Failed to get keys: " + std::string{keys.error().Message()}};
+    }
+
+    for (const auto& key : keys.value())
+    {
+        const auto value{kvs.GetValue(key)};
+        if (!value)
+        {
+            throw std::runtime_error{"Failed to read value of key " + key + ": " +
+                                     std::string{value.error().Message()}};
+        }
+        const auto* const number{std::get_if<int32_t>(&value.value().GetValue())};
+        if (number == nullptr)
+        {
+            throw std::runtime_error{"Value is not an I32, key: " + key};
+        }
+        TRACING_INFO(kTargetName, std::pair{std::string{"key"}, key}, std::pair{std::string{"value"}, *number});
+    }
+}
+
+/// @brief Logs the error of a failed load from storage under "load_error", logs nothing on success.
+void LogLoadError(const score::Result<void>& result)
+{
+    if (!result)
+    {
+        TRACING_INFO(kTargetName, std::pair{std::string{"load_error"}, std::string{result.error().Message()}});
+    }
+}
 }  // namespace
 
 /// @brief Changes the KVS, flushes it twice, changes it again without flush, then destroys the KVS object.
@@ -137,33 +172,58 @@ class StoredValues final : public Scenario
     {
         const auto params{KvsParameters::FromJson(input)};
         const auto kvs{KvsInstance(params)};
+        LogStoredValues(kvs);
+    }
+};
 
-        const auto keys{kvs.GetAllKeys()};
-        if (!keys)
-        {
-            throw std::runtime_error{"Failed to get keys: " + std::string{keys.error().Message()}};
-        }
+/// @brief Opens the KVS, restores snapshot 1 and logs the error if the restore fails.
+/// Then logs every written key with its I32 value.
+class ValuesAfterRestore final : public Scenario
+{
+  public:
+    ~ValuesAfterRestore() final = default;
 
-        for (const auto& key : keys.value())
-        {
-            const auto value{kvs.GetValue(key)};
-            if (!value)
-            {
-                throw std::runtime_error{"Failed to read value of key " + key + ": " +
-                                         std::string{value.error().Message()}};
-            }
-            const auto* const number{std::get_if<int32_t>(&value.value().GetValue())};
-            if (number == nullptr)
-            {
-                throw std::runtime_error{"Value is not an I32, key: " + key};
-            }
-            TRACING_INFO(kTargetName, std::pair{std::string{"key"}, key}, std::pair{std::string{"value"}, *number});
-        }
+    std::string name() const final
+    {
+        return "values_after_restore";
+    }
+
+    void run(const std::string& input) const final
+    {
+        const auto params{KvsParameters::FromJson(input)};
+        auto kvs{KvsInstance(params)};
+        LogLoadError(kvs.SnapshotRestore(SnapshotId{1}));
+        LogStoredValues(kvs);
+    }
+};
+
+/// @brief Opens the KVS, discards pending changes (reloads the stored data) and logs the error if this fails.
+/// Then logs every written key with its I32 value.
+class ValuesAfterDiscard final : public Scenario
+{
+  public:
+    ~ValuesAfterDiscard() final = default;
+
+    std::string name() const final
+    {
+        return "values_after_discard";
+    }
+
+    void run(const std::string& input) const final
+    {
+        const auto params{KvsParameters::FromJson(input)};
+        auto kvs{KvsInstance(params)};
+        LogLoadError(kvs.DiscardPendingChanges());
+        LogStoredValues(kvs);
     }
 };
 
 ScenarioGroup::Ptr PersistencyGroup()
 {
-    return ScenarioGroup::Ptr{new ScenarioGroupImpl{
-        "persistency", {std::make_shared<ExplicitFlush>(), std::make_shared<StoredValues>()}, {}}};
+    return ScenarioGroup::Ptr{new ScenarioGroupImpl{"persistency",
+                                                    {std::make_shared<ExplicitFlush>(),
+                                                     std::make_shared<StoredValues>(),
+                                                     std::make_shared<ValuesAfterRestore>(),
+                                                     std::make_shared<ValuesAfterDiscard>()},
+                                                    {}}};
 }

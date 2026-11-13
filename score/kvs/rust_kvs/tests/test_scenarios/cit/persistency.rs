@@ -36,6 +36,14 @@ fn storage_fingerprints(dir: &Path) -> String {
     entries.join(",")
 }
 
+/// Log every written key of the KVS with its I32 value.
+fn log_stored_values(kvs: &Kvs) {
+    for key in kvs.get_all_keys().expect("Failed to get keys") {
+        let value: i32 = kvs.get_value_as(&key).expect("Failed to read value as I32");
+        info!(key = key.as_str(), value);
+    }
+}
+
 /// Change the KVS, flush it twice, change it again without flush, then drop the KVS object.
 ///
 /// The second flush overwrites and removes keys already in storage.
@@ -99,12 +107,27 @@ impl Scenario for StoredValues {
     fn run(&self, input: &str) -> Result<(), String> {
         let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
         let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+        log_stored_values(&kvs);
+        Ok(())
+    }
+}
 
-        for key in kvs.get_all_keys().expect("Failed to get keys") {
-            let value: i32 = kvs.get_value_as(&key).expect("Failed to read value as I32");
-            info!(key = key.as_str(), value);
+/// Open the KVS, restore snapshot 1 and log the error if the restore fails.
+/// Then log every written key with its I32 value.
+struct ValuesAfterRestore;
+
+impl Scenario for ValuesAfterRestore {
+    fn name(&self) -> &str {
+        "values_after_restore"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let params = KvsParameters::from_json(input).expect("Failed to parse parameters");
+        let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+        if let Err(e) = kvs.snapshot_restore(SnapshotId(1)) {
+            info!(load_error = format!("{e:?}"));
         }
-
+        log_stored_values(&kvs);
         Ok(())
     }
 }
@@ -112,7 +135,13 @@ impl Scenario for StoredValues {
 pub fn persistency_group() -> Box<dyn ScenarioGroup> {
     Box::new(ScenarioGroupImpl::new(
         "persistency",
-        vec![Box::new(ExplicitFlush), Box::new(StoredValues)],
+        vec![
+            Box::new(ExplicitFlush),
+            Box::new(StoredValues),
+            // There is no counterpart of the C++ scenario `values_after_discard`: the Rust KVS has no API to discard
+            // pending changes.
+            Box::new(ValuesAfterRestore),
+        ],
         vec![],
     ))
 }
