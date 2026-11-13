@@ -23,6 +23,7 @@ load("@score_rules_imagefs//rules/qnx:ifs.bzl", "qnx_ifs")
 
 pkg_files(
     name = "test_scenarios_pkg",
+    testonly = True,
     srcs = ["//score/kvs/tests/test_scenarios"],
     attributes = pkg_attributes(mode = "0755"),
     prefix = "/opt/score_persistency",

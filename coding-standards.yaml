@@ -49,6 +49,13 @@ deviations:
       - "score/kvs"
 
   # Code-identifier deviations: only the lines after a marker are covered.
+  - rule-id: "RULE-6-7-1"
+    query-id: "cpp/misra/local-variable-static-storage-duration"
+    code-identifier: "kvs-instance-registry"
+    scope: "The function-local registry instance in KvsInstanceRegistry::GetInstance in score/kvs/internal/kvs_instance_registry.cpp."
+    justification: >-
+      The registry is process-wide so its state is shared by all KVS callers and initialized once.
+      Function-local static initialization is thread-safe, and the registry must remain alive for the process lifetime.
   - rule-id: "RULE-8-2-10"
     query-id: "cpp/misra/functions-call-themselves-either-directly-or-indirectly"
     code-identifier: "kvs-recursive-value"
@@ -113,13 +120,6 @@ deviations:
     scope: "The SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE call in score/kvs/kvs_value.cpp."
     justification: >-
       The identifier `__PRETTY_FUNCTION__` comes from the expansion of the baselibs precondition macro, not from KVS code.
-  - rule-id: "RULE-0-1-1"
-    query-id: "cpp/misra/unnecessary-write-to-local-object"
-    code-identifier: "kvs-raii-lock-guard"
-    scope: "The std::scoped_lock in Kvs::operator=(Kvs&&) in score/kvs/kvs.cpp."
-    justification: >-
-      The lock is an RAII guard that holds both mutexes for its scope.
-      It is never read by design.
 
 # Guideline recategorizations: the rule is not checked anywhere in the repo.
 guideline-recategorizations:

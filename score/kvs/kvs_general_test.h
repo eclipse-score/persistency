@@ -25,10 +25,10 @@
 #include <string>
 
 #include "score/filesystem/filesystem.h"
-#include "score/filesystem/filesystem_mock.h"
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
 #include "score/kvs/internal/kvs_helper.h"
+#include "score/kvs/internal/kvs_instance_registry.h"
 #include "score/kvs/kvs_builder.h"
 
 uint32_t Adler32(const std::string& data);
@@ -80,6 +80,8 @@ inline void PrepareEnvironment(const std::string& dir,
                                const std::string& default_data,
                                TSnapshots&&... snapshots)
 {
+    score::kvs::KvsInstanceRegistry::GetInstance().Reset();
+
     mkdir(dir.c_str(), 0777);
 
     const std::string path{dir + "/" + prefix + std::to_string(instance_id)};
@@ -93,7 +95,7 @@ inline void PrepareEnvironment(const std::string& dir,
 
 // Default data used in unit tests.
 
-const std::uint32_t kInstance{123U};
+const std::uint32_t kInstance{3u};
 const score::kvs::InstanceId kInstanceId{kInstance};
 const score::kvs::SnapshotId kSnapshotId{0ul};
 

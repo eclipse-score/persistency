@@ -17,143 +17,40 @@
 #include "score/json/json_parser.h"
 #include "score/json/json_writer.h"
 #include "score/kvs/error.h"
+#include "score/kvs/kvs_types.h"
 #include "score/kvs/kvs_value.h"
 #include "score/result/result.h"
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <mutex>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
 namespace score::kvs
 {
-
-/// @brief Maximum allowed key length in bytes.
-/// @note comp_req__kvs__key_length
-constexpr std::size_t kMaxKeyLengthBytes{32U};
-
-/// @deprecated Use `kMaxKeyLengthBytes` instead.
-[[deprecated("Use kMaxKeyLengthBytes instead. This name is removed in a future release.")]]
-constexpr std::size_t KVS_MAX_KEY_LENGTH_BYTES{kMaxKeyLengthBytes};
-
-/// @brief Upper bound of the configurable maximum number of snapshots.
+// TODO: Introduce a public KVS interface and make Kvs its hidden implementation.
+/// @brief Persistent key-value store (KVS) instance.
 ///
-/// The configurable maximum number of snapshots is limited to the range 0..kMaxSnapshotsUpperBound.
-/// A value of 0 disables snapshot operations.
-/// @note comp_req__kvs__snapshot_max_num_cfg
-constexpr std::size_t kMaxSnapshotsUpperBound{3U};
-
-/// @deprecated Use `kMaxSnapshotsUpperBound` instead.
-[[deprecated("Use kMaxSnapshotsUpperBound instead. This name is removed in a future release.")]]
-constexpr std::size_t KVS_MAX_SNAPSHOTS_UPPER_BOUND{kMaxSnapshotsUpperBound};
-
-/// @brief Default maximum number of snapshots.
+/// A KVS instance holds key-value pairs and read-only default values in memory and persists its data to disk on
+/// `Flush()`, keeping a configurable number of snapshots. Access default values with `GetDefaultValue()`.
+/// Operations on a valid instance are thread-safe; moving an object must not occur concurrently with its use.
 ///
-/// It can be overridden per instance at init-time via KvsBuilder::SnapshotMaxCount().
-/// @note comp_req__kvs__snapshot_max_num_cfg
-constexpr std::size_t kDefaultMaxSnapshots{3U};
-
-/// @deprecated Use `kDefaultMaxSnapshots` instead.
-[[deprecated("Use kDefaultMaxSnapshots instead. This name is removed in a future release.")]]
-constexpr std::size_t KVS_DEFAULT_MAX_SNAPSHOTS{kDefaultMaxSnapshots};
-
-/// @brief Identifier of a KVS instance.
-// codeql::misra_deviation_next_line(kvs-special-members)
-struct InstanceId
-{
-    /// @brief Constructs an instance identifier.
-    ///
-    /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(InstanceId(0))`.
-    /// @param id Numeric value of the identifier.
-    // codeql::misra_deviation_next_line(kvs-id-implicit-ctor)
-    InstanceId(size_t id) noexcept : id{id} {}
-
-    /// Numeric value of the identifier.
-    size_t id;
-};
-
-/// @brief Identifier of a KVS snapshot.
-// codeql::misra_deviation_next_line(kvs-special-members)
-struct SnapshotId
-{
-    /// @brief Constructs a snapshot identifier.
-    ///
-    /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(SnapshotId(0))`.
-    /// @param id Numeric value of the identifier.
-    // codeql::misra_deviation_next_line(kvs-id-implicit-ctor)
-    SnapshotId(size_t id) noexcept : id{id} {}
-
-    /// Numeric value of the identifier.
-    size_t id;
-};
-
-/// @brief Whether default values must be available when opening a KVS.
-enum class KvsDefaults : std::uint8_t
-{
-    /// Defaults must be available.
-    kRequired = 0,
-    /// Use empty defaults if none are available.
-    kOptional = 1,
-    /// Defaults are not loaded.
-    kIgnored = 2,
-
-    // Deprecated enumerators.
-    // Each one is an alias of its k-prefixed replacement and is removed in a future release.
-    Required [[deprecated("Use kRequired instead. This name is removed in a future release.")]] = kRequired,
-    Optional [[deprecated("Use kOptional instead. This name is removed in a future release.")]] = kOptional,
-    Ignored [[deprecated("Use kIgnored instead. This name is removed in a future release.")]] = kIgnored,
-};
-
-/// @deprecated Use `KvsDefaults` instead.
-using OpenNeedDefaults [[deprecated("Use KvsDefaults instead. This name is removed in a future release.")]] =
-    KvsDefaults;
-
-/// @brief Whether KVS data must already exist when opening a KVS.
-enum class KvsLoad : std::uint8_t
-{
-    /// KVS data must already exist.
-    kRequired = 0,
-    /// Use an empty KVS if no KVS data is available.
-    kOptional = 1,
-    /// KVS data is not loaded.
-    kIgnored = 2,
-
-    // Deprecated enumerators.
-    // Each one is an alias of its k-prefixed replacement and is removed in a future release.
-    Required [[deprecated("Use kRequired instead. This name is removed in a future release.")]] = kRequired,
-    Optional [[deprecated("Use kOptional instead. This name is removed in a future release.")]] = kOptional,
-    Ignored [[deprecated("Use kIgnored instead. This name is removed in a future release.")]] = kIgnored,
-};
-
-/// @deprecated Use `KvsLoad` instead.
-using OpenNeedKvs [[deprecated("Use KvsLoad instead. This name is removed in a future release.")]] = KvsLoad;
-
-/// @brief Whether a JSON file must exist when it is opened.
-enum class OpenJsonNeedFile : std::uint8_t
-{
-    /// The file must already exist.
-    kRequired = 0,
-    /// If the file doesn't exist, start with empty data.
-    kOptional = 1,
-
-    // Deprecated enumerators.
-    // Each one is an alias of its k-prefixed replacement and is removed in a future release.
-    Required [[deprecated("Use kRequired instead. This name is removed in a future release.")]] = kRequired,
-    Optional [[deprecated("Use kOptional instead. This name is removed in a future release.")]] = kOptional,
-};
-
-/// @brief A thread-safe key-value store (KVS).
+/// Shared state:
+/// Matching builds for an instance ID return shared pointers to the same `Kvs` object.
+/// A change made through any pointer, including a pending one, is immediately visible through all others.
+/// In particular, `Reset()`, `RemoveAllKeys()`, `DiscardPendingChanges()`, `SnapshotRestore()` and
+/// `Flush()` affect the shared instance. The registry retains the object until `score::kvs::Unregister()` or
+/// process exit.
 ///
-/// The Kvs class provides an interface for managing a key-value store with features such as:
-/// - Support for default values.
-/// - Snapshot management for persistence and restoration.
+/// Opening:
+/// Shared pointers are obtained with `KvsBuilder::Build()`. The first build of an instance ID loads its data from disk;
+/// later builds reuse the same registered object without reading the files again. All builder options of a later build
+/// must match those of the first one, otherwise the build fails with `kInstanceParametersMismatch`.
 ///
-/// @note A Kvs object is not copyable, but it can be moved.
-/// A moved-from Kvs object must not be used.
-/// It may only be destroyed or assigned a new value.
+/// Ownership:
+/// A `Kvs` object is movable but not copyable. Do not move from or move-assign to an object held by the registry.
+/// A moved-from object may only be destroyed or assigned to.
 // codeql::misra_deviation_next_line(kvs-special-members)
 class Kvs final
 {
@@ -171,36 +68,6 @@ class Kvs final
     /// @param other The object to move from.
     /// It must not be used afterwards, except to destroy it or assign a new value to it.
     Kvs& operator=(Kvs&& other) & noexcept;
-
-    /// @brief Opens the key-value store with the specified instance ID and flags.
-    ///
-    /// This function initializes and opens the key-value store (KVS) for a given instance ID.
-    /// It lets the caller specify whether default values and an existing KVS are required or optional.
-    ///
-    /// @note Instead of using Kvs::Open() directly, it is recommended to use the KvsBuilder class.
-    ///
-    /// @param instance_id The instance ID of the KVS.
-    /// This uniquely identifies the KVS instance.
-    /// @param snapshot_id The snapshot ID of the KVS.
-    /// This uniquely identifies the KVS snapshot.
-    /// @param defaults Whether default values are required, optional or ignored.
-    /// @param kvs_load Whether the KVS data is required, optional or ignored.
-    /// @param working_dir The directory path where the KVS files are located.
-    /// Use "" or "." for the current directory.
-    /// @param max_storage_bytes Optional maximum total storage size in bytes.
-    /// Pass std::nullopt to enforce no storage limit.
-    /// @param snapshot_max_count The maximum number of snapshots this instance maintains.
-    /// Values above kMaxSnapshotsUpperBound are clamped to it (a warning is logged).
-    /// A value of 0 disables snapshot operations.
-    /// The current KVS data is still persisted by Flush().
-    /// @return The opened Kvs object on success, or an ErrorCode on failure.
-    static score::Result<Kvs> Open(const InstanceId& instance_id,
-                                   const SnapshotId& snapshot_id,
-                                   const KvsDefaults& defaults,
-                                   const KvsLoad& kvs_load,
-                                   const std::string& working_dir,
-                                   const std::optional<size_t>& max_storage_bytes,
-                                   const std::size_t snapshot_max_count) noexcept;
 
     /// @brief Resets the key-value store to its initial state.
     /// @return Nothing on success, or an ErrorCode on failure.
@@ -270,7 +137,7 @@ class Kvs final
     /// @brief Discards all pending changes to the key-value store.
     ///
     /// Reloads the key-value pairs from storage, dropping every change since the last successful `Flush()`.
-    /// If `Flush()` was never called, it drops every change since `Open()`.
+    /// If `Flush()` was never called, it drops every change since the KVS was built.
     /// Default values are not affected, since they are read-only for this instance.
     /// A store that was opened without an existing KVS file and never flushed discards to empty.
     ///
@@ -335,20 +202,6 @@ class Kvs final
 
     // Deprecated snake_case API.
     // Each entry forwards to its PascalCase replacement and is removed in a future release.
-
-    /// @deprecated Use `Open()` instead.
-    [[deprecated("Use Open() instead. This name is removed in a future release.")]]
-    static score::Result<Kvs> open(const InstanceId& instance_id,
-                                   const SnapshotId& snapshot_id,
-                                   const KvsDefaults& defaults,
-                                   const KvsLoad& kvs_load,
-                                   const std::string& working_dir,
-                                   const std::optional<size_t>& max_storage_bytes,
-                                   const std::size_t snapshot_max_count) noexcept
-    {
-        return Kvs::Open(
-            instance_id, snapshot_id, defaults, kvs_load, working_dir, max_storage_bytes, snapshot_max_count);
-    }
 
     /// @deprecated Use `Reset()` instead.
     [[deprecated("Use Reset() instead. This name is removed in a future release.")]]
@@ -477,10 +330,15 @@ class Kvs final
     }
 
   private:
+    friend class KvsBuilder;
+
     /// @brief Constructs an empty KVS.
     ///
-    /// Private to prevent direct instantiation, use Open() instead.
+    /// Private to prevent direct instantiation; use KvsBuilder::Build() instead.
     Kvs() noexcept;
+
+    /// @brief Counts the existing snapshots. Caller must hold `mutex_`.
+    score::Result<size_t> SnapshotCountInternal() const noexcept;
 
     /// @brief Rotates the snapshots, ensuring that the maximum count is maintained.
     score::Result<void> SnapshotRotate() const noexcept;
@@ -501,21 +359,16 @@ class Kvs final
     /// @brief Retrieves the current storage size of all persisted files (defaults and snapshots).
     score::Result<size_t> GetCurrentStorageSize() const noexcept;
 
-    /// Mutex guarding `kvs_`.
-    mutable std::mutex kvs_mutex_;
-
-    /// Written key-value pairs.
-    KvsMap kvs_;
-
-    /// Default values, fixed after Open().
+    /// Protects the instance state.
+    mutable std::mutex mutex_;
+    /// Values in the current snapshot.
+    KvsMap current_values_;
+    /// Default values loaded for this store.
     KvsMap default_values_;
-
-    /// Path prefix of the KVS files, including the instance ID.
+    /// Parameters that have been used to open this instance.
+    KvsOpenParameters params_;
+    /// Prefix used to construct this store's file paths.
     score::filesystem::Path filename_prefix_;
-
-    /// Maximum number of snapshots maintained by this instance.
-    /// @note comp_req__kvs__snapshot_max_num_cfg
-    std::size_t max_snapshots_;
 
     /// Filesystem handler for file operations.
     std::unique_ptr<score::filesystem::Filesystem> filesystem_;
@@ -525,10 +378,6 @@ class Kvs final
 
     /// JSON writer for writing KVS data.
     std::unique_ptr<score::json::IJsonWriter> writer_;
-
-    /// Maximum storage limit in bytes.
-    /// Unset means no limit is enforced.
-    std::optional<size_t> max_storage_bytes_;
 };
 
 }  // namespace score::kvs
