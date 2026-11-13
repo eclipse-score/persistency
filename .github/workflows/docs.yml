@@ -50,3 +50,37 @@ jobs:
       bazel-target: "--lockfile_mode=error //:docs"
       retention-days: 3
       tests-report-artifact: ${{ needs.cit-tests.outputs.artifact-name }}
+
+  apt-mirror-smoke-test:
+    name: APT mirror smoke test
+    runs-on: ${{ vars.runner_labels_ghub_standard_x64 && fromJSON(vars.runner_labels_ghub_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    permissions: {}
+    steps:
+      - name: Configure APT mirror fallback
+        run: |
+          set -euo pipefail
+          sources_file=/etc/apt/sources.list.d/ubuntu.sources
+          mirror_list=/etc/apt/apt-mirrors.txt
+
+          if [[ ! -f "$sources_file" ]]; then
+            echo "Expected Ubuntu sources file not found: $sources_file" >&2
+            exit 1
+          fi
+
+          printf '%s\tpriority:1\n%s\tpriority:2\n' \
+            'https://mirror.pilotfiber.com/ubuntu/' \
+            'http://mirror.arizona.edu/ubuntu/' |
+            sudo tee "$mirror_list" >/dev/null
+
+          sudo sed -i -E "s|^URIs:.*$|URIs: mirror+file:$mirror_list|" "$sources_file"
+          sudo -u _apt test -r "$mirror_list"
+          printf 'Acquire::Retries "3";\n' |
+            sudo tee /etc/apt/apt.conf.d/80-acquire-retries >/dev/null
+
+          grep '^URIs:' "$sources_file"
+          cat "$mirror_list"
+
+      - name: Install Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
