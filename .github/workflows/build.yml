@@ -31,7 +31,7 @@ jobs:
       (github.event_name == 'pull_request' &&
         github.actor != 'dependabot[bot]' &&
         github.event.pull_request.head.repo.full_name == github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@d241348e8670bf5b8902d67ff3ac77e7f60f9ec7 # main (2026-11-11)
+    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@2396c21ed424744a3df4e1d0aa66cd8de9b947e7 # main (2026-11-11)
     permissions:
       contents: read
     strategy:
