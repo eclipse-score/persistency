@@ -48,7 +48,7 @@ jobs:
         with:
           disk-cache-key: ${{ github.job }}
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@eec4d9a282df73385c31dd2a032b23adb51c085f # main branch (2026-10-12)
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@0ce893b32405f16e5d51e86006fa0bd3e5b69710 # main branch (2026-10-12)
       - name: Check coverage scope completeness
         run: ./.github/tools/check_coverage_scope.sh
       # The kvs_tool ITF tests run their binaries in a Docker container.
