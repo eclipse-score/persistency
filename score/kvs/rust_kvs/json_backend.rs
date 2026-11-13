@@ -33,6 +33,32 @@ use tinyjson::{JsonGenerateError, JsonParseError, JsonValue};
 //   "my_null": { "t": "null", "v": null }
 // }
 
+fn checked_number<T>(
+    value: f64,
+    min: f64,
+    max: f64,
+    require_integer: bool,
+    max_inclusive: bool,
+    convert: impl FnOnce(f64) -> T,
+) -> Result<T, ErrorCode> {
+    if !value.is_finite()
+        || (require_integer && value.fract() != 0.0)
+        || value < min
+        || (if max_inclusive { value > max } else { value >= max })
+    {
+        return Err(ErrorCode::InvalidValueType);
+    }
+
+    Ok(convert(value))
+}
+
+fn tagged_number(tag: &str, value: f64) -> JsonValue {
+    let mut obj = HashMap::new();
+    obj.insert("t".to_string(), JsonValue::String(tag.to_string()));
+    obj.insert("v".to_string(), JsonValue::Number(value));
+    JsonValue::Object(obj)
+}
+
 /// Backend-specific JsonValue -> KvsValue conversion.
 impl TryFrom<JsonValue> for KvsValue {
     type Error = ErrorCode;
@@ -43,11 +69,52 @@ impl TryFrom<JsonValue> for KvsValue {
                 // Type-tagged: { "t": ..., "v": ... }
                 if let (Some(JsonValue::String(type_str)), Some(value)) = (obj.remove("t"), obj.remove("v")) {
                     match (type_str.as_str(), value) {
-                        ("i32", JsonValue::Number(v)) => Ok(KvsValue::I32(v as i32)),
-                        ("u32", JsonValue::Number(v)) => Ok(KvsValue::U32(v as u32)),
-                        ("i64", JsonValue::Number(v)) => Ok(KvsValue::I64(v as i64)),
-                        ("u64", JsonValue::Number(v)) => Ok(KvsValue::U64(v as u64)),
-                        ("f64", JsonValue::Number(v)) => Ok(KvsValue::F64(v)),
+                        ("u8", JsonValue::Number(v)) => {
+                            checked_number(v, u8::MIN as f64, u8::MAX as f64 + 1.0, true, false, |n| {
+                                KvsValue::U8(n as u8)
+                            })
+                        },
+                        ("u16", JsonValue::Number(v)) => {
+                            checked_number(v, u16::MIN as f64, u16::MAX as f64 + 1.0, true, false, |n| {
+                                KvsValue::U16(n as u16)
+                            })
+                        },
+                        ("u32", JsonValue::Number(v)) => {
+                            checked_number(v, u32::MIN as f64, u32::MAX as f64 + 1.0, true, false, |n| {
+                                KvsValue::U32(n as u32)
+                            })
+                        },
+                        ("u64", JsonValue::Number(v)) => {
+                            checked_number(v, u64::MIN as f64, u64::MAX as f64, true, false, |n| {
+                                KvsValue::U64(n as u64)
+                            })
+                        },
+                        ("i8", JsonValue::Number(v)) => {
+                            checked_number(v, i8::MIN as f64, i8::MAX as f64 + 1.0, true, false, |n| {
+                                KvsValue::I8(n as i8)
+                            })
+                        },
+                        ("i16", JsonValue::Number(v)) => {
+                            checked_number(v, i16::MIN as f64, i16::MAX as f64 + 1.0, true, false, |n| {
+                                KvsValue::I16(n as i16)
+                            })
+                        },
+                        ("i32", JsonValue::Number(v)) => {
+                            checked_number(v, i32::MIN as f64, i32::MAX as f64 + 1.0, true, false, |n| {
+                                KvsValue::I32(n as i32)
+                            })
+                        },
+                        ("i64", JsonValue::Number(v)) => {
+                            checked_number(v, i64::MIN as f64, i64::MAX as f64, true, false, |n| {
+                                KvsValue::I64(n as i64)
+                            })
+                        },
+                        ("f32", JsonValue::Number(v)) => {
+                            checked_number(v, -(f32::MAX as f64), f32::MAX as f64, false, true, |n| {
+                                KvsValue::F32(n as f32)
+                            })
+                        },
+                        ("f64", JsonValue::Number(v)) if v.is_finite() => Ok(KvsValue::F64(v)),
                         ("bool", JsonValue::Boolean(v)) => Ok(KvsValue::Boolean(v)),
                         ("str", JsonValue::String(v)) => Ok(KvsValue::String(v)),
                         ("null", JsonValue::Null) => Ok(KvsValue::Null),
@@ -80,26 +147,16 @@ impl TryFrom<KvsValue> for JsonValue {
     fn try_from(val: KvsValue) -> Result<Self, Self::Error> {
         let mut obj = HashMap::new();
         match val {
-            KvsValue::I32(n) => {
-                obj.insert("t".to_string(), JsonValue::String("i32".to_string()));
-                obj.insert("v".to_string(), JsonValue::Number(n as f64));
-            },
-            KvsValue::U32(n) => {
-                obj.insert("t".to_string(), JsonValue::String("u32".to_string()));
-                obj.insert("v".to_string(), JsonValue::Number(n as f64));
-            },
-            KvsValue::I64(n) => {
-                obj.insert("t".to_string(), JsonValue::String("i64".to_string()));
-                obj.insert("v".to_string(), JsonValue::Number(n as f64));
-            },
-            KvsValue::U64(n) => {
-                obj.insert("t".to_string(), JsonValue::String("u64".to_string()));
-                obj.insert("v".to_string(), JsonValue::Number(n as f64));
-            },
-            KvsValue::F64(n) => {
-                obj.insert("t".to_string(), JsonValue::String("f64".to_string()));
-                obj.insert("v".to_string(), JsonValue::Number(n));
-            },
+            KvsValue::U8(n) => return Ok(tagged_number("u8", n as f64)),
+            KvsValue::U16(n) => return Ok(tagged_number("u16", n as f64)),
+            KvsValue::U32(n) => return Ok(tagged_number("u32", n as f64)),
+            KvsValue::U64(n) => return Ok(tagged_number("u64", n as f64)),
+            KvsValue::I8(n) => return Ok(tagged_number("i8", n as f64)),
+            KvsValue::I16(n) => return Ok(tagged_number("i16", n as f64)),
+            KvsValue::I32(n) => return Ok(tagged_number("i32", n as f64)),
+            KvsValue::I64(n) => return Ok(tagged_number("i64", n as f64)),
+            KvsValue::F32(n) => return Ok(tagged_number("f32", n as f64)),
+            KvsValue::F64(n) => return Ok(tagged_number("f64", n)),
             KvsValue::Boolean(b) => {
                 obj.insert("t".to_string(), JsonValue::String("bool".to_string()));
                 obj.insert("v".to_string(), JsonValue::Boolean(b));

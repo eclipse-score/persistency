@@ -19,6 +19,7 @@
 
 #include "score/utility.hpp"
 #include <iomanip>
+#include <limits>
 #include <sstream>
 #include <string>
 
@@ -50,6 +51,27 @@ void InfoLog(const std::string& key,
 {
     TRACING_INFO(
         kTargetName, std::make_pair(std::string("key"), key_value), std::make_pair(std::string("value"), value_json));
+}
+
+template <typename T>
+std::string FloatingPointToString(const T number, const int precision)
+{
+    std::ostringstream stream;
+    stream << std::setprecision(precision) << number;
+    std::string str{stream.str()};
+    if (const auto dot{str.find('.')}; dot != std::string::npos)
+    {
+        const auto last_nonzero{str.find_last_not_of('0')};
+        if (last_nonzero != std::string::npos && last_nonzero > dot)
+        {
+            str.erase(last_nonzero + 1);
+        }
+        if (str.back() == '.')
+        {
+            str.pop_back();
+        }
+    }
+    return str;
 }
 }  // namespace
 
@@ -125,6 +147,16 @@ class SupportedDatatypesValues final : public Scenario
     {
         switch (value_.GetType())
         {
+            case KvsValue::Type::kI8:
+                return "i8";
+            case KvsValue::Type::kU8:
+                return "u8";
+            case KvsValue::Type::kI16:
+                return "i16";
+            case KvsValue::Type::kU16:
+                return "u16";
+            case KvsValue::Type::kF32:
+                return "f32";
             case KvsValue::Type::kI32:
                 return "i32";
             case KvsValue::Type::kU32:
@@ -177,9 +209,29 @@ class SupportedDatatypesValues final : public Scenario
     }
 
     // Factory functions for each value type scenario.
+    static Scenario::Ptr SupportedDatatypesI8()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int8_t>(-123)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesI16()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int16_t>(-12345)));
+    }
+
     static Scenario::Ptr SupportedDatatypesI32()
     {
         return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<int32_t>(-321)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesU8()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<uint8_t>(123)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesU16()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<uint16_t>(12345)));
     }
 
     static Scenario::Ptr SupportedDatatypesU32()
@@ -195,6 +247,11 @@ class SupportedDatatypesValues final : public Scenario
     static Scenario::Ptr SupportedDatatypesU64()
     {
         return std::make_shared<SupportedDatatypesValues>(KvsValue(static_cast<uint64_t>(123456789)));
+    }
+
+    static Scenario::Ptr SupportedDatatypesF32()
+    {
+        return std::make_shared<SupportedDatatypesValues>(KvsValue(12.5F));
     }
 
     static Scenario::Ptr SupportedDatatypesF64()
@@ -233,10 +290,15 @@ class SupportedDatatypesValues final : public Scenario
 
     static ScenarioGroup::Ptr ValueTypesGroup()
     {
-        std::vector<Scenario::Ptr> scenarios{SupportedDatatypesI32(),
+        std::vector<Scenario::Ptr> scenarios{SupportedDatatypesU8(),
+                                             SupportedDatatypesU16(),
                                              SupportedDatatypesU32(),
-                                             SupportedDatatypesI64(),
                                              SupportedDatatypesU64(),
+                                             SupportedDatatypesI8(),
+                                             SupportedDatatypesI16(),
+                                             SupportedDatatypesI32(),
+                                             SupportedDatatypesI64(),
+                                             SupportedDatatypesF32(),
                                              SupportedDatatypesF64(),
                                              SupportedDatatypesBool(),
                                              SupportedDatatypesString(),
@@ -250,35 +312,28 @@ class SupportedDatatypesValues final : public Scenario
     {
         switch (value.GetType())
         {
-            case KvsValue::Type::kI32:
-                return std::to_string(std::get<int32_t>(value.GetValue()));
+            case KvsValue::Type::kU8:
+                return std::to_string(std::get<uint8_t>(value.GetValue()));
+            case KvsValue::Type::kU16:
+                return std::to_string(std::get<uint16_t>(value.GetValue()));
             case KvsValue::Type::kU32:
                 return std::to_string(std::get<uint32_t>(value.GetValue()));
-            case KvsValue::Type::kI64:
-                return std::to_string(std::get<int64_t>(value.GetValue()));
             case KvsValue::Type::kU64:
                 return std::to_string(std::get<uint64_t>(value.GetValue()));
+            case KvsValue::Type::kI8:
+                return std::to_string(std::get<int8_t>(value.GetValue()));
+            case KvsValue::Type::kI16:
+                return std::to_string(std::get<int16_t>(value.GetValue()));
+            case KvsValue::Type::kI32:
+                return std::to_string(std::get<int32_t>(value.GetValue()));
+            case KvsValue::Type::kI64:
+                return std::to_string(std::get<int64_t>(value.GetValue()));
+            case KvsValue::Type::kF32:
+                return FloatingPointToString(std::get<float>(value.GetValue()),
+                                             std::numeric_limits<float>::max_digits10);
             case KvsValue::Type::kF64:
             {
-                // Format with high precision, then remove trailing zeros and dot for minimal JSON representation.
-                auto number{std::get<double>(value.GetValue())};
-                std::ostringstream stream;
-                stream << std::setprecision(15) << number;
-                std::string str{stream.str()};
-                // Remove trailing zeros and dot if needed.
-                if (auto dot{str.find('.')}; dot != std::string::npos)
-                {
-                    // Find last non-zero digit after decimal point.
-                    auto last_nonzero{str.find_last_not_of('0')};
-                    if (last_nonzero != std::string::npos && last_nonzero > dot)
-                    {
-                        str.erase(last_nonzero + 1);
-                    }
-                    // Remove dot if it's the last character.
-                    if (str.back() == '.')
-                        str.pop_back();
-                }
-                return str;
+                return FloatingPointToString(std::get<double>(value.GetValue()), 15);
             }
             case KvsValue::Type::kBoolean:
                 return std::get<bool>(value.GetValue()) ? "true" : "false";

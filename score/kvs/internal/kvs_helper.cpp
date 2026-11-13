@@ -16,8 +16,11 @@
 #include "score/utility.hpp"
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <unordered_set>
 
 namespace score::kvs
@@ -25,6 +28,53 @@ namespace score::kvs
 
 namespace
 {
+
+template <typename T>
+score::Result<KvsValue> NumberToKvsValue(const score::json::Any& value) noexcept
+{
+    const auto number{value.As<score::json::Number>()};
+    if (!number.has_value())
+    {
+        return score::MakeUnexpected(ErrorCode::kInvalidValueType);
+    }
+
+    if constexpr (std::is_floating_point_v<T>)
+    {
+        return number->get().Visit([](const auto source) noexcept -> score::Result<KvsValue> {
+            const double source_as_double{static_cast<double>(source)};
+            if (!std::isfinite(source_as_double) ||
+                (std::abs(source_as_double) > static_cast<double>(std::numeric_limits<T>::max())))
+            {
+                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
+            }
+            return KvsValue(static_cast<T>(source));
+        });
+    }
+    else
+    {
+        const auto converted{number->get().As<T>()};
+        if (!converted.has_value())
+        {
+            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
+        }
+        return KvsValue(*converted);
+    }
+}
+
+template <typename T>
+score::Result<score::json::Any> TaggedValueToAny(const KvsValue& value, const std::string_view type_tag) noexcept
+{
+    const auto* const number{std::get_if<T>(&value.GetValue())};
+    if (number == nullptr)
+    {
+        return score::MakeUnexpected(ErrorCode::kInvalidValueType);
+    }
+
+    score::json::Object obj;
+    score::cpp::ignore = obj.emplace("t", score::json::Any(std::string(type_tag)));
+    score::cpp::ignore = obj.emplace("v", score::json::Any(*number));
+    return score::json::Any(std::move(obj));
+}
 
 /// Converts object members to `{"t": "obj", "v": <object>}`, failing on a duplicate key.
 template <typename Members>
@@ -143,50 +193,45 @@ score::Result<KvsValue> AnyToKvsValue(const score::json::Any& any) noexcept
     const std::string_view type_tag{type_str->get()};
     const score::json::Any& value_any{value->second};
 
-    if (type_tag == "i32")
+    if (type_tag == "u8")
     {
-        const auto number{value_any.As<int32_t>()};
-        if (!number.has_value())
-        {
-            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-        }
-        return KvsValue(static_cast<int32_t>(*number));
+        return NumberToKvsValue<uint8_t>(value_any);
+    }
+    else if (type_tag == "u16")
+    {
+        return NumberToKvsValue<uint16_t>(value_any);
     }
     else if (type_tag == "u32")
     {
-        const auto number{value_any.As<uint32_t>()};
-        if (!number.has_value())
-        {
-            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-        }
-        return KvsValue(static_cast<uint32_t>(*number));
-    }
-    else if (type_tag == "i64")
-    {
-        const auto number{value_any.As<int64_t>()};
-        if (!number.has_value())
-        {
-            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-        }
-        return KvsValue(static_cast<int64_t>(*number));
+        return NumberToKvsValue<uint32_t>(value_any);
     }
     else if (type_tag == "u64")
     {
-        const auto number{value_any.As<uint64_t>()};
-        if (!number.has_value())
-        {
-            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-        }
-        return KvsValue(static_cast<uint64_t>(*number));
+        return NumberToKvsValue<uint64_t>(value_any);
+    }
+    else if (type_tag == "i8")
+    {
+        return NumberToKvsValue<int8_t>(value_any);
+    }
+    else if (type_tag == "i16")
+    {
+        return NumberToKvsValue<int16_t>(value_any);
+    }
+    else if (type_tag == "i32")
+    {
+        return NumberToKvsValue<int32_t>(value_any);
+    }
+    else if (type_tag == "i64")
+    {
+        return NumberToKvsValue<int64_t>(value_any);
+    }
+    else if (type_tag == "f32")
+    {
+        return NumberToKvsValue<float>(value_any);
     }
     else if (type_tag == "f64")
     {
-        const auto number{value_any.As<double>()};
-        if (!number.has_value())
-        {
-            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-        }
-        return KvsValue(*number);
+        return NumberToKvsValue<double>(value_any);
     }
     else if (type_tag == "bool")
     {
@@ -268,83 +313,30 @@ score::Result<score::json::Any> KvsValueToAny(const KvsValue& kvs_value) noexcep
     score::json::Object obj;
     switch (kvs_value.GetType())
     {
-        case KvsValue::Type::kI32:
-        {
-            const auto* value = std::get_if<int32_t>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("i32")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+        case KvsValue::Type::kU8:
+            return TaggedValueToAny<uint8_t>(kvs_value, "u8");
+        case KvsValue::Type::kU16:
+            return TaggedValueToAny<uint16_t>(kvs_value, "u16");
         case KvsValue::Type::kU32:
-        {
-            const auto* value = std::get_if<uint32_t>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("u32")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
-        case KvsValue::Type::kI64:
-        {
-            const auto* value = std::get_if<int64_t>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("i64")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+            return TaggedValueToAny<uint32_t>(kvs_value, "u32");
         case KvsValue::Type::kU64:
-        {
-            const auto* value = std::get_if<uint64_t>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("u64")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+            return TaggedValueToAny<uint64_t>(kvs_value, "u64");
+        case KvsValue::Type::kI8:
+            return TaggedValueToAny<int8_t>(kvs_value, "i8");
+        case KvsValue::Type::kI16:
+            return TaggedValueToAny<int16_t>(kvs_value, "i16");
+        case KvsValue::Type::kI32:
+            return TaggedValueToAny<int32_t>(kvs_value, "i32");
+        case KvsValue::Type::kI64:
+            return TaggedValueToAny<int64_t>(kvs_value, "i64");
+        case KvsValue::Type::kF32:
+            return TaggedValueToAny<float>(kvs_value, "f32");
         case KvsValue::Type::kF64:
-        {
-            const auto* value = std::get_if<double>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("f64")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+            return TaggedValueToAny<double>(kvs_value, "f64");
         case KvsValue::Type::kBoolean:
-        {
-            const auto* value = std::get_if<bool>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("bool")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+            return TaggedValueToAny<bool>(kvs_value, "bool");
         case KvsValue::Type::kString:
-        {
-            const auto* value = std::get_if<std::string>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("str")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+            return TaggedValueToAny<std::string>(kvs_value, "str");
         case KvsValue::Type::kNull:
         {
             score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("null")));
@@ -435,10 +427,15 @@ bool HasUniqueKeys(const KvsValue& value) noexcept
             }
             return true;
         }
-        case KvsValue::Type::kI32:
+        case KvsValue::Type::kU8:
+        case KvsValue::Type::kU16:
         case KvsValue::Type::kU32:
-        case KvsValue::Type::kI64:
         case KvsValue::Type::kU64:
+        case KvsValue::Type::kI8:
+        case KvsValue::Type::kI16:
+        case KvsValue::Type::kI32:
+        case KvsValue::Type::kI64:
+        case KvsValue::Type::kF32:
         case KvsValue::Type::kF64:
         case KvsValue::Type::kBoolean:
         case KvsValue::Type::kString:
