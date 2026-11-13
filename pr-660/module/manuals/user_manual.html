@@ -423,7 +423,7 @@
 <li class="toctree-l2"><a class="reference internal" href="security_manual.html">Security Manual</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../release/release_note.html">Release Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release/release_note.html">Persistency Release Note</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../safety_mgt/index.html">Safety Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../security_mgt/index.html">Security Management</a></li>
 </ul>
@@ -491,7 +491,7 @@
                   
   <section id="persistency-user-manual">
 <span id="id1"></span><h1>Persistency User Manual<a class="headerlink" href="#persistency-user-manual" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-7d2b9914">
+<div class="need_container docutils container" id="SNCB-52f9c6ca">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_user_manual">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -574,86 +574,6 @@ component, including its configuration, is specified in <a class="reference inte
 <p>Logical interface: <a class="external_link reference external" href="https://eclipse-score.github.io/score/main/features/persistency/architecture/index.html#logic_arc_int__persistency__interface">logic_arc_int__persistency__interface</a>. The API is documented in the source code
 (C++: <a class="reference external" href="https://github.com/eclipse-score/persistency/tree/main/score/kvs">score/kvs</a>, Rust: crate <code class="docutils literal notranslate"><span class="pre">rust_kvs</span></code>,
 <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">doc</span> <span class="pre">-p</span> <span class="pre">rust_kvs</span></code>).</p>
-<section id="numeric-values">
-<h2>Numeric Values<a class="headerlink" href="#numeric-values" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">KvsValue</span></code> preserves the numeric type supplied by the application, including after flushing and reloading storage.
-The following numeric types are supported in both languages:</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id2">
-<caption><span class="caption-number">Table 1 </span><span class="caption-text">Numeric value types</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
-<thead>
-<tr class="row-odd"><th class="head"><p>C++ type</p></th>
-<th class="head"><p>C++ type enumerator</p></th>
-<th class="head"><p>Rust type and variant</p></th>
-<th class="head"><p>JSON type tag</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::int8_t</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">kI8</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">i8</span></code> / <code class="docutils literal notranslate"><span class="pre">I8</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">i8</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::uint8_t</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">kU8</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">u8</span></code> / <code class="docutils literal notranslate"><span class="pre">U8</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">u8</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::int16_t</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">kI16</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">i16</span></code> / <code class="docutils literal notranslate"><span class="pre">I16</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">i16</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::uint16_t</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">kU16</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">u16</span></code> / <code class="docutils literal notranslate"><span class="pre">U16</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">u16</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::int32_t</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">kI32</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">i32</span></code> / <code class="docutils literal notranslate"><span class="pre">I32</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">i32</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::uint32_t</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">kU32</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">u32</span></code> / <code class="docutils literal notranslate"><span class="pre">U32</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">u32</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::int64_t</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">kI64</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">i64</span></code> / <code class="docutils literal notranslate"><span class="pre">I64</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">i64</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::uint64_t</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">kU64</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">u64</span></code> / <code class="docutils literal notranslate"><span class="pre">U64</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">u64</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">kF32</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">f32</span></code> / <code class="docutils literal notranslate"><span class="pre">F32</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">f32</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">double</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">kF64</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">f64</span></code> / <code class="docutils literal notranslate"><span class="pre">F64</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">f64</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>In C++, construct values with an explicitly typed argument, such as <code class="docutils literal notranslate"><span class="pre">KvsValue{std::int8_t{-42}}</span></code> or <code class="docutils literal notranslate"><span class="pre">KvsValue{0.5F}</span></code>, and retrieve them with <code class="docutils literal notranslate"><span class="pre">std::get&lt;std::int8_t&gt;(value.GetValue())</span></code> or <code class="docutils literal notranslate"><span class="pre">std::get&lt;float&gt;(value.GetValue())</span></code>.
-In Rust, use <code class="docutils literal notranslate"><span class="pre">KvsValue::from(-42i8)</span></code> or <code class="docutils literal notranslate"><span class="pre">KvsValue::from(0.5f32)</span></code>, and retrieve them with <code class="docutils literal notranslate"><span class="pre">get::&lt;i8&gt;()</span></code>, <code class="docutils literal notranslate"><span class="pre">TryFrom&lt;&amp;KvsValue&gt;</span></code>, or the KVS <code class="docutils literal notranslate"><span class="pre">get_value_as</span></code> API.
-The same types can be used inside arrays and objects and in tagged default-value files.
-For example, <code class="docutils literal notranslate"><span class="pre">{&quot;t&quot;:&quot;i8&quot;,&quot;v&quot;:-42}</span></code> represents an 8-bit signed integer.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">i8</span></code>, <code class="docutils literal notranslate"><span class="pre">u8</span></code>, <code class="docutils literal notranslate"><span class="pre">i16</span></code> and <code class="docutils literal notranslate"><span class="pre">u16</span></code> tags require integral JSON numbers within the corresponding type’s range.
-The <code class="docutils literal notranslate"><span class="pre">f32</span></code> tag accepts finite JSON numbers within the finite <code class="docutils literal notranslate"><span class="pre">f32</span></code> range, rounded to the nearest representable value using the platform’s floating-point conversion.
-Subnormal values are supported; sufficiently small magnitudes can round to zero.
-Non-finite <code class="docutils literal notranslate"><span class="pre">f32</span></code> values cannot be persisted in JSON.</p>
-<p>Earlier Rust versions serialized <code class="docutils literal notranslate"><span class="pre">i8</span></code> and <code class="docutils literal notranslate"><span class="pre">i16</span></code> as <code class="docutils literal notranslate"><span class="pre">I32</span></code>, <code class="docutils literal notranslate"><span class="pre">u8</span></code> and <code class="docutils literal notranslate"><span class="pre">u16</span></code> as <code class="docutils literal notranslate"><span class="pre">U32</span></code>, and <code class="docutils literal notranslate"><span class="pre">f32</span></code> as <code class="docutils literal notranslate"><span class="pre">F64</span></code>.
-Typed Rust deserialization continues to accept these legacy variants; integer narrowing remains range-checked.
-Direct <code class="docutils literal notranslate"><span class="pre">KvsValue</span></code> extraction with <code class="docutils literal notranslate"><span class="pre">get</span></code> or <code class="docutils literal notranslate"><span class="pre">TryFrom</span></code> requires the exact variant.
-Existing storage tags are unchanged, but older versions cannot read files containing the new tags.</p>
-</section>
 </section>
 <section id="performance-considerations">
 <h1>Performance Considerations<a class="headerlink" href="#performance-considerations" title="Link to this heading">#</a></h1>
@@ -743,10 +663,7 @@ The application shall fulfill the assumptions of use listed in <a class="referen
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numeric-values">Numeric Values</a></li>
-</ul>
-</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-considerations">Performance Considerations</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-guidelines">Integration Guidelines</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#version-history-compatibility-and-troubleshooting">Version History, Compatibility, and Troubleshooting</a></li>
