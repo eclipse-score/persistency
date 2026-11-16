@@ -11,13 +11,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 import json
-import pytest
-
 from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 from zlib import adler32
 
+import pytest
 from common import CommonScenario, ResultCode, temp_dir_common, write_file_on_target
 from score.itf.plugins.core import Target
 from test_cit_default_values import create_defaults_file, create_defaults_json
