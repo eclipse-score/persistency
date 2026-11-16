@@ -14,6 +14,7 @@
 #include "cit/cit.h"
 
 #include "cit/default_values.h"
+#include "cit/key_value.h"
 #include "cit/multiple_kvs.h"
 #include "cit/persistency.h"
 #include "cit/snapshots.h"
@@ -21,8 +22,12 @@
 
 ScenarioGroup::Ptr CitScenarioGroup()
 {
-    return ScenarioGroup::Ptr{new ScenarioGroupImpl{
-        "cit",
-        {},
-        {DefaultValuesGroup(), MultipleKvsGroup(), PersistencyGroup(), SnapshotsGroup(), SupportedDatatypesGroup()}}};
+    return ScenarioGroup::Ptr{new ScenarioGroupImpl{"cit",
+                                                    {},
+                                                    {DefaultValuesGroup(),
+                                                     KeyValueGroup(),
+                                                     MultipleKvsGroup(),
+                                                     PersistencyGroup(),
+                                                     SnapshotsGroup(),
+                                                     SupportedDatatypesGroup()}}};
 }
