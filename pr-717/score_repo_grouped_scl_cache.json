@@ -427,7 +427,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[matching-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__default_value_cfg",
               "verify_type": "partially",
               "result": "passed",
@@ -436,7 +436,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[mismatching-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__default_value_cfg",
               "verify_type": "partially",
               "result": "passed",
@@ -580,7 +580,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[matching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__default_value_cfg",
               "verify_type": "partially",
               "result": "passed",
@@ -589,7 +589,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[mismatching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__default_value_cfg",
               "verify_type": "partially",
               "result": "passed",
@@ -839,7 +839,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[matching-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__default_value_query",
               "verify_type": "partially",
               "result": "passed",
@@ -848,7 +848,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[mismatching-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__default_value_query",
               "verify_type": "partially",
               "result": "passed",
@@ -884,7 +884,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[matching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__default_value_query",
               "verify_type": "partially",
               "result": "passed",
@@ -893,7 +893,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[mismatching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__default_value_query",
               "verify_type": "partially",
               "result": "passed",
@@ -1034,7 +1034,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-valid-loaded-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1043,7 +1043,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1052,7 +1052,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-data_missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1061,7 +1061,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-modified-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1070,7 +1070,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1079,7 +1079,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1088,7 +1088,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1097,7 +1097,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-valid-loaded-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1106,7 +1106,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1115,7 +1115,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-data_missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1124,7 +1124,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-modified-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1133,7 +1133,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1142,7 +1142,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1151,7 +1151,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "skipped",
@@ -1160,7 +1160,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1169,7 +1169,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-data_missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1178,7 +1178,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-modified-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1187,7 +1187,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-truncated-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1196,7 +1196,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_truncated-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1205,7 +1205,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1214,7 +1214,7 @@
             {
               "name": "TestSnapshotRestoreVerifiesChecksum__test_restore[matching-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 231,
+              "line": 230,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1223,7 +1223,7 @@
             {
               "name": "TestSnapshotRestoreVerifiesChecksum__test_restore[mismatching-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 231,
+              "line": 230,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1232,7 +1232,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[matching-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1241,7 +1241,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[mismatching-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1250,7 +1250,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-valid-loaded-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1259,7 +1259,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1268,7 +1268,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-data_missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1277,7 +1277,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-modified-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1286,7 +1286,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1295,7 +1295,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1304,7 +1304,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1313,7 +1313,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-valid-loaded-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1322,7 +1322,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1331,7 +1331,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-data_missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1340,7 +1340,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-modified-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1349,7 +1349,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1358,7 +1358,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1367,7 +1367,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1376,7 +1376,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1385,7 +1385,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-data_missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1394,7 +1394,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-modified-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1403,7 +1403,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-truncated-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1412,7 +1412,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_truncated-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1421,7 +1421,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1430,7 +1430,7 @@
             {
               "name": "TestSnapshotRestoreVerifiesChecksum__test_restore[matching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 231,
+              "line": 230,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1439,7 +1439,7 @@
             {
               "name": "TestSnapshotRestoreVerifiesChecksum__test_restore[mismatching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 231,
+              "line": 230,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1448,7 +1448,7 @@
             {
               "name": "TestDiscardPendingChangesVerifiesChecksum__test_discard[matching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 312,
+              "line": 311,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1457,7 +1457,7 @@
             {
               "name": "TestDiscardPendingChangesVerifiesChecksum__test_discard[mismatching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 312,
+              "line": 311,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1466,7 +1466,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[matching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1475,7 +1475,7 @@
             {
               "name": "TestOpenDefaultsVerifiesChecksum__test_open[mismatching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 383,
+              "line": 382,
               "need": "comp_req__kvs__pers_data_csum_vrfy",
               "verify_type": "partially",
               "result": "passed",
@@ -1492,7 +1492,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-valid-loaded-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1501,7 +1501,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1510,7 +1510,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-data_missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1519,7 +1519,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-modified-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1528,7 +1528,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1537,7 +1537,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1546,7 +1546,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1555,7 +1555,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-valid-loaded-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1564,7 +1564,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1573,7 +1573,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-data_missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1582,7 +1582,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-modified-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1591,7 +1591,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1600,7 +1600,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1609,7 +1609,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "skipped",
@@ -1618,7 +1618,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1627,7 +1627,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-data_missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1636,7 +1636,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-modified-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1645,7 +1645,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-truncated-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1654,7 +1654,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_truncated-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1663,7 +1663,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1672,7 +1672,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-valid-loaded-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1681,7 +1681,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1690,7 +1690,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-data_missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1699,7 +1699,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-modified-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1708,7 +1708,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1717,7 +1717,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1726,7 +1726,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1735,7 +1735,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-valid-loaded-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1744,7 +1744,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1753,7 +1753,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-data_missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1762,7 +1762,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-modified-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1771,7 +1771,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1780,7 +1780,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1789,7 +1789,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1798,7 +1798,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1807,7 +1807,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-data_missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1816,7 +1816,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-modified-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1825,7 +1825,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-truncated-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1834,7 +1834,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_truncated-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1843,7 +1843,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__open_need_kvs_behavior",
               "verify_type": "fully",
               "result": "passed",
@@ -1860,7 +1860,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-valid-loaded-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1869,7 +1869,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1878,7 +1878,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-data_missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1887,7 +1887,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-modified-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1896,7 +1896,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1905,7 +1905,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1914,7 +1914,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1923,7 +1923,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-valid-loaded-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1932,7 +1932,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1941,7 +1941,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-data_missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1950,7 +1950,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-modified-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1959,7 +1959,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1968,7 +1968,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_truncated-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1977,7 +1977,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_missing-error-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "skipped",
@@ -1986,7 +1986,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -1995,7 +1995,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-data_missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2004,7 +2004,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-modified-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2013,7 +2013,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-truncated-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2022,7 +2022,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_truncated-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2031,7 +2031,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_missing-empty-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2040,7 +2040,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-valid-loaded-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2049,7 +2049,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2058,7 +2058,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-data_missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2067,7 +2067,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-modified-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2076,7 +2076,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2085,7 +2085,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2094,7 +2094,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[required-hash_missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2103,7 +2103,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-valid-loaded-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2112,7 +2112,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2121,7 +2121,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-data_missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2130,7 +2130,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-modified-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2139,7 +2139,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2148,7 +2148,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_truncated-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2157,7 +2157,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[optional-hash_missing-error-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2166,7 +2166,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2175,7 +2175,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-data_missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2184,7 +2184,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-modified-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2193,7 +2193,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-truncated-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2202,7 +2202,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_truncated-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2211,7 +2211,7 @@
             {
               "name": "TestOpenByKvsLoadMode__test_open[ignored-hash_missing-empty-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 133,
+              "line": 132,
               "need": "comp_req__kvs__corruption_detect_open",
               "verify_type": "fully",
               "result": "passed",
@@ -2228,7 +2228,7 @@
             {
               "name": "TestSnapshotRestoreVerifiesChecksum__test_restore[matching-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 231,
+              "line": 230,
               "need": "comp_req__kvs__snapshot_restore_api",
               "verify_type": "partially",
               "result": "passed",
@@ -2237,7 +2237,7 @@
             {
               "name": "TestSnapshotRestoreVerifiesChecksum__test_restore[mismatching-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 231,
+              "line": 230,
               "need": "comp_req__kvs__snapshot_restore_api",
               "verify_type": "partially",
               "result": "passed",
@@ -2264,7 +2264,7 @@
             {
               "name": "TestSnapshotRestoreVerifiesChecksum__test_restore[matching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 231,
+              "line": 230,
               "need": "comp_req__kvs__snapshot_restore_api",
               "verify_type": "partially",
               "result": "passed",
@@ -2273,7 +2273,7 @@
             {
               "name": "TestSnapshotRestoreVerifiesChecksum__test_restore[mismatching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 231,
+              "line": 230,
               "need": "comp_req__kvs__snapshot_restore_api",
               "verify_type": "partially",
               "result": "passed",
@@ -3072,7 +3072,7 @@
             {
               "name": "TestDiscardPendingChangesVerifiesChecksum__test_discard[matching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 312,
+              "line": 311,
               "need": "comp_req__kvs__discard_pending_changes_api",
               "verify_type": "partially",
               "result": "passed",
@@ -3081,7 +3081,7 @@
             {
               "name": "TestDiscardPendingChangesVerifiesChecksum__test_discard[mismatching-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_integrity.py",
-              "line": 312,
+              "line": 311,
               "need": "comp_req__kvs__discard_pending_changes_api",
               "verify_type": "partially",
               "result": "passed",
