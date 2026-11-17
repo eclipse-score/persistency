@@ -280,9 +280,23 @@
     "FullyVerifies": null
   },
   {
-    "name": "TestExplicitFlush__test_data_stored[rust]",
+    "name": "TestExplicitFlush__test_storage_written_only_at_flush[rust]",
     "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-    "line": "47",
+    "line": "122",
+    "result": "passed",
+    "repo_name": "local_repo",
+    "hash": "",
+    "url": "",
+    "TestType": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
+    "result_text": "",
+    "PartiallyVerifies": null,
+    "FullyVerifies": "comp_req__kvs__explicit_flush"
+  },
+  {
+    "name": "TestExplicitFlush__test_flushed_state_loaded_after_restart[rust]",
+    "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
+    "line": "166",
     "result": "passed",
     "repo_name": "local_repo",
     "hash": "",
@@ -922,6 +936,34 @@
     "result_text": "",
     "PartiallyVerifies": "comp_req__kvs__multi_instance, comp_req__kvs__concurrency",
     "FullyVerifies": null
+  },
+  {
+    "name": "TestExplicitFlush__test_storage_written_only_at_flush[cpp]",
+    "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
+    "line": "122",
+    "result": "passed",
+    "repo_name": "local_repo",
+    "hash": "",
+    "url": "",
+    "TestType": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
+    "result_text": "",
+    "PartiallyVerifies": null,
+    "FullyVerifies": "comp_req__kvs__explicit_flush"
+  },
+  {
+    "name": "TestExplicitFlush__test_flushed_state_loaded_after_restart[cpp]",
+    "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
+    "line": "166",
+    "result": "passed",
+    "repo_name": "local_repo",
+    "hash": "",
+    "url": "",
+    "TestType": "requirements-based",
+    "DerivationTechnique": "requirements-analysis",
+    "result_text": "",
+    "PartiallyVerifies": null,
+    "FullyVerifies": "comp_req__kvs__explicit_flush"
   },
   {
     "name": "TestSnapshotCountFirstFlush__test_ok[0-cpp]",
