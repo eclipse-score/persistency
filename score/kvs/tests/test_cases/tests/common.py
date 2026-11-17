@@ -19,6 +19,7 @@ from collections.abc import Generator
 from datetime import timedelta
 from pathlib import Path
 from typing import Any
+from zlib import adler32
 
 import pytest
 from score.itf.plugins.core import Target
@@ -80,6 +81,48 @@ def write_file_on_target(target: Target, path: Path, content: bytes) -> None:
         local_path = Path(local_dir) / path.name
         local_path.write_bytes(content)
         target.upload(str(local_path), str(path))
+
+
+# Type tag and value pair.
+TaggedValue = tuple[str, Any]
+
+
+def create_defaults_json(values: dict[str, TaggedValue]) -> str:
+    """
+    Create JSON string containing default values.
+    """
+    # Create defaults.
+    json_value = {}
+    for key, tagged_value in values.items():
+        type_tag, value = tagged_value
+        json_value[key] = {"t": type_tag, "v": value}
+
+    return json.dumps({"t": "obj", "v": json_value})
+
+
+def create_defaults_file(target: Target, dir_path: Path, instance_id: int, values: dict[str, TaggedValue]) -> Path:
+    """
+    Create file containing default values on the target, along with a matching hash file.
+    Returns path to default values file.
+    """
+    # Path to expected defaults file.
+    # E.g., `/tmp/xyz/kvs_0_default.json`.
+    defaults_file_path = dir_path / f"kvs_{instance_id}_default.json"
+    # Path to expected defaults hash file.
+    # E.g., `/tmp/xyz/kvs_0_default.hash`.
+    defaults_hash_file_path = dir_path / f"kvs_{instance_id}_default.hash"
+
+    # Create JSON string containing default values.
+    json_str = create_defaults_json(values)
+
+    # Generate hash.
+    defaults_hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
+
+    # Save content and hash.
+    write_file_on_target(target, defaults_file_path, json_str.encode())
+    write_file_on_target(target, defaults_hash_file_path, defaults_hash)
+
+    return defaults_file_path
 
 
 def run_scenario_on_target(target: Target, command: list[str], execution_timeout: float) -> ScenarioResult:

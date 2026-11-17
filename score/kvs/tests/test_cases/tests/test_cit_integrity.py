@@ -17,9 +17,15 @@ from typing import Any
 from zlib import adler32
 
 import pytest
-from common import CommonScenario, ResultCode, temp_dir_common, write_file_on_target
+from common import (
+    CommonScenario,
+    ResultCode,
+    create_defaults_file,
+    create_defaults_json,
+    temp_dir_common,
+    write_file_on_target,
+)
 from score.itf.plugins.core import Target
-from test_cit_default_values import create_defaults_file, create_defaults_json
 from test_properties import add_test_properties
 from testing_utils import LogContainer, ScenarioResult
 
@@ -95,6 +101,22 @@ OPEN_CASES = [
     ("ignored", "hash_missing", "empty"),
 ]
 
+# Error of an "error" case by storage state, as printed after "Failed to create KVS instance: " by the scenario program:
+# Rust prints the ErrorCode name, C++ the message of the ErrorCode (score/kvs/error.cpp). The error shows where the open
+# failed:
+# - No data file: the data file cannot be read. C++ reports kKvsFileReadError, Rust FileNotFound.
+# - Data file changed or cut, or hash file cut: the integrity check fails (ValidationFailed): the checksum does not
+#   match, or the hash file is too short.
+# - No hash file: the hash file cannot be read (KvsHashFileReadError), so the integrity check cannot run.
+OPEN_ERRORS: dict[str, dict[str, str]] = {
+    "missing": {"cpp": "KVS file read error", "rust": "FileNotFound"},
+    "data_missing": {"cpp": "KVS file read error", "rust": "FileNotFound"},
+    "modified": {"cpp": "Validation failed", "rust": "ValidationFailed"},
+    "truncated": {"cpp": "Validation failed", "rust": "ValidationFailed"},
+    "hash_truncated": {"cpp": "Validation failed", "rust": "ValidationFailed"},
+    "hash_missing": {"cpp": "KVS hash file read error", "rust": "KvsHashFileReadError"},
+}
+
 
 @add_test_properties(
     fully_verifies=["comp_req__kvs__open_need_kvs_behavior", "comp_req__kvs__corruption_detect_open"],
@@ -162,28 +184,49 @@ class TestOpenByKvsLoadMode(CommonScenario):
 
         Expected result:
         - "error" cases ("required" with every state except "valid"; "optional" with "modified", "truncated",
-          "hash_truncated" and "hash_missing"): the program stops with "Failed to create KVS instance".
+          "hash_truncated" and "hash_missing"): the program stops with "Failed to create KVS instance" and the error
+          of the storage state, which shows where the open failed:
+          - "missing" and "data_missing": the data file cannot be read. C++ "KVS file read error", Rust
+            "FileNotFound".
+          - "modified", "truncated" and "hash_truncated": the integrity check fails, because the checksum does not
+            match or the hash file is too short. C++ "Validation failed", Rust "ValidationFailed". For "truncated",
+            whose data is not valid JSON, this also shows that the checksum is checked before the JSON is parsed; a
+            parser error would mean it was not.
+          - "hash_missing": the hash file cannot be read, so the integrity check cannot run. C++ "KVS hash file read
+            error", Rust "KvsHashFileReadError".
         - "empty" cases ("optional" with "missing" and "data_missing", where no data file exists; "ignored" with
           every state except "valid"): the program ends without an error and logs no key, so no data of the storage
           files is loaded.
         - "loaded" cases ("required" and "optional" with "valid"): the program ends without an error and logs
           exactly "stored" = 1, so intact storage files written by the test are loaded.
 
-        Known defect: for Rust, "optional" with "hash_missing" opens an empty KVS instead of reporting an error. This
-        one case is marked as an expected failure (strict xfail), so it turns into a test failure once it passes.
+        Known defect: Rust reports a missing hash file as "FileNotFound", the same error as for a missing data file,
+        which means "no storage". So for "hash_missing", "optional" opens an empty KVS instead of reporting an error.
+        For "required", the open fails as it should, and only the error is expected to differ: "FileNotFound" instead
+        of "KvsHashFileReadError". These two Rust cases are marked as expected failures (strict xfail): "optional"
+        from the check that the open fails, "required" only at the check of the error, so the check that its open
+        fails still runs. Each turns into a test failure once it passes.
         """
-        if (kvs_load, storage, version) == ("optional", "hash_missing", "rust"):
-            request.applymarker(
-                pytest.mark.xfail(
-                    strict=True,
-                    reason="Rust opens an empty KVS in Optional mode when the data file exists but its hash file is "
-                    "missing, while comp_req__kvs__open_need_kvs_behavior requires an error",
-                )
-            )
         logged = {log.key: log.value for log in logs_info_level.get_logs("key")}
         if expected == "error":
+            if (kvs_load, storage, version) == ("optional", "hash_missing", "rust"):
+                request.applymarker(
+                    pytest.mark.xfail(
+                        strict=True,
+                        reason="Rust Optional opens an empty KVS for an existing data file without a hash file, while "
+                        "comp_req__kvs__open_need_kvs_behavior requires an error",
+                    )
+                )
             assert results.return_code == ResultCode.PANIC, f"expected the open to fail, logged values: {logged}"
-            assert "Failed to create KVS instance" in results.stderr
+            if (storage, version) == ("hash_missing", "rust"):
+                request.applymarker(
+                    pytest.mark.xfail(
+                        strict=True,
+                        reason="Rust reports FileNotFound, the code for a missing data file, instead of "
+                        "KvsHashFileReadError for a missing hash file",
+                    )
+                )
+            assert f"Failed to create KVS instance: {OPEN_ERRORS[storage][version]}" in results.stderr
         else:
             assert results.return_code == ResultCode.SUCCESS, results.stderr
             assert logged == (STORED_VALUES if expected == "loaded" else {})
@@ -346,7 +389,7 @@ class TestDiscardPendingChangesVerifiesChecksum(CommonScenario):
     partially_verifies=[
         "comp_req__kvs__pers_data_csum_vrfy",
         "comp_req__kvs__default_value_cfg",
-        "comp_req__kvs__default_value_query",
+        "comp_req__kvs__default_val_chksum",
     ],
     test_type="fault-injection",
     derivation_technique="requirements-analysis",
