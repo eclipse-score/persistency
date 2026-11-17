@@ -18,7 +18,7 @@ namespace score::kvs::test_support
 
 /// @brief Drops the shared state of every KVS instance, as if the process had restarted.
 ///
-/// The next `KvsBuilder::Build()` for any instance ID reads its files from disk again.
+/// The next `Initialize()` reads the files of every configured instance from disk again.
 /// For tests only, the Bazel target is `testonly`.
 ///
 /// @pre No `Kvs` handle exists. A handle that outlives the call keeps the old state,

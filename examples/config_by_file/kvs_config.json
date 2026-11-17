@@ -1,0 +1,13 @@
+{
+  "formatVersion": 1,
+  "kvsInstances": [
+    {
+      "instanceId": 0,
+      "snapshotMaxCount": 2
+    },
+    {
+      "instanceId": 1,
+      "defaults": "ignored"
+    }
+  ]
+}

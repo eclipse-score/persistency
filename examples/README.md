@@ -123,6 +123,16 @@ int main()
 
 Further usage patterns are shown in the C++ test scenarios in [score/kvs/tests/test_scenarios/cpp](../score/kvs/tests/test_scenarios/cpp).
 
+### 2.1 Configuration Examples
+
+The KVS instances of a process are configured once and opened with `Initialize()`. Each example shows one way to configure them:
+
+- [config_by_code](config_by_code/main.cpp) configures an instance in code.
+- [config_by_file](config_by_file/main.cpp) loads the instances from a JSON configuration file.
+- [config_by_file_and_code](config_by_file_and_code/main.cpp) loads a JSON configuration file and adds an instance in code.
+
+An example is executed with `bazel run //examples/<directory name>`, e.g. `bazel run //examples/config_by_code`.
+
 ## 3. Using the Rust Implementation
 
 The Rust examples are located in [score/kvs/rust_kvs/examples](../score/kvs/rust_kvs/examples). The content of each

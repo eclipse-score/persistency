@@ -29,6 +29,7 @@
 namespace score::kvs
 {
 struct KvsInstanceState;
+struct KvsParameters;
 
 /// @brief Maximum allowed key length in bytes.
 /// @note comp_req__kvs__key_length
@@ -51,7 +52,7 @@ constexpr std::size_t KVS_MAX_SNAPSHOTS_UPPER_BOUND{kMaxSnapshotsUpperBound};
 
 /// @brief Default maximum number of snapshots.
 ///
-/// It can be overridden per instance at init-time via KvsBuilder::SnapshotMaxCount().
+/// It can be overridden per instance via KvsParametersBuilder::SnapshotMaxCount().
 /// @note comp_req__kvs__snapshot_max_num_cfg
 constexpr std::size_t kDefaultMaxSnapshots{3U};
 
@@ -59,10 +60,15 @@ constexpr std::size_t kDefaultMaxSnapshots{3U};
 [[deprecated("Use kDefaultMaxSnapshots instead. This name is removed in a future release.")]]
 constexpr std::size_t KVS_DEFAULT_MAX_SNAPSHOTS{kDefaultMaxSnapshots};
 
+/// @brief Default directory where KVS files are stored.
+///
+/// It can be overridden per instance via KvsParametersBuilder::WorkingDir().
+constexpr std::string_view kDefaultWorkingDir{"./data_folder/"};
+
 /// @brief Maximum number of KVS instances in one process.
 ///
 /// Valid instance IDs are in the range 0..kMaxInstanceCount - 1.
-/// `KvsBuilder::Build()` fails with `kInvalidInstanceId` for any other ID.
+/// `Get()` fails with `kInvalidInstanceId` for any other ID.
 constexpr std::size_t kMaxInstanceCount{10UL};
 
 /// @brief Identifier of a KVS instance.
@@ -165,9 +171,9 @@ enum class OpenJsonNeedFile : std::uint8_t
 /// `Flush()` affect every handle of the instance. The state lives until the process ends.
 ///
 /// Opening:
-/// Handles are created with `KvsBuilder::Build()`. The first build of an instance ID loads its data from disk;
-/// later builds reuse the shared state without reading the files again. All builder options of a later build
-/// must match those of the first one, otherwise the build fails with `kInstanceParametersMismatch`.
+/// Handles are created with `Get()`, after `Initialize()` has loaded the data of every configured instance from disk.
+/// `Get()` reads no files.
+/// It returns a handle to the state that `Initialize()` created.
 ///
 /// Ownership:
 /// A `Kvs` object is movable but not copyable. A moved-from object may only be destroyed or assigned to.
@@ -275,7 +281,7 @@ class Kvs final
 
     /// @brief Retrieves the maximum number of snapshots that can be stored.
     ///
-    /// The limit is configured per instance via KvsBuilder::SnapshotMaxCount().
+    /// The limit is configured per instance via KvsParametersBuilder::SnapshotMaxCount().
     /// It defaults to kDefaultMaxSnapshots and never exceeds kMaxSnapshotsUpperBound.
     ///
     /// @return The maximum number of snapshots.
@@ -450,11 +456,12 @@ class Kvs final
     }
 
   private:
-    friend class KvsBuilder;
+    friend score::Result<std::shared_ptr<KvsInstanceState>> OpenInstanceState(const KvsParameters& params) noexcept;
+    friend score::Result<Kvs> Get(const InstanceId& instance_id) noexcept;
 
     /// @brief Constructs an empty KVS.
     ///
-    /// Private to prevent direct instantiation; use KvsBuilder::Build() instead.
+    /// Private to prevent direct instantiation. Use `Get()` instead.
     Kvs() noexcept;
 
     /// @brief Counts the existing snapshots. Caller must hold `state_->mutex`.

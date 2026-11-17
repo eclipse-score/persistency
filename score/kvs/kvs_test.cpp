@@ -22,7 +22,7 @@
 
 // Only needed to inject a failing JSON writer: the real writer cannot fail, so this path is unreachable otherwise.
 #define private public
-#include "score/kvs/kvs_builder.h"
+#include "score/kvs/kvs_parameters.h"
 #undef private
 #include "score/kvs/kvs_general_test.h"
 #include "score/os/ObjectSeam.h"
@@ -80,17 +80,17 @@ score::Result<Kvs> OpenCrafted(const std::string& defaults,
     Store(kDefaultPrefix + ".json", kDefaultPrefix + ".hash", defaults);
     Store(kKvsPrefix + ".json", kKvsPrefix + ".hash", kvs_data);
 
-    return KvsBuilder{kInstanceId}
-        .Snapshot(kSnapshotId)
-        .Defaults(need_defaults)
-        .KvsLoad(need_kvs)
-        .WorkingDir(std::string(kDataDir))
-        .SnapshotMaxCount(kDefaultMaxSnapshots)
-        .Build();
+    return OpenForTest(KvsParametersBuilder{kInstanceId}
+                           .Snapshot(kSnapshotId)
+                           .Defaults(need_defaults)
+                           .KvsLoad(need_kvs)
+                           .WorkingDir(std::string(kDataDir))
+                           .SnapshotMaxCount(kDefaultMaxSnapshots)
+                           .Build());
 }
 
 /// @brief Writes the defaults file with a valid hash.
-/// Call it before building the KVS, because Build() reads the defaults once.
+/// Call it before building the KVS, because opening reads the defaults once.
 void SeedDefaults(const std::string& json)
 {
     Store(kDefaultPrefix + ".json", kDefaultPrefix + ".hash", json);
@@ -137,13 +137,13 @@ std::vector<std::string> InvalidCharacterKeys()
 /// Flush() then writes snapshot 0 in place, without rotating the previous files away.
 Kvs OpenTestKvs()
 {
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .SnapshotMaxCount(0U)
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .SnapshotMaxCount(0U)
+                             .Build())};
 
     EXPECT_TRUE(kvs);
     EXPECT_EQ(kvs->SnapshotMaxCount(), 0U);
@@ -165,13 +165,13 @@ Kvs OpenTestKvsWithNewKey()
 void ExpectOnlyNewKey()
 {
     KvsInstanceStateRegistry::GetInstance().Reset();
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kRequired)
-                 .KvsLoad(KvsLoad::kRequired)
-                 .WorkingDir(std::string(kDataDir))
-                 .SnapshotMaxCount(0U)
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kRequired)
+                             .KvsLoad(KvsLoad::kRequired)
+                             .WorkingDir(std::string(kDataDir))
+                             .SnapshotMaxCount(0U)
+                             .Build())};
     ASSERT_TRUE(kvs);
     auto keys{kvs->GetAllKeys()};
     ASSERT_TRUE(keys);
@@ -214,24 +214,24 @@ TEST(kvs_constructor, move_constructor)
     const std::uint32_t instance_b{5U};
 
     // Create object A.
-    auto result_a{KvsBuilder{instance_b}
-                      .Snapshot(kSnapshotId)
-                      .Defaults(KvsDefaults::kOptional)
-                      .KvsLoad(KvsLoad::kOptional)
-                      .WorkingDir(std::string(kDataDir))
-                      .SnapshotMaxCount(kMaxSnapshotsUpperBound)
-                      .Build()};
+    auto result_a{OpenForTest(KvsParametersBuilder{instance_b}
+                                  .Snapshot(kSnapshotId)
+                                  .Defaults(KvsDefaults::kOptional)
+                                  .KvsLoad(KvsLoad::kOptional)
+                                  .WorkingDir(std::string(kDataDir))
+                                  .SnapshotMaxCount(kMaxSnapshotsUpperBound)
+                                  .Build())};
     ASSERT_TRUE(result_a);
     Kvs kvs_a{std::move(result_a.value())};
 
     // Create object B.
-    auto result_b{KvsBuilder{kInstanceId}
-                      .Snapshot(kSnapshotId)
-                      .Defaults(KvsDefaults::kOptional)
-                      .KvsLoad(KvsLoad::kOptional)
-                      .WorkingDir(std::string(kDataDir))
-                      .SnapshotMaxCount(kMaxSnapshotsUpperBound)
-                      .Build()};
+    auto result_b{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                  .Snapshot(kSnapshotId)
+                                  .Defaults(KvsDefaults::kOptional)
+                                  .KvsLoad(KvsLoad::kOptional)
+                                  .WorkingDir(std::string(kDataDir))
+                                  .SnapshotMaxCount(kMaxSnapshotsUpperBound)
+                                  .Build())};
     ASSERT_TRUE(result_b);
     Kvs kvs_b{std::move(result_b.value())};
 
@@ -282,7 +282,7 @@ TEST(kvs_constructor, move_constructor)
 
 TEST(kvs_TEST, parse_json_data_success)
 {
-    // Build() reads the file through OpenJson().
+    // Opening reads the file through OpenJson().
     // This also covers the Optional mode with an existing file.
     auto kvs{OpenCrafted(kDefaultJson,
                          R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})",
@@ -354,36 +354,36 @@ TEST(kvs_open, storage_corrupted_all_kvs_open_modes)
 
     // Required.
     {
-        auto kvs{KvsBuilder{instance_id}
-                     .Snapshot(snapshot_id)
-                     .Defaults(default_mode)
-                     .KvsLoad(KvsLoad::kRequired)
-                     .WorkingDir(std::string(dir))
-                     .Build()};
+        auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                                 .Snapshot(snapshot_id)
+                                 .Defaults(default_mode)
+                                 .KvsLoad(KvsLoad::kRequired)
+                                 .WorkingDir(std::string(dir))
+                                 .Build())};
         ASSERT_FALSE(kvs);
         ASSERT_EQ(kvs.error(), ErrorCode::kValidationFailed);
     }
 
     // Optional.
     {
-        auto kvs{KvsBuilder{instance_id}
-                     .Snapshot(snapshot_id)
-                     .Defaults(default_mode)
-                     .KvsLoad(KvsLoad::kOptional)
-                     .WorkingDir(std::string(dir))
-                     .Build()};
+        auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                                 .Snapshot(snapshot_id)
+                                 .Defaults(default_mode)
+                                 .KvsLoad(KvsLoad::kOptional)
+                                 .WorkingDir(std::string(dir))
+                                 .Build())};
         ASSERT_FALSE(kvs);
         ASSERT_EQ(kvs.error(), ErrorCode::kValidationFailed);
     }
 
     // Ignored.
     {
-        auto kvs{KvsBuilder{instance_id}
-                     .Snapshot(snapshot_id)
-                     .Defaults(default_mode)
-                     .KvsLoad(KvsLoad::kIgnored)
-                     .WorkingDir(std::string(dir))
-                     .Build()};
+        auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                                 .Snapshot(snapshot_id)
+                                 .Defaults(default_mode)
+                                 .KvsLoad(KvsLoad::kIgnored)
+                                 .WorkingDir(std::string(dir))
+                                 .Build())};
         // Successfully opened without loading.
         ASSERT_TRUE(kvs);
 
@@ -419,36 +419,36 @@ TEST(kvs_open, hash_missing_all_kvs_open_modes)
 
     // Required.
     {
-        auto kvs{KvsBuilder{instance_id}
-                     .Snapshot(snapshot_id)
-                     .Defaults(default_mode)
-                     .KvsLoad(KvsLoad::kRequired)
-                     .WorkingDir(std::string(dir))
-                     .Build()};
+        auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                                 .Snapshot(snapshot_id)
+                                 .Defaults(default_mode)
+                                 .KvsLoad(KvsLoad::kRequired)
+                                 .WorkingDir(std::string(dir))
+                                 .Build())};
         ASSERT_FALSE(kvs);
         ASSERT_EQ(kvs.error(), ErrorCode::kKvsHashFileReadError);
     }
 
     // Optional.
     {
-        auto kvs{KvsBuilder{instance_id}
-                     .Snapshot(snapshot_id)
-                     .Defaults(default_mode)
-                     .KvsLoad(KvsLoad::kOptional)
-                     .WorkingDir(std::string(dir))
-                     .Build()};
+        auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                                 .Snapshot(snapshot_id)
+                                 .Defaults(default_mode)
+                                 .KvsLoad(KvsLoad::kOptional)
+                                 .WorkingDir(std::string(dir))
+                                 .Build())};
         ASSERT_FALSE(kvs);
         ASSERT_EQ(kvs.error(), ErrorCode::kKvsHashFileReadError);
     }
 
     // Ignored.
     {
-        auto kvs{KvsBuilder{instance_id}
-                     .Snapshot(snapshot_id)
-                     .Defaults(default_mode)
-                     .KvsLoad(KvsLoad::kIgnored)
-                     .WorkingDir(std::string(dir))
-                     .Build()};
+        auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                                 .Snapshot(snapshot_id)
+                                 .Defaults(default_mode)
+                                 .KvsLoad(KvsLoad::kIgnored)
+                                 .WorkingDir(std::string(dir))
+                                 .Build())};
         // Successfully opened without loading.
         ASSERT_TRUE(kvs);
         // `kvs` should be not present.
@@ -479,12 +479,12 @@ TEST(kvs_open, selected_snapshot)
 
     // First instance, load snapshot 0.
     {
-        auto kvs{KvsBuilder{instance_id}
-                     .Snapshot(SnapshotId{0ul})
-                     .Defaults(KvsDefaults::kRequired)
-                     .KvsLoad(KvsLoad::kRequired)
-                     .WorkingDir(std::string(dir))
-                     .Build()};
+        auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                                 .Snapshot(SnapshotId{0ul})
+                                 .Defaults(KvsDefaults::kRequired)
+                                 .KvsLoad(KvsLoad::kRequired)
+                                 .WorkingDir(std::string(dir))
+                                 .Build())};
         ASSERT_TRUE(kvs);
         auto value{kvs->GetValue("kvs")};
         ASSERT_TRUE(value);
@@ -497,12 +497,12 @@ TEST(kvs_open, selected_snapshot)
 
     // Second instance, load snapshot 1.
     {
-        auto kvs{KvsBuilder{instance_id}
-                     .Snapshot(SnapshotId{1ul})
-                     .Defaults(KvsDefaults::kRequired)
-                     .KvsLoad(KvsLoad::kRequired)
-                     .WorkingDir(std::string(dir))
-                     .Build()};
+        auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                                 .Snapshot(SnapshotId{1ul})
+                                 .Defaults(KvsDefaults::kRequired)
+                                 .KvsLoad(KvsLoad::kRequired)
+                                 .WorkingDir(std::string(dir))
+                                 .Build())};
         ASSERT_TRUE(kvs);
         auto value{kvs->GetValue("kvs")};
         ASSERT_TRUE(value);
@@ -526,13 +526,13 @@ TEST(kvs_open, t_and_v_keys_loaded_from_file)
 
     PrepareEnvironment(dir, prefix, instance_id.id, default_data, snapshot_data_0);
 
-    auto kvs{KvsBuilder{instance_id}
-                 .Snapshot(SnapshotId{0ul})
-                 .Defaults(KvsDefaults::kRequired)
-                 .KvsLoad(KvsLoad::kRequired)
-                 .WorkingDir(std::string(dir))
-                 .SnapshotMaxCount(kDefaultMaxSnapshots)
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                             .Snapshot(SnapshotId{0ul})
+                             .Defaults(KvsDefaults::kRequired)
+                             .KvsLoad(KvsLoad::kRequired)
+                             .WorkingDir(std::string(dir))
+                             .SnapshotMaxCount(kDefaultMaxSnapshots)
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     auto keys{kvs->GetAllKeys()};
@@ -573,34 +573,23 @@ TEST(kvs_open, two_clients_the_same_instance)
     PrepareEnvironment(dir, prefix, instance_id.id, default_data, snapshot_data_0);
 
     // First client. The same instance.
-    auto kvs1 = KvsBuilder{instance_id}
-                    .Snapshot(SnapshotId{0ul})
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(dir))
-                    .Build();
+    auto kvs1 = OpenForTest(KvsParametersBuilder{instance_id}
+                                .Snapshot(SnapshotId{0ul})
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(dir))
+                                .Build());
 
     // Second client. The same instance.
-    auto kvs2 = KvsBuilder{instance_id}
-                    .Snapshot(SnapshotId{0ul})
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(dir))
-                    .Build();
+    auto kvs2 = OpenForTest(KvsParametersBuilder{instance_id}
+                                .Snapshot(SnapshotId{0ul})
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(dir))
+                                .Build());
 
     ASSERT_TRUE(kvs1);
     ASSERT_TRUE(kvs2);
-
-    // Third client. The same instance however different params. Should fail.
-    auto kvs3 = KvsBuilder{instance_id}
-                    .Snapshot(SnapshotId{0ul})
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(dir))
-                    .SnapshotMaxCount(1ul)
-                    .Build();
-    ASSERT_FALSE(kvs3);
-    ASSERT_EQ(kvs3.error(), ErrorCode::kInstanceParametersMismatch);
 
     // Both clients see the same keys.
     auto keys1{kvs1->GetAllKeys()};
@@ -715,12 +704,12 @@ TEST(kvs_open_json, open_json_json_invalid)
     // A missing KVS file fails, even if its hash file exists.
     PrepareEnvironment();
     ASSERT_TRUE(RealFilesystem().standard->Remove(kKvsPrefix + ".json"));
-    kvs = KvsBuilder{kInstanceId}
-              .Snapshot(kSnapshotId)
-              .Defaults(KvsDefaults::kRequired)
-              .KvsLoad(KvsLoad::kRequired)
-              .WorkingDir(std::string(kDataDir))
-              .Build();
+    kvs = OpenForTest(KvsParametersBuilder{kInstanceId}
+                          .Snapshot(kSnapshotId)
+                          .Defaults(KvsDefaults::kRequired)
+                          .KvsLoad(KvsLoad::kRequired)
+                          .WorkingDir(std::string(kDataDir))
+                          .Build());
     ASSERT_FALSE(kvs);
     EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kKvsFileReadError);
 
@@ -730,12 +719,12 @@ TEST(kvs_open_json, open_json_json_invalid)
 TEST(kvs_reset, reset_success)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Check that data exists.
@@ -757,12 +746,12 @@ TEST(kvs_get_all_keys, get_all_keys_success)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Check if all keys are returned.
@@ -785,12 +774,12 @@ TEST(kvs_key_exists, key_exists_success)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Check if key exists.
@@ -810,12 +799,12 @@ TEST(kvs_get_value, get_value_success)
     PrepareEnvironment();
     SeedDefaults(R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})");
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Check if value is returned.
@@ -840,12 +829,12 @@ TEST(kvs_get_value, get_value_failure)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Check if non-existing key returns error.
@@ -861,12 +850,12 @@ TEST(kvs_get_default_value, get_default_value_success)
     PrepareEnvironment();
     SeedDefaults(R"({"t": "obj", "v": {"kvs": {"t": "i32", "v": 42}}})");
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Check if default value is returned.
@@ -887,12 +876,12 @@ TEST(kvs_get_default_value, get_default_value_failure)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Check if non-existing key returns error.
@@ -908,12 +897,12 @@ TEST(kvs_set_value_to_default, set_value_to_default_success)
     PrepareEnvironment();
     SeedDefaults(R"({"t": "obj", "v": {"default": {"t": "i32", "v": 5}, "kvs": {"t": "f64", "v": 42.0}}})");
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
     // Check that data exists.
     auto exists_result{result.value().KeyExists("kvs")};
@@ -951,13 +940,13 @@ TEST(kvs_set_value_to_default, set_value_to_default_failure)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .SnapshotMaxCount(kDefaultMaxSnapshots)
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .SnapshotMaxCount(kDefaultMaxSnapshots)
+                                .Build())};
 
     ASSERT_TRUE(result);
 
@@ -967,13 +956,13 @@ TEST(kvs_set_value_to_default, set_value_to_default_failure)
     EXPECT_EQ(set_value_to_default_result.error(), ErrorCode::kKeyNotFound);
 
     // Set a key without default value.
-    result = KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kRequired)
-                 .KvsLoad(KvsLoad::kRequired)
-                 .WorkingDir(std::string(kDataDir))
-                 .SnapshotMaxCount(kDefaultMaxSnapshots)
-                 .Build();
+    result = OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kRequired)
+                             .KvsLoad(KvsLoad::kRequired)
+                             .WorkingDir(std::string(kDataDir))
+                             .SnapshotMaxCount(kDefaultMaxSnapshots)
+                             .Build());
     ASSERT_TRUE(result);
     // default_json has no "kvs" key, so "kvs" has no default value.
     auto get_default_result{result.value().GetDefaultValue("kvs")};
@@ -989,13 +978,13 @@ TEST(kvs_set_value_to_default, set_value_to_default_failure)
 TEST(kvs_set_value_to_default, set_value_to_default_failure_invalid_key)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .SnapshotMaxCount(kDefaultMaxSnapshots)
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .SnapshotMaxCount(kDefaultMaxSnapshots)
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Keys are validated before the default value lookup.
@@ -1024,12 +1013,12 @@ TEST(kvs_is_value_default, is_value_default)
     PrepareEnvironment();
     SeedDefaults(R"({"t": "obj", "v": {"default": {"t": "f64", "v": 42.0}}})");
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
     auto kvs{std::move(result.value())};
 
@@ -1069,12 +1058,12 @@ TEST(kvs_is_value_default, is_value_default)
 TEST(kvs_set_value, set_value_success)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Set a new value.
@@ -1102,12 +1091,12 @@ TEST(kvs_set_value, set_value_success)
 TEST(kvs_set_value, set_value_key_too_long)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // A key of exactly kMaxKeyLengthBytes bytes is accepted (inclusive limit).
@@ -1127,12 +1116,12 @@ TEST(kvs_set_value, set_value_key_too_long)
 TEST(kvs_get_value, get_value_failure_key_too_long)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Keys are validated only when set.
@@ -1153,12 +1142,12 @@ TEST(kvs_get_value, get_value_failure_key_too_long)
 TEST(kvs_set_value, set_value_valid_keys)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // comp_req__kvs__key_naming: any key consisting of printable ASCII characters is accepted.
@@ -1197,12 +1186,12 @@ TEST(kvs_set_value, set_value_valid_keys)
 TEST(kvs_set_value, set_value_empty_key)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // comp_req__kvs__key_length: an empty key is rejected with kInvalidKey.
@@ -1221,12 +1210,12 @@ TEST(kvs_set_value, set_value_empty_key)
 TEST(kvs_set_value, set_value_failure_invalid_characters)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     for (const auto& key : InvalidCharacterKeys())
@@ -1245,12 +1234,12 @@ TEST(kvs_set_value, set_value_failure_invalid_characters)
 TEST(kvs_get_value, get_value_failure_empty_key)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Keys are validated only when set, so an empty key is reported as missing.
@@ -1264,12 +1253,12 @@ TEST(kvs_get_value, get_value_failure_empty_key)
 TEST(kvs_get_value, get_value_failure_invalid_characters)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Keys are validated only when set.
@@ -1287,13 +1276,13 @@ TEST(kvs_get_value, get_value_failure_invalid_characters)
 TEST(kvs_set_value, set_value_duplicate_object_key)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .SnapshotMaxCount(kDefaultMaxSnapshots)
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .SnapshotMaxCount(kDefaultMaxSnapshots)
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Duplicate key in a top-level object.
@@ -1329,12 +1318,12 @@ TEST(kvs_set_value, t_and_v_keys_round_trip)
     PrepareEnvironment(dir, prefix, instance_id.id, R"({"t": "obj", "v": {}})");
 
     {
-        auto kvs{KvsBuilder{instance_id}
-                     .Snapshot(SnapshotId{0ul})
-                     .Defaults(KvsDefaults::kRequired)
-                     .KvsLoad(KvsLoad::kOptional)
-                     .WorkingDir(std::string(dir))
-                     .Build()};
+        auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                                 .Snapshot(SnapshotId{0ul})
+                                 .Defaults(KvsDefaults::kRequired)
+                                 .KvsLoad(KvsLoad::kOptional)
+                                 .WorkingDir(std::string(dir))
+                                 .Build())};
         ASSERT_TRUE(kvs);
 
         EXPECT_TRUE(kvs->SetValue("t", KvsValue("obj")));
@@ -1346,12 +1335,12 @@ TEST(kvs_set_value, t_and_v_keys_round_trip)
 
     // Drop the shared state so the next build reloads the flushed files.
     KvsInstanceStateRegistry::GetInstance().Reset();
-    auto kvs{KvsBuilder{instance_id}
-                 .Snapshot(SnapshotId{0ul})
-                 .Defaults(KvsDefaults::kRequired)
-                 .KvsLoad(KvsLoad::kRequired)
-                 .WorkingDir(std::string(dir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                             .Snapshot(SnapshotId{0ul})
+                             .Defaults(KvsDefaults::kRequired)
+                             .KvsLoad(KvsLoad::kRequired)
+                             .WorkingDir(std::string(dir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     auto t_value{kvs->GetValue("t")};
@@ -1391,12 +1380,12 @@ TEST(kvs_set_value, over_length_nested_key_round_trip)
     PrepareEnvironment(dir, prefix, instance_id.id, R"({"t": "obj", "v": {}})");
 
     {
-        auto kvs{KvsBuilder{instance_id}
-                     .Snapshot(SnapshotId{0ul})
-                     .Defaults(KvsDefaults::kRequired)
-                     .KvsLoad(KvsLoad::kOptional)
-                     .WorkingDir(std::string(dir))
-                     .Build()};
+        auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                                 .Snapshot(SnapshotId{0ul})
+                                 .Defaults(KvsDefaults::kRequired)
+                                 .KvsLoad(KvsLoad::kOptional)
+                                 .WorkingDir(std::string(dir))
+                                 .Build())};
         ASSERT_TRUE(kvs);
 
         KvsValue::Object cfg{{long_key, KvsValue(int32_t{1})}};
@@ -1406,12 +1395,12 @@ TEST(kvs_set_value, over_length_nested_key_round_trip)
 
     // Drop the shared state so the next build reloads the flushed files.
     KvsInstanceStateRegistry::GetInstance().Reset();
-    auto kvs{KvsBuilder{instance_id}
-                 .Snapshot(SnapshotId{0ul})
-                 .Defaults(KvsDefaults::kRequired)
-                 .KvsLoad(KvsLoad::kRequired)
-                 .WorkingDir(std::string(dir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{instance_id}
+                             .Snapshot(SnapshotId{0ul})
+                             .Defaults(KvsDefaults::kRequired)
+                             .KvsLoad(KvsLoad::kRequired)
+                             .WorkingDir(std::string(dir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     auto cfg_value{kvs->GetValue("cfg")};
@@ -1429,12 +1418,12 @@ TEST(kvs_set_value, over_length_nested_key_round_trip)
 TEST(kvs_remove_key, remove_key_success)
 {
     PrepareEnvironment();
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Check that data exists.
@@ -1456,12 +1445,12 @@ TEST(kvs_remove_key, remove_key_failure)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kRequired)
-                    .KvsLoad(KvsLoad::kRequired)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kRequired)
+                                .KvsLoad(KvsLoad::kRequired)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Remove a non-existing key.
@@ -1480,13 +1469,13 @@ TEST(kvs_write_json_data, write_json_data_success)
     system(("rm -rf " + kKvsPrefix + ".json").c_str());
     system(("rm -rf " + kKvsPrefix + ".hash").c_str());
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .SnapshotMaxCount(0U)
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .SnapshotMaxCount(0U)
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     ASSERT_TRUE(kvs->SetValue("booltest", KvsValue(true)));
@@ -1508,13 +1497,13 @@ TEST(kvs_write_json_data, write_json_data_success)
     KvsInstanceStateRegistry::GetInstance().Reset();
 
     // A second KVS loads the written data.
-    auto reopened{KvsBuilder{kInstanceId}
-                      .Snapshot(kSnapshotId)
-                      .Defaults(KvsDefaults::kRequired)
-                      .KvsLoad(KvsLoad::kRequired)
-                      .WorkingDir(std::string(kDataDir))
-                      .SnapshotMaxCount(0ul)
-                      .Build()};
+    auto reopened{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                  .Snapshot(kSnapshotId)
+                                  .Defaults(KvsDefaults::kRequired)
+                                  .KvsLoad(KvsLoad::kRequired)
+                                  .WorkingDir(std::string(kDataDir))
+                                  .SnapshotMaxCount(0ul)
+                                  .Build())};
     ASSERT_TRUE(reopened);
     auto value{reopened->GetValue("booltest")};
     ASSERT_TRUE(value);
@@ -1710,12 +1699,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Create test snapshot files, tagged with their index.
@@ -1741,12 +1730,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success)
     // Snapshot 0 holds the new data with a valid hash.
     EXPECT_NE(GenerationJson(0), GenerationTag(0));
     KvsInstanceStateRegistry::GetInstance().Reset();
-    auto reopened{KvsBuilder{kInstanceId}
-                      .Snapshot(kSnapshotId)
-                      .Defaults(KvsDefaults::kOptional)
-                      .KvsLoad(KvsLoad::kRequired)
-                      .WorkingDir(std::string(kDataDir))
-                      .Build()};
+    auto reopened{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                  .Snapshot(kSnapshotId)
+                                  .Defaults(KvsDefaults::kOptional)
+                                  .KvsLoad(KvsLoad::kRequired)
+                                  .WorkingDir(std::string(kDataDir))
+                                  .Build())};
     EXPECT_TRUE(reopened);
 
     CleanupEnvironment();
@@ -1756,12 +1745,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_max_snapshots)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Create test snapshot files, tagged with their index.
@@ -1786,12 +1775,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_json)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Create test snapshot files, tagged with their index.
@@ -1817,12 +1806,12 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_hash)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
 
     ASSERT_TRUE(result);
 
@@ -1852,12 +1841,12 @@ TEST(kvs_flush, flush_success_data)
     system(("rm -rf " + kKvsPrefix + ".json").c_str());
     system(("rm -rf " + kKvsPrefix + ".hash").c_str());
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Clear KVS to ensure no data is written.
@@ -1875,12 +1864,12 @@ TEST(kvs_flush, flush_success_data)
 
     // A second KVS loads the flushed data.
     KvsInstanceStateRegistry::GetInstance().Reset();
-    auto reopened{KvsBuilder{kInstanceId}
-                      .Snapshot(kSnapshotId)
-                      .Defaults(KvsDefaults::kRequired)
-                      .KvsLoad(KvsLoad::kRequired)
-                      .WorkingDir(std::string(kDataDir))
-                      .Build()};
+    auto reopened{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                  .Snapshot(kSnapshotId)
+                                  .Defaults(KvsDefaults::kRequired)
+                                  .KvsLoad(KvsLoad::kRequired)
+                                  .WorkingDir(std::string(kDataDir))
+                                  .Build())};
     ASSERT_TRUE(reopened);
     auto get_value_result{reopened.value().GetValue("key1")};
     ASSERT_TRUE(get_value_result);
@@ -1898,12 +1887,12 @@ TEST(kvs_flush, flush_success_snapshot_rotate)
     system(("rm -rf " + kKvsPrefix + ".json").c_str());
     system(("rm -rf " + kKvsPrefix + ".hash").c_str());
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
     EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.json"));
     EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.hash"));
@@ -1930,12 +1919,12 @@ TEST(kvs_flush, flush_sets_file_permissions)
     ASSERT_TRUE(fs.standard->Remove(json_path));
     ASSERT_TRUE(fs.standard->Remove(hash_path));
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     std::string value{"value1"};
@@ -1959,12 +1948,12 @@ TEST(kvs_flush, flush_failure_rotate_snapshots)
     // Test folder for permission handling.
     std::string permissions_dir{kDataDir + "permissions/"};
     filesystem_test::CreateDirectories(permissions_dir);
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(permissions_dir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(permissions_dir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     filesystem_test::SetPermissions(permissions_dir, score::filesystem::Perms::kReadUser);
@@ -1980,12 +1969,12 @@ TEST(kvs_flush, flush_failure_json_writer)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     // Force error in writer.ToBuffer.
@@ -2006,12 +1995,12 @@ TEST(kvs_snapshot_count, snapshot_count_success)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Create empty test snapshot files.
@@ -2035,12 +2024,12 @@ TEST(kvs_snapshot_count, snapshot_count_invalid)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     // stat() fails with an error other than ENOENT, so the existence check fails.
@@ -2060,12 +2049,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_success)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Create empty test snapshot files.
@@ -2108,7 +2097,7 @@ TEST(kvs_snapshot_restore, snapshot_restore_success)
     exists_result = result.value().KeyExists("kvs_old");
     ASSERT_TRUE(exists_result);
     EXPECT_TRUE(exists_result.value());
-    // Restore replaces the content, so the key loaded by Build() is gone.
+    // Restore replaces the content, so the key loaded on open is gone.
     exists_result = result.value().KeyExists("kvs");
     ASSERT_TRUE(exists_result);
     EXPECT_FALSE(exists_result.value());
@@ -2120,12 +2109,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_invalid_snapshot_id)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Restore snapshot ID 0 -> current KVS.
@@ -2145,12 +2134,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_open_json)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Create empty test snapshot files.
@@ -2171,12 +2160,12 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_snapshot_count)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     // stat() fails with an error other than ENOENT, so the existence check fails.
@@ -2196,12 +2185,12 @@ TEST(kvs_snapshot_max_count, snapshot_max_count)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
     EXPECT_EQ(result.value().SnapshotMaxCount(), kDefaultMaxSnapshots);
 
@@ -2212,12 +2201,12 @@ TEST(kvs_get_filename, get_kvs_filename_success)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Generate test files.
@@ -2240,12 +2229,12 @@ TEST(kvs_get_filename, get_kvs_filename_failure)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     // Test files not available.
@@ -2270,12 +2259,12 @@ TEST(kvs_get_filename, get_hashname_success)
 {
     PrepareEnvironment();
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Generate test files.
@@ -2298,12 +2287,12 @@ TEST(kvs_get_filename, get_hashname_failure)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     // Test files not available.
@@ -2328,12 +2317,12 @@ TEST(kvs_remove_all_keys, remove_all_keys_removes_inserted_keys)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     // Insert some test key-value pairs.
@@ -2362,12 +2351,12 @@ TEST(kvs_remove_all_keys, remove_all_keys_empty_kvs)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     ASSERT_TRUE(kvs.value().RemoveAllKeys());
@@ -2387,12 +2376,12 @@ TEST(kvs_remove_all_keys, remove_all_keys_keeps_defaults)
     PrepareEnvironment();
     SeedDefaults(R"({"t": "obj", "v": {"defaulted": {"t": "f64", "v": 42.0}}})");
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kRequired)
-                 .KvsLoad(KvsLoad::kRequired)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kRequired)
+                             .KvsLoad(KvsLoad::kRequired)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     ASSERT_TRUE(kvs.value().GetDefaultValue("defaulted"));
@@ -2421,12 +2410,12 @@ TEST(kvs_discard_pending_changes, discard_reverts_to_state_at_open)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kRequired)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kRequired)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     // "kvs" is loaded from the test file by PrepareEnvironment().
@@ -2442,7 +2431,7 @@ TEST(kvs_discard_pending_changes, discard_reverts_to_state_at_open)
     auto result{kvs.value().DiscardPendingChanges()};
     EXPECT_TRUE(result);
 
-    // Back to what Build() loaded.
+    // Back to what the open loaded.
     exists_result = kvs.value().KeyExists("added");
     ASSERT_TRUE(exists_result);
     EXPECT_FALSE(exists_result.value());
@@ -2461,12 +2450,12 @@ TEST(kvs_discard_pending_changes, discard_reverts_to_last_flush)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     ASSERT_TRUE(kvs.value().RemoveAllKeys());
@@ -2494,12 +2483,12 @@ TEST(kvs_discard_pending_changes, discard_without_changes_is_noop)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kRequired)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kRequired)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     const auto keys_before{kvs.value().GetAllKeys()};
@@ -2523,12 +2512,12 @@ TEST(kvs_discard_pending_changes, discard_without_persisted_file_yields_empty)
     system(("rm -rf " + kKvsPrefix + ".json").c_str());
     system(("rm -rf " + kKvsPrefix + ".hash").c_str());
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     ASSERT_TRUE(kvs.value().SetValue("pending", KvsValue(1.0)));
@@ -2545,12 +2534,12 @@ TEST(kvs_discard_pending_changes, discard_reports_corrupted_storage)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kRequired)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kRequired)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     // Corrupt the hash of the persisted file after opening.
@@ -2570,12 +2559,12 @@ TEST(kvs_get_storage_file_size, size_matches_files_on_disk)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kRequired)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kRequired)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     const auto expected{filesystem_test::FileSize(kKvsPrefix + ".json") +
@@ -2595,12 +2584,12 @@ TEST(kvs_get_storage_file_size, size_without_files_is_zero)
     system(("rm -rf " + kKvsPrefix + ".json").c_str());
     system(("rm -rf " + kKvsPrefix + ".hash").c_str());
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     auto result{kvs.value().GetStorageFileSize()};
@@ -2617,12 +2606,12 @@ TEST(kvs_get_storage_file_size, size_reflects_storage_not_pending_changes)
     system(("rm -rf " + kKvsPrefix + ".json").c_str());
     system(("rm -rf " + kKvsPrefix + ".hash").c_str());
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     // Unflushed changes are invisible to the size query.
@@ -2644,12 +2633,12 @@ TEST(kvs_get_storage_file_size, size_failure_unreadable_path)
 {
     PrepareEnvironment();
 
-    auto kvs{KvsBuilder{kInstanceId}
-                 .Snapshot(kSnapshotId)
-                 .Defaults(KvsDefaults::kOptional)
-                 .KvsLoad(KvsLoad::kOptional)
-                 .WorkingDir(std::string(kDataDir))
-                 .Build()};
+    auto kvs{OpenForTest(KvsParametersBuilder{kInstanceId}
+                             .Snapshot(kSnapshotId)
+                             .Defaults(KvsDefaults::kOptional)
+                             .KvsLoad(KvsLoad::kOptional)
+                             .WorkingDir(std::string(kDataDir))
+                             .Build())};
     ASSERT_TRUE(kvs);
 
     // A directory in place of the data file cannot be sized as a regular file.
@@ -2670,9 +2659,9 @@ TEST(kvs_max_storage_bytes, flush_succeeds_without_configured_limit)
     const std::string test_dir{"./kvs_no_limit_test/"};
     CleanupEnvironment(test_dir);
 
-    KvsBuilder builder{kInstanceId};
+    KvsParametersBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
-    auto open_result{builder.Build()};
+    auto open_result{OpenForTest(builder.Build())};
     ASSERT_TRUE(open_result);
     Kvs kvs{std::move(open_result.value())};
 
@@ -2691,10 +2680,10 @@ TEST(kvs_max_storage_bytes, flush_fails_when_storage_limit_exceeded)
     const std::string test_dir{"./kvs_storage_test/"};
     CleanupEnvironment(test_dir);
 
-    KvsBuilder builder{kInstanceId};
+    KvsParametersBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
     builder.MaxStorageBytes(kTestMaxStorageBytes);
-    auto open_result{builder.Build()};
+    auto open_result{OpenForTest(builder.Build())};
     ASSERT_TRUE(open_result);
     Kvs kvs{std::move(open_result.value())};
 
@@ -2727,10 +2716,10 @@ TEST(kvs_check_size, check_size_within_limit_succeeds)
     const std::string test_dir{"./kvs_check_size_within_test/"};
     CleanupEnvironment(test_dir);
 
-    KvsBuilder builder{InstanceId(1)};
+    KvsParametersBuilder builder{InstanceId(1)};
     builder.WorkingDir(std::string(test_dir));
     builder.MaxStorageBytes(kTestMaxStorageBytes);
-    auto open_result{builder.Build()};
+    auto open_result{OpenForTest(builder.Build())};
     ASSERT_TRUE(open_result);
     Kvs kvs{std::move(open_result.value())};
 
@@ -2750,10 +2739,10 @@ TEST(kvs_check_size, check_size_exceeding_limit_fails)
     const std::string test_dir{"./kvs_check_size_exceeding_test/"};
     CleanupEnvironment(test_dir);
 
-    KvsBuilder builder{InstanceId(2)};
+    KvsParametersBuilder builder{InstanceId(2)};
     builder.WorkingDir(std::string(test_dir));
     builder.MaxStorageBytes(kTestMaxStorageBytes);
-    auto open_result{builder.Build()};
+    auto open_result{OpenForTest(builder.Build())};
     ASSERT_TRUE(open_result);
     Kvs kvs{std::move(open_result.value())};
 
@@ -2777,13 +2766,13 @@ TEST(kvs_max_storage_bytes, flush_without_limit_does_not_measure_storage)
     const std::string test_dir{"./kvs_no_limit_no_measure_test/"};
     CleanupEnvironment(test_dir);
 
-    KvsBuilder builder{kInstanceId};
+    KvsParametersBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
-    auto open_result{builder.Build()};
+    auto open_result{OpenForTest(builder.Build())};
     ASSERT_TRUE(open_result);
     Kvs kvs{std::move(open_result.value())};
 
-    // Obstruct the measurement only after building, so Build() itself is unaffected
+    // Obstruct the measurement only after opening, so the open itself is unaffected.
     filesystem_test::CreateDirectories(test_dir + "kvs_" + std::to_string(kInstance) + "_default.hash");
 
     auto set_result{kvs.SetValue("key", KvsValue("value"))};
@@ -2804,10 +2793,10 @@ TEST(kvs_max_storage_bytes, flush_with_limit_measures_storage)
     const std::string test_dir{"./kvs_limit_measures_test/"};
     CleanupEnvironment(test_dir);
 
-    KvsBuilder builder{kInstanceId};
+    KvsParametersBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
     builder.MaxStorageBytes(kTestMaxStorageBytes * 1000U);
-    auto open_result{builder.Build()};
+    auto open_result{OpenForTest(builder.Build())};
     ASSERT_TRUE(open_result);
     Kvs kvs{std::move(open_result.value())};
 
@@ -2831,9 +2820,9 @@ TEST(kvs_check_size, check_size_without_limit_reports_size)
     const std::string test_dir{"./kvs_check_size_no_limit_test/"};
     CleanupEnvironment(test_dir);
 
-    KvsBuilder builder{InstanceId(3)};
+    KvsParametersBuilder builder{InstanceId(3)};
     builder.WorkingDir(std::string(test_dir));
-    auto open_result{builder.Build()};
+    auto open_result{OpenForTest(builder.Build())};
     ASSERT_TRUE(open_result);
     Kvs kvs{std::move(open_result.value())};
 
@@ -2859,13 +2848,13 @@ TEST(kvs_snapshot_max_count, snapshot_max_count_configurable)
     for (const std::size_t configured_max : {std::size_t{0U}, std::size_t{1U}, kMaxSnapshotsUpperBound})
     {
         PrepareEnvironment();
-        auto result{KvsBuilder{kInstanceId}
-                        .Snapshot(kSnapshotId)
-                        .Defaults(KvsDefaults::kOptional)
-                        .KvsLoad(KvsLoad::kOptional)
-                        .WorkingDir(std::string(kDataDir))
-                        .SnapshotMaxCount(configured_max)
-                        .Build()};
+        auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                    .Snapshot(kSnapshotId)
+                                    .Defaults(KvsDefaults::kOptional)
+                                    .KvsLoad(KvsLoad::kOptional)
+                                    .WorkingDir(std::string(kDataDir))
+                                    .SnapshotMaxCount(configured_max)
+                                    .Build())};
         ASSERT_TRUE(result);
         EXPECT_EQ(result.value().SnapshotMaxCount(), configured_max);
         CleanupEnvironment();
@@ -2879,13 +2868,13 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_respects_configured_max)
     // Rotation must stop at the configured maximum.
     // A configuration that is only reported but not enforced would leave this snapshot behind.
     const std::size_t configured_max = 1U;
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .SnapshotMaxCount(configured_max)
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .SnapshotMaxCount(configured_max)
+                                .Build())};
     ASSERT_TRUE(result);
 
     // Create test snapshot files up to the configured maximum.
@@ -2919,13 +2908,13 @@ TEST(kvs_snapshot_count, snapshot_count_caps_at_configured_max)
     // Counting must use the configured maximum as upper bound.
     // Otherwise, the count could report snapshots that rotation is not allowed to maintain.
     const std::size_t configured_max = 1U;
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .SnapshotMaxCount(configured_max)
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .SnapshotMaxCount(configured_max)
+                                .Build())};
     ASSERT_TRUE(result);
 
     for (std::size_t i{0U}; i < kDefaultMaxSnapshots; i++)
@@ -2950,13 +2939,13 @@ TEST(kvs_flush, flush_zero_snapshots_still_persists_current_data)
     system(("rm -rf " + kKvsPrefix + ".json").c_str());
     system(("rm -rf " + kKvsPrefix + ".hash").c_str());
 
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .SnapshotMaxCount(0U)
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .SnapshotMaxCount(0U)
+                                .Build())};
     ASSERT_TRUE(result);
 
     std::string value{"value1"};
@@ -2988,13 +2977,13 @@ TEST(kvs_snapshot_restore, snapshot_restore_beyond_configured_max)
 
     // Restoring a snapshot outside the configured window must be rejected, even if an older file is still present.
     const std::size_t configured_max = 1U;
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .SnapshotMaxCount(configured_max)
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .SnapshotMaxCount(configured_max)
+                                .Build())};
     ASSERT_TRUE(result);
 
     for (std::size_t i{0U}; i <= configured_max + 1U; i++)
@@ -3017,24 +3006,24 @@ TEST(kvs_constructor, move_preserves_snapshot_max_count)
     // The configuration is instance state and has to survive both move operations.
     // The value differs from the default, so a reset to the default would be detected.
     const std::size_t configured_max = 1U;
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .SnapshotMaxCount(configured_max)
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .SnapshotMaxCount(configured_max)
+                                .Build())};
     ASSERT_TRUE(result);
 
     Kvs kvs_moved{std::move(result.value())};
     EXPECT_EQ(kvs_moved.SnapshotMaxCount(), configured_max);
 
-    auto result_default{KvsBuilder{InstanceId(kInstanceId.id + 1U)}
-                            .Snapshot(kSnapshotId)
-                            .Defaults(KvsDefaults::kOptional)
-                            .KvsLoad(KvsLoad::kOptional)
-                            .WorkingDir(std::string(kDataDir))
-                            .Build()};
+    auto result_default{OpenForTest(KvsParametersBuilder{InstanceId(kInstanceId.id + 1U)}
+                                        .Snapshot(kSnapshotId)
+                                        .Defaults(KvsDefaults::kOptional)
+                                        .KvsLoad(KvsLoad::kOptional)
+                                        .WorkingDir(std::string(kDataDir))
+                                        .Build())};
     ASSERT_TRUE(result_default);
     Kvs kvs_assigned{std::move(result_default.value())};
     ASSERT_EQ(kvs_assigned.SnapshotMaxCount(), kDefaultMaxSnapshots);
@@ -3053,13 +3042,13 @@ TEST(kvs_snapshot_max_count, snapshot_max_count_clamped_to_upper_bound)
     for (const std::size_t requested : {kMaxSnapshotsUpperBound + 1U, std::size_t{100U}})
     {
         PrepareEnvironment();
-        auto result{KvsBuilder{kInstanceId}
-                        .Snapshot(kSnapshotId)
-                        .Defaults(KvsDefaults::kOptional)
-                        .KvsLoad(KvsLoad::kOptional)
-                        .WorkingDir(std::string(kDataDir))
-                        .SnapshotMaxCount(requested)
-                        .Build()};
+        auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                    .Snapshot(kSnapshotId)
+                                    .Defaults(KvsDefaults::kOptional)
+                                    .KvsLoad(KvsLoad::kOptional)
+                                    .WorkingDir(std::string(kDataDir))
+                                    .SnapshotMaxCount(requested)
+                                    .Build())};
 
         ASSERT_TRUE(result);
         EXPECT_EQ(result.value().SnapshotMaxCount(), kMaxSnapshotsUpperBound);
@@ -3069,13 +3058,13 @@ TEST(kvs_snapshot_max_count, snapshot_max_count_clamped_to_upper_bound)
     PrepareEnvironment();
 
     // Rotation follows the clamped value: no snapshot beyond the upper bound is created.
-    auto result{KvsBuilder{kInstanceId}
-                    .Snapshot(kSnapshotId)
-                    .Defaults(KvsDefaults::kOptional)
-                    .KvsLoad(KvsLoad::kOptional)
-                    .WorkingDir(std::string(kDataDir))
-                    .SnapshotMaxCount(100U)
-                    .Build()};
+    auto result{OpenForTest(KvsParametersBuilder{kInstanceId}
+                                .Snapshot(kSnapshotId)
+                                .Defaults(KvsDefaults::kOptional)
+                                .KvsLoad(KvsLoad::kOptional)
+                                .WorkingDir(std::string(kDataDir))
+                                .SnapshotMaxCount(100U)
+                                .Build())};
     ASSERT_TRUE(result);
     for (std::size_t i{0U}; i <= kMaxSnapshotsUpperBound; i++)
     {
@@ -3098,11 +3087,11 @@ TEST(kvs_max_storage_bytes, storage_size_counts_only_configured_snapshots)
     const std::string test_dir{"./kvs_storage_configured_snapshots_test/"};
     CleanupEnvironment(test_dir);
 
-    KvsBuilder builder{kInstanceId};
+    KvsParametersBuilder builder{kInstanceId};
     builder.WorkingDir(std::string(test_dir));
     builder.SnapshotMaxCount(1U);
     builder.MaxStorageBytes(kTestMaxStorageBytes);
-    auto open_result{builder.Build()};
+    auto open_result{OpenForTest(builder.Build())};
     ASSERT_TRUE(open_result);
     Kvs kvs{std::move(open_result.value())};
 
@@ -3125,7 +3114,7 @@ namespace
 std::pair<Kvs, Kvs> BuildSharedHandlesWithPendingChange()
 {
     const auto build = []() {
-        auto result{KvsBuilder{kInstanceId}.WorkingDir(std::string(kDataDir)).Build()};
+        auto result{OpenForTest(KvsParametersBuilder{kInstanceId}.WorkingDir(std::string(kDataDir)).Build())};
         EXPECT_TRUE(result);
         return std::move(result.value());
     };

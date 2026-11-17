@@ -14,7 +14,7 @@
 #define SCORE_KVS_INTERNAL_KVS_INSTANCE_STATE_H
 
 #include "score/filesystem/filesystem.h"
-#include "score/kvs/kvs_builder.h"
+#include "score/kvs/kvs_parameters.h"
 #include "score/kvs/kvs_value.h"
 
 #include <array>
@@ -51,16 +51,21 @@ struct KvsInstanceStateRegistry final
     /// Array.
     Array array;
 
+    /// Whether `Initialize()` has succeeded.
+    bool initialized{false};
+
   private:
     KvsInstanceStateRegistry() noexcept = default;
 };
 
 /// @brief In-memory state shared by all `Kvs` handles of one instance ID.
 ///
-/// Created by the first `KvsBuilder::Build()` for the ID. Later builds must pass equal `params`.
+/// Created by `Initialize()` from the configured options of the ID.
 struct KvsInstanceState final
 {
-    KvsInstanceState() = default;
+    /// @brief Creates an empty state for the given options.
+    /// @param options Options of the instance.
+    explicit KvsInstanceState(const KvsParameters& options);
 
     KvsInstanceState(KvsInstanceState&&) = delete;
     KvsInstanceState(const KvsInstanceState&) = delete;
@@ -74,14 +79,21 @@ struct KvsInstanceState final
     /// Default values loaded for this store.
     KvsMap default_values;
     /// Parameters that have been used to open this instance.
-    KvsOpenParameters params;
+    KvsParameters params;
     /// Prefix used to construct this store's file paths.
     score::filesystem::Path filename_prefix;
 };
 
-/// @brief Compares the kvs open options.
-bool operator==(const KvsOpenParameters& v1, const KvsOpenParameters& v2) noexcept;
-bool operator!=(const KvsOpenParameters& v1, const KvsOpenParameters& v2) noexcept;
+/// @brief Loads the files of one instance and creates its state.
+///
+/// Takes no lock, does not check the instance ID range and does not touch the registry.
+/// @param params Options of the instance.
+/// @return The new state on success, or the ErrorCode of the failed file load.
+score::Result<std::shared_ptr<KvsInstanceState>> OpenInstanceState(const KvsParameters& params) noexcept;
+
+/// @brief Compares the options of two instances.
+bool operator==(const KvsParameters& v1, const KvsParameters& v2) noexcept;
+bool operator!=(const KvsParameters& v1, const KvsParameters& v2) noexcept;
 
 }  // namespace score::kvs
 
