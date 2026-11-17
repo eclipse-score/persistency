@@ -29,7 +29,7 @@ jobs:
     # same-repository PRs without approval ||
     if: >-
       (github.event_name == 'merge_group') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/license-check.yml@2396c21ed424744a3df4e1d0aa66cd8de9b947e7 # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/license-check.yml@5c8e3554fedd0214e61b8ecc5a70559a4eeac86d # v0.0.3-43-7e8ea4c
     with:
       repo-url: "${{ github.server_url }}/${{ github.repository }}"
       bazel-target: "run --lockfile_mode=error //tools:license-check"
