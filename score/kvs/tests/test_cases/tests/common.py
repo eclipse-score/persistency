@@ -83,6 +83,16 @@ def write_file_on_target(target: Target, path: Path, content: bytes) -> None:
         target.upload(str(local_path), str(path))
 
 
+def read_file_on_target(target: Target, path: Path) -> bytes:
+    """
+    Content of a file on the target, byte for byte: it is downloaded, not printed through the shell.
+    """
+    with tempfile.TemporaryDirectory() as local_dir:
+        local_path = Path(local_dir) / path.name
+        target.download(str(path), str(local_path))
+        return local_path.read_bytes()
+
+
 # Type tag and value pair.
 TaggedValue = tuple[str, Any]
 
@@ -192,6 +202,15 @@ def logs_from_stdout(stdout: str) -> LogContainer:
         message["timestamp"] = timedelta(microseconds=int(message["timestamp"]))
     messages.sort(key=lambda message: message["timestamp"])
     return LogContainer([ResultEntry(message) for message in messages])
+
+
+def stored_values(result: ScenarioResult, target_path: Path) -> dict[str, int]:
+    """
+    Key-value pairs logged by the 'stored_values' scenario.
+    """
+    logs = logs_from_stdout(result.stdout)
+    logs = logs.get_logs(field="target", pattern=f"{target_path.name}.*").get_logs(field="level", value="INFO")
+    return {log.key: log.value for log in logs.get_logs("key")}
 
 
 def temp_dir_common(target: Target, base_name: str, *args: str) -> Generator[Path, None, None]:
