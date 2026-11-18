@@ -21,7 +21,7 @@ on:
 
 jobs:
   common:
-    uses: eclipse-score/cicd-workflows/.github/workflows/on-pr.yml@d0cb6eefcf122446c6f79b11130cd009208bb18e # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/on-pr.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # v0.0.3-43-7e8ea4c
     with:
       format-target: "//tools:format.check"
       copyright-target: "//tools:copyright.check"
