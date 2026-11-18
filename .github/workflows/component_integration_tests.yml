@@ -28,7 +28,7 @@ on:
 
 jobs:
   component-integration-tests:
-    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@d0cb6eefcf122446c6f79b11130cd009208bb18e # main (2026-11-11)
+    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # main (2026-11-11)
     permissions:
       contents: read
     with:
