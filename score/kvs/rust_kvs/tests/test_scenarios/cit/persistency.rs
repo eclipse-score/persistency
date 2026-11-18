@@ -13,6 +13,7 @@
 use crate::helpers::kvs_instance::kvs_instance;
 use crate::helpers::kvs_parameters::KvsParameters;
 use rust_kvs::prelude::*;
+use serde_json::Value;
 use std::fs;
 use std::hash::{DefaultHasher, Hash, Hasher};
 use std::path::Path;
@@ -132,6 +133,126 @@ impl Scenario for ValuesAfterRestore {
     }
 }
 
+/// Set one key per value type, then flush as often as the input field "flush_count" says.
+///
+/// Before each flush, set the key "generation" to the number of the flush, 1 for the first.
+/// The string value and the key `quote" backslash\` hold characters that JSON must escape.
+struct FlushValueTypes;
+
+impl Scenario for FlushValueTypes {
+    fn name(&self) -> &str {
+        "flush_value_types"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
+        let flush_count: i32 =
+            serde_json::from_value(v["flush_count"].clone()).expect("Failed to parse \"flush_count\" field");
+        let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
+        let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+
+        let values = [
+            ("i32", KvsValue::I32(-321)),
+            ("u32", KvsValue::U32(1234)),
+            ("i64", KvsValue::I64(-123456789012)),
+            ("u64", KvsValue::U64(123456789012)),
+            ("f64", KvsValue::F64(-5432.1)),
+            ("bool", KvsValue::Boolean(true)),
+            ("null", KvsValue::Null),
+            (
+                "str",
+                KvsValue::String(
+                    "quote \" backslash \\ slash / newline \n tab \t control \u{1} umlaut \u{e4}".to_string(),
+                ),
+            ),
+            (
+                "arr",
+                KvsValue::Array(vec![
+                    KvsValue::I32(1),
+                    KvsValue::String(String::new()),
+                    KvsValue::Boolean(false),
+                    KvsValue::Null,
+                    KvsValue::Array(vec![]),
+                    KvsValue::Object(KvsMap::new()),
+                ]),
+            ),
+            (
+                "obj",
+                KvsValue::Object(KvsMap::from([
+                    ("nested".to_string(), KvsValue::F64(1.5)),
+                    (
+                        "deeper".to_string(),
+                        KvsValue::Object(KvsMap::from([(
+                            "text".to_string(),
+                            KvsValue::String("value".to_string()),
+                        )])),
+                    ),
+                ])),
+            ),
+            ("quote\" backslash\\", KvsValue::I32(7)),
+        ];
+        for (key, value) in values {
+            kvs.set_value(key, value)
+                .unwrap_or_else(|e| panic!("Failed to set {key}: {e:?}"));
+        }
+
+        for generation in 1..=flush_count {
+            kvs.set_value("generation", generation)
+                .expect("Failed to set generation");
+            kvs.flush().expect("Failed to flush");
+        }
+
+        Ok(())
+    }
+}
+
+/// Recover the data from a snapshot, as an application does when the open finds the storage corrupted.
+///
+/// Open the KVS with load mode Required. If the open succeeds, log "required_open" = "succeeded" and end: there is
+/// nothing to recover. If the open fails, log the error under "open_error".
+/// Then open it with load mode Ignored, restore the snapshot of the input field "snapshot_id" and log the error if the
+/// restore fails, log every written key with its I32 value, flush and log the error under "flush_error" if the flush
+/// fails.
+struct RecoverFromSnapshot;
+
+impl Scenario for RecoverFromSnapshot {
+    fn name(&self) -> &str {
+        "recover_from_snapshot"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
+        let snapshot_id: usize =
+            serde_json::from_value(v["snapshot_id"].clone()).expect("Failed to parse \"snapshot_id\" field");
+        let mut params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
+
+        params.kvs_load = Some(KvsLoad::Required);
+        match kvs_instance(params.clone()) {
+            // Nothing to recover. An open with load mode Ignored would also fail: the instance pool keeps this
+            // instance with load mode Required.
+            Ok(_) => {
+                info!(required_open = "succeeded");
+                return Ok(());
+            },
+            // The same text as the exception of the C++ scenario.
+            Err(e) => info!(open_error = format!("Failed to create KVS instance: {e:?}")),
+        }
+
+        params.kvs_load = Some(KvsLoad::Ignored);
+        let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+        if let Err(e) = kvs.snapshot_restore(SnapshotId(snapshot_id)) {
+            info!(load_error = format!("{e:?}"));
+        }
+        log_stored_values(&kvs);
+
+        if let Err(e) = kvs.flush() {
+            info!(flush_error = format!("{e:?}"));
+        }
+
+        Ok(())
+    }
+}
+
 pub fn persistency_group() -> Box<dyn ScenarioGroup> {
     Box::new(ScenarioGroupImpl::new(
         "persistency",
@@ -141,6 +262,8 @@ pub fn persistency_group() -> Box<dyn ScenarioGroup> {
             // There is no counterpart of the C++ scenario `values_after_discard`: the Rust KVS has no API to discard
             // pending changes.
             Box::new(ValuesAfterRestore),
+            Box::new(FlushValueTypes),
+            Box::new(RecoverFromSnapshot),
         ],
         vec![],
     ))

@@ -30,10 +30,28 @@
 #include <vector>
 
 using namespace score::kvs;
+using namespace score::json;
 
 namespace
 {
 const std::string kTargetName{"cpp_test_scenarios::cit::persistency"};
+
+/// @brief Parses the scenario input as a JSON object.
+Object ParseInput(const std::string& input)
+{
+    const JsonParser parser;
+    auto any_result{parser.FromBuffer(input)};
+    if (!any_result)
+    {
+        throw score::result::Error(any_result.error());
+    }
+    auto object_result{any_result.value().As<Object>()};
+    if (!object_result)
+    {
+        throw score::result::Error(object_result.error());
+    }
+    return std::move(object_result.value().get());
+}
 
 /// @brief Every file in the directory as "name=fingerprint", sorted and joined with ','.
 ///
@@ -218,12 +236,126 @@ class ValuesAfterDiscard final : public Scenario
     }
 };
 
+/// @brief Sets one key per value type, then flushes as often as the input field "flush_count" says.
+///
+/// Before each flush, sets the key "generation" to the number of the flush, 1 for the first.
+/// The string value and the key `quote" backslash\` hold characters that JSON must escape.
+class FlushValueTypes final : public Scenario
+{
+  public:
+    ~FlushValueTypes() final = default;
+
+    std::string name() const final
+    {
+        return "flush_value_types";
+    }
+
+    void run(const std::string& input) const final
+    {
+        const auto object{ParseInput(input)};
+        const auto flush_count{object.at("flush_count").As<std::int32_t>().value()};
+        auto kvs{KvsInstance(KvsParameters::FromValue(object))};
+
+        // Throws if the operation failed.
+        const auto check{[](const std::string& operation, const score::Result<void>& result) {
+            if (!result)
+            {
+                throw std::runtime_error{"Failed to " + operation + ": " + std::string{result.error().Message()}};
+            }
+        }};
+
+        const std::vector<std::pair<std::string, KvsValue>> values{
+            {"i32", KvsValue{std::int32_t{-321}}},
+            {"u32", KvsValue{std::uint32_t{1234U}}},
+            {"i64", KvsValue{std::int64_t{-123456789012}}},
+            {"u64", KvsValue{std::uint64_t{123456789012U}}},
+            {"f64", KvsValue{-5432.1}},
+            {"bool", KvsValue{true}},
+            {"null", KvsValue{nullptr}},
+            // "\xc3\xa4" is the UTF-8 encoding of the umlaut a (U+00E4).
+            {"str", KvsValue{"quote \" backslash \\ slash / newline \n tab \t control \x01 umlaut \xc3\xa4"}},
+            {"arr",
+             KvsValue{KvsValue::Array{KvsValue{std::int32_t{1}},
+                                      KvsValue{""},
+                                      KvsValue{false},
+                                      KvsValue{nullptr},
+                                      KvsValue{KvsValue::Array{}},
+                                      KvsValue{KvsValue::Object{}}}}},
+            {"obj",
+             KvsValue{KvsValue::Object{{"nested", KvsValue{1.5}},
+                                       {"deeper", KvsValue{KvsValue::Object{{"text", KvsValue{"value"}}}}}}}},
+            {"quote\" backslash\\", KvsValue{std::int32_t{7}}},
+        };
+        for (const auto& [key, value] : values)
+        {
+            check("set " + key, kvs->SetValue(key, value));
+        }
+
+        for (std::int32_t generation{1}; generation <= flush_count; ++generation)
+        {
+            check("set generation", kvs->SetValue("generation", KvsValue{generation}));
+            check("flush", kvs->Flush());
+        }
+    }
+};
+
+/// @brief Recovers the data from a snapshot, as an application does when the open finds the storage corrupted.
+///
+/// Opens the KVS with load mode Required. If the open succeeds, logs "required_open" = "succeeded" and ends: there is
+/// nothing to recover. If the open fails, logs the error under "open_error".
+/// Then opens it with load mode Ignored, restores the snapshot of the input field "snapshot_id" and logs the error if
+/// the restore fails, logs every written key with its I32 value, flushes and logs the error under "flush_error" if the
+/// flush fails.
+class RecoverFromSnapshot final : public Scenario
+{
+  public:
+    ~RecoverFromSnapshot() final = default;
+
+    std::string name() const final
+    {
+        return "recover_from_snapshot";
+    }
+
+    void run(const std::string& input) const final
+    {
+        const auto object{ParseInput(input)};
+        const SnapshotId snapshot_id{object.at("snapshot_id").As<std::size_t>().value()};
+        auto params{KvsParameters::FromValue(object)};
+
+        params.kvs_load = KvsLoad::kRequired;
+        try
+        {
+            static_cast<void>(KvsInstance(params));
+            TRACING_INFO(kTargetName, std::pair{std::string{"required_open"}, std::string{"succeeded"}});
+            return;
+        }
+        catch (const std::runtime_error& error)
+        {
+            TRACING_INFO(kTargetName, std::pair{std::string{"open_error"}, std::string{error.what()}});
+        }
+
+        params.kvs_load = KvsLoad::kIgnored;
+        auto kvs{KvsInstance(params)};
+        LogLoadError(kvs->SnapshotRestore(snapshot_id));
+        LogStoredValues(*kvs);
+
+        const auto flush_result{kvs->Flush()};
+        if (!flush_result)
+        {
+            TRACING_INFO(kTargetName,
+                         std::pair{std::string{"flush_error"}, std::string{flush_result.error().Message()}});
+        }
+    }
+};
+
 ScenarioGroup::Ptr PersistencyGroup()
 {
     return ScenarioGroup::Ptr{new ScenarioGroupImpl{"persistency",
                                                     {std::make_shared<ExplicitFlush>(),
                                                      std::make_shared<StoredValues>(),
                                                      std::make_shared<ValuesAfterRestore>(),
-                                                     std::make_shared<ValuesAfterDiscard>()},
+                                                     std::make_shared<ValuesAfterDiscard>(),
+                                                     std::make_shared<FlushValueTypes>(),
+                                                     std::make_shared<RecoverFromSnapshot>()},
                                                     {}}};
 }
