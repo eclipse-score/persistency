@@ -108,7 +108,7 @@ Module Work products List
         * - :need:`wp__fdr_reports` (module's Safety Analyses & DFA)
           - :need:`gd_chklst__safety_analysis`
           - :ndf:`copy('status', need_id='gd_chklst__safety_analysis')`
-          - :need:`doc__module_safety_analysis_fdr`
+          - :need:`doc__persistency_safety_analysis_fdr`
 
         * - :need:`wp__audit_report`
           - performed by external experts
