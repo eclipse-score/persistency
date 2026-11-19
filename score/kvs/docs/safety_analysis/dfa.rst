@@ -144,11 +144,11 @@ Unintended impacts to function due to various failures.
   * - UI_01_05
     - Livelocks
     - no
-    - No retry loops. Calls wait for the instance lock and do not retry.
+    - No retry loops. Calls wait for the instance lock or, for ``Build()`` and ``Unregister()``, the registry lock and do not retry.
   * - UI_01_06
     - Blocking of execution
     - no
-    - Calls wait for the instance lock held by another thread of the process. The effect is covered by :need:`feat_saf_dfa__persistency__execution_blocking`.
+    - Calls wait for the instance lock held by another thread of the process. ``Build()`` and ``Unregister()`` also wait for the registry lock, so a slow ``Build()`` of one instance delays them for every other instance. The effect is covered by :need:`feat_saf_dfa__persistency__execution_blocking`.
   * - UI_01_07
     - Incorrect allocation of execution time
     - no
