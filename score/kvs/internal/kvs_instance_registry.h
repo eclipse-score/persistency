@@ -39,7 +39,7 @@ struct KvsInstanceRegistry final
     static KvsInstanceRegistry& GetInstance();
 
     /// @brief Removes the instance registered under the given ID.
-    score::Result<void> Unregister(std::size_t instance_id) noexcept;
+    [[nodiscard]] score::Result<void> Unregister(std::size_t instance_id) noexcept;
 
     /// @brief Reset registry. For test use only.
     void Reset();
