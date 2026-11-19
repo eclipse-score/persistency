@@ -192,18 +192,18 @@ std::string GenerationTag(std::size_t index)
 /// The hash is never read, so a tag is enough.
 void PlantGeneration(std::size_t index)
 {
-    std::ofstream(kFilenamePrefix + "_" + std::to_string(index) + ".json") << GenerationTag(index);
-    std::ofstream(kFilenamePrefix + "_" + std::to_string(index) + ".hash") << "h" << index;
+    std::ofstream(kInstancePrefix + "_" + std::to_string(index) + ".json") << GenerationTag(index);
+    std::ofstream(kInstancePrefix + "_" + std::to_string(index) + ".hash") << "h" << index;
 }
 
 std::string GenerationJson(std::size_t index)
 {
-    return FileContent(score::filesystem::Path{kFilenamePrefix + "_" + std::to_string(index) + ".json"});
+    return FileContent(score::filesystem::Path{kInstancePrefix + "_" + std::to_string(index) + ".json"});
 }
 
 std::string GenerationHash(std::size_t index)
 {
-    return FileContent(score::filesystem::Path{kFilenamePrefix + "_" + std::to_string(index) + ".hash"});
+    return FileContent(score::filesystem::Path{kInstancePrefix + "_" + std::to_string(index) + ".hash"});
 }
 }  // namespace
 
@@ -1658,8 +1658,8 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success)
         PlantGeneration(i);
         EXPECT_EQ(result.value()->SnapshotCount().value(), i + 1);
     }
-    ASSERT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".json"));
-    ASSERT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".hash"));
+    ASSERT_FALSE(filesystem_test::Exists(kInstancePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".json"));
+    ASSERT_FALSE(filesystem_test::Exists(kInstancePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".hash"));
 
     // Flush() rotates the snapshots, then writes a new snapshot 0.
     ASSERT_TRUE(result.value()->Flush());
@@ -1710,8 +1710,8 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_max_snapshots)
     // Check if no ID higher than kDefaultMaxSnapshots exists.
     ASSERT_TRUE(result.value()->Flush());
     EXPECT_EQ(GenerationJson(kDefaultMaxSnapshots), GenerationTag(kDefaultMaxSnapshots - 1U));
-    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".json"));
-    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".hash"));
+    EXPECT_FALSE(filesystem_test::Exists(kInstancePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".json"));
+    EXPECT_FALSE(filesystem_test::Exists(kInstancePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".hash"));
 
     CleanupEnvironment();
 }
@@ -1737,7 +1737,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_json)
 
     // Snapshot (JSON) renaming failed (create directories instead of JSON files to trigger a rename error).
     ASSERT_TRUE(RealFilesystem().standard->CreateDirectory(
-        score::filesystem::Path{kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".json"}));
+        score::filesystem::Path{kInstancePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".json"}));
     auto flush_result{result.value()->Flush()};
     ASSERT_FALSE(flush_result);
     EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::kPhysicalStorageFailure);
@@ -1769,7 +1769,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_failure_renaming_hash)
 
     // Hash renaming failed (create directories instead of JSON files to trigger a rename error).
     ASSERT_TRUE(RealFilesystem().standard->CreateDirectory(
-        score::filesystem::Path{kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".hash"}));
+        score::filesystem::Path{kInstancePrefix + "_" + std::to_string(kDefaultMaxSnapshots) + ".hash"}));
     auto flush_result{result.value()->Flush()};
     ASSERT_FALSE(flush_result);
     EXPECT_EQ(static_cast<ErrorCode>(*flush_result.error()), ErrorCode::kPhysicalStorageFailure);
@@ -1804,8 +1804,8 @@ TEST(kvs_flush, flush_success_data)
     // Check if files were created correctly.
     EXPECT_TRUE(filesystem_test::Exists(kKvsPrefix + ".json"));
     EXPECT_TRUE(filesystem_test::Exists(kKvsPrefix + ".hash"));
-    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.json"));
-    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.hash"));
+    EXPECT_FALSE(filesystem_test::Exists(kInstancePrefix + "_1.json"));
+    EXPECT_FALSE(filesystem_test::Exists(kInstancePrefix + "_1.hash"));
 
     // A second KVS loads the flushed data.
     ResetRegistry();
@@ -1839,8 +1839,8 @@ TEST(kvs_flush, flush_success_snapshot_rotate)
                     .WorkingDir(std::string(kDataDir))
                     .Build()};
     ASSERT_TRUE(result);
-    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.json"));
-    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.hash"));
+    EXPECT_FALSE(filesystem_test::Exists(kInstancePrefix + "_1.json"));
+    EXPECT_FALSE(filesystem_test::Exists(kInstancePrefix + "_1.hash"));
 
     // Initial flush -> snapshot ID 0.
     score::cpp::ignore = result.value()->Flush();
@@ -1848,8 +1848,8 @@ TEST(kvs_flush, flush_success_snapshot_rotate)
     // Check if SnapshotRotate was triggered on second flush --> one snapshot should be available afterwards.
     auto flush_result{result.value()->Flush()};
     ASSERT_TRUE(flush_result);
-    EXPECT_TRUE(filesystem_test::Exists(kFilenamePrefix + "_1.json"));
-    EXPECT_TRUE(filesystem_test::Exists(kFilenamePrefix + "_1.hash"));
+    EXPECT_TRUE(filesystem_test::Exists(kInstancePrefix + "_1.json"));
+    EXPECT_TRUE(filesystem_test::Exists(kInstancePrefix + "_1.hash"));
 
     CleanupEnvironment();
 }
@@ -1951,13 +1951,13 @@ TEST(kvs_snapshot_count, snapshot_count_success)
     // Create empty test snapshot files.
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
-        std::ofstream(kFilenamePrefix + "_" + std::to_string(i) + ".json") << "{}";
+        std::ofstream(kInstancePrefix + "_" + std::to_string(i) + ".json") << "{}";
         auto count{result.value()->SnapshotCount()};
         EXPECT_TRUE(count);
         EXPECT_EQ(count.value(), i + 1);
     }
     // Test maximum capacity.
-    std::ofstream(kFilenamePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".json") << "{}";
+    std::ofstream(kInstancePrefix + "_" + std::to_string(kDefaultMaxSnapshots + 1) + ".json") << "{}";
     auto count{result.value()->SnapshotCount()};
     EXPECT_TRUE(count);
     EXPECT_EQ(count.value(), kDefaultMaxSnapshots);
@@ -2025,7 +2025,7 @@ TEST(kvs_snapshot_restore, snapshot_restore_success)
         }
     })"};
     // Create hash data for json_data.
-    std::ofstream out{kFilenamePrefix + "_1.json", std::ios::binary};
+    std::ofstream out{kInstancePrefix + "_1.json", std::ios::binary};
     out.write(json_data.data(), json_data.size());
     out.close();
     uint32_t hash{Adler32(json_data)};
@@ -2033,7 +2033,7 @@ TEST(kvs_snapshot_restore, snapshot_restore_success)
                                       uint8_t((hash >> 16) & 0xFF),
                                       uint8_t((hash >> 8) & 0xFF),
                                       uint8_t((hash) & 0xFF)};
-    std::ofstream hash_out{kFilenamePrefix + "_1.hash", std::ios::binary};
+    std::ofstream hash_out{kInstancePrefix + "_1.hash", std::ios::binary};
     hash_out.write(reinterpret_cast<const char*>(hash_bytes.data()), hash_bytes.size());
     hash_out.close();
 
@@ -2089,9 +2089,9 @@ TEST(kvs_snapshot_restore, snapshot_restore_failure_open_json)
 
     // Create empty test snapshot files.
     // Empty JSON.
-    std::ofstream(kFilenamePrefix + "_1.json") << "{}";
+    std::ofstream(kInstancePrefix + "_1.json") << "{}";
     // Invalid hash -> trigger OpenJson() error.
-    std::ofstream(kFilenamePrefix + "_1.hash") << "invalid_hash";
+    std::ofstream(kInstancePrefix + "_1.hash") << "invalid_hash";
 
     auto restore_result{result.value()->SnapshotRestore(1)};
     EXPECT_FALSE(restore_result);
@@ -2157,14 +2157,14 @@ TEST(kvs_get_filename, get_kvs_filename_success)
     // Generate test files.
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
-        std::ofstream(kFilenamePrefix + "_" + std::to_string(i) + ".json") << "{}";
+        std::ofstream(kInstancePrefix + "_" + std::to_string(i) + ".json") << "{}";
     }
 
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
         auto filename{result.value()->KvsFilePath(SnapshotId(i))};
         EXPECT_TRUE(filename);
-        EXPECT_EQ(filename.value().CStr(), kFilenamePrefix + "_" + std::to_string(i) + ".json");
+        EXPECT_EQ(filename.value().CStr(), kInstancePrefix + "_" + std::to_string(i) + ".json");
     }
 
     CleanupEnvironment();
@@ -2215,14 +2215,14 @@ TEST(kvs_get_filename, get_hashname_success)
     // Generate test files.
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
-        std::ofstream(kFilenamePrefix + "_" + std::to_string(i) + ".hash") << "{}";
+        std::ofstream(kInstancePrefix + "_" + std::to_string(i) + ".hash") << "{}";
     }
 
     for (size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
         auto hashname{result.value()->HashFilePath(SnapshotId(i))};
         EXPECT_TRUE(hashname);
-        EXPECT_EQ(hashname.value().CStr(), kFilenamePrefix + "_" + std::to_string(i) + ".hash");
+        EXPECT_EQ(hashname.value().CStr(), kInstancePrefix + "_" + std::to_string(i) + ".hash");
     }
 
     CleanupEnvironment();
@@ -2839,13 +2839,13 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_respects_configured_max)
     // Flush() then wrote a new snapshot 0.
     // Without this the test would also pass if nothing rotated.
     EXPECT_EQ(GenerationJson(1), GenerationTag(0));
-    EXPECT_TRUE(FileExists(score::filesystem::Path{kFilenamePrefix + "_0.json"}));
+    EXPECT_TRUE(FileExists(score::filesystem::Path{kInstancePrefix + "_0.json"}));
     EXPECT_NE(GenerationJson(0), GenerationTag(0));
 
     // No snapshot beyond the configured maximum may be created.
     // If rotation used the compile-time default instead of the configured value, _1 would have been rotated into _2.
-    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(configured_max + 1U) + ".json"));
-    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(configured_max + 1U) + ".hash"));
+    EXPECT_FALSE(filesystem_test::Exists(kInstancePrefix + "_" + std::to_string(configured_max + 1U) + ".json"));
+    EXPECT_FALSE(filesystem_test::Exists(kInstancePrefix + "_" + std::to_string(configured_max + 1U) + ".hash"));
 
     CleanupEnvironment();
 }
@@ -2868,7 +2868,7 @@ TEST(kvs_snapshot_count, snapshot_count_caps_at_configured_max)
 
     for (std::size_t i{0U}; i < kDefaultMaxSnapshots; i++)
     {
-        std::ofstream(kFilenamePrefix + "_" + std::to_string(i) + ".json") << "{}";
+        std::ofstream(kInstancePrefix + "_" + std::to_string(i) + ".json") << "{}";
     }
 
     auto count{result.value()->SnapshotCount()};
@@ -2909,8 +2909,8 @@ TEST(kvs_flush, flush_zero_snapshots_still_persists_current_data)
     // ... but no previous generation is ever created ...
     auto second_flush_result{result.value()->Flush()};
     EXPECT_TRUE(second_flush_result);
-    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.json"));
-    EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.hash"));
+    EXPECT_FALSE(filesystem_test::Exists(kInstancePrefix + "_1.json"));
+    EXPECT_FALSE(filesystem_test::Exists(kInstancePrefix + "_1.hash"));
 
     // ... and no snapshot is reported.
     auto count{result.value()->SnapshotCount()};
@@ -2937,8 +2937,8 @@ TEST(kvs_snapshot_restore, snapshot_restore_beyond_configured_max)
 
     for (std::size_t i{0U}; i <= configured_max + 1U; i++)
     {
-        std::ofstream(kFilenamePrefix + "_" + std::to_string(i) + ".json") << "{}";
-        std::ofstream(kFilenamePrefix + "_" + std::to_string(i) + ".hash") << "{}";
+        std::ofstream(kInstancePrefix + "_" + std::to_string(i) + ".json") << "{}";
+        std::ofstream(kInstancePrefix + "_" + std::to_string(i) + ".hash") << "{}";
     }
 
     auto restore_result{result.value()->SnapshotRestore(SnapshotId(configured_max + 1U))};
@@ -2982,12 +2982,12 @@ TEST(kvs_snapshot_max_count, snapshot_max_count_clamped_to_upper_bound)
     ASSERT_TRUE(result);
     for (std::size_t i{0U}; i <= kMaxSnapshotsUpperBound; i++)
     {
-        std::ofstream(kFilenamePrefix + "_" + std::to_string(i) + ".json") << "{}";
-        std::ofstream(kFilenamePrefix + "_" + std::to_string(i) + ".hash") << "{}";
+        std::ofstream(kInstancePrefix + "_" + std::to_string(i) + ".json") << "{}";
+        std::ofstream(kInstancePrefix + "_" + std::to_string(i) + ".hash") << "{}";
     }
     ASSERT_TRUE(result.value()->Flush());
     EXPECT_FALSE(
-        filesystem_test::Exists(kFilenamePrefix + "_" + std::to_string(kMaxSnapshotsUpperBound + 1U) + ".json"));
+        filesystem_test::Exists(kInstancePrefix + "_" + std::to_string(kMaxSnapshotsUpperBound + 1U) + ".json"));
 
     CleanupEnvironment();
 }

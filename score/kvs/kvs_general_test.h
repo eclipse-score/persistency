@@ -105,7 +105,7 @@ const score::kvs::SnapshotId kSnapshotId{0ul};
 const std::string kDataDir{"./data_folder/"};
 const std::string kDefaultPrefix{kDataDir + "kvs_" + std::to_string(kInstance) + "_default"};
 const std::string kKvsPrefix{kDataDir + "kvs_" + std::to_string(kInstance) + "_0"};
-const std::string kFilenamePrefix{kDataDir + "kvs_" + std::to_string(kInstance)};
+const std::string kInstancePrefix{kDataDir + "kvs_" + std::to_string(kInstance)};
 
 const std::string kDefaultJson{R"({
     "t": "obj",
