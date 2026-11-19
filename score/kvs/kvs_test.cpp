@@ -164,7 +164,7 @@ std::shared_ptr<Kvs> OpenTestKvsWithNewKey()
 /// kValidationFailed.
 void ExpectOnlyNewKey()
 {
-    KvsInstanceRegistry::GetInstance().Reset();
+    ResetRegistry();
     auto kvs{KvsBuilder{kInstanceId}
                  .Snapshot(kSnapshotId)
                  .Defaults(KvsDefaults::kRequired)
@@ -1272,7 +1272,7 @@ TEST(kvs_set_value, t_and_v_keys_round_trip)
     }
 
     // Drop the shared state so the next build reloads the flushed files.
-    KvsInstanceRegistry::GetInstance().Reset();
+    ResetRegistry();
     auto kvs{KvsBuilder{instance_id}
                  .Snapshot(SnapshotId{0ul})
                  .Defaults(KvsDefaults::kRequired)
@@ -1332,7 +1332,7 @@ TEST(kvs_set_value, over_length_nested_key_round_trip)
     }
 
     // Drop the shared state so the next build reloads the flushed files.
-    KvsInstanceRegistry::GetInstance().Reset();
+    ResetRegistry();
     auto kvs{KvsBuilder{instance_id}
                  .Snapshot(SnapshotId{0ul})
                  .Defaults(KvsDefaults::kRequired)
@@ -1432,7 +1432,7 @@ TEST(kvs_write_json_data, write_json_data_success)
     std::string expected_hash_string{reinterpret_cast<const char*>(hash_bytes.data()), hash_bytes.size()};
     EXPECT_EQ(hash_content, expected_hash_string);
 
-    KvsInstanceRegistry::GetInstance().Reset();
+    ResetRegistry();
 
     // A second KVS loads the written data.
     auto reopened{KvsBuilder{kInstanceId}
@@ -1674,7 +1674,7 @@ TEST(kvs_snapshot_rotate, snapshot_rotate_success)
 
     // Snapshot 0 holds the new data with a valid hash.
     EXPECT_NE(GenerationJson(0), GenerationTag(0));
-    KvsInstanceRegistry::GetInstance().Reset();
+    ResetRegistry();
     auto reopened{KvsBuilder{kInstanceId}
                       .Snapshot(kSnapshotId)
                       .Defaults(KvsDefaults::kOptional)
@@ -1808,7 +1808,7 @@ TEST(kvs_flush, flush_success_data)
     EXPECT_FALSE(filesystem_test::Exists(kFilenamePrefix + "_1.hash"));
 
     // A second KVS loads the flushed data.
-    KvsInstanceRegistry::GetInstance().Reset();
+    ResetRegistry();
     auto reopened{KvsBuilder{kInstanceId}
                       .Snapshot(kSnapshotId)
                       .Defaults(KvsDefaults::kRequired)

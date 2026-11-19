@@ -32,6 +32,7 @@
 #include "score/kvs/kvs_builder.h"
 
 uint32_t Adler32(const std::string& data);
+void ResetRegistry();
 void PrepareEnvironment();
 void CleanupEnvironment();
 void CleanupEnvironment(const std::string& dir);
@@ -80,7 +81,7 @@ inline void PrepareEnvironment(const std::string& dir,
                                const std::string& default_data,
                                TSnapshots&&... snapshots)
 {
-    score::kvs::KvsInstanceRegistry::GetInstance().Reset();
+    ResetRegistry();
 
     mkdir(dir.c_str(), 0777);
 

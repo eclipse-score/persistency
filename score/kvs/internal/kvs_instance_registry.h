@@ -41,9 +41,6 @@ struct KvsInstanceRegistry final
     /// @brief Removes the instance registered under the given ID.
     [[nodiscard]] score::Result<void> Unregister(std::size_t instance_id) noexcept;
 
-    /// @brief Reset registry. For test use only.
-    void Reset();
-
     /// Protects access to members.
     std::mutex mutex;
 

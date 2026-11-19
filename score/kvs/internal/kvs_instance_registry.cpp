@@ -57,13 +57,4 @@ score::Result<void> KvsInstanceRegistry::Unregister(const std::size_t instance_i
     return {};
 }
 
-void KvsInstanceRegistry::Reset()
-{
-    std::unique_lock<std::mutex> lock(mutex);
-    for (auto& entry : array)
-    {
-        entry = nullptr;
-    }
-}
-
 }  // namespace score::kvs
