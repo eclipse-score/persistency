@@ -215,6 +215,15 @@ score::Result<void> CommitTempFile(const score::filesystem::Path& path) noexcept
 
     return {};
 }
+
+/// @brief Returns the path prefix of the files of an instance, `<working_dir>/kvs_<instance_id>`.
+///
+/// An empty working directory stands for the current directory.
+score::filesystem::Path FilenamePrefix(const KvsOpenParameters& params) noexcept
+{
+    const std::string directory{params.working_dir.empty() ? std::string{"./"} : params.working_dir};
+    return score::filesystem::Path{directory} / (std::string{kFilenamePrefix} + std::to_string(params.instance_id));
+}
 }  // namespace
 
 score::Result<void> Kvs::Reset() noexcept
@@ -551,11 +560,46 @@ score::Result<size_t> Kvs::CalculatePotentialSize() const noexcept
 
 Kvs::Kvs(BuilderKey, const KvsOpenParameters& params) noexcept
     : params_{params},
+      filename_prefix_{FilenamePrefix(params)},
       filesystem_{
           std::make_unique<score::filesystem::Filesystem>(score::filesystem::FilesystemFactory{}.CreateInstance())},
       parser_{std::make_unique<score::json::JsonParser>()},
       writer_{std::make_unique<score::json::JsonWriter>()}
 {
+}
+
+score::Result<void> Kvs::Load() noexcept
+{
+    if (params_.default_load_policy != KvsDefaults::kIgnored)
+    {
+        const OpenJsonNeedFile need_file{(params_.default_load_policy == KvsDefaults::kRequired)
+                                             ? OpenJsonNeedFile::kRequired
+                                             : OpenJsonNeedFile::kOptional};
+        const score::filesystem::Path default_path{filename_prefix_.Native() + std::string{kDefaultSuffix}};
+        auto default_result{OpenJson(default_path, need_file)};
+        if (!default_result)
+        {
+            return score::MakeUnexpected(static_cast<ErrorCode>(*default_result.error()));
+        }
+        default_values_ = std::move(*default_result);
+    }
+
+    if (params_.current_load_policy != KvsLoad::kIgnored)
+    {
+        const OpenJsonNeedFile need_file{(params_.current_load_policy == KvsLoad::kRequired)
+                                             ? OpenJsonNeedFile::kRequired
+                                             : OpenJsonNeedFile::kOptional};
+        const score::filesystem::Path kvs_path{filename_prefix_.Native() + std::string{kSnapshotSeparator} +
+                                               std::to_string(params_.snapshot_id)};
+        auto current_result{OpenJson(kvs_path, need_file)};
+        if (!current_result)
+        {
+            return score::MakeUnexpected(static_cast<ErrorCode>(*current_result.error()));
+        }
+        current_values_ = std::move(*current_result);
+    }
+
+    return {};
 }
 
 score::Result<void> Kvs::SnapshotRotate() const noexcept
@@ -696,11 +740,6 @@ score::Result<void> Kvs::WriteJsonData(const std::string& buffer) const noexcept
     const score::filesystem::Path hash_path{filename_prefix_.Native() + std::string{kSnapshotSeparator} + "0" +
                                             std::string{kHashSuffix}};
     const score::filesystem::Path dir{json_path.ParentPath()};
-    if (dir.Empty())
-    {
-        GetLogger().LogError() << "Provided directory path is empty" << json_path;
-        return score::MakeUnexpected(ErrorCode::kPhysicalStorageFailure);
-    }
 
     const auto create_path_result{filesystem_->standard->CreateDirectories(dir)};
     if (!create_path_result.has_value())

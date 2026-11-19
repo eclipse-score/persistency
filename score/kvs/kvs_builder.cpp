@@ -13,7 +13,6 @@
 
 #include "score/kvs/kvs_builder.h"
 
-#include "score/kvs/internal/kvs_constants.h"
 #include "score/kvs/internal/kvs_instance_registry.h"
 #include "score/kvs/internal/logger.h"
 
@@ -150,47 +149,11 @@ score::Result<std::shared_ptr<Kvs>> KvsBuilder::Build() const noexcept
     }
 
     std::shared_ptr<Kvs> kvs{std::make_shared<Kvs>(Kvs::BuilderKey{}, params_)};
-
-    const std::string directory{params_.working_dir.empty() ? std::string{"./"} : params_.working_dir};
-    const score::filesystem::Path base_path{directory};
-    score::filesystem::Path filename_prefix{base_path /
-                                            (std::string{kFilenamePrefix} + std::to_string(params_.instance_id))};
-    const score::filesystem::Path filename_default{filename_prefix.Native() + std::string{kDefaultSuffix}};
-
-    score::Result<KvsMap> default_values{};
-    // Load the default values if requested.
-    if (params_.default_load_policy != KvsDefaults::kIgnored)
+    const auto load_result{kvs->Load()};
+    if (!load_result)
     {
-        const OpenJsonNeedFile need_file{(params_.default_load_policy == KvsDefaults::kRequired)
-                                             ? OpenJsonNeedFile::kRequired
-                                             : OpenJsonNeedFile::kOptional};
-        default_values = kvs->OpenJson(filename_default, need_file);
-        if (!default_values)
-        {
-            return score::MakeUnexpected(static_cast<ErrorCode>(*default_values.error()));
-        }
+        return score::MakeUnexpected<std::shared_ptr<Kvs>>(load_result.error());
     }
-
-    const score::filesystem::Path filename_kvs{filename_prefix.Native() + std::string{kSnapshotSeparator} +
-                                               std::to_string(params_.snapshot_id)};
-
-    score::Result<KvsMap> current_values{};
-    // Load the current values if requested.
-    if (params_.current_load_policy != KvsLoad::kIgnored)
-    {
-        const OpenJsonNeedFile need_file{(params_.current_load_policy == KvsLoad::kRequired)
-                                             ? OpenJsonNeedFile::kRequired
-                                             : OpenJsonNeedFile::kOptional};
-        current_values = kvs->OpenJson(filename_kvs, need_file);
-        if (!current_values)
-        {
-            return score::MakeUnexpected(static_cast<ErrorCode>(*current_values.error()));
-        }
-    }
-
-    kvs->filename_prefix_ = std::move(filename_prefix);
-    kvs->current_values_ = std::move(*current_values);
-    kvs->default_values_ = std::move(*default_values);
 
     entry = std::move(kvs);
 

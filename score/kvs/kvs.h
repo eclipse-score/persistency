@@ -336,6 +336,11 @@ class Kvs final
     }
 
   private:
+    /// @brief Loads the default and current values from storage as the open parameters request.
+    ///
+    /// KvsBuilder calls it before the instance is shared, so it does not take `mutex_`.
+    score::Result<void> Load() noexcept;
+
     /// @brief Counts the existing snapshots. Caller must hold `mutex_`.
     score::Result<size_t> SnapshotCountInternal() const noexcept;
 
@@ -371,7 +376,7 @@ class Kvs final
     KvsMap default_values_;
 
     /// Prefix used to construct this store's file paths.
-    score::filesystem::Path filename_prefix_;
+    const score::filesystem::Path filename_prefix_;
 
     /// Filesystem handler for file operations.
     std::unique_ptr<score::filesystem::Filesystem> filesystem_;
