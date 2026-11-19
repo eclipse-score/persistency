@@ -52,8 +52,10 @@ score::mw::log::LogStream& operator<<(score::mw::log::LogStream& stream, const L
             return stream << "kOptional";
         case LoadPolicy::kIgnored:
             return stream << "kIgnored";
+        // COV_JUSTIFIED_START kvs-load-policy-unknown-arm
         default:
             return stream << "unknown";
+            // COV_JUSTIFIED_STOP
     }
 }
 

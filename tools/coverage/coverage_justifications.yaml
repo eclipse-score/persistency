@@ -50,4 +50,10 @@
 
 version: 1
 
-justifications: []
+justifications:
+  - id: kvs-load-policy-unknown-arm
+    category: defensive_programming
+    platforms: [linux, qnx]
+    reason: >-
+      The default arm of the load policy stream operator in score/kvs/kvs_builder.cpp is unreachable, because every enumerator has its own case.
+      It is kept so that a value outside the enumerators is still logged.
