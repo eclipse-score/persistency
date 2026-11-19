@@ -64,8 +64,7 @@ score::mw::log::LogStream& operator<<(score::mw::log::LogStream& stream, const K
     stream << "[current_load_policy=" << params.current_load_policy << "]";
     stream << "[default_load_policy=" << params.default_load_policy << "]";
     stream << "[working_dir=" << params.working_dir << "]";
-    stream << "[storage_quota=" << (params.storage_quota ? std::to_string(*(params.storage_quota)) : "unlimited")
-           << "]";
+    stream << "[storage_quota=" << (params.storage_quota ? std::to_string(*params.storage_quota) : "unlimited") << "]";
     stream << "[snapshot_count_limit=" << params.snapshot_count_limit << "]";
     return stream;
 }

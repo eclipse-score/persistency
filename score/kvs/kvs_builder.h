@@ -14,7 +14,6 @@
 #define SCORE_KVS_KVS_BUILDER_H
 
 #include "score/kvs/kvs.h"
-#include "score/mw/log/logging.h"
 #include <memory>
 #include <optional>
 #include <string>

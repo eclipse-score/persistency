@@ -813,6 +813,8 @@ score::Result<std::string> Kvs::SerializeAndCheck() const noexcept
     // Flush() then behaves exactly as it does without this feature: no extra file system calls, and no new way to fail.
     if (params_.storage_quota)
     {
+        const std::size_t quota{*params_.storage_quota};
+
         // 2. Size of all other persisted files.
         const auto current_size_result{GetCurrentStorageSize()};
         if (!current_size_result)
@@ -824,10 +826,10 @@ score::Result<std::string> Kvs::SerializeAndCheck() const noexcept
         const size_t total_size{*current_size_result + buffer.size() + kHashFileSize};
 
         // 4. Check against the limit.
-        if (total_size > *(params_.storage_quota))
+        if (total_size > quota)
         {
             GetLogger().LogError() << "error: KVS storage limit would be exceeded. total_size:" << total_size
-                                   << "max_storage_bytes:" << *(params_.storage_quota);
+                                   << "max_storage_bytes:" << quota;
             return score::MakeUnexpected(ErrorCode::kOutOfStorageSpace);
         }
     }
