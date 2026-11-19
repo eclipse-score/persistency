@@ -53,7 +53,7 @@ namespace score::kvs
 /// Make Kvs its hidden implementation and remove the temporary BuilderKey and KvsBuilder friendship.
 class Kvs final
 {
-    /// @brief Temporarily allows the builder to load the instance with the private `Load()` before registration.
+    /// @brief Temporarily allows the builder to load and initialize private instance state before registration.
     friend class KvsBuilder;
 
     /// @brief Passkey that only KvsBuilder can create, so that it can construct Kvs with std::make_shared.
@@ -338,11 +338,6 @@ class Kvs final
     }
 
   private:
-    /// @brief Loads the default and current values from storage as the open parameters request.
-    ///
-    /// KvsBuilder calls it before the instance is shared, so it does not take `mutex_`.
-    score::Result<void> Load() noexcept;
-
     /// @brief Counts the existing snapshots. Caller must hold `mutex_`.
     score::Result<size_t> SnapshotCountInternal() const noexcept;
 
@@ -378,7 +373,7 @@ class Kvs final
     KvsMap default_values_;
 
     /// Prefix used to construct this store's file paths.
-    const score::filesystem::Path filename_prefix_;
+    score::filesystem::Path filename_prefix_;
 
     /// Filesystem handler for file operations.
     std::unique_ptr<score::filesystem::Filesystem> filesystem_;
