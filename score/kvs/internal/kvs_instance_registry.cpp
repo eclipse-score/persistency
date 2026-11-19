@@ -42,7 +42,8 @@ score::Result<void> KvsInstanceRegistry::Unregister(const std::size_t instance_i
                 return score::MakeUnexpected(ErrorCode::kResourceBusy);
             }
 
-            GetLogger().LogInfo() << "[instance=" << instance_id << "]" << "Instance unregistered successfully.";
+            GetLogger().LogInfo() << "[instance=" << instance_id << "]"
+                                  << "Instance unregistered, unflushed changes are discarded.";
             removed = std::move(entry);
         }
     }
