@@ -22,14 +22,16 @@
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
+#include <mutex>
 #include <string>
 
 #include "score/filesystem/filesystem.h"
-#include "score/filesystem/filesystem_mock.h"
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
 #include "score/kvs/internal/kvs_helper.h"
-#include "score/kvs/kvs_builder.h"
+#include "score/kvs/internal/kvs_instance_state.h"
+#include "score/kvs/kvs_parameters.h"
+#include "score/kvs/kvs_runtime.h"
 
 uint32_t Adler32(const std::string& data);
 void PrepareEnvironment();
@@ -80,6 +82,8 @@ inline void PrepareEnvironment(const std::string& dir,
                                const std::string& default_data,
                                TSnapshots&&... snapshots)
 {
+    score::kvs::KvsInstanceStateRegistry::GetInstance().Reset();
+
     mkdir(dir.c_str(), 0777);
 
     const std::string path{dir + "/" + prefix + std::to_string(instance_id)};
@@ -91,9 +95,44 @@ inline void PrepareEnvironment(const std::string& dir,
     PrepareKvs(dir, prefix, instance_id, 0ul, std::forward<TSnapshots>(snapshots)...);
 }
 
+/// @brief Opens one instance without a configuration and returns a handle to it.
+///
+/// A filled registry slot is reused, so tests can open the same instance more than once.
+inline score::Result<score::kvs::Kvs> OpenForTest(const score::kvs::KvsParameters& params)
+{
+    if (params.instance_id >= score::kvs::kMaxInstanceCount)
+    {
+        return score::MakeUnexpected(score::kvs::ErrorCode::kInvalidInstanceId);
+    }
+
+    auto& registry{score::kvs::KvsInstanceStateRegistry::GetInstance()};
+    {
+        std::unique_lock<std::mutex> lock{registry.mutex};
+        auto& entry{registry.array.at(params.instance_id)};
+        if (entry)
+        {
+            if (entry->params != params)
+            {
+                ADD_FAILURE() << "Instance " << params.instance_id << " is already open with different parameters";
+            }
+        }
+        else
+        {
+            auto state{score::kvs::OpenInstanceState(params)};
+            if (!state)
+            {
+                return score::MakeUnexpected(static_cast<score::kvs::ErrorCode>(*state.error()));
+            }
+            entry = std::move(state.value());
+        }
+        registry.initialized = true;
+    }
+    return score::kvs::Get(score::kvs::InstanceId{params.instance_id});
+}
+
 // Default data used in unit tests.
 
-const std::uint32_t kInstance{123U};
+const std::uint32_t kInstance{3u};
 const score::kvs::InstanceId kInstanceId{kInstance};
 const score::kvs::SnapshotId kSnapshotId{0ul};
 

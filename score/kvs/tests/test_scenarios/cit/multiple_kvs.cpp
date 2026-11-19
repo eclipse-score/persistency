@@ -15,6 +15,7 @@
 
 #include "helpers/kvs_instance.h"
 #include "helpers/kvs_parameters.h"
+#include "score/kvs/test_support/test_support.h"
 #include <tracing.hpp>
 #include <cmath>
 
@@ -94,6 +95,8 @@ class MultipleInstanceIds final : public Scenario
             }
         }
 
+        // Simulate a restart, so the second run reads the flushed files.
+        score::kvs::test_support::ResetInstanceRegistryForTesting();
         {
             // Second KVS run.
             auto kvs1{KvsInstance(params1)};
@@ -166,6 +169,8 @@ class SameInstanceIdSameValue final : public Scenario
             }
         }
 
+        // Simulate a restart, so the second run reads the flushed files.
+        score::kvs::test_support::ResetInstanceRegistryForTesting();
         {
             // Second KVS run.
             auto kvs1{KvsInstance(params)};
@@ -226,6 +231,14 @@ class SameInstanceIdDifferentValue final : public Scenario
                 throw std::runtime_error{"Failed to set value"};
             }
 
+            // Both handles share one in-memory state, so the first sees the second's write before any flush.
+            auto shared_value{kvs1.GetValue(keyname)};
+            if (!shared_value)
+            {
+                throw std::runtime_error{"Failed to read value"};
+            }
+            InfoLog("kvs1_before_flush", keyname, std::get<double>(shared_value->GetValue()));
+
             // Flush KVS.
             auto flush_result_1{kvs1.Flush()};
             if (!flush_result_1)
@@ -239,6 +252,8 @@ class SameInstanceIdDifferentValue final : public Scenario
             }
         }
 
+        // Simulate a restart, so the second run reads the flushed files.
+        score::kvs::test_support::ResetInstanceRegistryForTesting();
         {
             // Second KVS run.
             auto kvs1{KvsInstance(params)};

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "KVS configuration",
+  "description": "Options of the KVS instances of a process. Each instanceId must be unique within the list, which JSON Schema cannot enforce.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "kvsInstances"],
+  "properties": {
+    "formatVersion": {
+      "description": "Version of this file format.",
+      "const": 1
+    },
+    "kvsInstances": {
+      "description": "Options of each instance. The instanceId values must be unique.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["instanceId"],
+        "properties": {
+          "instanceId": {
+            "description": "Identifier of the instance. Mandatory, no built-in default. Set in code by the KvsParameters constructor.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9
+          },
+          "snapshotId": {
+            "description": "Snapshot to load on open, 0 is the current KVS data. Built-in default is 0. Set in code by KvsParametersBuilder::Snapshot().",
+            "type": "integer",
+            "minimum": 0
+          },
+          "defaults": {
+            "description": "Whether the default values are required, optional or ignored. Built-in default is optional. Set in code by KvsParametersBuilder::Defaults().",
+            "enum": ["required", "optional", "ignored"]
+          },
+          "kvsLoad": {
+            "description": "Whether the KVS data is required, optional or ignored. Built-in default is optional. Set in code by KvsParametersBuilder::KvsLoad().",
+            "enum": ["required", "optional", "ignored"]
+          },
+          "workingDir": {
+            "description": "Directory where the KVS files are stored. Built-in default is ./data_folder/. Set in code by KvsParametersBuilder::WorkingDir().",
+            "type": "string"
+          },
+          "maxStorageBytes": {
+            "description": "Maximum total size of the instance files in bytes. Built-in default is unlimited. Set in code by KvsParametersBuilder::MaxStorageBytes().",
+            "type": "integer",
+            "minimum": 1
+          },
+          "snapshotMaxCount": {
+            "description": "Maximum number of snapshots kept, 0 disables snapshots. Built-in default is 3. Set in code by KvsParametersBuilder::SnapshotMaxCount().",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3
+          }
+        }
+      }
+    }
+  }
+}

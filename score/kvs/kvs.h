@@ -22,14 +22,14 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <mutex>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
 namespace score::kvs
 {
+struct KvsInstanceState;
+struct KvsParameters;
 
 /// @brief Maximum allowed key length in bytes.
 /// @note comp_req__kvs__key_length
@@ -52,7 +52,7 @@ constexpr std::size_t KVS_MAX_SNAPSHOTS_UPPER_BOUND{kMaxSnapshotsUpperBound};
 
 /// @brief Default maximum number of snapshots.
 ///
-/// It can be overridden per instance at init-time via KvsBuilder::SnapshotMaxCount().
+/// It can be overridden per instance via KvsParametersBuilder::SnapshotMaxCount().
 /// @note comp_req__kvs__snapshot_max_num_cfg
 constexpr std::size_t kDefaultMaxSnapshots{3U};
 
@@ -60,7 +60,20 @@ constexpr std::size_t kDefaultMaxSnapshots{3U};
 [[deprecated("Use kDefaultMaxSnapshots instead. This name is removed in a future release.")]]
 constexpr std::size_t KVS_DEFAULT_MAX_SNAPSHOTS{kDefaultMaxSnapshots};
 
+/// @brief Default directory where KVS files are stored.
+///
+/// It can be overridden per instance via KvsParametersBuilder::WorkingDir().
+constexpr std::string_view kDefaultWorkingDir{"./data_folder/"};
+
+/// @brief Maximum number of KVS instances in one process.
+///
+/// Valid instance IDs are in the range 0..kMaxInstanceCount - 1.
+/// `Get()` fails with `kInvalidInstanceId` for any other ID.
+constexpr std::size_t kMaxInstanceCount{10UL};
+
 /// @brief Identifier of a KVS instance.
+///
+/// Must be in the range 0..kMaxInstanceCount - 1.
 // codeql::misra_deviation_next_line(kvs-special-members)
 struct InstanceId
 {
@@ -145,15 +158,25 @@ enum class OpenJsonNeedFile : std::uint8_t
     Optional [[deprecated("Use kOptional instead. This name is removed in a future release.")]] = kOptional,
 };
 
-/// @brief A thread-safe key-value store (KVS).
+/// @brief Handle to a persistent key-value store (KVS) instance.
 ///
-/// The Kvs class provides an interface for managing a key-value store with features such as:
-/// - Support for default values.
-/// - Snapshot management for persistence and restoration.
+/// A KVS instance holds key-value pairs in memory, falls back to read-only default values for keys that were
+/// never written, and persists its data to disk on `Flush()`, keeping a configurable number of snapshots.
+/// All methods are thread-safe.
 ///
-/// @note A Kvs object is not copyable, but it can be moved.
-/// A moved-from Kvs object must not be used.
-/// It may only be destroyed or assigned a new value.
+/// Shared state:
+/// Every `Kvs` object opened for the same instance ID is a handle to one shared, in-memory state.
+/// A change made through any handle, including a pending one, is immediately visible through all others.
+/// In particular, `Reset()`, `RemoveAllKeys()`, `DiscardPendingChanges()`, `SnapshotRestore()` and
+/// `Flush()` affect every handle of the instance. The state lives until the process ends.
+///
+/// Opening:
+/// Handles are created with `Get()`, after `Initialize()` has loaded the data of every configured instance from disk.
+/// `Get()` reads no files.
+/// It returns a handle to the state that `Initialize()` created.
+///
+/// Ownership:
+/// A `Kvs` object is movable but not copyable. A moved-from object may only be destroyed or assigned to.
 // codeql::misra_deviation_next_line(kvs-special-members)
 class Kvs final
 {
@@ -171,36 +194,6 @@ class Kvs final
     /// @param other The object to move from.
     /// It must not be used afterwards, except to destroy it or assign a new value to it.
     Kvs& operator=(Kvs&& other) & noexcept;
-
-    /// @brief Opens the key-value store with the specified instance ID and flags.
-    ///
-    /// This function initializes and opens the key-value store (KVS) for a given instance ID.
-    /// It lets the caller specify whether default values and an existing KVS are required or optional.
-    ///
-    /// @note Instead of using Kvs::Open() directly, it is recommended to use the KvsBuilder class.
-    ///
-    /// @param instance_id The instance ID of the KVS.
-    /// This uniquely identifies the KVS instance.
-    /// @param snapshot_id The snapshot ID of the KVS.
-    /// This uniquely identifies the KVS snapshot.
-    /// @param defaults Whether default values are required, optional or ignored.
-    /// @param kvs_load Whether the KVS data is required, optional or ignored.
-    /// @param working_dir The directory path where the KVS files are located.
-    /// Use "" or "." for the current directory.
-    /// @param max_storage_bytes Optional maximum total storage size in bytes.
-    /// Pass std::nullopt to enforce no storage limit.
-    /// @param snapshot_max_count The maximum number of snapshots this instance maintains.
-    /// Values above kMaxSnapshotsUpperBound are clamped to it (a warning is logged).
-    /// A value of 0 disables snapshot operations.
-    /// The current KVS data is still persisted by Flush().
-    /// @return The opened Kvs object on success, or an ErrorCode on failure.
-    static score::Result<Kvs> Open(const InstanceId& instance_id,
-                                   const SnapshotId& snapshot_id,
-                                   const KvsDefaults& defaults,
-                                   const KvsLoad& kvs_load,
-                                   const std::string& working_dir,
-                                   const std::optional<size_t>& max_storage_bytes,
-                                   const std::size_t snapshot_max_count) noexcept;
 
     /// @brief Resets the key-value store to its initial state.
     /// @return Nothing on success, or an ErrorCode on failure.
@@ -270,7 +263,7 @@ class Kvs final
     /// @brief Discards all pending changes to the key-value store.
     ///
     /// Reloads the key-value pairs from storage, dropping every change since the last successful `Flush()`.
-    /// If `Flush()` was never called, it drops every change since `Open()`.
+    /// If `Flush()` was never called, it drops every change since the KVS was built.
     /// Default values are not affected, since they are read-only for this instance.
     /// A store that was opened without an existing KVS file and never flushed discards to empty.
     ///
@@ -288,7 +281,7 @@ class Kvs final
 
     /// @brief Retrieves the maximum number of snapshots that can be stored.
     ///
-    /// The limit is configured per instance via KvsBuilder::SnapshotMaxCount().
+    /// The limit is configured per instance via KvsParametersBuilder::SnapshotMaxCount().
     /// It defaults to kDefaultMaxSnapshots and never exceeds kMaxSnapshotsUpperBound.
     ///
     /// @return The maximum number of snapshots.
@@ -335,20 +328,6 @@ class Kvs final
 
     // Deprecated snake_case API.
     // Each entry forwards to its PascalCase replacement and is removed in a future release.
-
-    /// @deprecated Use `Open()` instead.
-    [[deprecated("Use Open() instead. This name is removed in a future release.")]]
-    static score::Result<Kvs> open(const InstanceId& instance_id,
-                                   const SnapshotId& snapshot_id,
-                                   const KvsDefaults& defaults,
-                                   const KvsLoad& kvs_load,
-                                   const std::string& working_dir,
-                                   const std::optional<size_t>& max_storage_bytes,
-                                   const std::size_t snapshot_max_count) noexcept
-    {
-        return Kvs::Open(
-            instance_id, snapshot_id, defaults, kvs_load, working_dir, max_storage_bytes, snapshot_max_count);
-    }
 
     /// @deprecated Use `Reset()` instead.
     [[deprecated("Use Reset() instead. This name is removed in a future release.")]]
@@ -477,10 +456,16 @@ class Kvs final
     }
 
   private:
+    friend score::Result<std::shared_ptr<KvsInstanceState>> OpenInstanceState(const KvsParameters& params) noexcept;
+    friend score::Result<Kvs> Get(const InstanceId& instance_id) noexcept;
+
     /// @brief Constructs an empty KVS.
     ///
-    /// Private to prevent direct instantiation, use Open() instead.
+    /// Private to prevent direct instantiation. Use `Get()` instead.
     Kvs() noexcept;
+
+    /// @brief Counts the existing snapshots. Caller must hold `state_->mutex`.
+    score::Result<size_t> SnapshotCountInternal() const noexcept;
 
     /// @brief Rotates the snapshots, ensuring that the maximum count is maintained.
     score::Result<void> SnapshotRotate() const noexcept;
@@ -501,21 +486,8 @@ class Kvs final
     /// @brief Retrieves the current storage size of all persisted files (defaults and snapshots).
     score::Result<size_t> GetCurrentStorageSize() const noexcept;
 
-    /// Mutex guarding `kvs_`.
-    mutable std::mutex kvs_mutex_;
-
-    /// Written key-value pairs.
-    KvsMap kvs_;
-
-    /// Default values, fixed after Open().
-    KvsMap default_values_;
-
-    /// Path prefix of the KVS files, including the instance ID.
-    score::filesystem::Path filename_prefix_;
-
-    /// Maximum number of snapshots maintained by this instance.
-    /// @note comp_req__kvs__snapshot_max_num_cfg
-    std::size_t max_snapshots_;
+    /// Internal state.
+    std::shared_ptr<KvsInstanceState> state_;
 
     /// Filesystem handler for file operations.
     std::unique_ptr<score::filesystem::Filesystem> filesystem_;
@@ -525,10 +497,6 @@ class Kvs final
 
     /// JSON writer for writing KVS data.
     std::unique_ptr<score::json::IJsonWriter> writer_;
-
-    /// Maximum storage limit in bytes.
-    /// Unset means no limit is enforced.
-    std::optional<size_t> max_storage_bytes_;
 };
 
 }  // namespace score::kvs

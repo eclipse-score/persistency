@@ -13,14 +13,14 @@
 #ifndef SCORE_LIB_KVS_KVSBUILDER_HPP
 #define SCORE_LIB_KVS_KVSBUILDER_HPP
 
-#include "score/kvs/kvs_builder.h"
+#include "score/kvs/kvs_parameters.h"
 
 namespace score::kvs::deprecated_headers
 {
 
-/// @deprecated Include `score/kvs/kvs_builder.h` instead.
-using KvsBuilderHpp [[deprecated("score/kvs/kvsbuilder.hpp is deprecated. Include score/kvs/kvs_builder.h instead.")]] =
-    int;
+/// @deprecated Include `score/kvs/kvs_parameters.h` instead.
+using KvsBuilderHpp
+    [[deprecated("score/kvs/kvsbuilder.hpp is deprecated. Include score/kvs/kvs_parameters.h instead.")]] = int;
 
 // Referencing the alias emits the deprecation warning in every translation unit that includes this header.
 static_assert(sizeof(KvsBuilderHpp) > 0, "");

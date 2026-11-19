@@ -65,6 +65,18 @@ std::string_view KvsErrorDomain::MessageFor(const score::result::ErrorCode& code
             return "Invalid value type";
         case ErrorCode::kInvalidKey:
             return "Key is not valid";
+        case ErrorCode::kInvalidInstanceId:
+            return "Invalid Instance ID";
+        case ErrorCode::kInvalidConfiguration:
+            return "Invalid configuration";
+        case ErrorCode::kConfigFileReadError:
+            return "Configuration file read error";
+        case ErrorCode::kInstanceAlreadyConfigured:
+            return "Instance already configured";
+        case ErrorCode::kAlreadyInitialized:
+            return "KVS already initialized";
+        case ErrorCode::kInstanceNotInitialized:
+            return "Instance not initialized";
         default:
             return "Unknown Error!";
     }

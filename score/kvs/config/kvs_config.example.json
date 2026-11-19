@@ -1,0 +1,22 @@
+{
+  "formatVersion": 1,
+  "kvsInstances": [
+    {
+      "instanceId": 0,
+      "snapshotId": 1,
+      "defaults": "required",
+      "kvsLoad": "ignored",
+      "workingDir": "./data/settings/",
+      "maxStorageBytes": 1048576,
+      "snapshotMaxCount": 2
+    },
+    {
+      "instanceId": 1,
+      "workingDir": "./data/cache/",
+      "snapshotMaxCount": 0
+    },
+    {
+      "instanceId": 4
+    }
+  ]
+}

@@ -83,6 +83,24 @@ enum class ErrorCode : score::result::ErrorCode
     /// Key is not valid.
     kInvalidKey = 21,
 
+    /// Invalid Instance ID.
+    kInvalidInstanceId = 23,
+
+    /// Invalid configuration.
+    kInvalidConfiguration = 24,
+
+    /// Configuration file read error.
+    kConfigFileReadError = 25,
+
+    /// Instance already configured.
+    kInstanceAlreadyConfigured = 26,
+
+    /// KVS already initialized.
+    kAlreadyInitialized = 27,
+
+    /// Instance not initialized.
+    kInstanceNotInitialized = 28,
+
     // Deprecated enumerators.
     // Each one is an alias of its k-prefixed replacement and is removed in a future release.
     UnmappedError [[deprecated("Use kUnmappedError instead. This name is removed in a future release.")]] =

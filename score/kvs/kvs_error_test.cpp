@@ -47,6 +47,12 @@ TEST(kvs_MessageFor, MessageFor)
         {ErrorCode::kConversionFailed, "Conversion failed"},
         {ErrorCode::kInvalidValueType, "Invalid value type"},
         {ErrorCode::kInvalidKey, "Key is not valid"},
+        {ErrorCode::kInvalidInstanceId, "Invalid Instance ID"},
+        {ErrorCode::kInvalidConfiguration, "Invalid configuration"},
+        {ErrorCode::kConfigFileReadError, "Configuration file read error"},
+        {ErrorCode::kInstanceAlreadyConfigured, "Instance already configured"},
+        {ErrorCode::kAlreadyInitialized, "KVS already initialized"},
+        {ErrorCode::kInstanceNotInitialized, "Instance not initialized"},
     };
     for (const auto& test : test_cases)
     {

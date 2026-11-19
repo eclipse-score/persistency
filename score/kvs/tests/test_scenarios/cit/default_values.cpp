@@ -16,6 +16,7 @@
 #include "helpers/helpers.h"
 #include "helpers/kvs_instance.h"
 #include "helpers/kvs_parameters.h"
+#include "score/kvs/test_support/test_support.h"
 #include <tracing.hpp>
 #include <sstream>
 
@@ -156,7 +157,8 @@ class DefaultValues final : public Scenario
             }
         }
 
-        // Flush and reopen KVS instance to ensure persistency.
+        // Simulate a restart, so the reopened KVS reads the flushed files and persistency is really checked.
+        score::kvs::test_support::ResetInstanceRegistryForTesting();
         {
             auto kvs{KvsInstance(params)};
 

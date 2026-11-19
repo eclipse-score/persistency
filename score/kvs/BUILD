@@ -29,17 +29,30 @@ cc_library(
     name = "kvs",
     srcs = [
         "error.cpp",
+        "internal/config_json_parsing_strategy.cpp",
+        "internal/config_json_parsing_strategy.h",
+        "internal/config_parser.cpp",
+        "internal/config_parser.h",
+        "internal/config_parsing_strategy.cpp",
+        "internal/config_parsing_strategy.h",
+        "internal/kvs_constants.h",
         "internal/kvs_helper.cpp",
         "internal/kvs_helper.h",
+        "internal/kvs_instance_state.cpp",
+        "internal/kvs_instance_state.h",
         "internal/logger.h",
         "kvs.cpp",
-        "kvs_builder.cpp",
+        "kvs_configuration.cpp",
+        "kvs_parameters.cpp",
+        "kvs_runtime.cpp",
         "kvs_value.cpp",
     ],
     hdrs = [
         "error.h",
         "kvs.h",
-        "kvs_builder.h",
+        "kvs_configuration.h",
+        "kvs_parameters.h",
+        "kvs_runtime.h",
         "kvs_value.h",
         "deprecated_namespace.h",
         # Deprecated forwarders to the headers above.
@@ -74,25 +87,41 @@ alias(
     visibility = ["//visibility:public"],
 )
 
+# Test-only hooks into the KVS internals, e.g. to simulate a process restart.
+cc_library(
+    name = "test_support",
+    testonly = True,
+    srcs = ["test_support/test_support.cpp"],
+    hdrs = ["test_support/test_support.h"],
+    visibility = ["//score/kvs/tests:__subpackages__"],
+    deps = [":kvs"],
+)
+
 cc_test(
     name = "unit_tests",
     size = "small",
     srcs = [
-        "kvs_builder_test.cpp",
+        "config_parser_test.cpp",
+        "kvs_configuration_test.cpp",
         "kvs_deprecated_api_test.cpp",
         "kvs_error_test.cpp",
         "kvs_general_test.cpp",
         "kvs_general_test.h",
         "kvs_helper_test.cpp",
+        "kvs_parameters_test.cpp",
+        "kvs_runtime_test.cpp",
         "kvs_test.cpp",
         "kvs_value_test.cpp",
+    ],
+    data = [
+        "config/kvs_config.example.json",
+        "config/kvs_config.schema.json",
     ],
     visibility = ["//:__pkg__"],
     deps = [
         ":kvs",
         "@googletest//:gtest_main",
         "@score_baselibs//score/filesystem",
-        "@score_baselibs//score/filesystem:mock",
         "@score_baselibs//score/json:mock",
         "@score_baselibs//score/language/futurecpp",
         "@score_baselibs//score/mw/log:backend_stub_testutil",

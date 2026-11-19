@@ -16,6 +16,7 @@
 #include "helpers/helpers.h"
 #include "helpers/kvs_instance.h"
 #include "helpers/kvs_parameters.h"
+#include "score/kvs/test_support/test_support.h"
 #include <tracing.hpp>
 
 using namespace score::kvs;
@@ -97,6 +98,8 @@ class SnapshotCount final : public Scenario
             }
         }
 
+        // Simulate a restart, so the reopened KVS reads the flushed files.
+        score::kvs::test_support::ResetInstanceRegistryForTesting();
         {
             auto kvs{KvsInstance(params)};
             auto count_result{kvs.SnapshotCount()};
@@ -163,6 +166,8 @@ class SnapshotRestore final : public Scenario
             }
         }
 
+        // Simulate a restart, so the reopened KVS reads the flushed files.
+        score::kvs::test_support::ResetInstanceRegistryForTesting();
         {
             auto kvs{KvsInstance(params)};
 
