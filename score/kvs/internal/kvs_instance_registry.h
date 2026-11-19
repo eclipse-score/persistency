@@ -41,10 +41,10 @@ struct KvsInstanceRegistry final
     /// @brief Removes the instance registered under the given ID.
     [[nodiscard]] score::Result<void> Unregister(std::size_t instance_id) noexcept;
 
-    /// Protects access to members.
+    /// Serializes builds and unregistrations, and protects `array`.
     std::mutex mutex;
 
-    /// Array.
+    /// Registered instances, indexed by instance ID.
     Array array;
 
   private:

@@ -91,7 +91,8 @@ deviations:
     code-identifier: "kvs-special-members"
     scope: "The classes KvsValue, InstanceId, SnapshotId and KvsErrorDomain in score/kvs/kvs_value.h, score/kvs/kvs_types.h and score/kvs/error.h."
     justification: >-
-      KvsValue declares its copy and move operations noexcept. The audit also flags implicit destructors for these types, which do not need custom implementations.
+      KvsValue declares its copy and move operations noexcept.
+      The audit also flags implicit destructors for these types, which do not need custom implementations.
   - rule-id: "RULE-8-2-6"
     query-id: "cpp/misra/int-to-pointer-cast-prohibited"
     code-identifier: "kvs-write-byte-pointer"

@@ -73,7 +73,7 @@ class KvsBuilder final
     /// @brief Builds and opens the Kvs instance with the configured options.
     ///
     /// Builds for the same instance ID and options return the same object retained by the registry.
-    /// After `Unregister()`, a later build creates a new object; see `Unregister()` for details.
+    /// After `Unregister()`, a later build creates a new object.
     ///
     /// @return The opened store on success, or an ErrorCode on failure:
     /// - `kInvalidInstanceId` if the instance ID is not below `kMaxInstanceCount`.
@@ -139,7 +139,7 @@ class KvsBuilder final
     }
 
   private:
-    /// Open options.
+    /// Open parameters of the instance to build.
     KvsOpenParameters params_;
 };
 

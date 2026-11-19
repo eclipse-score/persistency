@@ -122,10 +122,8 @@ KvsBuilder& KvsBuilder::SnapshotMaxCount(const std::size_t max_count) noexcept
 
 score::Result<std::shared_ptr<Kvs>> KvsBuilder::Build() const noexcept
 {
-    // Lock the registry.
     std::unique_lock<std::mutex> lock{KvsInstanceRegistry::GetInstance().mutex};
 
-    // Out of range.
     if (params_.instance_id >= KvsInstanceRegistry::GetInstance().array.size())
     {
         GetLogger().LogError() << "[instance=" << params_.instance_id << "]"
@@ -133,11 +131,9 @@ score::Result<std::shared_ptr<Kvs>> KvsBuilder::Build() const noexcept
         return score::MakeUnexpected(ErrorCode::kInvalidInstanceId);
     }
 
-    // Check if already exists.
     auto& entry{KvsInstanceRegistry::GetInstance().array.at(params_.instance_id)};
     if (entry)
     {
-        // Has it been created with different params?
         if (entry->params_ != params_)
         {
             GetLogger().LogError() << "[instance=" << params_.instance_id << "]"
