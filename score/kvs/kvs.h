@@ -58,10 +58,14 @@ class Kvs final
     /// @brief Temporarily allows the builder to load and initialize private instance state before registration.
     friend class KvsBuilder;
 
-    /// @brief Passkey that lets KvsBuilder construct Kvs with std::make_shared while preventing direct construction.
-    struct BuilderKey final
+    /// @brief Passkey that only KvsBuilder can create, so that it can construct Kvs with std::make_shared.
+    ///
+    /// The constructor is user-provided and private, so `{}` cannot create the key outside KvsBuilder.
+    class BuilderKey final
     {
-        BuilderKey() noexcept = default;
+        friend class KvsBuilder;
+
+        BuilderKey() noexcept {}
     };
 
   public:
