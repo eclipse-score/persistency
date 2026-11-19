@@ -15,6 +15,7 @@
 
 #include "helpers/kvs_instance.h"
 #include "helpers/kvs_parameters.h"
+#include "score/kvs/kvs_builder.h"
 #include <tracing.hpp>
 #include <cmath>
 
@@ -56,7 +57,7 @@ class MultipleInstanceIds final : public Scenario
         auto any_result{parser.FromBuffer(input)};
         if (!any_result)
         {
-            throw score::result::Error(any_result.error());
+            throw std::runtime_error{"Failed to parse input JSON"};
         }
         auto& obj{any_result.value().As<Object>().value().get()};
 
@@ -64,10 +65,12 @@ class MultipleInstanceIds final : public Scenario
         auto params2{KvsParameters::FromValue(obj.at("kvs_parameters_2").As<Object>().value().get())};
         {
             // Create first KVS instance.
-            auto kvs1{KvsInstance(params1)};
+            auto kvs1_handle{KvsInstance(params1)};
+            auto& kvs1{*kvs1_handle};
 
             // Create second KVS instance.
-            auto kvs2{KvsInstance(params2)};
+            auto kvs2_handle{KvsInstance(params2)};
+            auto& kvs2{*kvs2_handle};
 
             // Set value to both KVS instances.
             auto set_result_1{kvs1.SetValue(keyname, KvsValue{value1})};
@@ -92,12 +95,28 @@ class MultipleInstanceIds final : public Scenario
             {
                 throw std::runtime_error{"Failed to flush second instance"};
             }
+
+            kvs1_handle = nullptr;
+            kvs2_handle = nullptr;
+            auto unregister_result_1{Unregister(params1.instance_id)};
+            if (!unregister_result_1)
+            {
+                throw std::runtime_error{"Failed to unregister first instance"};
+            }
+            auto unregister_result_2{Unregister(params2.instance_id)};
+            if (!unregister_result_2)
+            {
+                throw std::runtime_error{"Failed to unregister second instance"};
+            }
         }
 
+        // Reopen the instances to read the flushed files.
         {
             // Second KVS run.
-            auto kvs1{KvsInstance(params1)};
-            auto kvs2{KvsInstance(params2)};
+            auto kvs1_handle{KvsInstance(params1)};
+            auto& kvs1{*kvs1_handle};
+            auto kvs2_handle{KvsInstance(params2)};
+            auto& kvs2{*kvs2_handle};
 
             auto kvs1_value{kvs1.GetValue(keyname)};
             if (!kvs1_value)
@@ -136,10 +155,12 @@ class SameInstanceIdSameValue final : public Scenario
         auto params{KvsParameters::FromJson(input)};
         {
             // Create first KVS instance.
-            auto kvs1{KvsInstance(params)};
+            auto kvs1_handle{KvsInstance(params)};
+            auto& kvs1{*kvs1_handle};
 
             // Create second KVS instance.
-            auto kvs2{KvsInstance(params)};
+            auto kvs2_handle{KvsInstance(params)};
+            auto& kvs2{*kvs2_handle};
 
             // Set value to both KVS instances.
             auto set_result_1{kvs1.SetValue(keyname, KvsValue{value})};
@@ -164,12 +185,23 @@ class SameInstanceIdSameValue final : public Scenario
             {
                 throw std::runtime_error{"Failed to flush second instance"};
             }
+
+            kvs1_handle = nullptr;
+            kvs2_handle = nullptr;
+            auto unregister_result{Unregister(params.instance_id)};
+            if (!unregister_result)
+            {
+                throw std::runtime_error{"Failed to unregister instance"};
+            }
         }
 
+        // Reopen the instance to read the flushed files.
         {
             // Second KVS run.
-            auto kvs1{KvsInstance(params)};
-            auto kvs2{KvsInstance(params)};
+            auto kvs1_handle{KvsInstance(params)};
+            auto& kvs1{*kvs1_handle};
+            auto kvs2_handle{KvsInstance(params)};
+            auto& kvs2{*kvs2_handle};
 
             auto value1{kvs1.GetValue(keyname)};
             if (!value1)
@@ -209,10 +241,12 @@ class SameInstanceIdDifferentValue final : public Scenario
         auto params{KvsParameters::FromJson(input)};
         {
             // Create first KVS instance.
-            auto kvs1{KvsInstance(params)};
+            auto kvs1_handle{KvsInstance(params)};
+            auto& kvs1{*kvs1_handle};
 
             // Create second KVS instance.
-            auto kvs2{KvsInstance(params)};
+            auto kvs2_handle{KvsInstance(params)};
+            auto& kvs2{*kvs2_handle};
 
             // Set value to both KVS instances.
             auto set_result_1{kvs1.SetValue(keyname, KvsValue{value1})};
@@ -226,6 +260,14 @@ class SameInstanceIdDifferentValue final : public Scenario
                 throw std::runtime_error{"Failed to set value"};
             }
 
+            // Both handles share one in-memory state, so the first sees the second's write before any flush.
+            auto shared_value{kvs1.GetValue(keyname)};
+            if (!shared_value)
+            {
+                throw std::runtime_error{"Failed to read value"};
+            }
+            InfoLog("kvs1_before_flush", keyname, std::get<double>(shared_value->GetValue()));
+
             // Flush KVS.
             auto flush_result_1{kvs1.Flush()};
             if (!flush_result_1)
@@ -237,12 +279,23 @@ class SameInstanceIdDifferentValue final : public Scenario
             {
                 throw std::runtime_error{"Failed to flush second instance"};
             }
+
+            kvs1_handle = nullptr;
+            kvs2_handle = nullptr;
+            auto unregister_result{Unregister(params.instance_id)};
+            if (!unregister_result)
+            {
+                throw std::runtime_error{"Failed to unregister instance"};
+            }
         }
 
+        // Reopen the instance to read the flushed files.
         {
             // Second KVS run.
-            auto kvs1{KvsInstance(params)};
-            auto kvs2{KvsInstance(params)};
+            auto kvs1_handle{KvsInstance(params)};
+            auto& kvs1{*kvs1_handle};
+            auto kvs2_handle{KvsInstance(params)};
+            auto& kvs2{*kvs2_handle};
 
             auto kvs1_value{kvs1.GetValue(keyname)};
             if (!kvs1_value)

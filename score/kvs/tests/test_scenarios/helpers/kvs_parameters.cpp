@@ -58,7 +58,7 @@ KvsParameters KvsParameters::FromJson(const std::string& json_str)
     auto any_result{parser.FromBuffer(json_str)};
     if (!any_result)
     {
-        throw score::result::Error(any_result.error());
+        throw std::runtime_error{"Failed to parse JSON input"};
     }
 
     return KvsParameters::FromValue(any_result.value().As<Object>().value().get());

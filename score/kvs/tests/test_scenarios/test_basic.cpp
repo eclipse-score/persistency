@@ -54,7 +54,12 @@ void BasicScenario::run(const std::string& input) const
     }
 
     // Create KVS.
-    Kvs kvs{*builder.Build()};
+    auto build_result{builder.Build()};
+    if (!build_result)
+    {
+        throw std::runtime_error{"Failed to create KVS instance: " + std::string{build_result.error().Message()}};
+    }
+    auto& kvs{**build_result};
 
     // Simple set/get.
     std::string key{"example_key"};

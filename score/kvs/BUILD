@@ -29,8 +29,11 @@ cc_library(
     name = "kvs",
     srcs = [
         "error.cpp",
+        "internal/kvs_constants.h",
         "internal/kvs_helper.cpp",
         "internal/kvs_helper.h",
+        "internal/kvs_instance_registry.cpp",
+        "internal/kvs_instance_registry.h",
         "internal/logger.h",
         "kvs.cpp",
         "kvs_builder.cpp",
@@ -40,6 +43,7 @@ cc_library(
         "error.h",
         "kvs.h",
         "kvs_builder.h",
+        "kvs_types.h",
         "kvs_value.h",
         "deprecated_namespace.h",
         # Deprecated forwarders to the headers above.
@@ -92,7 +96,6 @@ cc_test(
         ":kvs",
         "@googletest//:gtest_main",
         "@score_baselibs//score/filesystem",
-        "@score_baselibs//score/filesystem:mock",
         "@score_baselibs//score/json:mock",
         "@score_baselibs//score/language/futurecpp",
         "@score_baselibs//score/mw/log:backend_stub_testutil",

@@ -98,23 +98,23 @@ class ExplicitFlush final : public Scenario
             step("open", {});
 
             // Changes before the first flush, on empty storage: set.
-            step("set", kvs.SetValue("kept", KvsValue{1}));
-            step("set", kvs.SetValue("overwritten", KvsValue{1}));
-            step("set", kvs.SetValue("removed", KvsValue{3}));
-            step("flush", kvs.Flush());
+            step("set", kvs->SetValue("kept", KvsValue{1}));
+            step("set", kvs->SetValue("overwritten", KvsValue{1}));
+            step("set", kvs->SetValue("removed", KvsValue{3}));
+            step("flush", kvs->Flush());
 
             // Changes to stored keys, then the second flush: overwrite, remove.
-            step("set", kvs.SetValue("overwritten", KvsValue{2}));
-            step("remove", kvs.RemoveKey("removed"));
-            step("flush", kvs.Flush());
+            step("set", kvs->SetValue("overwritten", KvsValue{2}));
+            step("remove", kvs->RemoveKey("removed"));
+            step("flush", kvs->Flush());
 
             // Changes after the last flush, never flushed: overwrite, remove, reset, set, snapshot restore.
             // Snapshot 1 holds the state of the first flush.
-            step("set", kvs.SetValue("overwritten", KvsValue{20}));
-            step("remove", kvs.RemoveKey("kept"));
-            step("reset", kvs.Reset());
-            step("set", kvs.SetValue("added", KvsValue{4}));
-            step("restore", kvs.SnapshotRestore(SnapshotId{1}));
+            step("set", kvs->SetValue("overwritten", KvsValue{20}));
+            step("remove", kvs->RemoveKey("kept"));
+            step("reset", kvs->Reset());
+            step("set", kvs->SetValue("added", KvsValue{4}));
+            step("restore", kvs->SnapshotRestore(SnapshotId{1}));
         }
 
         // The KVS object is destroyed: a file written now was written by the destructor.
@@ -138,7 +138,7 @@ class StoredValues final : public Scenario
         const auto params{KvsParameters::FromJson(input)};
         const auto kvs{KvsInstance(params)};
 
-        const auto keys{kvs.GetAllKeys()};
+        const auto keys{kvs->GetAllKeys()};
         if (!keys)
         {
             throw std::runtime_error{"Failed to get keys: " + std::string{keys.error().Message()}};
@@ -146,7 +146,7 @@ class StoredValues final : public Scenario
 
         for (const auto& key : keys.value())
         {
-            const auto value{kvs.GetValue(key)};
+            const auto value{kvs->GetValue(key)};
             if (!value)
             {
                 throw std::runtime_error{"Failed to read value of key " + key + ": " +
