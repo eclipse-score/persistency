@@ -14,9 +14,6 @@ name: Cargo build and Miri
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-  push:
-    branches:
-      - main
   merge_group:
     types: [checks_requested]
   workflow_call:
