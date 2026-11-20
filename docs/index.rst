@@ -111,7 +111,7 @@ The integration of the module into a Bazel project is described in ``examples/RE
 .. _quick-start-building-testing:
 
 Quick Start - Building and Testing
-===================================
+----------------------------------
 
 To build the module:
 
