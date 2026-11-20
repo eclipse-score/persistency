@@ -584,11 +584,11 @@ TEST(kvs_TEST, parse_json_data_rejects_empty_key)
 {
     // comp_req__kvs__key_length: an empty key found while loading means the file is invalid or corrupted.
     // Loading must halt with an error.
-    // The JSON parser already rejects an empty key, before the key check of the KVS.
+    // An empty JSON member name is valid JSON, but not a valid KVS key.
     auto kvs{OpenCrafted(kDefaultJson,
                          R"({"t": "obj", "v": {"valid_key": {"t": "i32", "v": 42}, "": {"t": "i32", "v": 7}}})")};
     ASSERT_FALSE(kvs);
-    EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kJsonParserError);
+    EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kInvalidKey);
 
     CleanupEnvironment();
 }
@@ -596,16 +596,29 @@ TEST(kvs_TEST, parse_json_data_rejects_empty_key)
 TEST(kvs_TEST, parse_json_data_rejects_invalid_characters_key)
 {
     // comp_req__kvs__key_naming: a key with characters outside printable ASCII means the file is invalid or corrupted.
-    // The JSON parser rejects Unicode escapes in keys.
-    // So the control and non-ASCII characters are written as raw bytes.
-    // The parser accepts these keys, and the key check of the KVS rejects them.
-    const std::vector<std::string> invalid_keys{"\x1f", "\x7f", "tab\\tkey", u8"ą", "\x80"};
+    // Escape control characters so valid JSON reaches KVS key validation.
+    const std::vector<std::string> invalid_keys{
+        R"(\u001f)", "\x7f", R"(tab\tkey)", R"(new\nline)", R"(nul\u0000key)", R"(\u0105)", u8"ą", "\x80"};
     for (const auto& invalid_key : invalid_keys)
     {
         SCOPED_TRACE(invalid_key);
         auto kvs{OpenCrafted(kDefaultJson, KvsFile(Entry("valid_key", 42) + "," + Entry(invalid_key, 7)))};
         ASSERT_FALSE(kvs);
         EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kInvalidKey);
+    }
+
+    CleanupEnvironment();
+}
+
+TEST(kvs_TEST, parse_json_data_rejects_unescaped_control_characters_key)
+{
+    const std::vector<std::string> invalid_keys{"\x1f", "tab\tkey", "new\nline", std::string("nul\0key", 7U)};
+    for (const auto& invalid_key : invalid_keys)
+    {
+        SCOPED_TRACE(invalid_key);
+        auto kvs{OpenCrafted(kDefaultJson, KvsFile(Entry("valid_key", 42) + "," + Entry(invalid_key, 7)))};
+        ASSERT_FALSE(kvs);
+        EXPECT_EQ(static_cast<ErrorCode>(*kvs.error()), ErrorCode::kJsonParserError);
     }
 
     CleanupEnvironment();
