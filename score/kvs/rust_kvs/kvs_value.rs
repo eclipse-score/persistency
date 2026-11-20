@@ -21,17 +21,32 @@ pub type KvsMap = HashMap<String, KvsValue>;
 /// Key-value-storage value
 #[derive(Clone, Debug, PartialEq, ScoreDebug)]
 pub enum KvsValue {
-    /// 32-bit signed integer
-    I32(i32),
+    /// 8-bit unsigned integer
+    U8(u8),
+
+    /// 16-bit unsigned integer
+    U16(u16),
 
     /// 32-bit unsigned integer
     U32(u32),
 
+    /// 64-bit unsigned integer
+    U64(u64),
+
+    /// 8-bit signed integer
+    I8(i8),
+
+    /// 16-bit signed integer
+    I16(i16),
+
+    /// 32-bit signed integer
+    I32(i32),
+
     /// 64-bit signed integer
     I64(i64),
 
-    /// 64-bit unsigned integer
-    U64(u64),
+    /// 32-bit float
+    F32(f32),
 
     /// 64-bit float
     F64(f64),
@@ -64,10 +79,15 @@ macro_rules! impl_from_t_for_kvs_value {
     };
 }
 
-impl_from_t_for_kvs_value!(i32, I32);
+impl_from_t_for_kvs_value!(u8, U8);
+impl_from_t_for_kvs_value!(u16, U16);
 impl_from_t_for_kvs_value!(u32, U32);
-impl_from_t_for_kvs_value!(i64, I64);
 impl_from_t_for_kvs_value!(u64, U64);
+impl_from_t_for_kvs_value!(i8, I8);
+impl_from_t_for_kvs_value!(i16, I16);
+impl_from_t_for_kvs_value!(i32, I32);
+impl_from_t_for_kvs_value!(i64, I64);
+impl_from_t_for_kvs_value!(f32, F32);
 impl_from_t_for_kvs_value!(f64, F64);
 impl_from_t_for_kvs_value!(bool, Boolean);
 impl_from_t_for_kvs_value!(String, String);
@@ -103,10 +123,15 @@ macro_rules! impl_tryfrom_kvs_value_to_t {
     };
 }
 
-impl_tryfrom_kvs_value_to_t!(i32, I32);
+impl_tryfrom_kvs_value_to_t!(u8, U8);
+impl_tryfrom_kvs_value_to_t!(u16, U16);
 impl_tryfrom_kvs_value_to_t!(u32, U32);
-impl_tryfrom_kvs_value_to_t!(i64, I64);
 impl_tryfrom_kvs_value_to_t!(u64, U64);
+impl_tryfrom_kvs_value_to_t!(i8, I8);
+impl_tryfrom_kvs_value_to_t!(i16, I16);
+impl_tryfrom_kvs_value_to_t!(i32, I32);
+impl_tryfrom_kvs_value_to_t!(i64, I64);
+impl_tryfrom_kvs_value_to_t!(f32, F32);
 impl_tryfrom_kvs_value_to_t!(f64, F64);
 impl_tryfrom_kvs_value_to_t!(bool, Boolean);
 impl_tryfrom_kvs_value_to_t!(String, String);
@@ -146,11 +171,16 @@ macro_rules! impl_kvs_get_inner_value {
         }
     };
 }
-impl_kvs_get_inner_value!(f64, F64);
-impl_kvs_get_inner_value!(i32, I32);
+impl_kvs_get_inner_value!(u8, U8);
+impl_kvs_get_inner_value!(u16, U16);
 impl_kvs_get_inner_value!(u32, U32);
-impl_kvs_get_inner_value!(i64, I64);
 impl_kvs_get_inner_value!(u64, U64);
+impl_kvs_get_inner_value!(i8, I8);
+impl_kvs_get_inner_value!(i16, I16);
+impl_kvs_get_inner_value!(i32, I32);
+impl_kvs_get_inner_value!(i64, I64);
+impl_kvs_get_inner_value!(f32, F32);
+impl_kvs_get_inner_value!(f64, F64);
 impl_kvs_get_inner_value!(bool, Boolean);
 impl_kvs_get_inner_value!(String, String);
 impl_kvs_get_inner_value!(Vec<KvsValue>, Array);

@@ -17,6 +17,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -75,6 +76,36 @@ const KvsValue& MemberOrAbort(const KvsValue::Object& object, const std::string_
     std::abort();
 }
 
+bool IsU8(const KvsValue& value, const std::uint8_t expected)
+{
+    const auto* const actual{std::get_if<std::uint8_t>(&value.GetValue())};
+    return (actual != nullptr) && (*actual == expected);
+}
+
+bool IsU16(const KvsValue& value, const std::uint16_t expected)
+{
+    const auto* const actual{std::get_if<std::uint16_t>(&value.GetValue())};
+    return (actual != nullptr) && (*actual == expected);
+}
+
+bool IsI8(const KvsValue& value, const std::int8_t expected)
+{
+    const auto* const actual{std::get_if<std::int8_t>(&value.GetValue())};
+    return (actual != nullptr) && (*actual == expected);
+}
+
+bool IsI16(const KvsValue& value, const std::int16_t expected)
+{
+    const auto* const actual{std::get_if<std::int16_t>(&value.GetValue())};
+    return (actual != nullptr) && (*actual == expected);
+}
+
+bool IsF32(const KvsValue& value, const float expected)
+{
+    const auto* const actual{std::get_if<float>(&value.GetValue())};
+    return (actual != nullptr) && (*actual == expected);
+}
+
 bool IsF64(const KvsValue& value, const double expected)
 {
     const auto* const actual{std::get_if<double>(&value.GetValue())};
@@ -124,6 +155,11 @@ void StoreScenario(const std::string& working_dir)
     }
     auto& kvs{**build_result};
 
+    ExpectValue(IsU8(GetOrAbort(kvs, "u8"), std::uint8_t{123}), "u8");
+    ExpectValue(IsU16(GetOrAbort(kvs, "u16"), std::uint16_t{12345}), "u16");
+    ExpectValue(IsI8(GetOrAbort(kvs, "i8"), std::int8_t{-123}), "i8");
+    ExpectValue(IsI16(GetOrAbort(kvs, "i16"), std::int16_t{-12345}), "i16");
+    ExpectValue(IsF32(GetOrAbort(kvs, "f32"), 12.5F), "f32");
     ExpectValue(IsF64(GetOrAbort(kvs, "number"), 123.0), "number");
     ExpectValue(IsBool(GetOrAbort(kvs, "bool"), true), "bool");
     ExpectValue(IsString(GetOrAbort(kvs, "string"), "First"), "string");
@@ -162,6 +198,11 @@ void LoadScenario(const std::string& working_dir)
     }
     auto& kvs{**build_result};
 
+    SetOrAbort(kvs, "i8", KvsValue{std::int8_t{-123}});
+    SetOrAbort(kvs, "u8", KvsValue{std::uint8_t{123}});
+    SetOrAbort(kvs, "i16", KvsValue{std::int16_t{-12345}});
+    SetOrAbort(kvs, "u16", KvsValue{std::uint16_t{12345}});
+    SetOrAbort(kvs, "f32", KvsValue{12.5F});
     SetOrAbort(kvs, "i32", KvsValue{static_cast<int32_t>(-123)});
     SetOrAbort(kvs, "u32", KvsValue{static_cast<uint32_t>(123)});
     SetOrAbort(kvs, "i64", KvsValue{static_cast<int64_t>(-12345)});
@@ -176,6 +217,24 @@ void LoadScenario(const std::string& working_dir)
                    {KvsValue{static_cast<int64_t>(555)}, KvsValue{std::string{"string-in-array"}}}}});
     const KvsValue::Object obj{{std::string{"f64-in-object"}, KvsValue{123.456}}};
     SetOrAbort(kvs, "object", KvsValue{obj});
+
+    // Boundary values.
+    SetOrAbort(kvs, "i8-min", KvsValue{std::numeric_limits<std::int8_t>::min()});
+    SetOrAbort(kvs, "i8-max", KvsValue{std::numeric_limits<std::int8_t>::max()});
+    SetOrAbort(kvs, "u8-max", KvsValue{std::numeric_limits<std::uint8_t>::max()});
+    SetOrAbort(kvs, "i16-min", KvsValue{std::numeric_limits<std::int16_t>::min()});
+    SetOrAbort(kvs, "i16-max", KvsValue{std::numeric_limits<std::int16_t>::max()});
+    SetOrAbort(kvs, "u16-max", KvsValue{std::numeric_limits<std::uint16_t>::max()});
+    SetOrAbort(kvs, "i32-min", KvsValue{std::numeric_limits<std::int32_t>::min()});
+    SetOrAbort(kvs, "i32-max", KvsValue{std::numeric_limits<std::int32_t>::max()});
+    SetOrAbort(kvs, "u32-max", KvsValue{std::numeric_limits<std::uint32_t>::max()});
+    SetOrAbort(kvs, "i64-min", KvsValue{std::numeric_limits<std::int64_t>::min()});
+    SetOrAbort(kvs, "i64-max", KvsValue{std::numeric_limits<std::int64_t>::max()});
+    SetOrAbort(kvs, "u64-max", KvsValue{std::numeric_limits<std::uint64_t>::max()});
+    SetOrAbort(kvs, "f32-min", KvsValue{std::numeric_limits<float>::lowest()});
+    SetOrAbort(kvs, "f32-max", KvsValue{std::numeric_limits<float>::max()});
+    SetOrAbort(kvs, "f64-min", KvsValue{std::numeric_limits<double>::lowest()});
+    SetOrAbort(kvs, "f64-max", KvsValue{std::numeric_limits<double>::max()});
 
     if (!kvs.Flush().has_value())
     {
