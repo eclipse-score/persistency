@@ -28,16 +28,18 @@ Persistency Release Note
 
 
 | **Module Name:** Persistency
-| **Release Tag:** v0.4.1
-| **Origin Release Tag:** v0.4.0
-| **Release Date:** 2026-11-10
+| **Release Tag:** v0.5.0
+| **Origin Release Tag:** v0.4.1
+| **Release Date:** 2026-11-20
 
 
 Overview
 ^^^^^^^^
 
-This document provides an overview of the changes, improvements, and bug fixes included in the software module release version v0.4.1
+This document provides an overview of the changes, improvements, and bug fixes included in the software module release version v0.5.0
 as compared to the module's origin release (which is usually the previous release).
+
+This release introduces a shared C++ KVS instance registry with breaking API changes and expands build and verification coverage; see the `release comparison <https://github.com/eclipse-score/persistency/compare/v0.4.1...v0.5.0>`_.
 
 Disclaimer
 ----------
@@ -56,31 +58,35 @@ This note focuses on behavior and compatibility changes relevant to module users
 New Features
 ------------
 
-No new KVS operations or storage capabilities were introduced in this maintenance release.
+- **C++ instance registry:** ``KvsBuilder::Build()`` returns a shared pointer to a process-local KVS instance. Repeated builds with the same instance ID and identical options share the same object, including unflushed changes, without reloading files.
+- **C++ instance lifecycle:** ``score::kvs::Unregister()`` removes an instance once all caller-held shared pointers have been released. The registry otherwise retains the instance until process exit.
 
 Improvements
 ------------
 
-- **Instance locking:** operations on the same KVS instance now wait for the lock instead of failing immediately;
-  the C++ ``KMutexLockFailed`` error was removed.
-- **C++ filesystem access:** the implementation now uses ``score::filesystem`` instead of ``std::filesystem``.
-- **Logging:** KVS instances share a logger and emit more informative messages.
+- **C++ thread safety:** snapshot counting, file-path queries and storage-file size queries now acquire the instance mutex.
+- **Developer tooling:** improved IDE support includes compile-command extraction, VS Code tasks and Rust formatting configuration.
 
 Bug Fixes
 ---------
 
-No additional user-visible bug fixes are called out separately from the generated changelog.
+- **C++ duplicate instances:** the registry prevents independently opened objects for the same instance ID within one process. Opening an already registered ID with different options fails with ``kInstanceParametersMismatch``.
 
 Other changes by Label
 ----------------------
 
-- **Integration testing:** C++ and Rust component integration tests now run through ITF on Linux (Docker) and QNX x86_64 (QEMU).
-- **Documentation and build/CI maintenance:** see the generated changelog in the GitHub release description.
+- **Verification coverage:** added Linux aarch64 tests under QEMU user emulation, QNX x86_64 and aarch64 unit tests in QEMU VMs, and Linux AddressSanitizer, UndefinedBehaviorSanitizer and LeakSanitizer checks.
+- **Integration testing:** expanded C++ and Rust tests for explicit flush and persistence across restarts.
+- **Build/CI maintenance:** release checks reuse the build, Cargo, lint, sanitizer, coverage and documentation workflows; coverage tooling moved to ``tools/coverage`` with a scope check.
+- **Dependencies and documentation:** updated module and CI dependencies and integrated Quick Start into the module documentation; see the generated changelog for the complete list.
 
 Compatibility
 ^^^^^^^^^^^^^
 
-- **Dependencies:** as declared in ``MODULE.bazel`` of tag v0.4.1
+- **C++ source and ABI compatibility:** this release is not a drop-in replacement for v0.4.1. The builder result type and instance ownership model changed, ``Kvs::Open()`` and its deprecated ``open()`` alias were removed, and ``Kvs`` is no longer movable. Rebuild consumers after adapting them as described below.
+- **C++ instance IDs:** valid IDs are now limited to 0 through 9 (``kMaxInstanceCount`` is 10); other IDs fail with ``kInvalidInstanceId``.
+- **Rust API and stored data:** no Rust public API or persisted JSON/hash format changes were introduced.
+- **Dependencies:** as declared in ``MODULE.bazel`` of tag v0.5.0
   The full dependency inventory is provided by the SBOM (``//:sbom_*``).
 
 Performed Verification
@@ -95,8 +101,7 @@ Known Issues
 - **Non-atomic storage of data and hash file** (`#515`_), :need:`comp_req__kvs__atomic_store`:
   an interrupted write is detected as checksum mismatch on the next load (:need:`comp_req__kvs__pers_data_csum_vrfy`).
 - **Large 64-bit integers rounded in JSON (Rust)** (`#204`_): exact storage is only given within the IEEE 754 double integer range.
-- **No protection against multi-process access** (`#494`_), :need:`comp_req__kvs__single_process_access`:
-  exclusive access per KVS instance has to be ensured by the user.
+- **No protection against multi-process access** (`#494`_), :need:`comp_req__kvs__single_process_access`: the new registry coordinates instances within one process only; exclusive access across processes still has to be ensured by the user.
 
 Known Vulnerabilities
 ---------------------
@@ -106,10 +111,12 @@ Known Vulnerabilities
 Upgrade Instructions
 ^^^^^^^^^^^^^^^^^^^^
 
-1. **C++ API:** remove handling for ``KMutexLockFailed``; contending calls now wait for the instance lock.
-2. **C++ API:** assignments to rvalue ``Kvs`` or ``KvsValue`` objects are no longer supported.
-3. **C++ API:** ``KvsValue::GetValue()`` on a temporary now returns by value.
-4. **C++ ABI:** ``KvsValue::Type`` now has underlying type ``std::uint8_t``; rebuild C++ consumers.
+1. **Open through the builder:** replace ``Kvs::Open()`` and ``Kvs::open()`` with ``KvsBuilder`` calls using equivalent options and ``Build()``.
+2. **Use shared ownership:** ``Build()`` and its deprecated ``build()`` alias now return ``score::Result<std::shared_ptr<Kvs>>`` instead of ``score::Result<Kvs>``. Check the result, then access the store through the returned shared pointer rather than moving a ``Kvs`` value.
+3. **Coordinate instance configuration:** use IDs below ``kMaxInstanceCount`` and identical builder options for all users of an ID. Different directories do not create independent instances under the same ID; handle ``kInvalidInstanceId`` and ``kInstanceParametersMismatch``.
+4. **Account for shared state:** mutations, including pending changes, resets and snapshot restores, affect every holder of the instance. Building again does not reload data or change its configuration.
+5. **Manage reopening explicitly:** flush changes that must persist, release all caller-held shared pointers, then call ``score::kvs::Unregister()`` before rebuilding to reload files or change options. Unregistering does not flush; it fails with ``kResourceBusy`` while callers still hold pointers, or ``kInvalidInstanceId`` if the ID is invalid or not registered.
+6. **Rebuild C++ consumers:** adapt value-based storage and ownership assumptions to shared pointers. No stored-data migration is required.
 
 For any questions or support, please contact the *Project lead* or raise an issue/discussion.
 
