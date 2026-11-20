@@ -31,49 +31,40 @@ namespace score::kvs
 {
 /// @brief Persistent key-value store (KVS) instance.
 ///
-/// A KVS instance holds key-value pairs and read-only default values in memory and persists its data to disk on
-/// `Flush()`, keeping a configurable number of snapshots. Access default values with `GetDefaultValue()`.
-/// Operations on a valid instance are thread-safe. A `Kvs` object itself cannot be copied or moved.
+/// A KVS instance holds key-value pairs and read-only default values in memory.
+/// It persists its data on `Flush()` and keeps a configurable number of snapshots.
+/// Access default values with `GetDefaultValue()`.
+/// Operations on a valid instance are thread-safe.
+/// A `Kvs` object itself cannot be copied or moved.
 ///
 /// Shared state:
 /// Matching builds for an instance ID return shared pointers to the same `Kvs` object.
 /// A change made through any pointer, including a pending one, is immediately visible through all others.
-/// In particular, `Reset()`, `RemoveAllKeys()`, `DiscardPendingChanges()`, `SnapshotRestore()` and
-/// `Flush()` affect the shared instance. The registry retains the object until `score::kvs::Unregister()` or
-/// process exit.
+/// `Reset()`, `RemoveAllKeys()`, `DiscardPendingChanges()`, `SnapshotRestore()` and `Flush()` act on the shared object.
+/// The registry keeps the object until `Unregister()` from kvs_builder.h is called or the process exits.
 ///
 /// Opening:
-/// Shared pointers are obtained with `KvsBuilder::Build()`. The first build of an instance ID loads its data from disk;
-/// later builds reuse the same registered object without reading the files again. All builder options of a later build
-/// must match those of the first one, otherwise the build fails with `kInstanceParametersMismatch`.
+/// Shared pointers are obtained with `KvsBuilder::Build()`.
+/// The first build of an instance ID loads its data from disk.
+/// Later builds reuse the registered object without reading the files again.
+/// A later build with different builder options fails with `kInstanceParametersMismatch`.
 ///
-/// Ownership:
-/// Use the shared pointers returned by `KvsBuilder::Build()` to access a registered instance. The `Kvs` object
-/// itself is neither copyable nor movable.
-///
-/// @todo(https://github.com/eclipse-score/persistency/issues/620): Introduce a public KVS interface, make Kvs its
-/// hidden implementation, and remove the temporary BuilderKey and KvsBuilder friendship.
+/// @todo(https://github.com/eclipse-score/persistency/issues/620): Introduce a public KVS interface.
+/// Make Kvs its hidden implementation and remove the temporary KvsBuilder friendship.
 class Kvs final
 {
-    /// @brief Temporarily allows the builder to load and initialize private instance state before registration.
+    /// @brief Temporarily allows the builder to construct Kvs and load its private state before registration.
     friend class KvsBuilder;
 
-    /// @brief Passkey that lets KvsBuilder construct Kvs with std::make_shared while preventing direct construction.
-    struct BuilderKey final
-    {
-        BuilderKey() noexcept = default;
-    };
+    /// @brief Constructs an empty KVS for initialization by KvsBuilder.
+    /// @param params Open parameters of the instance.
+    explicit Kvs(const KvsOpenParameters& params) noexcept;
 
   public:
     Kvs(const Kvs&) = delete;
     Kvs(Kvs&&) = delete;
     Kvs& operator=(const Kvs&) = delete;
     Kvs& operator=(Kvs&&) = delete;
-
-    /// @brief Constructs an empty KVS for initialization by KvsBuilder.
-    /// @param key Passkey available only to KvsBuilder.
-    /// @param params kvs parameters.
-    explicit Kvs(BuilderKey, const KvsOpenParameters& params) noexcept;
 
     /// @brief Resets the key-value store to its initial state.
     /// @return Nothing on success, or an ErrorCode on failure.

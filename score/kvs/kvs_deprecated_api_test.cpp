@@ -200,32 +200,36 @@ TEST(kvs_deprecated_api, kvs_write_wrappers)
     EXPECT_FALSE(kvs.KeyExists("old_key").value());
     EXPECT_TRUE(kvs.KeyExists("new_key").value());
 
-    // A flushed key is visible to a KVS opened afterwards.
+    // A flushed key is visible to a KVS loaded from the files afterwards.
+    // The handle is released and the instance unregistered, so the next build reads the files again.
     ASSERT_TRUE(kvs.flush());
+    result.value().reset();
+    ASSERT_TRUE(Unregister(kInstanceId));
     auto reopened{OpenKvs()};
     ASSERT_TRUE(reopened);
-    EXPECT_TRUE(reopened.value()->KeyExists("new_key").value());
-    EXPECT_TRUE(reopened.value()->KeyExists("kvs").value());
+    Kvs& reopened_kvs{*reopened.value()};
+    EXPECT_TRUE(reopened_kvs.KeyExists("new_key").value());
+    EXPECT_TRUE(reopened_kvs.KeyExists("kvs").value());
 
     // Pending changes are dropped, flushed ones stay.
-    ASSERT_TRUE(kvs.SetValue("pending", KvsValue(3)));
-    ASSERT_TRUE(kvs.discard_pending_changes());
-    EXPECT_FALSE(kvs.KeyExists("pending").value());
-    EXPECT_TRUE(kvs.KeyExists("new_key").value());
-    EXPECT_TRUE(kvs.KeyExists("kvs").value());
+    ASSERT_TRUE(reopened_kvs.SetValue("pending", KvsValue(3)));
+    ASSERT_TRUE(reopened_kvs.discard_pending_changes());
+    EXPECT_FALSE(reopened_kvs.KeyExists("pending").value());
+    EXPECT_TRUE(reopened_kvs.KeyExists("new_key").value());
+    EXPECT_TRUE(reopened_kvs.KeyExists("kvs").value());
 
-    ASSERT_TRUE(kvs.remove_all_keys());
-    EXPECT_TRUE(kvs.GetAllKeys().value().empty());
+    ASSERT_TRUE(reopened_kvs.remove_all_keys());
+    EXPECT_TRUE(reopened_kvs.GetAllKeys().value().empty());
 
-    ASSERT_TRUE(kvs.SetValue("again", KvsValue(4)));
-    ASSERT_TRUE(kvs.reset());
-    EXPECT_TRUE(kvs.GetAllKeys().value().empty());
+    ASSERT_TRUE(reopened_kvs.SetValue("again", KvsValue(4)));
+    ASSERT_TRUE(reopened_kvs.reset());
+    EXPECT_TRUE(reopened_kvs.GetAllKeys().value().empty());
 
-    auto old_restore_ok{kvs.snapshot_restore(SnapshotId{0ul})};
-    auto new_restore_ok{kvs.SnapshotRestore(SnapshotId{0ul})};
+    auto old_restore_ok{reopened_kvs.snapshot_restore(SnapshotId{0ul})};
+    auto new_restore_ok{reopened_kvs.SnapshotRestore(SnapshotId{0ul})};
     ExpectSame(old_restore_ok, new_restore_ok);
-    auto old_restore_bad{kvs.snapshot_restore(SnapshotId{99ul})};
-    auto new_restore_bad{kvs.SnapshotRestore(SnapshotId{99ul})};
+    auto old_restore_bad{reopened_kvs.snapshot_restore(SnapshotId{99ul})};
+    auto new_restore_bad{reopened_kvs.SnapshotRestore(SnapshotId{99ul})};
     ExpectSame(old_restore_bad, new_restore_bad);
     DISABLE_WARNING_POP
     CleanupEnvironment();
