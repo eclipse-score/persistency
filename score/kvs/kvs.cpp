@@ -549,7 +549,7 @@ score::Result<size_t> Kvs::CalculatePotentialSize() const noexcept
     return *current_size_result + buffer.size() + kHashFileSize;
 }
 
-Kvs::Kvs(BuilderKey, const KvsOpenParameters& params) noexcept
+Kvs::Kvs(const KvsOpenParameters& params) noexcept
     : params_{params},
       filesystem_{
           std::make_unique<score::filesystem::Filesystem>(score::filesystem::FilesystemFactory{}.CreateInstance())},

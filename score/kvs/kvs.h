@@ -50,32 +50,21 @@ namespace score::kvs
 /// A later build with different builder options fails with `kInstanceParametersMismatch`.
 ///
 /// @todo(https://github.com/eclipse-score/persistency/issues/620): Introduce a public KVS interface.
-/// Make Kvs its hidden implementation and remove the temporary BuilderKey and KvsBuilder friendship.
+/// Make Kvs its hidden implementation and remove the temporary KvsBuilder friendship.
 class Kvs final
 {
-    /// @brief Temporarily allows the builder to load and initialize private instance state before registration.
+    /// @brief Temporarily allows the builder to construct Kvs and load its private state before registration.
     friend class KvsBuilder;
 
-    /// @brief Passkey that only KvsBuilder can create, so that it can construct Kvs with std::make_shared.
-    ///
-    /// The constructor is user-provided and private, so `{}` cannot create the key outside KvsBuilder.
-    class BuilderKey final
-    {
-        friend class KvsBuilder;
-
-        BuilderKey() noexcept {}
-    };
+    /// @brief Constructs an empty KVS for initialization by KvsBuilder.
+    /// @param params Open parameters of the instance.
+    explicit Kvs(const KvsOpenParameters& params) noexcept;
 
   public:
     Kvs(const Kvs&) = delete;
     Kvs(Kvs&&) = delete;
     Kvs& operator=(const Kvs&) = delete;
     Kvs& operator=(Kvs&&) = delete;
-
-    /// @brief Constructs an empty KVS for initialization by KvsBuilder.
-    /// @param key Passkey available only to KvsBuilder.
-    /// @param params Open parameters of the instance.
-    explicit Kvs(BuilderKey, const KvsOpenParameters& params) noexcept;
 
     /// @brief Resets the key-value store to its initial state.
     /// @return Nothing on success, or an ErrorCode on failure.

@@ -115,6 +115,22 @@ deviations:
     scope: "The SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE call in score/kvs/kvs_value.cpp."
     justification: >-
       The identifier `__PRETTY_FUNCTION__` comes from the expansion of the baselibs precondition macro, not from KVS code.
+  - rule-id: "RULE-23-11-1"
+    query-id: "cpp/misra/use-smart-ptr-factory-functions"
+    code-identifier: "kvs-builder-new"
+    scope: "The construction of the shared Kvs instance in KvsBuilder::Build in score/kvs/kvs_builder.cpp."
+    justification: >-
+      The constructor of Kvs is private so that only KvsBuilder creates instances, and std::make_shared cannot call it.
+      The new-expression is the only argument of the std::shared_ptr constructor, so no other evaluation can throw before ownership passes to it.
+      Build() is noexcept, so a failed allocation terminates and cannot leak.
+  - rule-id: "RULE-21-6-2"
+    query-id: "cpp/misra/dynamic-memory-managed-manually"
+    code-identifier: "kvs-builder-new"
+    scope: "The construction of the shared Kvs instance in KvsBuilder::Build in score/kvs/kvs_builder.cpp."
+    justification: >-
+      The constructor of Kvs is private so that only KvsBuilder creates instances, and std::make_shared cannot call it.
+      The result of the new-expression passes directly to the std::shared_ptr constructor, which manages the memory from then on.
+      No code deletes the object manually.
 
 # Guideline recategorizations: the rule is not checked anywhere in the repo.
 guideline-recategorizations:

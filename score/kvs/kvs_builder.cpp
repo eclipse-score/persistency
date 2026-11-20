@@ -150,7 +150,9 @@ score::Result<std::shared_ptr<Kvs>> KvsBuilder::Build() const noexcept
         return entry;
     }
 
-    std::shared_ptr<Kvs> kvs{std::make_shared<Kvs>(Kvs::BuilderKey{}, params_)};
+    // std::make_shared cannot call the private constructor of Kvs.
+    // NOLINTNEXTLINE(bugprone-unhandled-exception-at-new) Build() is noexcept, so a failed allocation terminates.
+    std::shared_ptr<Kvs> kvs{new Kvs{params_}};  // codeql::misra_deviation(kvs-builder-new)
 
     const std::string directory{params_.working_dir.empty() ? std::string{"./"} : params_.working_dir};
     const score::filesystem::Path base_path{directory};
