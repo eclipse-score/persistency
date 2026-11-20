@@ -37,6 +37,7 @@ docs(
     ],
     project = "S-CORE persistency",
     project_url = "https://eclipse-score.github.io/persistency/",
+    source_dir = "docs",
 )
 
 setup_starpls(
