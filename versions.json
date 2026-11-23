@@ -102,5 +102,9 @@
   {
     "version": "pr-754",
     "url": "https://eclipse-score.github.io/persistency/pr-754/"
+  },
+  {
+    "version": "pr-756",
+    "url": "https://eclipse-score.github.io/persistency/pr-756/"
   }
 ]
