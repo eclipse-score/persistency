@@ -18,7 +18,7 @@ KVS Assumptions of Use
 .. document:: KVS AoU
    :id: doc__kvs_aou
    :status: valid
-   :version: 1
+   :version: 2
    :safety: ASIL_B
    :security: NO
    :realizes: wp__requirements_comp_aou[version==1]
