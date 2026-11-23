@@ -22,6 +22,8 @@ from common import (
     ResultCode,
     create_defaults_file,
     create_defaults_json,
+    run_named_scenario,
+    stored_values,
     temp_dir_common,
     write_file_on_target,
 )
@@ -47,6 +49,10 @@ STORED_HASH = adler32(STORED_DATA).to_bytes(length=4, byteorder="big")
 MODIFIED_DATA = json.dumps({"t": "obj", "v": {"stored": {"t": "i32", "v": 2}}}).encode()
 # Hash file of MODIFIED_DATA.
 MODIFIED_HASH = adler32(MODIFIED_DATA).to_bytes(length=4, byteorder="big")
+
+# Key-value pairs of intact snapshots by slot: slot 1 is the data of the flush before the current storage, slot 2 the
+# data of the flush before that, and so on. They differ from each other and from the data files of STORAGE_FILES.
+SNAPSHOT_VALUES = {1: {"stored": 10, "added": 10}, 2: {"stored": 20}, 3: {"stored": 30}}
 
 # Key read by the scenario "cit.default_values.default_values", and its value in the default-values file.
 DEFAULT_KEY = "test_number"
@@ -452,3 +458,196 @@ class TestOpenDefaultsVerifiesChecksum(CommonScenario):
             defaults = [log.default_value for log in logged]
             assert results.return_code == ResultCode.PANIC, f"expected the open to fail, default values: {defaults}"
             assert "Failed to create KVS instance" in results.stderr
+
+
+@add_test_properties(
+    partially_verifies=[
+        "comp_req__kvs__recovery_snapshot_restore",
+        "comp_req__kvs__corruption_detect_open",
+        "comp_req__kvs__open_need_kvs_behavior",
+        "comp_req__kvs__pers_data_csum_vrfy",
+        "comp_req__kvs__snapshot_restore_api",
+        "comp_req__kvs__explicit_flush",
+    ],
+    test_type="fault-injection",
+    derivation_technique="requirements-analysis",
+)
+@pytest.mark.parametrize("version", ["cpp", "rust"], scope="class")
+@pytest.mark.parametrize("storage", ["modified", "truncated", "hash_truncated", "hash_missing"], scope="class")
+@pytest.mark.parametrize("snapshot", list(SNAPSHOT_VALUES), scope="class")
+class TestRecoveryBySnapshotRestore(CommonScenario):
+    """
+    Verifies that after an open has detected a corrupted or interrupted current storage, the user can restore the
+    snapshot of their choice, which recovers exactly the data of that snapshot, and that a flush persists the
+    recovered data for the next process. Covered: a data file changed after its hash file was written, a data file or
+    a hash file cut by an interrupted write, a data file without its hash file, and the snapshots in slots 1 to 3.
+    For comp_req__kvs__corruption_detect_open, comp_req__kvs__open_need_kvs_behavior and
+    comp_req__kvs__pers_data_csum_vrfy, only that an open with load mode Required reports the error of these storage
+    states is covered; for comp_req__kvs__snapshot_restore_api, only the restore of an occupied slot selected by index;
+    for comp_req__kvs__explicit_flush, only that the flush called by the user persists the restored data.
+    """
+
+    @pytest.fixture(scope="class")
+    def temp_dir(self, target: Target, version: str, storage: str, snapshot: int) -> Generator[Path, None, None]:
+        # One working directory per case, named after it: each case writes its own storage files.
+        yield from temp_dir_common(target, self.__class__.__name__, version, storage, str(snapshot))
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.persistency.recover_from_snapshot"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, target: Target, temp_dir: Path, storage: str, snapshot: int) -> dict[str, Any]:
+        """
+        Write the damaged current storage and the intact snapshots 1 to 3, return the input that restores the chosen
+        snapshot.
+        """
+        files = dict(STORAGE_FILES[storage])
+        for slot, values in SNAPSHOT_VALUES.items():
+            data = json.dumps({"t": "obj", "v": {key: {"t": "i32", "v": value} for key, value in values.items()}})
+            files[f"kvs_{INSTANCE_ID}_{slot}.json"] = data.encode()
+            files[f"kvs_{INSTANCE_ID}_{slot}.hash"] = adler32(data.encode()).to_bytes(length=4, byteorder="big")
+        for name, content in files.items():
+            write_file_on_target(target, temp_dir / name, content)
+        return {"kvs_parameters": {"instance_id": INSTANCE_ID, "dir": str(temp_dir)}, "snapshot_id": snapshot}
+
+    def test_open_detects_damage(
+        self,
+        request: pytest.FixtureRequest,
+        version: str,
+        storage: str,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+    ):
+        """
+        Checks that an open with load mode Required reports the damaged current storage, before the recovery.
+
+        Steps:
+        1. Create an empty working folder on the target.
+        2. Write the current storage in the state under test:
+           - "modified" (corrupted data): a data file "kvs_1_0.json" with the key "stored" = 2, and the hash file
+             "kvs_1_0.hash" (the Adler-32 checksum) of the data file with "stored" = 1;
+           - "truncated" (interrupted write of the data file): the first half of the data file with "stored" = 1, and
+             the hash file of the whole data file;
+           - "hash_truncated" (interrupted write of the hash file): the data file with "stored" = 1, and the first 2 of
+             the 4 bytes of its hash file;
+           - "hash_missing" (flush interrupted between writing the data file and the hash file): the data file with
+             "stored" = 1, and no hash file.
+        3. Write three intact snapshots (previous states that the KVS keeps), each a data file and its hash file:
+           snapshot 1 "kvs_1_1.json" with "stored" = 10 and "added" = 10, snapshot 2 "kvs_1_2.json" with "stored" = 20,
+           snapshot 3 "kvs_1_3.json" with "stored" = 30.
+        4. Start the scenario program. It opens the KVS (key-value store) in this folder with load mode Required,
+           which loads the current storage and fails if the storage is missing or fails the integrity check. If the
+           open fails, the program logs the error and continues with the recovery of the other tests. If the open
+           succeeds, the program logs this and ends without a recovery.
+
+        Expected result:
+        - The program ends without an error.
+        - The open with load mode Required fails with the error of the storage state:
+          - "modified", "truncated" and "hash_truncated": the integrity check fails, because the checksum does not
+            match or the hash file is too short. C++ "Validation failed", Rust "ValidationFailed".
+          - "hash_missing": the hash file cannot be read. C++ "KVS hash file read error", Rust "KvsHashFileReadError".
+
+        Known defect: Rust reports a missing hash file as "FileNotFound", the error for a missing data file. The Rust
+        "hash_missing" cases are marked as expected failures (strict xfail) at the check of the error, after the check
+        that the open fails. They turn into test failures once they pass.
+        """
+        assert results.return_code == ResultCode.SUCCESS, results.stderr
+        open_error = logs_info_level.find_log("open_error")
+        assert open_error is not None, "the open with load mode Required did not fail"
+        if (storage, version) == ("hash_missing", "rust"):
+            request.applymarker(
+                pytest.mark.xfail(
+                    strict=True,
+                    reason="Rust reports FileNotFound, the code for a missing data file, instead of "
+                    "KvsHashFileReadError for a missing hash file",
+                )
+            )
+        assert open_error.open_error == f"Failed to create KVS instance: {OPEN_ERRORS[storage][version]}"
+
+    def test_restore_recovers_chosen_snapshot(
+        self, results: ScenarioResult, logs_info_level: LogContainer, snapshot: int
+    ):
+        """
+        Checks that restoring the chosen snapshot recovers exactly the data of this snapshot.
+
+        Steps:
+        1. Write the storage and run the scenario program of "test_open_detects_damage" (steps 1 to 4 there).
+        2. The program opens the KVS again, with load mode Ignored, which does not read the storage: memory is empty.
+        3. It restores the snapshot under test, 1, 2 or 3 (replaces the data in memory with the data of this
+           snapshot). If the restore fails, it logs the error.
+        4. It logs every key in memory with its value.
+
+        Expected result:
+        - The program ends without an error.
+        - The open with load mode Required fails, so the program runs the recovery.
+        - The restore reports no error.
+        - The logged values are exactly the data of the chosen snapshot: "stored" = 10 and "added" = 10 for snapshot
+          1, "stored" = 20 for snapshot 2, "stored" = 30 for snapshot 3. So no data of the damaged current storage or
+          of another snapshot is in memory.
+        """
+        assert results.return_code == ResultCode.SUCCESS, results.stderr
+        assert logs_info_level.find_log("required_open") is None, (
+            "the open with load mode Required did not fail, so the program ran no recovery"
+        )
+        load_error = logs_info_level.find_log("load_error")
+        assert load_error is None, f"snapshot restore failed: {load_error.load_error}"
+        assert {log.key: log.value for log in logs_info_level.get_logs("key")} == SNAPSHOT_VALUES[snapshot]
+
+    def test_recovered_data_loaded_after_flush(
+        self,
+        request: pytest.FixtureRequest,
+        target: Target,
+        target_path: Path,
+        temp_dir: Path,
+        execution_timeout: float,
+        version: str,
+        storage: str,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+        snapshot: int,
+    ):
+        """
+        Checks that a flush after the restore persists the recovered data, so that a new process loads it.
+
+        Steps:
+        1. Write the storage and run the scenario program of "test_restore_recovers_chosen_snapshot" (steps 1 to 4
+           there).
+        2. After the restore, the program flushes (writes the data in memory to the storage files) and logs the error
+           if the flush fails. Then it ends.
+        3. Start a second program on the target, as a new process. It opens the same KVS with load mode Required,
+           which fails if the current storage is missing or fails the integrity check, and logs every key with its
+           value.
+
+        Expected result:
+        - The first program ends without an error, and its open with load mode Required fails, so it runs the
+          recovery.
+        - The flush of the first program reports no error.
+        - The second program ends without an error, so the current storage written by the flush is intact.
+        - The second program loads exactly the data of the chosen snapshot.
+
+        Known defect: in the Rust KVS, the snapshot rotation of the flush rejects a current data file without its hash
+        file, so the flush fails with "IntegrityCorrupted" and the recovered data cannot be persisted
+        (eclipse-score/persistency#729). The Rust "hash_missing" cases are marked as expected failures (strict xfail)
+        at the check of the flush error, after the check that the program ends without an error. They turn into test
+        failures once they pass.
+        """
+        assert results.return_code == ResultCode.SUCCESS, results.stderr
+        assert logs_info_level.find_log("required_open") is None, (
+            "the open with load mode Required did not fail, so the program ran no recovery"
+        )
+        flush_error = logs_info_level.find_log("flush_error")
+        if (storage, version) == ("hash_missing", "rust"):
+            request.applymarker(
+                pytest.mark.xfail(
+                    strict=True,
+                    reason="Rust flush fails with IntegrityCorrupted: snapshot rotation rejects a current data file "
+                    "without its hash file, so the recovered data cannot be persisted (eclipse-score/persistency#729)",
+                )
+            )
+        assert flush_error is None, f"flush failed: {flush_error.flush_error}"
+
+        config = {"kvs_parameters": {"instance_id": INSTANCE_ID, "dir": str(temp_dir), "kvs_load": "required"}}
+        restart = run_named_scenario(target, target_path, "cit.persistency.stored_values", config, execution_timeout)
+        assert restart.return_code == ResultCode.SUCCESS, restart.stderr
+        assert stored_values(restart, target_path) == SNAPSHOT_VALUES[snapshot]
