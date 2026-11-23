@@ -29,3 +29,14 @@ updates:
         update-types:
           - "minor"
           - "patch"
+  - package-ecosystem: pre-commit
+    directory: /
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      pre-commit:
+        patterns:
+          - "*"

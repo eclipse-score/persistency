@@ -1,0 +1,114 @@
+# *******************************************************************************
+# Copyright (c) 2026 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+# Runs the PR checks and reports one result for the merge queue.
+# Required check: "PR mergeable".
+# docs.yml and build_qnx.yml have their own collectors ("Docs mergeable", "QNX mergeable").
+name: PR
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+
+jobs:
+  on-pr:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/on-pr.yml
+
+  gitlint:
+    # A merge group has no PR commits to check.
+    if: ${{ github.event_name == 'pull_request' }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/gitlint.yml
+
+  license-check:
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/license_check.yml
+    secrets:
+      ECLIPSE_GITLAB_API_TOKEN: ${{ secrets.ECLIPSE_GITLAB_API_TOKEN }}
+
+  lint:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/lint.yml
+
+  build-linux:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build_linux.yml
+
+  cargo:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/cargo_required.yml
+
+  coverage:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/coverage_report.yml
+
+  sanitizers:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/sanitizers_linux.yml
+
+  pr-mergeable:
+    name: PR mergeable
+    needs: [on-pr, gitlint, license-check, lint, build-linux, cargo, coverage, sanitizers]
+    # Runs even after failures and cancellations, so it can report them.
+    if: ${{ always() }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
+    permissions: {}
+    timeout-minutes: 5
+    steps:
+      - name: Check job results
+        env:
+          # These jobs must succeed.
+          REQUIRED: >-
+            on-pr=${{ needs.on-pr.result }}
+            lint=${{ needs.lint.result }}
+            build-linux=${{ needs.build-linux.result }}
+            cargo=${{ needs.cargo.result }}
+            coverage=${{ needs.coverage.result }}
+            sanitizers=${{ needs.sanitizers.result }}
+          # These jobs may also be skipped.
+          # gitlint skips merge groups and Dependabot PRs.
+          # license-check skips fork PRs, because they can't read its token.
+          OPTIONAL: >-
+            gitlint=${{ needs.gitlint.result }}
+            license-check=${{ needs.license-check.result }}
+        run: |
+          set -euo pipefail
+          status=0
+          for job in ${REQUIRED}; do
+            if [[ "${job#*=}" != "success" ]]; then
+              echo "::error::${job%%=*} must succeed, but its result is ${job#*=}."
+              status=1
+            fi
+          done
+          for job in ${OPTIONAL}; do
+            if [[ "${job#*=}" != "success" && "${job#*=}" != "skipped" ]]; then
+              echo "::error::${job%%=*} must succeed or be skipped, but its result is ${job#*=}."
+              status=1
+            fi
+          done
+          exit "${status}"

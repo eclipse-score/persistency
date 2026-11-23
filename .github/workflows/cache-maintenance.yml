@@ -36,11 +36,12 @@ jobs:
       qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
       qnx-user: ${{ secrets.SCORE_QNX_USER }}
       qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}
-    uses: eclipse-score/cicd-workflows/.github/workflows/cache-maintenance.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/cache-maintenance.yml@ace627933d0924894a3d066254f25d099732612e # main branch (2026-11-19)
     with:
       # Each line becomes one `bazel fetch` invocation.
       variants: |
         //...
+        --config=lint //...
         --config=score-linux-aarch64 //...
         --config=score-qnx-x86_64 //...
         --config=score-qnx-aarch64 //...
@@ -68,10 +69,31 @@ jobs:
       contents: read
     uses: ./.github/workflows/cargo_required.yml
 
+  warmup-lint:
+    needs: repository_cache_maintenance
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/lint.yml
+
+  warmup-coverage:
+    needs: repository_cache_maintenance
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/coverage_report.yml
+
+  warmup-sanitizers:
+    needs: repository_cache_maintenance
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/sanitizers_linux.yml
+
   delete_old_caches:
-    needs: [warmup-linux, warmup-qnx, warmup-cargo]
+    needs: [warmup-linux, warmup-qnx, warmup-cargo, warmup-lint, warmup-coverage, warmup-sanitizers]
     if: ${{ !cancelled() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
     permissions:
       # Prune after every warmup job has completed its cache-save post-step.
       actions: write

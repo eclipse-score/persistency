@@ -13,27 +13,25 @@
 
 name: Bazel Build (QNX)
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, synchronize]
   merge_group:
     types: [checks_requested]
   workflow_call:
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A new PR revision cancels pending approval or execution of the previous one.
+# Called runs (warmup, release) finish instead.
+concurrency:
+  group: qnx-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request_target' }}
+
 jobs:
   qnx-build:
     name: Build and Test ${{ matrix.name }}
-    # Job-level `if` has no access to `env`, so the clauses are kept one per line.
-    # 1. pushes to main
-    # 2. merge queue runs
-    # 3. manual dispatch (e.g. on a Dependabot branch, which gets no secrets itself)
-    # 4. same-repository PRs without approval, except Dependabot (no access to Actions secrets)
-    if: |-
-      github.event_name == 'push' ||
-      github.event_name == 'merge_group' ||
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' &&
-        github.actor != 'dependabot[bot]' &&
-        github.event.pull_request.head.repo.full_name == github.repository)
     strategy:
       fail-fast: false
       matrix:
@@ -51,10 +49,13 @@ jobs:
           - name: score-qnx-x86_64-cit
             bazel-config: score-qnx-x86_64
             test-targets: "//:cit_tests"
-    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # main (2026-11-11)
+    # Fork PRs require approval in the workflow-approval environment (bazel.yml default).
+    # Internal PRs run automatically.
+    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # main branch (2026-11-17)
     permissions:
       contents: read
     with:
+      runner-labels: ${{ vars.runner_labels_ghub24_standard_x64 || '"ubuntu-24.04"' }}
       build-targets: "//score/..."
       test-targets: ${{ matrix.test-targets }}
       bazel-configs: ${{ matrix.bazel-config }}
@@ -70,3 +71,31 @@ jobs:
       qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
       qnx-user: ${{ secrets.SCORE_QNX_USER }}
       qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}
+
+  qnx-mergeable:
+    name: QNX mergeable
+    needs: [qnx-build]
+    # Runs even after failures and cancellations, so it can report them.
+    # Only PRs and merge groups need the result.
+    # A fork PR passes only after its QNX run is approved.
+    if: ${{ always() && (github.event_name == 'pull_request_target' || github.event_name == 'merge_group') }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
+    permissions: {}
+    timeout-minutes: 5
+    steps:
+      - name: Check job results
+        env:
+          # These jobs must succeed.
+          # No skip is intended.
+          REQUIRED: >-
+            qnx-build=${{ needs.qnx-build.result }}
+        run: |
+          set -euo pipefail
+          status=0
+          for job in ${REQUIRED}; do
+            if [[ "${job#*=}" != "success" ]]; then
+              echo "::error::${job%%=*} must succeed, but its result is ${job#*=}."
+              status=1
+            fi
+          done
+          exit "${status}"

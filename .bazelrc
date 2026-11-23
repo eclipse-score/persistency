@@ -23,10 +23,11 @@ common --registry=https://bcr.bazel.build
 common --credential_helper=*.qnx.com=%workspace%/.github/tools/qnx_credential_helper.py
 common --credential_helper_timeout="60s"
 
-build --java_language_version=17
-build --tool_java_language_version=17
-build --java_runtime_version=remotejdk_17
-build --tool_java_runtime_version=remotejdk_17
+# Retry HTTP downloads to handle transient failures (e.g. QNX toolchain)
+common --http_connector_attempts=10
+common --http_timeout_scaling=2.0
+common --experimental_repository_downloader_retries=10
+
 # Warning features come from @score_cpp_policies, injected in MODULE.bazel. The levels are
 # enabled in REPO.bazel; `warnings_as_errors` is enabled here, because an rc file is read for
 # the root module only and so keeps `-Werror` out of the builds of consumers of this module.
