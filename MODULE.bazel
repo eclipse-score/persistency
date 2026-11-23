@@ -213,6 +213,16 @@ llvm.toolchain(
 )
 use_repo(llvm, "llvm_toolchain", "llvm_toolchain_llvm")
 
+# API parsing uses bundled C++ headers rather than the host's GCC installation.
+# ToDo: Clarify usage with coverage toolchain remove if not needed.
+llvm.toolchain(
+    name = "api_surface_llvm",
+    cxx_standard = {"": "c++17"},
+    llvm_version = "22.1.7",
+    stdlib = {"": "libc++"},
+)
+use_repo(llvm, "api_surface_llvm")
+
 # ITF - base image of the docker backend.
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci", dev_dependency = True)
 oci.pull(
