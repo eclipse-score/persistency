@@ -19,7 +19,7 @@ KVS DFA (Dependent Failure Analysis)
 .. document:: KVS DFA
    :id: doc__kvs_dfa
    :status: valid
-   :version: 1
+   :version: 2
    :safety: ASIL_B
    :security: NO
    :realizes: wp__sw_component_dfa[version==1]
