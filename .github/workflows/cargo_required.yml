@@ -11,18 +11,16 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 name: Cargo build and Miri
+# pr.yml calls this workflow on pull requests and merge groups.
+# release.yml and cache-maintenance.yml also call it.
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-  merge_group:
-    types: [checks_requested]
   workflow_call:
 env:
   CARGO_TERM_COLOR: always
 jobs:
   cargo-build:
     name: Cargo build
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
     permissions:
       contents: read
     steps:
@@ -41,7 +39,7 @@ jobs:
         run: cargo build
   miri:
     name: Miri (Bazel)
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
     permissions:
       contents: read
     steps:
@@ -52,7 +50,7 @@ jobs:
         with:
           disk-cache-key: ${{ github.job }}
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@d8f1ca7808fe21b755ef3277d3581a1d57dec15f # main branch (2026-10-12)
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@d8f1ca7808fe21b755ef3277d3581a1d57dec15f # unblock-user-namespace-for-linux-sandbox/v0.0.0
       - name: Bazel miri tests
         run: |
           bazel test --lockfile_mode=error --config=score-linux-x86_64 //:miri_tests

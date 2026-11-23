@@ -13,16 +13,16 @@
 
 name: PR Checks
 
+# pr.yml calls this workflow on pull requests and merge groups.
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-  merge_group:
-    types: [checks_requested]
+  workflow_call:
 
 jobs:
   common:
-    uses: eclipse-score/cicd-workflows/.github/workflows/on-pr.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/on-pr.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # main branch (2026-11-17)
     with:
+      runner-labels: ${{ vars.runner_labels_ghub24_standard_x64 || '"ubuntu-24.04"' }}
+      require-bzlmod-lock: true
       format-target: "//tools:format.check"
       copyright-target: "//tools:copyright.check"
     permissions:

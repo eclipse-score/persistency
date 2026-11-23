@@ -28,7 +28,7 @@ jobs:
   # The toolchain and tracing setup live in the `codeql` config in .bazelrc.
   codeql-cpp:
     name: Analyze (c-cpp)
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
     permissions:
       security-events: write
       packages: read
@@ -77,7 +77,7 @@ jobs:
   # Rust: CodeQL default code scanning suite, extracted from the Cargo workspace without a build.
   codeql-rust:
     name: Analyze (rust)
-    runs-on: ubuntu-24.04
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
     permissions:
       security-events: write
       packages: read
