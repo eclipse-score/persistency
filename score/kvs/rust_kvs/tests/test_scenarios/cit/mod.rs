@@ -11,6 +11,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // *******************************************************************************
 use crate::cit::default_values::default_values_group;
+use crate::cit::key_value::key_value_group;
 use crate::cit::multiple_kvs::multiple_kvs_group;
 use crate::cit::persistency::persistency_group;
 use crate::cit::snapshots::snapshots_group;
@@ -18,6 +19,7 @@ use crate::cit::supported_datatypes::supported_datatypes_group;
 use test_scenarios_rust::scenario::{ScenarioGroup, ScenarioGroupImpl};
 
 mod default_values;
+mod key_value;
 mod multiple_kvs;
 mod persistency;
 mod snapshots;
@@ -30,6 +32,7 @@ pub fn cit_scenario_group() -> Box<dyn ScenarioGroup> {
         vec![],
         vec![
             default_values_group(),
+            key_value_group(),
             multiple_kvs_group(),
             persistency_group(),
             snapshots_group(),
