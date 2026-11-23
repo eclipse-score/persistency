@@ -123,6 +123,9 @@ Building without an explicit ``--config`` (e.g. ``score-linux-x86_64``, ``score-
 The config ``score-linux-aarch64`` is supported too.
 Its tests need ``qemu-user``.
 The QNX configs need QNX SDP credentials (``SCORE_QNX_USER``, ``SCORE_QNX_PASSWORD``) and a QNX license.
+Both QNX architectures share the QNX SDP 8.0.5 package from the private ``eclipse-score/qnx_sdp_pkg`` GitHub releases.
+For local builds, set ``GH_TOKEN`` to a token with read access to that repository.
+CI forwards the ``SCORE_BOT_QNX_PKG_PAT`` secret as ``github-token`` to the shared Bazel workflow.
 Run the QNX unit tests with ``run-under-qnx-x86_64`` or ``run-under-qnx-aarch64``.
 These configs run the tests in a QEMU VM and need ``qemu-system-x86_64`` or ``qemu-system-aarch64``.
 The x86_64 VM uses KVM when it is available.
