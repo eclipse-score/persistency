@@ -36,7 +36,7 @@ Component AoU
    :safety: ASIL_B
    :status: valid
    :version: 1
-   :tags: Persistency KVS, environment
+   :tags: persistency, environment
 
    The user shall ensure that the file system and storage used for the KVS directory provide deterministic
    operations with a bounded execution time (open, read, write, ``fdatasync``, ``rename``, directory creation and
@@ -51,7 +51,7 @@ Component AoU
    :safety: ASIL_B
    :status: valid
    :version: 1
-   :tags: Persistency KVS, environment
+   :tags: persistency, environment
 
    The user shall configure the maximum storage size and the maximum number of snapshots of each KVS instance, so
    that the execution time of the KVS operations is bounded.
