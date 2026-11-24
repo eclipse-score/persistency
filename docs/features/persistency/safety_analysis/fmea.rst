@@ -18,7 +18,7 @@ Persistency Failure Modes and Effects Analysis
 .. document:: Persistency FMEA
    :id: doc__persistency_fmea
    :status: valid
-   :version: 1
+   :version: 2
    :safety: ASIL_B
    :security: NO
    :realizes: wp__feature_fmea[version==1]

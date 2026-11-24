@@ -7,9 +7,7 @@
 iniconfig==2.3.0 \
     --hash=sha256:c76315c77db068650d49c5b56314774a7804df16fee4402c1f19d6d15d8c4730 \
     --hash=sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12
-    # via
-    #   -r /home/maximilianp/.cache/bazel/_bazel_maximilianp/221f257587d27d688f9313d0a220885c/external/score_tools+/score_pytest/requirements_py312.txt
-    #   pytest
+    # via pytest
 jinja2==3.1.6 \
     --hash=sha256:0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d \
     --hash=sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67
@@ -80,15 +78,11 @@ markupsafe==3.0.2 \
 packaging==26.3 \
     --hash=sha256:94edc256424af38762eb31306eed28beb9f0efc50a8837492c9d6fd6004aed79 \
     --hash=sha256:d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c
-    # via
-    #   -r /home/maximilianp/.cache/bazel/_bazel_maximilianp/221f257587d27d688f9313d0a220885c/external/score_tools+/score_pytest/requirements_py312.txt
-    #   pytest
+    # via pytest
 pluggy==1.6.0 \
     --hash=sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3 \
     --hash=sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746
-    # via
-    #   -r /home/maximilianp/.cache/bazel/_bazel_maximilianp/221f257587d27d688f9313d0a220885c/external/score_tools+/score_pytest/requirements_py312.txt
-    #   pytest
+    # via pytest
 psutil==7.1.3 \
     --hash=sha256:0005da714eee687b4b8decd3d6cc7c6db36215c9e74e5ad2264b90c3df7d92dc \
     --hash=sha256:1068c303be3a72f8e18e412c5b2a8f6d31750fb152f9cb106b54090296c9d251 \
@@ -113,23 +107,16 @@ psutil==7.1.3 \
 pygments==2.21.0 \
     --hash=sha256:2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9 \
     --hash=sha256:610ca751c9bc2492b38eb9a38a7fbc93edbbb2d7182edaf34e66ae493dee5c8c
+    # via pytest
+pytest==9.0.3 \
+    --hash=sha256:2c5efc453d45394fdd706ade797c0a81091eccd1d6e4bccfcd476e2b8e0ab5d9 \
+    --hash=sha256:b86ada508af81d19edeb213c681b1d48246c1a91d304c6c81a427674c17eb91c
     # via
-    #   -r /home/maximilianp/.cache/bazel/_bazel_maximilianp/221f257587d27d688f9313d0a220885c/external/score_tools+/score_pytest/requirements_py312.txt
-    #   pytest
-pytest==9.1.1 \
-    --hash=sha256:1088fbde8f2b49d95a549a195707afa7a76a3ce9bcadc26b6d71f0ffda5fe313 \
-    --hash=sha256:37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c
-    # via
-    #   -r /home/maximilianp/.cache/bazel/_bazel_maximilianp/221f257587d27d688f9313d0a220885c/external/score_tools+/score_pytest/requirements_py312.txt
-    #   pytest-env
+    #   -r score/kvs/tests/test_cases/requirements.txt
     #   pytest-html
     #   pytest-metadata
     #   pytest-repeat
     #   testing-utils
-pytest-env==1.1.5 \
-    --hash=sha256:91209840aa0e43385073ac464a554ad2947cc2fd663a9debf88d03b01e0cc1cf \
-    --hash=sha256:ce90cf8772878515c24b31cd97c7fa1f4481cd68d588419fd45f10ecaee6bc30
-    # via -r score/kvs/tests/test_cases/requirements.txt
 pytest-html==4.1.1 \
     --hash=sha256:70a01e8ae5800f4a074b56a4cb1025c8f4f9b038bba5fe31e3c98eb996686f07 \
     --hash=sha256:c8152cea03bd4e9bee6d525573b67bbc6622967b72b9628dda0ea3e2a0b5dd71

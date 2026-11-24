@@ -21,22 +21,32 @@
 #include <unistd.h>
 #include <cstdio>
 #include <cstdlib>
-#include <filesystem>
 #include <fstream>
 #include <string>
 
-#include "score/filesystem/filesystem_mock.h"
+#include "score/filesystem/filesystem.h"
 #include "score/json/i_json_parser_mock.h"
 #include "score/json/i_json_writer_mock.h"
 #include "score/kvs/internal/kvs_helper.h"
+#include "score/kvs/internal/kvs_instance_registry.h"
 #include "score/kvs/kvs_builder.h"
-using namespace score::kvs;
 
 uint32_t Adler32(const std::string& data);
 void PrepareEnvironment();
 void CleanupEnvironment();
 void CleanupEnvironment(const std::string& dir);
 void Store(const std::string& file_path, const std::string& hash_path, const std::string& data);
+
+namespace filesystem_test
+{
+bool Exists(const std::string& path);
+bool Remove(const std::string& path);
+void RemoveAll(const std::string& path);
+void CreateDirectory(const std::string& path);
+void CreateDirectories(const std::string& path);
+void SetPermissions(const std::string& path, score::filesystem::Perms permissions);
+std::size_t FileSize(const std::string& path);
+}  // namespace filesystem_test
 
 inline void PrepareKvs(const std::string& dir,
                        const std::string& prefix,
@@ -70,6 +80,8 @@ inline void PrepareEnvironment(const std::string& dir,
                                const std::string& default_data,
                                TSnapshots&&... snapshots)
 {
+    score::kvs::KvsInstanceRegistry::GetInstance().Reset();
+
     mkdir(dir.c_str(), 0777);
 
     const std::string path{dir + "/" + prefix + std::to_string(instance_id)};
@@ -83,9 +95,9 @@ inline void PrepareEnvironment(const std::string& dir,
 
 // Default data used in unit tests.
 
-const std::uint32_t kInstance{123U};
-const InstanceId kInstanceId{kInstance};
-const SnapshotId kSnapshotId{0ul};
+const std::uint32_t kInstance{3u};
+const score::kvs::InstanceId kInstanceId{kInstance};
+const score::kvs::SnapshotId kSnapshotId{0ul};
 
 // score::filesystem::Path could be constructed implicitly from std::string.
 // For readability, the test code constructs it explicitly from these strings.

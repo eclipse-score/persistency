@@ -59,61 +59,91 @@ The C++ API is centered around the `KvsBuilder` and `Kvs` classes (namespace `sc
 #include "score/kvs/kvs_builder.h"
 
 #include <iostream>
+#include <memory>
 #include <string>
+#include <utility>
 #include <variant>
 
 using namespace score::kvs;
 
 int main()
 {
-    auto open_res = KvsBuilder(InstanceId(0))
-                        .Defaults(KvsDefaults::kOptional)
-                        .KvsLoad(KvsLoad::kOptional)
-                        .WorkingDir("./data_folder/")
-                        .Build();
+    const InstanceId instance_id{0U};
+    auto open_res{KvsBuilder{instance_id}
+                      .Defaults(KvsDefaults::kOptional)
+                      .KvsLoad(KvsLoad::kOptional)
+                      .WorkingDir("./data_folder/")
+                      .Build()};
     if (!open_res)
     {
         std::cerr << "Failed to open KVS" << std::endl;
         return 1;
     }
-    Kvs kvs = std::move(open_res.value());
+    std::shared_ptr<Kvs> kvs{std::move(open_res.value())};
 
-    // Set a key-value pair; errors shall be handled by the application (see safety manual)
-    if (!kvs.SetValue("username", KvsValue("alice")))
+    // Set a key-value pair; errors shall be handled by the application (see safety manual).
+    if (!kvs->SetValue("username", KvsValue("alice")))
     {
         std::cerr << "Failed to set value" << std::endl;
         return 1;
     }
 
     // Read a stored value (returns kKeyNotFound if no value is stored for the key)
-    auto get_res = kvs.GetValue("username");
-    if (get_res && get_res.value().GetType() == KvsValue::Type::kString)
+    auto get_res{kvs->GetValue("username")};
+    if (!get_res)
+    {
+        std::cerr << "Failed to get value" << std::endl;
+        return 1;
+    }
+    if (get_res.value().GetType() == KvsValue::Type::kString)
     {
         std::cout << "username: " << std::get<std::string>(get_res.value().GetValue()) << std::endl;
     }
 
-    // Read a default value
-    auto default_res = kvs.GetDefaultValue("language");
-
     // Check if a value is stored for a key
-    if (kvs.KeyExists("username").value_or(false))
+    auto exists_res{kvs->KeyExists("username")};
+    if (!exists_res)
+    {
+        std::cerr << "Failed to check key" << std::endl;
+        return 1;
+    }
+    if (exists_res.value())
     {
         std::cout << "username exists" << std::endl;
     }
 
-    // Remove a key
-    if (!kvs.RemoveKey("username"))
+    // List all keys with a stored value (defaults are not listed)
+    auto keys_res{kvs->GetAllKeys()};
+    if (!keys_res)
     {
-        std::cerr << "Failed to remove key" << std::endl;
+        std::cerr << "Failed to list keys" << std::endl;
+        return 1;
+    }
+    for (const auto& key : keys_res.value())
+    {
+        std::cout << "key: " << key << std::endl;
     }
 
-    // List all keys with a stored value (defaults are not listed)
-    auto keys_res = kvs.GetAllKeys();
+    // Remove a key
+    if (!kvs->RemoveKey("username"))
+    {
+        std::cerr << "Failed to remove key" << std::endl;
+        return 1;
+    }
 
     // Write the values to the storage
-    if (!kvs.Flush())
+    if (!kvs->Flush())
     {
         std::cerr << "Failed to flush KVS" << std::endl;
+        return 1;
+    }
+
+    // Release the application handle before unregistering the instance.
+    kvs.reset();
+    auto unregister_res{Unregister(instance_id)};
+    if (!unregister_res)
+    {
+        std::cerr << "Failed to unregister KVS" << std::endl;
         return 1;
     }
 

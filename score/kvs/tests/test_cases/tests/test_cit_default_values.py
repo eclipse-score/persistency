@@ -10,63 +10,26 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-import json
-import re
 from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 from zlib import adler32
 
 import pytest
-from common import CommonScenario, ResultCode, temp_dir_common
+from common import (
+    CommonScenario,
+    ResultCode,
+    create_defaults_file,
+    create_defaults_json,
+    file_exists,
+    temp_dir_common,
+    write_file_on_target,
+)
+from score.itf.plugins.core import Target
 from test_properties import add_test_properties
 from testing_utils import LogContainer, ScenarioResult
 
 pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
-
-
-# Type tag and value pair.
-TaggedValue = tuple[str, Any]
-
-
-def create_defaults_json(values: dict[str, TaggedValue]) -> str:
-    """
-    Create JSON string containing default values.
-    """
-    # Create defaults.
-    json_value = {}
-    for key, tagged_value in values.items():
-        type_tag, value = tagged_value
-        json_value[key] = {"t": type_tag, "v": value}
-
-    return json.dumps({"t": "obj", "v": json_value})
-
-
-def create_defaults_file(dir_path: Path, instance_id: int, values: dict[str, TaggedValue]) -> Path:
-    """
-    Create file containing default values, along with a matching hash file.
-    Returns path to default values file.
-    """
-    # Path to expected defaults file.
-    # E.g., `/tmp/xyz/kvs_0_default.json`.
-    defaults_file_path = dir_path / f"kvs_{instance_id}_default.json"
-    # Path to expected defaults hash file.
-    # E.g., `/tmp/xyz/kvs_0_default.hash`.
-    defaults_hash_file_path = dir_path / f"kvs_{instance_id}_default.hash"
-
-    # Create JSON string containing default values.
-    json_str = create_defaults_json(values)
-
-    # Generate hash.
-    defaults_hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
-
-    # Save content and hash.
-    with open(defaults_file_path, mode="w", encoding="UTF-8") as file:
-        file.write(json_str)
-    with open(defaults_hash_file_path, mode="wb") as file:
-        file.write(defaults_hash)
-
-    return defaults_file_path
 
 
 class DefaultValuesScenario(CommonScenario):
@@ -78,13 +41,11 @@ class DefaultValuesScenario(CommonScenario):
         return 1
 
     @pytest.fixture(scope="class")
-    def temp_dir(
-        self, tmp_path_factory: pytest.TempPathFactory, version: str, defaults: str
-    ) -> Generator[Path, None, None]:
+    def temp_dir(self, target: Target, version: str, defaults: str) -> Generator[Path, None, None]:
         """
         Create temporary directory and remove it after test.
         """
-        yield from temp_dir_common(tmp_path_factory, self.__class__.__name__, version, defaults)
+        yield from temp_dir_common(target, self.__class__.__name__, version, defaults)
 
 
 @add_test_properties(
@@ -125,12 +86,12 @@ class TestDefaultValues(DefaultValuesScenario):
         }
 
     @pytest.fixture(scope="class")
-    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+    def defaults_file(self, target: Target, temp_dir: Path, defaults: str) -> Path | None:
         assert defaults in ("optional", "required", "without")
         if defaults == "without":
             return None
 
-        return create_defaults_file(temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)})
+        return create_defaults_file(target, temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)})
 
     def test_valid(
         self,
@@ -202,12 +163,12 @@ class TestRemoveKey(DefaultValuesScenario):
         }
 
     @pytest.fixture(scope="class")
-    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+    def defaults_file(self, target: Target, temp_dir: Path, defaults: str) -> Path | None:
         assert defaults in ("optional", "required", "without")
         if defaults == "without":
             return None
 
-        return create_defaults_file(temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)})
+        return create_defaults_file(target, temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)})
 
     def test_valid(
         self,
@@ -263,12 +224,12 @@ class TestRemoveKey(DefaultValuesScenario):
 class TestMalformedDefaultsFile(DefaultValuesScenario):
     """Verifies that KVS fails to open when the defaults file contains invalid JSON."""
 
+    # Expected error, as printed by test scenarios: Rust prints error code name, C++ error message.
+    ERROR = {"rust": "JsonParserError", "cpp": "JSON parser error"}
+
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.default_values.default_values"
-
-    def capture_stderr(self) -> bool:
-        return True
 
     @pytest.fixture(scope="class")
     def test_config(self, temp_dir: Path, defaults: str, defaults_file: Path | None) -> dict[str, Any]:
@@ -283,7 +244,7 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         }
 
     @pytest.fixture(scope="class")
-    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+    def defaults_file(self, target: Target, temp_dir: Path, defaults: str) -> Path | None:
         assert defaults in ("optional", "required")
 
         # Path to expected defaults file.
@@ -302,10 +263,8 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         defaults_hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
 
         # Save content and hash.
-        with open(defaults_file_path, mode="w", encoding="UTF-8") as file:
-            file.write(json_str)
-        with open(defaults_hash_file_path, mode="wb") as file:
-            file.write(defaults_hash)
+        write_file_on_target(target, defaults_file_path, json_str.encode())
+        write_file_on_target(target, defaults_hash_file_path, defaults_hash)
 
         return defaults_file_path
 
@@ -313,12 +272,11 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
         self,
         defaults_file: Path | None,
         results: ScenarioResult,
+        version: str,
     ) -> None:
         assert defaults_file is not None
         assert results.return_code == ResultCode.PANIC
-        assert results.stderr is not None
-        pattern = r'file ".*" could not be read: JsonParserError'
-        assert re.findall(pattern, results.stderr) is not None
+        assert f"Failed to create KVS instance: {self.ERROR[version]}" in results.stderr
 
 
 @add_test_properties(
@@ -334,12 +292,13 @@ class TestMalformedDefaultsFile(DefaultValuesScenario):
 class TestMissingDefaultsFile(DefaultValuesScenario):
     """Verifies that KVS fails to open when the defaults file is missing."""
 
+    # Expected error, as printed by test scenarios: Rust prints error code name, C++ error message.
+    # Implementations differ: Rust reports FileNotFound, C++ reports KvsFileReadError.
+    ERROR = {"rust": "FileNotFound", "cpp": "KVS file read error"}
+
     @pytest.fixture(scope="class")
     def scenario_name(self) -> str:
         return "cit.default_values.default_values"
-
-    def capture_stderr(self) -> bool:
-        return True
 
     @pytest.fixture(scope="class")
     def test_config(self, temp_dir: Path, defaults: str) -> dict[str, Any]:
@@ -351,11 +310,9 @@ class TestMissingDefaultsFile(DefaultValuesScenario):
             }
         }
 
-    def test_invalid(self, results: ScenarioResult) -> None:
+    def test_invalid(self, results: ScenarioResult, version: str) -> None:
         assert results.return_code == ResultCode.PANIC
-        assert results.stderr is not None
-        pattern = r'file ".*" could not be read: KvsFileReadError'
-        assert re.findall(pattern, results.stderr) is not None
+        assert f"Failed to create KVS instance: {self.ERROR[version]}" in results.stderr
 
 
 @add_test_properties(
@@ -391,14 +348,14 @@ class TestResetAllKeys(DefaultValuesScenario):
         }
 
     @pytest.fixture(scope="class")
-    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+    def defaults_file(self, target: Target, temp_dir: Path, defaults: str) -> Path | None:
         assert defaults in ("optional", "required")
 
         values = {}
         for i in range(self.NUM_VALUES):
             values[f"test_number_{i}"] = ("f64", 432.1 * i)
 
-        return create_defaults_file(temp_dir, self.instance_id(), values)
+        return create_defaults_file(target, temp_dir, self.instance_id(), values)
 
     def test_valid(
         self,
@@ -459,14 +416,14 @@ class TestSetValueToDefault(DefaultValuesScenario):
         }
 
     @pytest.fixture(scope="class")
-    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+    def defaults_file(self, target: Target, temp_dir: Path, defaults: str) -> Path | None:
         assert defaults in ("optional", "required")
 
         values = {}
         for i in range(self.NUM_VALUES):
             values[f"test_number_{i}"] = ("f64", 432.1 * i)
 
-        return create_defaults_file(temp_dir, self.instance_id(), values)
+        return create_defaults_file(target, temp_dir, self.instance_id(), values)
 
     def test_valid(
         self,
@@ -509,17 +466,15 @@ class TestSetValueToDefault(DefaultValuesScenario):
 
 
 @add_test_properties(
-    fully_verifies=["comp_req__kvs__default_val_chksum"],
-    partially_verifies=[
-        "comp_req__kvs__value_default",
-        "comp_req__kvs__default_value_cfg",
-    ],
+    partially_verifies=["comp_req__kvs__pers_data_csum"],
     test_type="requirements-based",
     derivation_technique="requirements-analysis",
 )
 @pytest.mark.parametrize("defaults", ["optional", "required"], scope="class")
 class TestChecksumOnProvidedDefaults(DefaultValuesScenario):
-    """Ensures that a checksum file is created when opening KVS with defaults."""
+    """
+    Verifies that a flush of a KVS opened with a default-values file stores the data file with a hash file next to it.
+    """
 
     KEY = "test_number"
     VALUE = 111.1
@@ -541,15 +496,16 @@ class TestChecksumOnProvidedDefaults(DefaultValuesScenario):
         }
 
     @pytest.fixture(scope="class")
-    def defaults_file(self, temp_dir: Path, defaults: str) -> Path | None:
+    def defaults_file(self, target: Target, temp_dir: Path, defaults: str) -> Path | None:
         assert defaults in ("optional", "required", "without")
         if defaults == "without":
             return None
 
-        return create_defaults_file(temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)})
+        return create_defaults_file(target, temp_dir, self.instance_id(), {self.KEY: ("f64", self.VALUE)})
 
     def test_valid(
         self,
+        target: Target,
         defaults_file: Path | None,
         results: ScenarioResult,
         logs_info_level: LogContainer,
@@ -560,7 +516,5 @@ class TestChecksumOnProvidedDefaults(DefaultValuesScenario):
         logs = logs_info_level.get_logs(field="kvs_path")
         assert len(logs) == 1
 
-        kvs_path = Path(logs[0].kvs_path)
-        assert kvs_path.is_file()
-        hash_path = Path(logs[0].hash_path)
-        assert hash_path.is_file()
+        assert file_exists(target, Path(logs[0].kvs_path))
+        assert file_exists(target, Path(logs[0].hash_path))

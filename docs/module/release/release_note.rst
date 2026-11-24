@@ -1,6 +1,6 @@
 ..
    # *******************************************************************************
-   # Copyright (c) 2025 Contributors to the Eclipse Foundation
+   # Copyright (c) 2026 Contributors to the Eclipse Foundation
    #
    # See the NOTICE file(s) distributed with this work for additional
    # information regarding copyright ownership.
@@ -12,30 +12,34 @@
    # SPDX-License-Identifier: Apache-2.0
    # *******************************************************************************
 
-Release Note
-============
+Persistency Release Note
+========================
+
+.. note:: Document header
 
 .. document:: Persistency Release Note
    :id: doc__persistency_release_note
    :status: valid
    :version: 1
    :safety: ASIL_B
-   :security: NO
+   :security: YES
    :realizes: wp__module_sw_release_note[version==1]
    :tags: persistency
 
 
 | **Module Name:** Persistency
-| **Release Tag:** vX.Y.Z
-| **Origin Release Tag:** vU.V.W
-| **Release Date:** YYYY-MM-DD
+| **Release Tag:** v0.5.0
+| **Origin Release Tag:** v0.4.1
+| **Release Date:** 2026-11-20
 
 
 Overview
 ^^^^^^^^
 
-This document provides an overview of the changes, improvements, and bug fixes included in the software module release version vX.Y.Z
+This document provides an overview of the changes, improvements, and bug fixes included in the software module release version v0.5.0
 as compared to the module's origin release (which is usually the previous release).
+
+This release introduces a shared C++ KVS instance registry with breaking API changes and expands build and verification coverage; see the `release comparison <https://github.com/eclipse-score/persistency/compare/v0.4.1...v0.5.0>`_.
 
 Disclaimer
 ----------
@@ -47,38 +51,43 @@ being a non-profit and open source organization, can not take over any liability
 Changes to the Module
 ^^^^^^^^^^^^^^^^^^^^^
 
+The release description contains the generated changelog, including the complete list of merged pull requests and dependency updates:
+`GitHub releases <https://github.com/eclipse-score/persistency/releases>`_.
+This note focuses on behavior and compatibility changes relevant to module users.
+
 New Features
 ------------
 
-- **Feature 1:** Brief description of the new feature.
-- **Feature 2:** Brief description of the new feature.
-- **Feature 3:** Brief description of the new feature.
+- **C++ instance registry:** ``KvsBuilder::Build()`` returns a shared pointer to a process-local KVS instance. Repeated builds with the same instance ID and identical options share the same object, including unflushed changes, without reloading files.
+- **C++ instance lifecycle:** ``score::kvs::Unregister()`` removes an instance once all caller-held shared pointers have been released. The registry otherwise retains the instance until process exit.
 
 Improvements
 ------------
 
-- **Improvement 1:** Brief description of the improvement.
-- **Improvement 2:** Brief description of the improvement.
-- **Improvement 3:** Brief description of the improvement.
+- **C++ thread safety:** snapshot counting, file-path queries and storage-file size queries now acquire the instance mutex.
+- **Developer tooling:** improved IDE support includes compile-command extraction, VS Code tasks and Rust formatting configuration.
 
 Bug Fixes
 ---------
 
-- **Bug 1:** Brief description of the bug fix.
-- **Bug 2:** Brief description of the bug fix.
-- **Bug 3:** Brief description of the bug fix.
+- **C++ duplicate instances:** the registry prevents independently opened objects for the same instance ID within one process. Opening an already registered ID with different options fails with ``kInstanceParametersMismatch``.
 
 Other changes by Label
 ----------------------
 
-- **Label 1/Refactor 1:** Brief description of the change.
-- **Label 2/Refactor 2:** Brief description of the change.
-- **Label 3/Refactor 3:** Brief description of the change.
+- **Verification coverage:** added Linux aarch64 tests under QEMU user emulation, QNX x86_64 and aarch64 unit tests in QEMU VMs, and Linux AddressSanitizer, UndefinedBehaviorSanitizer and LeakSanitizer checks.
+- **Integration testing:** expanded C++ and Rust tests for explicit flush and persistence across restarts.
+- **Build/CI maintenance:** release checks reuse the build, Cargo, lint, sanitizer, coverage and documentation workflows; coverage tooling moved to ``tools/coverage`` with a scope check.
+- **Dependencies and documentation:** updated module and CI dependencies and integrated Quick Start into the module documentation; see the generated changelog for the complete list.
 
 Compatibility
 ^^^^^^^^^^^^^
 
-- **Dependencies:** List any dependencies and their versions.
+- **C++ source and ABI compatibility:** this release is not a drop-in replacement for v0.4.1. The builder result type and instance ownership model changed, ``Kvs::Open()`` and its deprecated ``open()`` alias were removed, and ``Kvs`` is no longer movable. Rebuild consumers after adapting them as described below.
+- **C++ instance IDs:** valid IDs are now limited to 0 through 9 (``kMaxInstanceCount`` is 10); other IDs fail with ``kInvalidInstanceId``.
+- **Rust API and stored data:** no Rust public API or persisted JSON/hash format changes were introduced.
+- **Dependencies:** as declared in ``MODULE.bazel`` of tag v0.5.0
+  The full dependency inventory is provided by the SBOM (``//:sbom_*``).
 
 Performed Verification
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -89,22 +98,28 @@ This release note is based on the verification as documented in module verificat
 Known Issues
 ------------
 
-- **Issue 1:** Brief description of the known issue. Justification regarding safety impact.
-- **Issue 2:** Brief description of the known issue. Justification regarding safety impact.
-- **Issue 3:** Brief description of the known issue. Justification regarding safety impact.
+- **Non-atomic storage of data and hash file** (`#515`_), :need:`comp_req__kvs__atomic_store`:
+  an interrupted write is detected as checksum mismatch on the next load (:need:`comp_req__kvs__pers_data_csum_vrfy`).
+- **Large 64-bit integers rounded in JSON (Rust)** (`#204`_): exact storage is only given within the IEEE 754 double integer range.
+- **No protection against multi-process access** (`#494`_), :need:`comp_req__kvs__single_process_access`: the new registry coordinates instances within one process only; exclusive access across processes still has to be ensured by the user.
 
 Known Vulnerabilities
 ---------------------
 
-- **CVE 1:** Brief description of the known CVE. Justification regarding security impact.
-- **CVE 2:** Brief description of the known CVE. Justification regarding security impact.
-- **CVE 3:** Brief description of the known CVE. Justification regarding security impact.
+- No open vulnerabilities are known for this release (GitHub Dependabot alerts: none open).
 
 Upgrade Instructions
 ^^^^^^^^^^^^^^^^^^^^
 
-1. **Step 1:** Description of the first step.
-2. **Step 2:** Description of the second step.
-3. **Step 3:** Description of the third step.
+1. **Open through the builder:** replace ``Kvs::Open()`` and ``Kvs::open()`` with ``KvsBuilder`` calls using equivalent options and ``Build()``.
+2. **Use shared ownership:** ``Build()`` and its deprecated ``build()`` alias now return ``score::Result<std::shared_ptr<Kvs>>`` instead of ``score::Result<Kvs>``. Check the result, then access the store through the returned shared pointer rather than moving a ``Kvs`` value.
+3. **Coordinate instance configuration:** use IDs below ``kMaxInstanceCount`` and identical builder options for all users of an ID. Different directories do not create independent instances under the same ID; handle ``kInvalidInstanceId`` and ``kInstanceParametersMismatch``.
+4. **Account for shared state:** mutations, including pending changes, resets and snapshot restores, affect every holder of the instance. Building again does not reload data or change its configuration.
+5. **Manage reopening explicitly:** flush changes that must persist, release all caller-held shared pointers, then call ``score::kvs::Unregister()`` before rebuilding to reload files or change options. Unregistering does not flush; it fails with ``kResourceBusy`` while callers still hold pointers, or ``kInvalidInstanceId`` if the ID is invalid or not registered.
+6. **Rebuild C++ consumers:** adapt value-based storage and ownership assumptions to shared pointers. No stored-data migration is required.
 
 For any questions or support, please contact the *Project lead* or raise an issue/discussion.
+
+.. _#204: https://github.com/eclipse-score/persistency/issues/204
+.. _#494: https://github.com/eclipse-score/persistency/issues/494
+.. _#515: https://github.com/eclipse-score/persistency/issues/515

@@ -1,4 +1,6 @@
 psutil
+# Keep pytest aligned with the version @score_itf ships (requirements_lock_3_12.txt),
+# both end up in the same py_itf_test binary.
+pytest==9.0.3
 pytest-metadata
-pytest-env
 testing-utils @ git+https://github.com/eclipse-score/testing_tools.git@007c9027d69ee5408add68fd598179129166ceb9

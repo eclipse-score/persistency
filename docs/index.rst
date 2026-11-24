@@ -111,7 +111,7 @@ The integration of the module into a Bazel project is described in ``examples/RE
 .. _quick-start-building-testing:
 
 Quick Start - Building and Testing
-===================================
+----------------------------------
 
 To build the module:
 
@@ -120,6 +120,12 @@ To build the module:
    bazel build --config=score-linux-x86_64 -- //score/...
 
 Building without an explicit ``--config`` (e.g. ``score-linux-x86_64``, ``score-qnx-x86_64``, ``score-qnx-aarch64``) is not supported.
+The config ``score-linux-aarch64`` is supported too.
+Its tests need ``qemu-user``.
+The QNX configs need QNX SDP credentials (``SCORE_QNX_USER``, ``SCORE_QNX_PASSWORD``) and a QNX license.
+Run the QNX unit tests with ``run-under-qnx-x86_64`` or ``run-under-qnx-aarch64``.
+These configs run the tests in a QEMU VM and need ``qemu-system-x86_64`` or ``qemu-system-aarch64``.
+The x86_64 VM uses KVM when it is available.
 The old names ``per-x86_64-linux``, ``per-x86_64-qnx`` and ``per-arm64-qnx`` still work as deprecated aliases.
 
 To run all tests:
@@ -138,7 +144,12 @@ To run Component / Feature Integration Tests:
 
 .. code-block:: bash
 
-   bazel test //:cit_tests
+   bazel test --config=score-linux-x86_64 //:cit_tests
+   bazel test --config=score-qnx-x86_64 //:cit_tests
+
+The tests run with `ITF <https://github.com/eclipse-score/itf>`_ on a target system:
+a Docker container on Linux (requires Docker), a QEMU VM on QNX (requires ``qemu-system-x86_64``,
+KVM is optional but makes the tests much faster).
 
 
 Module Build Configuration

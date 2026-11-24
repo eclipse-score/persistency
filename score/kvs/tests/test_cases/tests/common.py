@@ -10,15 +10,25 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
+import json
 import logging
-import shutil
+import shlex
+import tempfile
+import uuid
 from collections.abc import Generator
+from datetime import timedelta
 from pathlib import Path
+from typing import Any
+from zlib import adler32
 
 import pytest
-from testing_utils import BazelTools, BuildTools, LogContainer, Scenario
+from score.itf.plugins.core import Target
+from testing_utils import BuildTools, LogContainer, ResultEntry, Scenario, ScenarioResult
 
 logger = logging.getLogger(__name__)
+
+# Directory on the target for files created by the tests.
+TARGET_TMP_DIR = Path("/tmp")
 
 
 class ResultCode:
@@ -32,69 +42,252 @@ class ResultCode:
     SIGABRT = -6
 
 
-def temp_dir_common(
-    tmp_path_factory: pytest.TempPathFactory, base_name: str, *args: str
-) -> Generator[Path, None, None]:
-    """
-    Create temporary directory and remove it after test.
-    Common implementation to be reused by fixtures.
+def execute_checked(target: Target, command: str) -> str:
+    exit_code, output = target.execute(command)
+    assert exit_code == 0, f"Command `{command}` failed with exit code {exit_code}: {output.decode()}"
+    return output.decode()
 
-    Returns generator providing numbered path to temporary directory.
-    E.g., '<TMP_PATH>/<BASE_NAME>-<ARG1>-<ARG2><NUMBER>/'.
+
+def _test_path(target: Target, operator: str, path: Path) -> bool:
+    """
+    Evaluate 'test <operator> <path>' on the target, fail if the check itself doesn't run.
 
     Parameters
     ----------
-    tmp_path_factory : pytest.TempPathFactory
-        Factory for temporary directories.
+    target : Target
+        Target to check path on.
+    operator : str
+        'test' operator, e.g., '-e'.
+    path : Path
+        Path on the target.
+    """
+    command = f"test {operator} {shlex.quote(str(path))}"
+    exit_code, output = target.execute(command)
+    # 'test' exits with 0 (true), 1 (false) or above 1 (error).
+    assert exit_code in (0, 1), f"Command `{command}` failed with exit code {exit_code}: {output.decode()}"
+    return exit_code == 0
+
+
+def path_exists(target: Target, path: Path) -> bool:
+    return _test_path(target, "-e", path)
+
+
+def file_exists(target: Target, path: Path) -> bool:
+    return _test_path(target, "-f", path)
+
+
+def write_file_on_target(target: Target, path: Path, content: bytes) -> None:
+    with tempfile.TemporaryDirectory() as local_dir:
+        local_path = Path(local_dir) / path.name
+        local_path.write_bytes(content)
+        target.upload(str(local_path), str(path))
+
+
+def read_file_on_target(target: Target, path: Path) -> bytes:
+    """
+    Content of a file on the target, byte for byte: it is downloaded, not printed through the shell.
+    """
+    with tempfile.TemporaryDirectory() as local_dir:
+        local_path = Path(local_dir) / path.name
+        target.download(str(path), str(local_path))
+        return local_path.read_bytes()
+
+
+# Type tag and value pair.
+TaggedValue = tuple[str, Any]
+
+
+def create_defaults_json(values: dict[str, TaggedValue]) -> str:
+    """
+    Create JSON string containing default values.
+    """
+    # Create defaults.
+    json_value = {}
+    for key, tagged_value in values.items():
+        type_tag, value = tagged_value
+        json_value[key] = {"t": type_tag, "v": value}
+
+    return json.dumps({"t": "obj", "v": json_value})
+
+
+def create_defaults_file(target: Target, dir_path: Path, instance_id: int, values: dict[str, TaggedValue]) -> Path:
+    """
+    Create file containing default values on the target, along with a matching hash file.
+    Returns path to default values file.
+    """
+    # Path to expected defaults file.
+    # E.g., `/tmp/xyz/kvs_0_default.json`.
+    defaults_file_path = dir_path / f"kvs_{instance_id}_default.json"
+    # Path to expected defaults hash file.
+    # E.g., `/tmp/xyz/kvs_0_default.hash`.
+    defaults_hash_file_path = dir_path / f"kvs_{instance_id}_default.hash"
+
+    # Create JSON string containing default values.
+    json_str = create_defaults_json(values)
+
+    # Generate hash.
+    defaults_hash = adler32(json_str.encode()).to_bytes(length=4, byteorder="big")
+
+    # Save content and hash.
+    write_file_on_target(target, defaults_file_path, json_str.encode())
+    write_file_on_target(target, defaults_hash_file_path, defaults_hash)
+
+    return defaults_file_path
+
+
+def run_scenario_on_target(target: Target, command: list[str], execution_timeout: float) -> ScenarioResult:
+    """
+    Execute test scenario executable on the target and return results.
+
+    Parameters
+    ----------
+    target : Target
+        Target to execute test scenario on.
+    command : list[str]
+        Command to invoke.
+    execution_timeout : float
+        Test execution timeout in seconds.
+    """
+    # Stderr is redirected to a file to keep it apart from stdout.
+    stderr_path = TARGET_TMP_DIR / f"scenario-{uuid.uuid4().hex}.stderr"
+    # A hanging scenario is killed with SIGKILL, it might ignore SIGTERM.
+    target_command = (
+        f"cd {TARGET_TMP_DIR} && RUST_BACKTRACE=1 timeout -s KILL {execution_timeout} {shlex.join(command)} "
+        f"2>{stderr_path}"
+    )
+    logger.info("Running command: `%s`", target_command)
+    exit_code, stdout = target.execute(target_command)
+    stderr = execute_checked(target, f"cat {stderr_path} && rm -f {stderr_path}")
+    logger.debug("Command finished with exit code %d, stderr:\n%s", exit_code, stderr)
+
+    # Shell reports a process killed by signal N as 128 + N.
+    return_code = 128 - exit_code if exit_code > 128 else exit_code
+    hang = return_code == ResultCode.SIGKILL
+    if hang:
+        logger.warning("Command timed out after %ss", execution_timeout)
+    return ScenarioResult(stdout.decode(), stderr, return_code, hang)
+
+
+def scenario_command(target_path: Path, scenario_name: str, test_config: dict[str, Any]) -> list[str]:
+    """Command that runs a test scenario with the given configuration."""
+    return [str(target_path), "--name", scenario_name, "--input", json.dumps(test_config)]
+
+
+def run_named_scenario(
+    target: Target,
+    target_path: Path,
+    scenario_name: str,
+    test_config: dict[str, Any],
+    execution_timeout: float,
+) -> ScenarioResult:
+    """
+    Run a test scenario in a new process on the target and return results.
+
+    Used for processes other than the one of the 'results' fixture, e.g. a restart.
+    """
+    return run_scenario_on_target(target, scenario_command(target_path, scenario_name, test_config), execution_timeout)
+
+
+def logs_from_stdout(stdout: str) -> LogContainer:
+    """
+    Structured logs of a test scenario run, parsed from its stdout.
+
+    Mirrors the parsing of 'testing_utils.Scenario.logs' for processes other than the one of the 'results'
+    fixture: lines that are not JSON objects are skipped, timestamps are converted from microseconds
+    to 'timedelta' and logs are sorted chronologically.
+    """
+    lines = (line for line in stdout.strip().split("\n") if line.startswith("{") and line.endswith("}"))
+    messages = [json.loads(line) for line in lines]
+    for message in messages:
+        message["timestamp"] = timedelta(microseconds=int(message["timestamp"]))
+    messages.sort(key=lambda message: message["timestamp"])
+    return LogContainer([ResultEntry(message) for message in messages])
+
+
+def stored_values(result: ScenarioResult, target_path: Path) -> dict[str, int]:
+    """
+    Key-value pairs logged by the 'stored_values' scenario.
+    """
+    logs = logs_from_stdout(result.stdout)
+    logs = logs.get_logs(field="target", pattern=f"{target_path.name}.*").get_logs(field="level", value="INFO")
+    return {log.key: log.value for log in logs.get_logs("key")}
+
+
+def temp_dir_common(target: Target, base_name: str, *args: str) -> Generator[Path, None, None]:
+    """
+    Create temporary directory on the target and remove it after test.
+    Common implementation to be reused by fixtures.
+
+    Returns generator providing unique path to temporary directory.
+    E.g., '/tmp/<BASE_NAME>-<ARG1>-<ARG2>-<UNIQUE_ID>/'.
+
+    Parameters
+    ----------
+    target : Target
+        Target to create directory on.
     base_name : str
         Base directory name.
         'self.__class__.__name__' use is recommended.
     *args : Any
         Other parameters to be included in directory name.
     """
-    parts = [base_name, *args]
-    dir_name = "-".join(parts)
-    dir_path = tmp_path_factory.mktemp(dir_name, numbered=True)
+    parts = [base_name, *args, uuid.uuid4().hex[:8]]
+    dir_path = TARGET_TMP_DIR / "-".join(parts)
+    execute_checked(target, f"mkdir -p {shlex.quote(str(dir_path))}")
     logger.info("Created temporary directory: %s", dir_path)
     yield dir_path
-    shutil.rmtree(dir_path)
+    execute_checked(target, f"rm -rf {shlex.quote(str(dir_path))}")
     logger.info("Removed temporary directory: %s", dir_path)
 
 
 class CommonScenario(Scenario):
     @pytest.fixture(scope="class")
-    def build_tools(self, version: str) -> BuildTools:
-        assert version in ("cpp", "rust")
-        return BazelTools(option_prefix=version, config="score-linux-x86_64")
+    def build_tools(self) -> BuildTools:
+        # Required by 'Scenario', unused: Bazel installs test scenarios on the target.
+        raise NotImplementedError
 
     @pytest.fixture(scope="class")
-    def temp_dir(self, tmp_path_factory: pytest.TempPathFactory, version: str) -> Generator[Path, None, None]:
-        yield from temp_dir_common(tmp_path_factory, self.__class__.__name__, version)
-
-    @pytest.fixture(scope="class")
-    def logs_target(self, target_path: Path, logs: LogContainer) -> LogContainer:
+    def target_path(self, target: Target, version: str, request: pytest.FixtureRequest) -> Path:
         """
-        Logs with messages generated strictly by the tested code.
+        Path to test scenario executable on the target.
 
         Parameters
         ----------
-        target_path : Path
-            Path to test scenario executable.
-        logs : LogContainer
-            Unfiltered logs.
+        target : Target
+            Target with test scenario executable installed.
+        version : str
+            Test scenario implementation, "cpp" or "rust".
+        request : FixtureRequest
+            Test request built-in fixture.
         """
+        option = f"--{version}-target-path"
+        target_path = request.config.getoption(option)
+        if target_path is None:
+            raise pytest.UsageError(f'"{option}" must be set')
+        if not _test_path(target, "-x", target_path):
+            raise pytest.UsageError(f'"{option}": no executable at {target_path} on the target')
+        return target_path
+
+    @pytest.fixture(scope="class")
+    def command(self, target_path: Path, scenario_name: str, test_config: dict[str, Any]) -> list[str]:
+        """Command to invoke, see 'scenario_command'."""
+        return scenario_command(target_path, scenario_name, test_config)
+
+    @pytest.fixture(scope="class")
+    def results(self, target: Target, command: list[str], execution_timeout: float) -> ScenarioResult:
+        """Execute test scenario executable on the target and return results."""
+        return run_scenario_on_target(target, command, execution_timeout)
+
+    @pytest.fixture(scope="class")
+    def temp_dir(self, target: Target, version: str) -> Generator[Path, None, None]:
+        yield from temp_dir_common(target, self.__class__.__name__, version)
+
+    @pytest.fixture(scope="class")
+    def logs_target(self, target_path: Path, logs: LogContainer) -> LogContainer:
         return logs.get_logs(field="target", pattern=f"{target_path.name}.*")
 
     @pytest.fixture(scope="class")
     def logs_info_level(self, logs_target: LogContainer) -> LogContainer:
-        """
-        Logs with messages with INFO level.
-
-        Parameters
-        ----------
-        logs_target : LogContainer
-            Logs with messages generated strictly by the tested code.
-        """
         return logs_target.get_logs(field="level", value="INFO")
 
     @pytest.fixture(autouse=True)

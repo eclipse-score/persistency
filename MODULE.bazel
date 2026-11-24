@@ -18,27 +18,17 @@ bazel_dep(name = "rules_python", version = "1.8.5")
 bazel_dep(name = "rules_rust", version = "0.68.2-score")
 
 # External dependencies for production (alphabetically sorted)
-bazel_dep(name = "platforms", version = "1.1.0")
-bazel_dep(name = "score_bazel_platforms", version = "1.1.0")
-bazel_dep(name = "score_baselibs", version = "0.2.16")
-bazel_dep(name = "score_crates", version = "0.0.13")
-bazel_dep(name = "score_docs_as_code", version = "8.6.0")
-bazel_dep(name = "score_logging", version = "0.2.4")
-
-# Pinned past v0.2.4 compatibility with baselibs > 0.2.13
-git_override(
-    module_name = "score_logging",
-    commit = "359df78e36f6bf1a3a0830cb61525302b0bd3460",
-    remote = "https://github.com/eclipse-score/logging",
-)
-
-bazel_dep(name = "score_platform", version = "0.7.4")
-bazel_dep(name = "score_process_description", version = "2.2.2")
+bazel_dep(name = "score_baselibs", version = "0.2.19")
+bazel_dep(name = "score_crates", version = "0.0.15")
+bazel_dep(name = "score_docs_as_code", version = "9.1.1")
+bazel_dep(name = "score_logging", version = "0.2.7")
+bazel_dep(name = "score_platform", version = "0.7.6")
+bazel_dep(name = "score_process_description", version = "2.2.5")
 bazel_dep(name = "score_test_scenarios", version = "0.5.0")
-bazel_dep(name = "score_tooling", version = "3.0.2")
+bazel_dep(name = "score_tooling", version = "3.1.0")
 
 # LLVM source-based coverage pipeline (C++ + Rust): the qualified S-CORE
-# coverage tool, successor of @score_tooling//coverage. See quality/coverage/.
+# coverage tool, successor of @score_tooling//coverage. See tools/coverage/.
 bazel_dep(name = "score_coverage", version = "0.4.2", dev_dependency = True)
 
 # Development dependencies (alphabetically sorted)
@@ -50,13 +40,10 @@ bazel_dep(name = "buildifier_prebuilt", version = "8.5.1.3", dev_dependency = Tr
 bazel_dep(name = "googletest", version = "1.18.0", dev_dependency = True)
 bazel_dep(name = "rules_oci", version = "2.3.0", dev_dependency = True)
 bazel_dep(name = "rules_pkg", version = "1.2.0", dev_dependency = True)
-bazel_dep(name = "score_bazel_cpp_toolchains", version = "1.0.5", dev_dependency = True)
-bazel_dep(name = "score_cpp_policies", version = "0.1.2", dev_dependency = True)
-bazel_dep(name = "score_itf", version = "0.6.0", dev_dependency = True)
+bazel_dep(name = "score_itf", version = "0.7.0", dev_dependency = True)
+bazel_dep(name = "score_qnx_unit_tests", version = "0.3.0", dev_dependency = True)
 bazel_dep(name = "score_sbom", version = "0.1.1", dev_dependency = True)
-bazel_dep(name = "score_rules_imagefs", version = "0.1.0", dev_dependency = True)
 bazel_dep(name = "score_rust_policies", version = "0.0.5", dev_dependency = True)
-bazel_dep(name = "score_toolchains_rust", version = "0.10.0", dev_dependency = True)
 bazel_dep(name = "score_tools", version = "0.0.4", dev_dependency = True)
 
 # Python toolchain configuration
@@ -75,6 +62,16 @@ pip.parse(
     requirements_lock = "//score/kvs/tests/test_cases:requirements.txt.lock",
 )
 use_repo(pip, "pip_score_persistency_venv_test")
+
+# Toolchain dependencies.
+bazel_dep(name = "score_bazel_cpp_toolchains", version = "1.0.5", dev_dependency = True)
+
+bazel_dep(name = "score_bazel_platforms", version = "1.3.0")
+bazel_dep(name = "platforms", version = "1.1.0")
+
+bazel_dep(name = "score_toolchains_rust", version = "0.10.1", dev_dependency = True)
+bazel_dep(name = "score_rules_imagefs", version = "0.2.0", dev_dependency = True)
+bazel_dep(name = "score_cpp_policies", version = "0.1.2", dev_dependency = True)
 
 # C++ toolchain configuration
 # score_bazel_cpp_toolchains 1.0.0 removed its built-in warning features; inject them instead.
@@ -98,6 +95,7 @@ GCC_SANITIZER_FEATURES = SANITIZER_FEATURES + ["@score_cpp_policies//sanitizers/
 
 LLVM_SANITIZER_FEATURES = SANITIZER_FEATURES + ["@score_cpp_policies//sanitizers/features:ubsan_clang"]
 
+# Linux C++ toolchains.
 gcc = use_extension("@score_bazel_cpp_toolchains//extensions:gcc.bzl", "gcc", dev_dependency = True)
 gcc.toolchain(
     name = "score_gcc_x86_64_toolchain",
@@ -115,6 +113,8 @@ gcc.toolchain(
     use_default_package = True,
     version = "12.2.0",
 )
+
+# QNX C++ toolchains.
 gcc.toolchain(
     name = "score_qcc_x86_64_toolchain",
     extra_known_features = WARNING_FEATURES + GCC_SANITIZER_FEATURES,
@@ -143,7 +143,7 @@ use_repo(
     "score_qcc_x86_64_toolchain_pkg",
 )
 
-# Image filesystem toolchain configuration
+# QNX image toolchains.
 imagefs = use_extension("@score_rules_imagefs//extensions:imagefs.bzl", "imagefs", dev_dependency = True)
 imagefs.toolchain(
     name = "score_qnx_aarch64_ifs_toolchain",
@@ -184,14 +184,13 @@ use_repo(sbom_ext, "sbom_metadata")
 
 # *******************************************************************************
 # Coverage toolchain (LLVM source-based coverage pipeline from
-# @score_coverage, see quality/coverage/). Only active during
+# @score_coverage, see tools/coverage/). Only active during
 # `bazel coverage --config=llvm_cov` runs.
 #
 # C++ needs the hermetic Clang toolchain below (covmap instrumentation).
-# Rust needs nothing extra: the standard @score_toolchains_rust//toolchains/
-# ferrocene toolchain registered in score.bazelrc/score_toolchain.bazelrc
-# ships llvm-cov/llvm-profdata since score_toolchains_rust 0.10.0, which
-# activates Rust coverage instrumentation under `bazel coverage`.
+# Rust uses the standard @score_toolchains_rust//toolchains/ferrocene toolchain.
+# tools/coverage/coverage.bazelrc registers it explicitly for llvm_cov.
+# It ships llvm-cov/llvm-profdata since score_toolchains_rust 0.10.0.
 # *******************************************************************************
 bazel_dep(name = "toolchains_llvm", version = "1.11.1", dev_dependency = True)
 
@@ -214,17 +213,6 @@ llvm.toolchain(
 )
 use_repo(llvm, "llvm_toolchain", "llvm_toolchain_llvm")
 
-# Experimental dev tools
-bazel_dep(name = "custom_qemu", version = "1.0.0", dev_dependency = True)
-archive_override(
-    module_name = "custom_qemu",
-    integrity = "sha256-3V2d+p7nP0tsbrVWOPYUSJogLNal43CIAHEto6Vjdfg=",
-    strip_prefix = "third_party",  # matches top-level dir in the tar
-    urls = [
-        "https://github.com/qorix-group/custom-qemu/releases/download/1.0.0/custom_qemu.tar.gz",
-    ],
-)
-
 # ITF - base image of the docker backend.
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci", dev_dependency = True)
 oci.pull(
@@ -235,3 +223,15 @@ oci.pull(
     tag = "24.04",
 )
 use_repo(oci, "ubuntu", "ubuntu_linux_amd64")
+
+# Hedron's Compile Commands Extractor for Bazel
+# https://github.com/hedronvision/bazel-compile-commands-extractor
+bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
+git_override(
+    module_name = "hedron_compile_commands",
+    commit = "abb61a688167623088f8768cc9264798df6a9d10",
+    patch_strip = 1,
+    # Patch for support for Bazel 8.6.0.
+    patches = ["//patches:hedron_compile_commands_env_vars.patch"],
+    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+)

@@ -43,6 +43,9 @@ namespace score::kvs
 ///     double number = std::get<double>(number_value.GetValue());
 /// }
 /// @endcode
+///
+/// @note A moved-from KvsValue object must not be used.
+/// It may only be destroyed or assigned a new value.
 // codeql::misra_deviation_next_line(kvs-special-members)
 class KvsValue final
 {
@@ -151,6 +154,8 @@ class KvsValue final
     KvsValue(const KvsValue& other) noexcept;
 
     /// @brief Move constructor.
+    /// @param other The object to move from.
+    /// It must not be used afterwards, except to destroy it or assign a new value to it.
     KvsValue(KvsValue&& other) noexcept;
 
     /// @brief Destructor.
@@ -160,6 +165,8 @@ class KvsValue final
     KvsValue& operator=(const KvsValue& other) & noexcept;
 
     /// @brief Move assignment operator.
+    /// @param other The object to move from.
+    /// It must not be used afterwards, except to destroy it or assign a new value to it.
     KvsValue& operator=(KvsValue&& other) & noexcept;
 
     /// @brief Gets the type of the value.

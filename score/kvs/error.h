@@ -77,14 +77,17 @@ enum class ErrorCode : score::result::ErrorCode
     /// Conversion failed.
     kConversionFailed = 18,
 
-    /// Mutex failed.
-    kMutexLockFailed = 19,
-
     /// Invalid value type.
     kInvalidValueType = 20,
 
     /// Key is not valid.
     kInvalidKey = 21,
+
+    /// The params of an existing instance do not match.
+    kInstanceParametersMismatch = 22,
+
+    /// Invalid Instance ID.
+    kInvalidInstanceId = 23,
 
     // Deprecated enumerators.
     // Each one is an alias of its k-prefixed replacement and is removed in a future release.
@@ -124,8 +127,6 @@ enum class ErrorCode : score::result::ErrorCode
         kInvalidSnapshotId,
     ConversionFailed [[deprecated("Use kConversionFailed instead. This name is removed in a future release.")]] =
         kConversionFailed,
-    MutexLockFailed [[deprecated("Use kMutexLockFailed instead. This name is removed in a future release.")]] =
-        kMutexLockFailed,
     InvalidValueType [[deprecated("Use kInvalidValueType instead. This name is removed in a future release.")]] =
         kInvalidValueType,
     InvalidKey [[deprecated("Use kInvalidKey instead. This name is removed in a future release.")]] = kInvalidKey,

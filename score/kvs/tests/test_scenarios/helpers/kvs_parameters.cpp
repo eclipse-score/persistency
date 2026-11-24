@@ -58,7 +58,7 @@ KvsParameters KvsParameters::FromJson(const std::string& json_str)
     auto any_result{parser.FromBuffer(json_str)};
     if (!any_result)
     {
-        throw score::result::Error(any_result.error());
+        throw std::runtime_error{"Failed to parse JSON input"};
     }
 
     return KvsParameters::FromValue(any_result.value().As<Object>().value().get());
@@ -70,7 +70,7 @@ KvsParameters KvsParameters::FromValue(const Object& object)
     const auto& map_root{object.at("kvs_parameters")};
     const auto& obj_root{map_root.As<Object>().value().get()};
 
-    KvsParameters params{.instance_id = obj_root.at("instance_id").As<uint64_t>().value()};
+    KvsParameters params{obj_root.at("instance_id").As<uint64_t>().value()};
 
     // Deserialize "defaults".
     params.defaults = DeserializeLoadParam<score::kvs::KvsDefaults>(obj_root, "defaults");

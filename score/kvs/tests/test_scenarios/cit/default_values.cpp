@@ -16,6 +16,7 @@
 #include "helpers/helpers.h"
 #include "helpers/kvs_instance.h"
 #include "helpers/kvs_parameters.h"
+#include "score/kvs/kvs_builder.h"
 #include <tracing.hpp>
 #include <sstream>
 
@@ -33,10 +34,10 @@ const std::string kTargetName{"cpp_test_scenarios::cit::default_values"};
 /// @param value_is_default Whether the current value matches the default ("Ok(true)", "Ok(false)" or error string).
 /// @param default_value String encoding the default value for the key (e.g. "Ok(F64(...))" or error string).
 /// @param current_value String encoding the current value for the key (e.g. "Ok(F64(...))" or error string).
-static void InfoLog(const std::string& key,
-                    const std::string& value_is_default,
-                    const std::string& default_value,
-                    const std::string& current_value)
+void InfoLog(const std::string& key,
+             const std::string& value_is_default,
+             const std::string& default_value,
+             const std::string& current_value)
 {
     TRACING_INFO(kTargetName,
                  std::pair{std::string{"key"}, key},
@@ -52,7 +53,7 @@ static void InfoLog(const std::string& key,
 /// @param key The key being queried or modified in the KVS.
 /// @param value_is_default String encoding whether the current value matches the default.
 /// @param current_value Current value for the key (e.g. "Ok(F64(...))" or an error such as "Err(KeyNotFound)").
-static void InfoLog(const std::string& key, const std::string& value_is_default, const std::string& current_value)
+void InfoLog(const std::string& key, const std::string& value_is_default, const std::string& current_value)
 {
     TRACING_INFO(kTargetName,
                  std::pair{std::string{"key"}, key},
@@ -132,7 +133,8 @@ class DefaultValues final : public Scenario
         // Create KVS instance with provided params.
         auto params{KvsParameters::FromJson(input)};
         {
-            auto kvs{KvsInstance(params)};
+            auto kvs_handle{KvsInstance(params)};
+            auto& kvs{*kvs_handle};
 
             // Get current value parameters.
             std::string value_is_default{ValueIsDefaultStr(kvs, key)};
@@ -154,11 +156,19 @@ class DefaultValues final : public Scenario
             {
                 throw std::runtime_error{"Failed to flush"};
             }
+
+            kvs_handle = nullptr;
+            auto unregister_result{Unregister(params.instance_id)};
+            if (!unregister_result)
+            {
+                throw std::runtime_error{"Failed to unregister instance"};
+            }
         }
 
-        // Flush and reopen KVS instance to ensure persistency.
+        // Reopen the KVS to check the flushed data.
         {
-            auto kvs{KvsInstance(params)};
+            auto kvs_handle{KvsInstance(params)};
+            auto& kvs{*kvs_handle};
 
             // Get current value parameters.
             std::string value_is_default{ValueIsDefaultStr(kvs, key)};
@@ -187,7 +197,8 @@ class RemoveKey final : public Scenario
 
         // Create KVS instance with provided params.
         auto params{KvsParameters::FromJson(input)};
-        auto kvs{KvsInstance(params)};
+        auto kvs_handle{KvsInstance(params)};
+        auto& kvs{*kvs_handle};
 
         // Get value parameters before set.
         {
@@ -247,7 +258,8 @@ class ResetAllKeys final : public Scenario
 
         // Create KVS instance with provided params.
         auto params{KvsParameters::FromJson(input)};
-        auto kvs{KvsInstance(params)};
+        auto kvs_handle{KvsInstance(params)};
+        auto& kvs{*kvs_handle};
 
         // List of keys and corresponding values.
         std::vector<std::pair<std::string, double>> key_values;
@@ -318,7 +330,8 @@ class SetValueToDefault final : public Scenario
 
         // Create KVS instance with provided params.
         auto params{KvsParameters::FromJson(input)};
-        auto kvs{KvsInstance(params)};
+        auto kvs_handle{KvsInstance(params)};
+        auto& kvs{*kvs_handle};
 
         // List of keys and corresponding values.
         std::vector<std::pair<std::string, double>> key_values;
@@ -390,7 +403,8 @@ class Checksum final : public Scenario
         std::string hash_path;
         {
             // Create instance, flush, store paths to files, close instance.
-            auto kvs{KvsInstance(params)};
+            auto kvs_handle{KvsInstance(params)};
+            auto& kvs{*kvs_handle};
             auto flush_result{kvs.Flush()};
             if (!flush_result)
             {

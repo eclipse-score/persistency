@@ -14,6 +14,7 @@
 load("@score_docs_as_code//:docs.bzl", "docs")
 load("@score_sbom//:defs.bzl", "sbom")
 load("@score_tooling//:defs.bzl", "setup_starpls")
+load(":qemu.bzl", "qemu_aarch64")
 
 # Creates all documentation targets:
 # - `:docs` for building documentation at build-time
@@ -36,6 +37,7 @@ docs(
     ],
     project = "S-CORE persistency",
     project_url = "https://eclipse-score.github.io/persistency/",
+    source_dir = "docs",
 )
 
 setup_starpls(
@@ -89,7 +91,7 @@ exports_files([".clang-tidy"])
 
 exports_files(
     [
-        # Used by the @score_tooling coverage reporter to locate the workspace root.
+        # MODULE.bazel: the LLVM coverage pipeline (//tools/coverage) resolves the workspace root through it at report time.
         # MODULE.bazel is also the workspace marker for //tools:format.check.
         "MODULE.bazel",
         "pyproject.toml",
@@ -136,3 +138,6 @@ test_suite(
     ],
     visibility = ["//visibility:public"],
 )
+
+# Wrapper for running aarch64 Linux test binaries under qemu-user (--config=score-linux-aarch64).
+qemu_aarch64()

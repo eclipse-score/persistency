@@ -106,9 +106,10 @@ class TestSameInstanceIdSameValue(CommonScenario):
     derivation_technique="requirements-analysis",
 )
 class TestSameInstanceIdDifferentValue(CommonScenario):
-    """Verifies that changes in one KVS instance with a shared ID and key are reflected in another instance.
+    """Verifies that two handles opened with the same instance ID share one in-memory state.
 
-    This demonstrates interference.
+    A value set through the second handle is visible through the first before any flush.
+    After a restart, both handles read the last written value.
     """
 
     @pytest.fixture(scope="class")
@@ -122,9 +123,14 @@ class TestSameInstanceIdDifferentValue(CommonScenario):
     def test_ok(self, results: ScenarioResult, logs_info_level: LogContainer):
         assert results.return_code == ResultCode.SUCCESS
 
-        # Assertions are same as in 'TestSameInstanceIdSameValue'.
-        # Test scenario behavior differs underneath.
         key = "number"
+        # Read through the first handle right after the second handle's write, before any flush.
+        shared_log = logs_info_level.find_log("instance", value="kvs1_before_flush")
+        assert shared_log is not None
+        assert shared_log.key == key
+        assert round(shared_log.value, 1) == 222.2
+
+        # Values read after the restart.
         log1 = logs_info_level.find_log("instance", value="kvs1")
         assert log1 is not None
         assert log1.key == key

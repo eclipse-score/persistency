@@ -13,6 +13,8 @@
 
 #include "score/kvs/kvs_general_test.h"
 
+using namespace score::kvs;
+
 namespace
 {
 constexpr score::kvs::KvsErrorDomain kKvsErrorDomain;
@@ -43,9 +45,10 @@ TEST(kvs_MessageFor, MessageFor)
         {ErrorCode::kSerializationFailed, "Serialization failed"},
         {ErrorCode::kInvalidSnapshotId, "Invalid snapshot ID"},
         {ErrorCode::kConversionFailed, "Conversion failed"},
-        {ErrorCode::kMutexLockFailed, "Mutex failed"},
         {ErrorCode::kInvalidValueType, "Invalid value type"},
         {ErrorCode::kInvalidKey, "Key is not valid"},
+        {ErrorCode::kInstanceParametersMismatch, "Instance exists with different parameters"},
+        {ErrorCode::kInvalidInstanceId, "Invalid Instance ID"},
     };
     for (const auto& test : test_cases)
     {

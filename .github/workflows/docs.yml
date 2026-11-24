@@ -28,6 +28,12 @@ on:
     types: [checks_requested]
   release:
     types: [published]
+  # Reusable by other workflows; a called run builds the docs but does not publish them.
+  workflow_call:
+    outputs:
+      artifact-name:
+        description: Artifact with the built documentation.
+        value: ${{ jobs.docs.outputs.artifact-name }}
 
 jobs:
   cit-tests:
@@ -37,10 +43,10 @@ jobs:
 
   docs:
     needs: [cit-tests] # Test reports are needed for traceability links
-    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@7e8ea4c61756b931622ff979835469b93b162920 # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # v0.0.3-47-g6bcfd5d
     permissions:
       contents: read
     with:
       bazel-target: "--lockfile_mode=error //:docs"
       retention-days: 3
-      tests-report-artifact: tests-report
+      tests-report-artifact: ${{ needs.cit-tests.outputs.artifact-name }}
