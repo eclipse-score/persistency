@@ -24,6 +24,7 @@ Persistency Module
    :security: YES
    :safety: ASIL_B
    :status: valid
+   :maturity: experimental
    :includes: comp__persistency_kvs[version==1]
 
 Module Documents
