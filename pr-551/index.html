@@ -26,15 +26,15 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="_static/css/score.css?v=415257cb" />
-    <link rel="stylesheet" type="text/css" href="_static/css/score_needs.css?v=82a1844f" />
-    <link rel="stylesheet" type="text/css" href="_static/css/score_design.css?v=8048e6ee" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/css/score.css?v=5737673c" />
+    <link rel="stylesheet" type="text/css" href="_static/css/score_needs.css?v=6a6a7ab0" />
+    <link rel="stylesheet" type="text/css" href="_static/css/score_design.css?v=f381fa98" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=6a604523" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
@@ -45,17 +45,17 @@
     <link rel="stylesheet" type="text/css" href="_static/sphinx-needs/modern.css?v=803738c0" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
     <script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/documentation_options.js?v=7f41d439"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
-    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script data-sd-tabs-storage-prefix="sphinx-design-tab-id-" src="_static/design-tabs.js?v=fcb327ea"></script>
     <script src="_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
     <script src="_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
     <script src="_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
@@ -63,7 +63,7 @@
     <script src="_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.24.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://eclipse-score.github.io/persistency/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = '';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
@@ -124,7 +124,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -143,8 +143,14 @@
   
   
   
+    
+    
+      
+    
+    
+    <img src="_static/Eclipse-S-CORE-colour-horizontal.png" class="logo__image only-light" alt="Eclipse S-CORE documentation - Home"/>
+    <img src="_static/Eclipse-S-CORE-dark.png" class="logo__image only-dark pst-js-only" alt="Eclipse S-CORE documentation - Home"/>
   
-    <p class="title logo__title">Eclipse S-CORE</p>
   
 </a></div>
     
@@ -208,14 +214,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -270,7 +276,7 @@
   
 
   
-    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -286,7 +292,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
@@ -343,14 +349,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -551,7 +557,7 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
 <tr class="need row-odd"><td class="needs_title"><p>Persistency Release Note</p></td>
 <td class="needs_id"><p><a class="reference internal" href="module/release/release_note.html#doc__persistency_release_note">doc__persistency_release_note</a></p></td>
 <td class="needs_safety"><p>ASIL_B</p></td>
-<td class="needs_security"><p>NO</p></td>
+<td class="needs_security"><p>YES</p></td>
 <td class="needs_status"><p>valid</p></td>
 </tr>
 <tr class="need row-even"><td class="needs_title"><p>Persistency Safety Analysis Checklist</p></td>
@@ -729,14 +735,19 @@ It integrates best practices for build, test, CI/CD and documentation.</p>
 <p>The example <code class="docutils literal notranslate"><span class="pre">basic.rs</span></code> is executed with <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">run</span> <span class="pre">-p</span> <span class="pre">rust_kvs</span> <span class="pre">--example</span> <span class="pre">basic</span></code>, the other examples accordingly with their file name.
 The integration of the module into a Bazel project is described in <code class="docutils literal notranslate"><span class="pre">examples/README.md</span></code>.</p>
 </section>
-</section>
 <section id="quick-start-building-and-testing">
-<span id="quick-start-building-testing"></span><h1>Quick Start - Building and Testing<a class="headerlink" href="#quick-start-building-and-testing" title="Link to this heading">#</a></h1>
+<span id="quick-start-building-testing"></span><h2>Quick Start - Building and Testing<a class="headerlink" href="#quick-start-building-and-testing" title="Link to this heading">#</a></h2>
 <p>To build the module:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span>build<span class="w"> </span>--config<span class="o">=</span>score-linux-x86_64<span class="w"> </span>--<span class="w"> </span>//score/...
 </pre></div>
 </div>
 <p>Building without an explicit <code class="docutils literal notranslate"><span class="pre">--config</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">score-linux-x86_64</span></code>, <code class="docutils literal notranslate"><span class="pre">score-qnx-x86_64</span></code>, <code class="docutils literal notranslate"><span class="pre">score-qnx-aarch64</span></code>) is not supported.
+The config <code class="docutils literal notranslate"><span class="pre">score-linux-aarch64</span></code> is supported too.
+Its tests need <code class="docutils literal notranslate"><span class="pre">qemu-user</span></code>.
+The QNX configs need QNX SDP credentials (<code class="docutils literal notranslate"><span class="pre">SCORE_QNX_USER</span></code>, <code class="docutils literal notranslate"><span class="pre">SCORE_QNX_PASSWORD</span></code>) and a QNX license.
+Run the QNX unit tests with <code class="docutils literal notranslate"><span class="pre">run-under-qnx-x86_64</span></code> or <code class="docutils literal notranslate"><span class="pre">run-under-qnx-aarch64</span></code>.
+These configs run the tests in a QEMU VM and need <code class="docutils literal notranslate"><span class="pre">qemu-system-x86_64</span></code> or <code class="docutils literal notranslate"><span class="pre">qemu-system-aarch64</span></code>.
+The x86_64 VM uses KVM when it is available.
 The old names <code class="docutils literal notranslate"><span class="pre">per-x86_64-linux</span></code>, <code class="docutils literal notranslate"><span class="pre">per-x86_64-qnx</span></code> and <code class="docutils literal notranslate"><span class="pre">per-arm64-qnx</span></code> still work as deprecated aliases.</p>
 <p>To run all tests:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span><span class="nb">test</span><span class="w"> </span>//...
@@ -747,9 +758,14 @@ The old names <code class="docutils literal notranslate"><span class="pre">per-x
 </pre></div>
 </div>
 <p>To run Component / Feature Integration Tests:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span><span class="nb">test</span><span class="w"> </span>//:cit_tests
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bazel<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--config<span class="o">=</span>score-linux-x86_64<span class="w"> </span>//:cit_tests
+bazel<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--config<span class="o">=</span>score-qnx-x86_64<span class="w"> </span>//:cit_tests
 </pre></div>
 </div>
+<p>The tests run with <a class="reference external" href="https://github.com/eclipse-score/itf">ITF</a> on a target system:
+a Docker container on Linux (requires Docker), a QEMU VM on QNX (requires <code class="docutils literal notranslate"><span class="pre">qemu-system-x86_64</span></code>,
+KVM is optional but makes the tests much faster).</p>
+</section>
 <section id="module-build-configuration">
 <h2>Module Build Configuration<a class="headerlink" href="#module-build-configuration" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">project_config.bzl</span></code> file at the root of the module defines metadata used by Bazel macros.
@@ -797,7 +813,7 @@ See <a class="reference external" href="https://eclipse-score.github.io/score/ma
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
@@ -809,20 +825,14 @@ See <a class="reference external" href="https://eclipse-score.github.io/score/ma
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Persistency Documentation</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#feature-documentation">Feature Documentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-documentation">Module Documentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#component-documentation">Component Documentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start-building-and-testing">Quick Start - Building and Testing</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start-building-and-testing">Quick Start - Building and Testing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-build-configuration">Module Build Configuration</a></li>
 </ul>
-</li>
-</ul>
-
   </nav></div>
 
   <div class="sidebar-secondary-item">
@@ -854,8 +864,8 @@ See <a class="reference external" href="https://eclipse-score.github.io/score/ma
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -878,7 +888,7 @@ See <a class="reference external" href="https://eclipse-score.github.io/score/ma
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
 </p></div>
       
     </div>
