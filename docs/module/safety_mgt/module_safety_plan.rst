@@ -18,7 +18,7 @@ Module Safety Plan
 .. document:: Persistency Safety Plan
    :id: doc__persistency_safety_plan
    :status: valid
-   :version: 2
+   :version: 3
    :safety: ASIL_B
    :security: NO
    :realizes: wp__module_safety_plan[version==1]
@@ -64,8 +64,9 @@ Additional to the tailoring in the SW platform project as defined in the :need:`
 
 - Notes on the execution of the planned work products:
 
-  - The component safety analyses (:need:`doc__kvs_fmea`, :need:`doc__kvs_dfa`) refer to the feature safety analyses,
-    because the KVS component has no internal components (:need:`doc__kvs_component_architecture`).
+  - The component safety analyses (:need:`doc__kvs_fmea`, :need:`doc__kvs_dfa`) analyse the mechanisms specified in
+    :need:`doc__kvs_requirements`. The failures at the component interfaces are analysed in the feature safety
+    analyses, because the KVS component has no internal components (:need:`doc__kvs_component_architecture`).
   - The detailed design is captured in the source code (public API headers and traits, source code comments) according to
     :need:`gd_guidl__implementation`. :need:`doc__kvs_detailed_design` documents the decomposition into units.
 
