@@ -26,8 +26,10 @@ from common import (
     execute_checked,
     read_file_on_target,
     run_named_scenario,
+    scenario_command,
     stored_values,
     temp_dir_common,
+    write_file_on_target,
 )
 from score.itf.plugins.core import Target
 from test_properties import add_test_properties
@@ -108,6 +110,18 @@ TYPED_VALUES = {
 # Data file of the current KVS storage and of snapshot 1.
 CURRENT_DATA_FILE = f"kvs_{INSTANCE_ID}_0.json"
 SNAPSHOT_DATA_FILE = f"kvs_{INSTANCE_ID}_1.json"
+
+# Leftover temp files of the current storage, planted with a wider mode.
+STALE_TEMP_FILES = [f"kvs_{INSTANCE_ID}_0.json.tmp", f"kvs_{INSTANCE_ID}_0.hash.tmp"]
+
+# Flushes of the permissions test, the default of 3 snapshots: the oldest snapshot then holds the first flush.
+PERMISSIONS_FLUSH_COUNT = 3
+
+# File that the shell creates with the umask of the case, just before it starts the scenario.
+UMASK_PROBE = "umask_probe"
+
+# Mode of the probe file for each umask: 0666 without the umask bits.
+PROBE_MODES = {"0000": "666", "0077": "600", "0777": "000"}
 
 # Flush error for NaN: C++ prints the ErrorCode message, Rust the ErrorCode name.
 NON_FINITE_FLUSH_ERRORS = {"cpp": "JSON generator error", "rust": "JsonGeneratorError"}
@@ -350,6 +364,89 @@ class TestStorageFilesFormatAndChecksum(CommonScenario):
             data = read_file_on_target(target, temp_dir / name)
             checksum = adler32(data).to_bytes(length=4, byteorder="big")
             assert read_file_on_target(target, temp_dir / hash_name) == checksum, name
+
+
+@add_test_properties(
+    fully_verifies=["comp_req__kvs__storage_file_permissions"],
+    test_type="requirements-based",
+    derivation_technique="equivalence-classes",
+)
+@pytest.mark.parametrize("umask", list(PROBE_MODES), scope="class")
+class TestStorageFilePermissions(CommonScenario):
+    """
+    Verifies that flush creates every data and hash file with mode 0640, for the current storage and the snapshots.
+    The process umask masks no bit, some bits or all bits of 0640.
+    The first flush finds leftover temp files with the wider mode 0666.
+    Not covered: the default-values file, which the kvs tool creates (comp_req__kvs__default_storage_permissions).
+    """
+
+    @pytest.fixture(scope="class")
+    def temp_dir(self, target: Target, version: str, umask: str) -> Generator[Path, None, None]:
+        # Own working directory per case, because each case flushes its own storage files.
+        yield from temp_dir_common(target, self.__class__.__name__, version, umask)
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.persistency.flush_value_types"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, target: Target, temp_dir: Path) -> dict[str, Any]:
+        """
+        Leave the stale temp files with mode 0666.
+        Return the input for PERMISSIONS_FLUSH_COUNT flushes.
+        """
+        paths = [str(temp_dir / name) for name in STALE_TEMP_FILES]
+        for path in paths:
+            write_file_on_target(target, Path(path), b"stale")
+        execute_checked(target, f"chmod 666 {shlex.join(paths)}")
+        return {**kvs_parameters(temp_dir), "flush_count": PERMISSIONS_FLUSH_COUNT}
+
+    @pytest.fixture(scope="class")
+    def command(
+        self, target_path: Path, scenario_name: str, test_config: dict[str, Any], temp_dir: Path, umask: str
+    ) -> list[str]:
+        """
+        Shell that sets the umask, creates the probe file and then replaces itself with the scenario.
+        """
+        scenario = shlex.join(scenario_command(target_path, scenario_name, test_config))
+        # The QNX image has "sh" only as "/bin/sh", not in the PATH.
+        return ["/bin/sh", "-c", f"umask {umask} && : > {shlex.quote(str(temp_dir / UMASK_PROBE))} && exec {scenario}"]
+
+    def test_storage_files_have_mode_640(self, target: Target, temp_dir: Path, umask: str, results: ScenarioResult):
+        """
+        Checks that each data and hash file created by flush has mode 0640.
+
+        Steps:
+        1. Leave "kvs_1_0.json.tmp" and "kvs_1_0.hash.tmp" with mode 0666 in an empty folder.
+        2. In a shell, set the umask of the case, create a probe file and start the scenario.
+        3. Open the KVS in the folder and flush 3 times, with the default of 3 snapshots.
+        4. Read the mode of every file in the folder with "stat".
+
+        Expected result:
+        - Precondition: the probe file has mode 0666 without the umask bits, and no temp file is left.
+        - The data and hash files "kvs_1_<n>.json" and "kvs_1_<n>.hash" exist for n = 0, 1 and 2.
+        - Each data and hash file has mode 0640.
+        """
+        assert results.return_code == ResultCode.SUCCESS, results.stderr
+        output = execute_checked(target, f"cd {shlex.quote(str(temp_dir))} && stat -c '%a %n' *")
+        # stat prints "<mode> <name>" per file, and mode 000 as "0".
+        modes = {}
+        for line in output.splitlines():
+            mode, name = line.split(" ", 1)
+            modes[name] = mode.zfill(3)
+        assert modes.get(UMASK_PROBE) == PROBE_MODES[umask], f"precondition: umask not set: {modes}"
+        assert not modes.keys() & set(STALE_TEMP_FILES), f"precondition: flush left the temp files: {modes}"
+
+        storage = {
+            name: mode for name, mode in modes.items() if re.fullmatch(rf"kvs_{INSTANCE_ID}_\d+\.(json|hash)", name)
+        }
+        expected_files = {
+            f"kvs_{INSTANCE_ID}_{snapshot}.{ext}"
+            for snapshot in range(PERMISSIONS_FLUSH_COUNT)
+            for ext in ("json", "hash")
+        }
+        assert expected_files <= storage.keys(), f"files: {modes}"
+        assert storage == dict.fromkeys(storage, "640")
 
 
 def check_flush_failed(version: str, results: ScenarioResult, logs_info_level: LogContainer) -> None:
