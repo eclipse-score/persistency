@@ -16,8 +16,12 @@
 #include "score/utility.hpp"
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <unordered_set>
 
 namespace score::kvs
@@ -25,6 +29,113 @@ namespace score::kvs
 
 namespace
 {
+
+/// Narrows a double to a finite value of floating point type `T`.
+/// Returns no value if the double does not round to a finite `T`.
+template <typename T>
+std::optional<T> NarrowToFinite(const double value) noexcept
+{
+    // codeql::misra_deviation_next_line(kvs-bool-ref-load)
+    static_assert(std::is_floating_point_v<T>);
+    if (!std::isfinite(value))
+    {
+        return std::nullopt;
+    }
+
+    // codeql::misra_deviation_next_line(kvs-bool-ref-load)
+    if constexpr (std::is_same_v<T, double>)
+    {
+        return value;
+    }
+    else
+    {
+        // `T::max()` written in shortest round-trip form of `T` parses to a double slightly above it that still rounds
+        // back to it. Values below `max + ulp / 2` are rounded to `max`, values at or above it are rounded to infinity.
+        const double max{static_cast<double>(std::numeric_limits<T>::max())};
+        const double max_ulp{
+            max - static_cast<double>(std::nextafter(std::numeric_limits<T>::max(), std::numeric_limits<T>::lowest()))};
+        if (std::abs(value) >= (max + (max_ulp / 2.0)))
+        {
+            return std::nullopt;
+        }
+        return static_cast<T>(value);
+    }
+}
+
+/// Converts a stored JSON number of any arithmetic type to double.
+/// A named function object is used because a captureless lambda has an implicit conversion to a function pointer.
+struct ToDouble final
+{
+    template <typename Stored>
+    double operator()(const Stored stored) const noexcept
+    {
+        return static_cast<double>(stored);
+    }
+};
+
+template <typename T>
+score::Result<KvsValue> NumberToKvsValue(const score::json::Any& value) noexcept
+{
+    const auto number{value.As<score::json::Number>()};
+    if (!number.has_value())
+    {
+        return score::MakeUnexpected(ErrorCode::kInvalidValueType);
+    }
+
+    // codeql::misra_deviation_next_line(kvs-bool-ref-load)
+    if constexpr (std::is_floating_point_v<T>)
+    {
+        // Integers beyond 2^53 are rounded to the nearest double.
+        const double as_double{number->get().Visit(ToDouble{})};
+        const std::optional<T> narrowed{NarrowToFinite<T>(as_double)};
+        // codeql::misra_deviation_next_line(kvs-bool-ref-load)
+        if (!narrowed)
+        {
+            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
+        }
+        return KvsValue(*narrowed);
+    }
+    else
+    {
+        const auto converted{number->get().As<T>()};
+        // codeql::misra_deviation_next_line(kvs-bool-ref-load)
+        if (!converted)
+        {
+            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
+        }
+        return KvsValue(*converted);
+    }
+}
+
+/// Builds the `{"t": <type_tag>, "v": <value>}` wrapper used for every stored value.
+score::json::Any MakeTagged(const std::string_view type_tag, score::json::Any value) noexcept
+{
+    score::json::Object obj;
+    score::cpp::ignore = obj.emplace("t", score::json::Any(std::string(type_tag)));
+    score::cpp::ignore = obj.emplace("v", std::move(value));
+    return score::json::Any(std::move(obj));
+}
+
+template <typename T>
+score::Result<score::json::Any> TaggedValueToAny(const KvsValue& value, const std::string_view type_tag) noexcept
+{
+    const auto* const scalar{std::get_if<T>(&value.GetValue())};
+    if (scalar == nullptr)
+    {
+        return score::MakeUnexpected(ErrorCode::kInvalidValueType);
+    }
+    // codeql::misra_deviation_next_line(kvs-bool-ref-load)
+    if constexpr (std::is_same_v<T, float>)
+    {
+        // The parser rounds JSON text to a double before it can be narrowed, so shortest float text can load one ULP
+        // off. The exact double text of the widened float narrows back to it, which is also how Rust writes `f32`.
+        return MakeTagged(type_tag, score::json::Any(static_cast<double>(*scalar)));
+    }
+    else
+    {
+        return MakeTagged(type_tag, score::json::Any(*scalar));
+    }
+}
 
 /// Converts object members to `{"t": "obj", "v": <object>}`, failing on a duplicate key.
 template <typename Members>
@@ -47,10 +158,7 @@ score::Result<score::json::Any> ObjectToAny(const Members& members) noexcept
         }
     }
 
-    score::json::Object obj;
-    score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("obj")));
-    score::cpp::ignore = obj.emplace("v", score::json::Any(std::move(inner_obj)));
-    return score::json::Any(std::move(obj));
+    return MakeTagged("obj", score::json::Any(std::move(inner_obj)));
 }
 
 }  // namespace
@@ -143,50 +251,45 @@ score::Result<KvsValue> AnyToKvsValue(const score::json::Any& any) noexcept
     const std::string_view type_tag{type_str->get()};
     const score::json::Any& value_any{value->second};
 
-    if (type_tag == "i32")
+    if (type_tag == "u8")
     {
-        const auto number{value_any.As<int32_t>()};
-        if (!number.has_value())
-        {
-            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-        }
-        return KvsValue(static_cast<int32_t>(*number));
+        return NumberToKvsValue<uint8_t>(value_any);
+    }
+    else if (type_tag == "u16")
+    {
+        return NumberToKvsValue<uint16_t>(value_any);
     }
     else if (type_tag == "u32")
     {
-        const auto number{value_any.As<uint32_t>()};
-        if (!number.has_value())
-        {
-            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-        }
-        return KvsValue(static_cast<uint32_t>(*number));
-    }
-    else if (type_tag == "i64")
-    {
-        const auto number{value_any.As<int64_t>()};
-        if (!number.has_value())
-        {
-            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-        }
-        return KvsValue(static_cast<int64_t>(*number));
+        return NumberToKvsValue<uint32_t>(value_any);
     }
     else if (type_tag == "u64")
     {
-        const auto number{value_any.As<uint64_t>()};
-        if (!number.has_value())
-        {
-            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-        }
-        return KvsValue(static_cast<uint64_t>(*number));
+        return NumberToKvsValue<uint64_t>(value_any);
+    }
+    else if (type_tag == "i8")
+    {
+        return NumberToKvsValue<int8_t>(value_any);
+    }
+    else if (type_tag == "i16")
+    {
+        return NumberToKvsValue<int16_t>(value_any);
+    }
+    else if (type_tag == "i32")
+    {
+        return NumberToKvsValue<int32_t>(value_any);
+    }
+    else if (type_tag == "i64")
+    {
+        return NumberToKvsValue<int64_t>(value_any);
+    }
+    else if (type_tag == "f32")
+    {
+        return NumberToKvsValue<float>(value_any);
     }
     else if (type_tag == "f64")
     {
-        const auto number{value_any.As<double>()};
-        if (!number.has_value())
-        {
-            return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-        }
-        return KvsValue(*number);
+        return NumberToKvsValue<double>(value_any);
     }
     else if (type_tag == "bool")
     {
@@ -265,91 +368,35 @@ score::Result<KvsValue> AnyToKvsValue(const score::json::Any& any) noexcept
 
 score::Result<score::json::Any> KvsValueToAny(const KvsValue& kvs_value) noexcept
 {
-    score::json::Object obj;
     switch (kvs_value.GetType())
     {
-        case KvsValue::Type::kI32:
-        {
-            const auto* value = std::get_if<int32_t>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("i32")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+        case KvsValue::Type::kU8:
+            return TaggedValueToAny<uint8_t>(kvs_value, "u8");
+        case KvsValue::Type::kU16:
+            return TaggedValueToAny<uint16_t>(kvs_value, "u16");
         case KvsValue::Type::kU32:
-        {
-            const auto* value = std::get_if<uint32_t>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("u32")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
-        case KvsValue::Type::kI64:
-        {
-            const auto* value = std::get_if<int64_t>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("i64")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+            return TaggedValueToAny<uint32_t>(kvs_value, "u32");
         case KvsValue::Type::kU64:
-        {
-            const auto* value = std::get_if<uint64_t>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("u64")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+            return TaggedValueToAny<uint64_t>(kvs_value, "u64");
+        case KvsValue::Type::kI8:
+            return TaggedValueToAny<int8_t>(kvs_value, "i8");
+        case KvsValue::Type::kI16:
+            return TaggedValueToAny<int16_t>(kvs_value, "i16");
+        case KvsValue::Type::kI32:
+            return TaggedValueToAny<int32_t>(kvs_value, "i32");
+        case KvsValue::Type::kI64:
+            return TaggedValueToAny<int64_t>(kvs_value, "i64");
+        case KvsValue::Type::kF32:
+            return TaggedValueToAny<float>(kvs_value, "f32");
         case KvsValue::Type::kF64:
-        {
-            const auto* value = std::get_if<double>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("f64")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+            return TaggedValueToAny<double>(kvs_value, "f64");
         case KvsValue::Type::kBoolean:
-        {
-            const auto* value = std::get_if<bool>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("bool")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+            return TaggedValueToAny<bool>(kvs_value, "bool");
         case KvsValue::Type::kString:
-        {
-            const auto* value = std::get_if<std::string>(&kvs_value.GetValue());
-            if (value == nullptr)
-            {
-                return score::MakeUnexpected(ErrorCode::kInvalidValueType);
-            }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("str")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(*value));
-            break;
-        }
+            return TaggedValueToAny<std::string>(kvs_value, "str");
         case KvsValue::Type::kNull:
         {
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("null")));
-            score::cpp::ignore = obj.emplace("v", score::json::Any(score::json::Null{}));
-            break;
+            return MakeTagged("null", score::json::Any(score::json::Null{}));
         }
         case KvsValue::Type::kArray:
         {
@@ -358,7 +405,6 @@ score::Result<score::json::Any> KvsValueToAny(const KvsValue& kvs_value) noexcep
             {
                 return score::MakeUnexpected(ErrorCode::kInvalidValueType);
             }
-            score::cpp::ignore = obj.emplace("t", score::json::Any(std::string("arr")));
             score::json::List list;
             for (const auto& element : *value)
             {
@@ -370,8 +416,7 @@ score::Result<score::json::Any> KvsValueToAny(const KvsValue& kvs_value) noexcep
                 }
                 list.push_back(std::move(*converted));
             }
-            score::cpp::ignore = obj.emplace("v", score::json::Any(std::move(list)));
-            break;
+            return MakeTagged("arr", score::json::Any(std::move(list)));
         }
         case KvsValue::Type::kObject:
         {
@@ -388,8 +433,6 @@ score::Result<score::json::Any> KvsValueToAny(const KvsValue& kvs_value) noexcep
             return score::MakeUnexpected(ErrorCode::kInvalidValueType);
         }
     }
-
-    return score::json::Any(std::move(obj));
 }
 
 score::Result<score::json::Any> KvsValueToAny(const KvsValue::Object& object) noexcept
@@ -435,10 +478,15 @@ bool HasUniqueKeys(const KvsValue& value) noexcept
             }
             return true;
         }
-        case KvsValue::Type::kI32:
+        case KvsValue::Type::kU8:
+        case KvsValue::Type::kU16:
         case KvsValue::Type::kU32:
-        case KvsValue::Type::kI64:
         case KvsValue::Type::kU64:
+        case KvsValue::Type::kI8:
+        case KvsValue::Type::kI16:
+        case KvsValue::Type::kI32:
+        case KvsValue::Type::kI64:
+        case KvsValue::Type::kF32:
         case KvsValue::Type::kF64:
         case KvsValue::Type::kBoolean:
         case KvsValue::Type::kString:

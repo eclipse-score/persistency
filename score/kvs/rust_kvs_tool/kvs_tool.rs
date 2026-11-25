@@ -386,6 +386,11 @@ fn _createtestdata(kvs: Kvs) -> Result<(), ErrorCode> {
     println!("----------------------");
     println!("Create Test Data");
 
+    kvs.set_value("i8", -123i8)?;
+    kvs.set_value("u8", 123u8)?;
+    kvs.set_value("i16", -12345i16)?;
+    kvs.set_value("u16", 12345u16)?;
+    kvs.set_value("f32", 12.5f32)?;
     kvs.set_value("number", 123.0).inspect_err(|e| {
         error!("KVS Create Test Data Error (number): {:?}", e);
     })?;

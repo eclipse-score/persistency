@@ -40,6 +40,11 @@ def test_load(target, deployed_package: Path, impl: str, data_dir: Path):
         assert f"Key '{key}' exists!" in out
         assert f"Key Value: {expected_value}" in out
 
+    get_key("i8", "I8(-123)")
+    get_key("u8", "U8(123)")
+    get_key("i16", "I16(-12345)")
+    get_key("u16", "U16(12345)")
+    get_key("f32", "F32(12.5)")
     get_key("i32", "I32(-123)")
     get_key("u32", "U32(123)")
     get_key("i64", "I64(-12345)")
@@ -50,3 +55,20 @@ def test_load(target, deployed_package: Path, impl: str, data_dir: Path):
     get_key("null", "Null")
     get_key("array", 'Array([I64(555), String("string-in-array")])')
     get_key("object", 'Object({"f64-in-object": F64(123.456)})')
+
+    get_key("i8-min", "I8(-128)")
+    get_key("i8-max", "I8(127)")
+    get_key("u8-max", "U8(255)")
+    get_key("i16-min", "I16(-32768)")
+    get_key("i16-max", "I16(32767)")
+    get_key("u16-max", "U16(65535)")
+    get_key("i32-min", "I32(-2147483648)")
+    get_key("i32-max", "I32(2147483647)")
+    get_key("u32-max", "U32(4294967295)")
+    get_key("i64-min", "I64(-9223372036854775808)")
+    get_key("i64-max", "I64(9223372036854775807)")
+    get_key("u64-max", "U64(18446744073709551615)")
+    get_key("f32-min", "F32(-3.4028235e38)")
+    get_key("f32-max", "F32(3.4028235e38)")
+    get_key("f64-min", "F64(-1.7976931348623157e308)")
+    get_key("f64-max", "F64(1.7976931348623157e308)")

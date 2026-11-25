@@ -152,10 +152,15 @@ impl Scenario for FlushValueTypes {
         let kvs = kvs_instance(params).expect("Failed to create KVS instance");
 
         let values = [
-            ("i32", KvsValue::I32(-321)),
+            ("u8", KvsValue::U8(123)),
+            ("u16", KvsValue::U16(12345)),
             ("u32", KvsValue::U32(1234)),
-            ("i64", KvsValue::I64(-123456789012)),
             ("u64", KvsValue::U64(123456789012)),
+            ("i8", KvsValue::I8(-123)),
+            ("i16", KvsValue::I16(-12345)),
+            ("i32", KvsValue::I32(-321)),
+            ("i64", KvsValue::I64(-123456789012)),
+            ("f32", KvsValue::F32(12.5)),
             ("f64", KvsValue::F64(-5432.1)),
             ("bool", KvsValue::Boolean(true)),
             ("null", KvsValue::Null),

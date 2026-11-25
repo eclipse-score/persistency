@@ -23,10 +23,20 @@ using namespace score::kvs;
 
 TEST(kvs_value_test, get_type_reports_variant)
 {
+    RecordProperty("TestType", "interface-test");
+    RecordProperty("DerivationTechnique", "equivalence-classes");
+    RecordProperty("PartiallyVerifies", "comp_req__kvs__value_data_types");
+    RecordProperty("Description", "Check that GetType reports the type tag of every supported value type.");
+
+    const KvsValue unsigned_8{std::uint8_t{42}};
+    const KvsValue signed_8{std::int8_t{42}};
+    const KvsValue unsigned_16{std::uint16_t{42}};
+    const KvsValue signed_16{std::int16_t{42}};
     const KvsValue signed_32{std::int32_t{42}};
     const KvsValue unsigned_32{std::uint32_t{42}};
     const KvsValue signed_64{std::int64_t{42}};
     const KvsValue unsigned_64{std::uint64_t{42}};
+    const KvsValue single_precision{42.0F};
     const KvsValue floating_point{42.0};
     const KvsValue boolean{true};
     const KvsValue string_value{"text"};
@@ -34,10 +44,15 @@ TEST(kvs_value_test, get_type_reports_variant)
     const KvsValue array_value{KvsValue::Array{}};
     const KvsValue object_value{KvsValue::Object{}};
 
+    EXPECT_EQ(unsigned_8.GetType(), KvsValue::Type::kU8);
+    EXPECT_EQ(signed_8.GetType(), KvsValue::Type::kI8);
+    EXPECT_EQ(unsigned_16.GetType(), KvsValue::Type::kU16);
+    EXPECT_EQ(signed_16.GetType(), KvsValue::Type::kI16);
     EXPECT_EQ(signed_32.GetType(), KvsValue::Type::kI32);
     EXPECT_EQ(unsigned_32.GetType(), KvsValue::Type::kU32);
     EXPECT_EQ(signed_64.GetType(), KvsValue::Type::kI64);
     EXPECT_EQ(unsigned_64.GetType(), KvsValue::Type::kU64);
+    EXPECT_EQ(single_precision.GetType(), KvsValue::Type::kF32);
     EXPECT_EQ(floating_point.GetType(), KvsValue::Type::kF64);
     EXPECT_EQ(boolean.GetType(), KvsValue::Type::kBoolean);
     EXPECT_EQ(string_value.GetType(), KvsValue::Type::kString);
