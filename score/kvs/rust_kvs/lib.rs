@@ -22,23 +22,28 @@
 //! The key-value-storage is opened or initialized with [`KvsBuilder::new`] where various settings
 //! can be applied before the KVS instance is created.
 //!
-//! All `TinyJSON` provided datatypes can be used:
-//!   * `Number`: `f64`
+//! The following [`KvsValue`] variants are supported:
+//!   * `U8`, `U16`, `U32`, `U64`: `u8`, `u16`, `u32`, `u64`
+//!   * `I8`, `I16`, `I32`, `I64`: `i8`, `i16`, `i32`, `i64`
+//!   * `F32`, `F64`: `f32`, `f64`
 //!   * `Boolean`: `bool`
 //!   * `String`: `String`
 //!   * `Null`: `()`
 //!   * `Array`: `Vec<KvsValue>`
 //!   * `Object`: `HashMap<String, KvsValue>`
 //!
+//! Each value is stored with a type tag, so it is loaded as the same variant.
+//! `TinyJSON` holds every number as `f64`, so `u64` and `i64` values are exact only up to 2^53 in magnitude.
+//!
 //! Note: JSON arrays are not restricted to only contain values of the same type.
 //!
-//! Writing a value to the KVS can be done by calling [`Kvs::set_value`] with the `key` as first
-//! and a `KvsValue` as second parameter. Either `KvsValue::Number(123.0)` or `123.0` can be
-//! used as there will be an auto-Into performed when calling the function.
+//! Writing a value to the KVS can be done by calling [`Kvs::set_value`] with the `key` as first and a `KvsValue` as second parameter.
+//! Either `KvsValue::F64(123.0)` or `123.0` can be used, as the value is converted with `Into` when calling the function.
+//! The Rust type of the value selects the variant, e.g. `123.0_f32` is stored as `F32` and `123_u8` as `U8`.
 //!
-//! To read a value call [`Kvs::get_value`](Kvs::get_value) or [`Kvs::get_value_as::<T>`](Kvs::get_value_as)
-//! with the `key` as first parameter. `T` represents the type to read and can be `f64`, `bool`, `String`, `()`,
-//! `Vec<KvsValue>`, `HashMap<String, KvsValue>` or `KvsValue`.
+//! To read a value call [`Kvs::get_value`](Kvs::get_value) or [`Kvs::get_value_as::<T>`](Kvs::get_value_as) with the `key` as first parameter.
+//! `T` is the type to read and can be any of the types listed above or `KvsValue`.
+//! `T` must match the stored variant, no numeric conversion is performed.
 //! Also `let value: f64 = kvs.get_value_as()` can be used.
 //!
 //! If a `key` isn't available in the KVS a lookup into the defaults storage will be performed and
