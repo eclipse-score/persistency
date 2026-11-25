@@ -63,8 +63,8 @@ test --test_output=errors
 import %workspace%/score.bazelrc/score_toolchain.bazelrc
 
 # GCC reports -Wtsan for the atomic fences in the Baselibs logging frontend.
-# Keep that diagnostic visible while allowing the TSan build to complete.
-build:tsan --cxxopt=-Wno-error=tsan
+# Match the logging sources under the external repository's path and keep the warning visible.
+build:tsan --per_file_copt='(^|/)score/mw/log/.*[.]cpp$@-Wno-error=tsan'
 
 # Test execution and compatibility settings for this repository.
 test:_score_common --build_tests_only
