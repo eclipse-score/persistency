@@ -489,7 +489,7 @@
                   
   <section id="kvs-dfa-dependent-failure-analysis">
 <h1>KVS DFA (Dependent Failure Analysis)<a class="headerlink" href="#kvs-dfa-dependent-failure-analysis" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-6c75f541">
+<div class="need_container docutils container" id="SNCB-cbbf7aac">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__kvs_dfa">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -509,7 +509,7 @@
 </tr>
 <tr class="meta row-even"><td class="meta" colspan="3"><div class="needs_meta_left line-block">
 <div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">Persistency KVS</span></span></span></div>
-<div class="line"><span class="needs_version"><span class="needs_label">version: </span>1</span></div>
+<div class="line"><span class="needs_version"><span class="needs_label">version: </span>2</span></div>
 </span></span></div>
 <div class="line"><span><div class="line">realizes: <span class="realizes"><span><a class="external_link reference external" href="https://eclipse-score.github.io/process_description//main/process_areas/safety_analysis/safety_analysis_workproducts.html#wp__sw_component_dfa">wp__sw_component_dfa</a></span></span></div>
 </span></div>
@@ -686,12 +686,12 @@ platform DFA.</p>
 <tr class="row-even"><td><p>UI_01_05</p></td>
 <td><p>Livelocks</p></td>
 <td><p>no</p></td>
-<td><p>No retry loops. Calls wait for the instance lock and do not retry.</p></td>
+<td><p>No retry loops. Calls wait for the instance lock or, for <code class="docutils literal notranslate"><span class="pre">Build()</span></code> and <code class="docutils literal notranslate"><span class="pre">Unregister()</span></code>, the registry lock and do not retry.</p></td>
 </tr>
 <tr class="row-odd"><td><p>UI_01_06</p></td>
 <td><p>Blocking of execution</p></td>
 <td><p>no</p></td>
-<td><p>Calls wait for the instance lock held by another thread of the process. The effect is covered by <a class="reference internal" href="../../../features/persistency/safety_analysis/dfa.html#feat_saf_dfa__persistency__execution_blocking" title="feat_saf_dfa__persistency__execution_blocking"><em class="xref need">Persistency execution blocking (feat_saf_dfa__persistency__execution_blocking)</em></a>.</p></td>
+<td><p>Calls wait for the instance lock held by another thread of the process. <code class="docutils literal notranslate"><span class="pre">Build()</span></code> and <code class="docutils literal notranslate"><span class="pre">Unregister()</span></code> also wait for the registry lock, so a slow <code class="docutils literal notranslate"><span class="pre">Build()</span></code> of one instance delays them for every other instance. The effect is covered by <a class="reference internal" href="../../../features/persistency/safety_analysis/dfa.html#feat_saf_dfa__persistency__execution_blocking" title="feat_saf_dfa__persistency__execution_blocking"><em class="xref need">Persistency execution blocking (feat_saf_dfa__persistency__execution_blocking)</em></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p>UI_01_07</p></td>
 <td><p>Incorrect allocation of execution time</p></td>
@@ -730,7 +730,7 @@ platform DFA.</p>
 </section>
 <section id="dfa">
 <h2>DFA<a class="headerlink" href="#dfa" title="Link to this heading">#</a></h2>
-<div class="need_container docutils container" id="SNCB-08d9cbad">
+<div class="need_container docutils container" id="SNCB-4e2ebf72">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_comp_saf_dfa table" id="comp_saf_dfa__kvs__file_access">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -780,7 +780,7 @@ platform DFA.</p>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-925584d9">
+<div class="need_container docutils container" id="SNCB-a4a45d26">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_comp_saf_dfa table" id="comp_saf_dfa__kvs__instance_registry">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -805,14 +805,15 @@ platform DFA.</p>
 <div class="line"><span class="needs_sufficient"><span class="needs_label">sufficient: </span><span class="needs_data">yes</span></span></div>
 <div class="line"><span class="needs_version"><span class="needs_label">version: </span>1</span></div>
 </span></span></div>
-<div class="line"><span><div class="line">mitigated_by: <span class="mitigated_by"><span><a class="reference internal" href="../requirements/requirements.html#comp_req__kvs__concurrency" title="comp_saf_dfa__kvs__instance_registry">comp_req__kvs__concurrency</a>, <a class="reference internal" href="../requirements/requirements.html#comp_req__kvs__multi_instance" title="comp_saf_dfa__kvs__instance_registry">comp_req__kvs__multi_instance</a></span></span></div>
+<div class="line"><span><div class="line">mitigated_by: <span class="mitigated_by"><span><a class="reference internal" href="aou_requirements.html#aou_req__kvs__flush_before_unregister" title="comp_saf_dfa__kvs__instance_registry">aou_req__kvs__flush_before_unregister</a>, <a class="reference internal" href="../requirements/requirements.html#comp_req__kvs__concurrency" title="comp_saf_dfa__kvs__instance_registry">comp_req__kvs__concurrency</a>, <a class="reference internal" href="../requirements/requirements.html#comp_req__kvs__multi_instance" title="comp_saf_dfa__kvs__instance_registry">comp_req__kvs__multi_instance</a></span></span></div>
 <div class="line">violates: <span class="violates"><span><a class="reference internal" href="../architecture/component_architecture.html#comp_arc_sta__persistency_kvs__sv" title="comp_saf_dfa__kvs__instance_registry">comp_arc_sta__persistency_kvs__sv</a></span></span></div>
 </span></div>
 </div>
 </td>
 <td class="meta" colspan="3"></td>
 </tr>
-<tr class="content row-odd"><td class="content" colspan="6"><p>All builds share a process-wide registry of instance states, protected by a mutex.</p></td>
+<tr class="content row-odd"><td class="content" colspan="6"><p>All builds share a process-wide registry of instance states, protected by a mutex.
+<code class="docutils literal notranslate"><span class="pre">Unregister()</span></code> destroys the registered instance and discards its unflushed changes, see <a class="reference internal" href="aou_requirements.html#aou_req__kvs__flush_before_unregister" title="aou_req__kvs__flush_before_unregister"><em class="xref need">Flush before Unregister (aou_req__kvs__flush_before_unregister)</em></a>.</p></td>
 </tr>
 <tr class="footer row-even"><td class="footer_left" colspan="2"><div class="needs_footer_left line-block">
 <div class="line"><span><span class="needs-id"><a class="reference internal" href="#comp_saf_dfa__kvs__instance_registry" title="comp_saf_dfa__kvs__instance_registry">comp_saf_dfa__kvs__instance_registry</a></span></span></div>
@@ -828,7 +829,7 @@ platform DFA.</p>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-8da3fd58">
+<div class="need_container docutils container" id="SNCB-1033313a">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_comp_saf_dfa table" id="comp_saf_dfa__kvs__shared_instance_state">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -876,7 +877,7 @@ platform DFA.</p>
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-270547be">
+<div class="need_container docutils container" id="SNCB-d5f90d33">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_comp_saf_dfa table" id="comp_saf_dfa__kvs__callback_deadlock">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -927,7 +928,7 @@ instance blocks. Not sufficient: it is not specified that callbacks are executed
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-34ae14fd">
+<div class="need_container docutils container" id="SNCB-bf041f24">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_comp_saf_dfa table" id="comp_saf_dfa__kvs__async_flush">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -977,7 +978,7 @@ instance blocks. Not sufficient: it is not specified that callbacks are executed
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-afce4555">
+<div class="need_container docutils container" id="SNCB-d947d11e">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_comp_saf_dfa table" id="comp_saf_dfa__kvs__multi_process">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -1025,7 +1026,7 @@ instance blocks. Not sufficient: it is not specified that callbacks are executed
 </table>
 </div>
 </div>
-<div class="need_container docutils container" id="SNCB-1f2ec777">
+<div class="need_container docutils container" id="SNCB-6f54c6fb">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_comp_saf_dfa table" id="comp_saf_dfa__kvs__memory_depletion">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
