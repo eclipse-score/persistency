@@ -53,8 +53,10 @@ score::mw::log::LogStream& operator<<(score::mw::log::LogStream& stream, const L
             return stream << "kOptional";
         case LoadPolicy::kIgnored:
             return stream << "kIgnored";
+        // COV_JUSTIFIED_START kvs-load-policy-unknown-arm
         default:
             return stream << "unknown";
+            // COV_JUSTIFIED_STOP
     }
 }
 
@@ -65,8 +67,7 @@ score::mw::log::LogStream& operator<<(score::mw::log::LogStream& stream, const K
     stream << "[current_load_policy=" << params.current_load_policy << "]";
     stream << "[default_load_policy=" << params.default_load_policy << "]";
     stream << "[working_dir=" << params.working_dir << "]";
-    stream << "[storage_quota=" << (params.storage_quota ? std::to_string(*(params.storage_quota)) : "unlimited")
-           << "]";
+    stream << "[storage_quota=" << (params.storage_quota ? std::to_string(*params.storage_quota) : "unlimited") << "]";
     stream << "[snapshot_count_limit=" << params.snapshot_count_limit << "]";
     return stream;
 }
@@ -149,7 +150,9 @@ score::Result<std::shared_ptr<Kvs>> KvsBuilder::Build() const noexcept
         return entry;
     }
 
-    std::shared_ptr<Kvs> kvs{std::make_shared<Kvs>(Kvs::BuilderKey{}, params_)};
+    // std::make_shared cannot call the private constructor of Kvs.
+    // NOLINTNEXTLINE(bugprone-unhandled-exception-at-new) Build() is noexcept, so a failed allocation terminates.
+    std::shared_ptr<Kvs> kvs{new Kvs{params_}};  // codeql::misra_deviation(kvs-builder-new)
 
     const std::string directory{params_.working_dir.empty() ? std::string{"./"} : params_.working_dir};
     const score::filesystem::Path base_path{directory};

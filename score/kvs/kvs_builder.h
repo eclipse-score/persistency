@@ -14,7 +14,6 @@
 #define SCORE_KVS_KVS_BUILDER_H
 
 #include "score/kvs/kvs.h"
-#include "score/mw/log/logging.h"
 #include <memory>
 #include <optional>
 #include <string>
@@ -74,7 +73,7 @@ class KvsBuilder final
     /// @brief Builds and opens the Kvs instance with the configured options.
     ///
     /// Builds for the same instance ID and options return the same object retained by the registry.
-    /// After `Unregister()`, a later build creates a new object; see `Unregister()` for details.
+    /// After `Unregister()`, a later build creates a new object.
     ///
     /// @return The opened store on success, or an ErrorCode on failure:
     /// - `kInvalidInstanceId` if the instance ID is not below `kMaxInstanceCount`.
@@ -85,7 +84,7 @@ class KvsBuilder final
     /// - `kJsonParserError` if a defaults or KVS file is not a valid JSON object.
     /// - `kInvalidKey` if a defaults or KVS file contains an invalid key.
     /// - `kInvalidValueType` if a defaults or KVS file contains a value of an unsupported type.
-    score::Result<std::shared_ptr<Kvs>> Build() const noexcept;
+    [[nodiscard]] score::Result<std::shared_ptr<Kvs>> Build() const noexcept;
 
     // Deprecated snake_case API.
     // Each entry forwards to its PascalCase replacement and is removed in a future release.
@@ -133,14 +132,14 @@ class KvsBuilder final
     }
 
     /// @deprecated Use `Build()` instead.
-    [[deprecated("Use Build() instead. This name is removed in a future release.")]]
+    [[nodiscard]] [[deprecated("Use Build() instead. This name is removed in a future release.")]]
     score::Result<std::shared_ptr<Kvs>> build() const noexcept
     {
         return Build();
     }
 
   private:
-    /// Open options.
+    /// Open parameters of the instance to build.
     KvsOpenParameters params_;
 };
 
@@ -152,7 +151,7 @@ class KvsBuilder final
 /// @return Nothing on success, or an ErrorCode on failure:
 /// - `kInvalidInstanceId` if the ID is out of range or no instance is registered under it.
 /// - `kResourceBusy` if a pointer to the instance is held outside the registry.
-score::Result<void> Unregister(const InstanceId& instance_id) noexcept;
+[[nodiscard]] score::Result<void> Unregister(const InstanceId& instance_id) noexcept;
 
 }  // namespace score::kvs
 

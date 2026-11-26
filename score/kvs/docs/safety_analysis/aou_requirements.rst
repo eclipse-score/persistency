@@ -18,7 +18,7 @@ KVS Assumptions of Use
 .. document:: KVS AoU
    :id: doc__kvs_aou
    :status: valid
-   :version: 1
+   :version: 2
    :safety: ASIL_B
    :security: NO
    :realizes: wp__requirements_comp_aou[version==1]
@@ -55,3 +55,14 @@ Component AoU
 
    The user shall configure the maximum storage size and the maximum number of snapshots of each KVS instance, so
    that the execution time of the KVS operations is bounded.
+
+.. aou_req:: Flush before Unregister
+   :id: aou_req__kvs__flush_before_unregister
+   :reqtype: Process
+   :security: NO
+   :safety: ASIL_B
+   :status: valid
+   :version: 1
+   :tags: Persistency KVS
+
+   The user shall flush an instance before calling ``Unregister()``, because it destroys the registered instance and discards changes that were not flushed.

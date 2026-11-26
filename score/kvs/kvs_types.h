@@ -162,9 +162,11 @@ struct KvsOpenParameters final
     KvsDefaults default_load_policy{KvsDefaults::kOptional};
     /// Directory where KVS files are stored ("" or "." for the current directory).
     std::string working_dir{"./data_folder/"};
-    /// Maximum total size of this instance's files in bytes; std::nullopt means unlimited.
+    /// Maximum total size of this instance's files in bytes.
+    /// `std::nullopt` means unlimited.
     std::optional<std::size_t> storage_quota{std::nullopt};
-    /// Maximum number of snapshots kept, in the range 0..kMaxSnapshotsUpperBound; 0 disables snapshots.
+    /// Maximum number of snapshots kept, in the range 0..kMaxSnapshotsUpperBound.
+    /// 0 disables snapshots.
     std::size_t snapshot_count_limit{kDefaultMaxSnapshots};
 };
 

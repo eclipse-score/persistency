@@ -138,7 +138,7 @@ Unintended impacts to function due to various failures.
   * - UI_01_04
     - Deadlocks
     - no
-    - One mutex per instance (Rust additionally one for the instance pool in the builder). Both implementations wait for the lock. A call holds at most one lock and does not call back into the application while holding it. Exception: the C++ move assignment takes the locks of both instances at once with ``std::scoped_lock``, which avoids deadlock.
+    - One mutex per instance. Rust additionally has one for the instance pool in the builder, C++ one for the process-wide instance registry that build and unregister take. Both implementations wait for the lock. A call holds at most one lock and does not call back into the application while holding it.
   * - UI_01_05
     - Livelocks
     - no
@@ -193,6 +193,7 @@ DFA
    Causes: the application or OS scheduling, and waiting for the instance lock while another thread of the
    process uses the same instance. The wait lasts until that call returns, including its file access (e.g.
    flush or snapshot restore).
+   In C++, building and unregistering an instance also wait for the process-wide registry lock while another instance is built, including its file reads.
 
 .. feat_saf_dfa:: Corruption of persisted data
    :violates: feat_arc_sta__persistency__static

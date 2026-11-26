@@ -106,10 +106,18 @@ uint32_t Adler32(const std::string& data)
     return (b << 16) | a;
 }
 
+/// @brief Destroys every registered instance, also those still held by a test.
+void ResetRegistry()
+{
+    auto& registry{KvsInstanceRegistry::GetInstance()};
+    const std::lock_guard<std::mutex> lock{registry.mutex};
+    registry.array.fill(nullptr);
+}
+
 /// @brief Creates the test environment with default data, which is needed in most test cases.
 void PrepareEnvironment()
 {
-    KvsInstanceRegistry::GetInstance().Reset();
+    ResetRegistry();
 
     // Prepare the test environment.
     mkdir(kDataDir.c_str(), 0777);
@@ -130,7 +138,7 @@ void CleanupEnvironment()
 
 void CleanupEnvironment(const std::string& dir)
 {
-    KvsInstanceRegistry::GetInstance().Reset();
+    ResetRegistry();
 
     // Cleanup the test environment.
     const score::filesystem::Path path{dir};

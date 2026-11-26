@@ -19,7 +19,7 @@ KVS DFA (Dependent Failure Analysis)
 .. document:: KVS DFA
    :id: doc__kvs_dfa
    :status: valid
-   :version: 1
+   :version: 2
    :safety: ASIL_B
    :security: NO
    :realizes: wp__sw_component_dfa[version==1]
@@ -144,11 +144,11 @@ Unintended impacts to function due to various failures.
   * - UI_01_05
     - Livelocks
     - no
-    - No retry loops. Calls wait for the instance lock and do not retry.
+    - No retry loops. Calls wait for the instance lock or, for ``Build()`` and ``Unregister()``, the registry lock and do not retry.
   * - UI_01_06
     - Blocking of execution
     - no
-    - Calls wait for the instance lock held by another thread of the process. The effect is covered by :need:`feat_saf_dfa__persistency__execution_blocking`.
+    - Calls wait for the instance lock held by another thread of the process. ``Build()`` and ``Unregister()`` also wait for the registry lock, so a slow ``Build()`` of one instance delays them for every other instance. The effect is covered by :need:`feat_saf_dfa__persistency__execution_blocking`.
   * - UI_01_07
     - Incorrect allocation of execution time
     - no
@@ -199,12 +199,13 @@ DFA
    :failure_id: CO_01_01
    :failure_effect: Concurrent builds access the process-wide instance registry inconsistently.
    :safety_relevant: yes
-   :mitigated_by: comp_req__kvs__concurrency, comp_req__kvs__multi_instance
+   :mitigated_by: comp_req__kvs__concurrency, comp_req__kvs__multi_instance, aou_req__kvs__flush_before_unregister
    :sufficient: yes
    :status: valid
    :version: 1
 
    All builds share a process-wide registry of instance states, protected by a mutex.
+   ``Unregister()`` destroys the registered instance and discards its unflushed changes, see :need:`aou_req__kvs__flush_before_unregister`.
 
 .. comp_saf_dfa:: Instance state shared by handles
    :violates: comp_arc_sta__persistency_kvs__sv
