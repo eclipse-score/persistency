@@ -24,20 +24,8 @@
     "url": "https://eclipse-score.github.io/persistency/pr-595/"
   },
   {
-    "version": "pr-660",
-    "url": "https://eclipse-score.github.io/persistency/pr-660/"
-  },
-  {
     "version": "pr-690",
     "url": "https://eclipse-score.github.io/persistency/pr-690/"
-  },
-  {
-    "version": "pr-705",
-    "url": "https://eclipse-score.github.io/persistency/pr-705/"
-  },
-  {
-    "version": "pr-706",
-    "url": "https://eclipse-score.github.io/persistency/pr-706/"
   },
   {
     "version": "pr-734",
@@ -68,16 +56,8 @@
     "url": "https://eclipse-score.github.io/persistency/pr-756/"
   },
   {
-    "version": "pr-758",
-    "url": "https://eclipse-score.github.io/persistency/pr-758/"
-  },
-  {
     "version": "pr-759",
     "url": "https://eclipse-score.github.io/persistency/pr-759/"
-  },
-  {
-    "version": "pr-767",
-    "url": "https://eclipse-score.github.io/persistency/pr-767/"
   },
   {
     "version": "pr-768",
@@ -86,6 +66,22 @@
   {
     "version": "pr-769",
     "url": "https://eclipse-score.github.io/persistency/pr-769/"
+  },
+  {
+    "version": "pr-773",
+    "url": "https://eclipse-score.github.io/persistency/pr-773/"
+  },
+  {
+    "version": "pr-774",
+    "url": "https://eclipse-score.github.io/persistency/pr-774/"
+  },
+  {
+    "version": "pr-775",
+    "url": "https://eclipse-score.github.io/persistency/pr-775/"
+  },
+  {
+    "version": "pr-776",
+    "url": "https://eclipse-score.github.io/persistency/pr-776/"
   },
   {
     "version": "v0.3.0",
@@ -106,21 +102,5 @@
   {
     "version": "v0.5.0",
     "url": "https://eclipse-score.github.io/persistency/v0.5.0/"
-  },
-  {
-    "version": "pr-773",
-    "url": "https://eclipse-score.github.io/persistency/pr-773/"
-  },
-  {
-    "version": "pr-774",
-    "url": "https://eclipse-score.github.io/persistency/pr-774/"
-  },
-  {
-    "version": "pr-775",
-    "url": "https://eclipse-score.github.io/persistency/pr-775/"
-  },
-  {
-    "version": "pr-776",
-    "url": "https://eclipse-score.github.io/persistency/pr-776/"
   }
 ]
