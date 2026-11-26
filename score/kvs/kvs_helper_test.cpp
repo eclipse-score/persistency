@@ -389,7 +389,10 @@ TEST(kvs_any_to_kvsvalue, numeric_values_json_round_trip)
     ExpectJsonRoundTripBoundaries<int32_t>();
     ExpectJsonRoundTripBoundaries<int64_t>();
     ExpectJsonRoundTripBoundaries<float>();
+#if !defined(__QNXNTO__)
+    // TODO: Re-enable on QNX after https://github.com/eclipse-score/baselibs/issues/894 is fixed.
     ExpectJsonRoundTripBoundaries<double>();
+#endif
     ExpectJsonRoundTrip<float>(std::numeric_limits<float>::min());
     ExpectJsonRoundTrip<float>(0.1F);
     // Written as shortest float text this value would load one ULP off, because the parser rounds it to a double first.
@@ -441,9 +444,12 @@ TEST(kvs_any_to_kvsvalue, numeric_values_parse_rust_written_text)
     ASSERT_TRUE(f32_lowest);
     EXPECT_EQ(std::get<float>(f32_lowest->GetValue()), std::numeric_limits<float>::lowest());
 
+#if !defined(__QNXNTO__)
+    // TODO: Re-enable on QNX after https://github.com/eclipse-score/baselibs/issues/894 is fixed.
     const auto f64_max{parse("f64", "17976931348623157" + std::string(292U, '0'))};
     ASSERT_TRUE(f64_max);
     EXPECT_EQ(std::get<double>(f64_max->GetValue()), std::numeric_limits<double>::max());
+#endif
 }
 
 TEST(kvs_any_to_kvsvalue, any_to_kvsvalue_string)
