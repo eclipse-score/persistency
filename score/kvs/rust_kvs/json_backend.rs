@@ -202,7 +202,7 @@ impl JsonBackendBuilder {
 
     /// Set the working directory used by the JSON backend.
     pub fn working_dir(mut self, working_dir: PathBuf) -> Self {
-        trace!("'working_dir' set to {:?}", working_dir);
+        trace!("'working_dir' set to {}", working_dir.to_string_lossy().as_ref());
         self.working_dir = working_dir;
         self
     }
@@ -230,10 +230,18 @@ impl Default for JsonBackendBuilder {
 }
 
 /// KVS backend implementation based on TinyJSON.
-#[derive(Clone, Debug, PartialEq, ScoreDebug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct JsonBackend {
     working_dir: PathBuf,
     snapshot_max_count: usize,
+}
+
+impl ScoreDebug for JsonBackend {
+    fn fmt(&self, f: score_log::fmt::Writer, spec: &score_log::fmt::FormatSpec) -> score_log::fmt::Result {
+        score_log::fmt::DebugStruct::new(f, spec, "JsonBackend")
+            .field("snapshot_max_count", &self.snapshot_max_count)
+            .finish_non_exhaustive()
+    }
 }
 
 impl JsonBackend {
@@ -260,7 +268,6 @@ impl JsonBackend {
 
             // Old paths.
             let hash_path_old = self.hash_file_path(instance_id, old_snapshot_id);
-            let snap_name_old = Self::kvs_file_name(instance_id, old_snapshot_id);
             let snap_path_old = self.kvs_file_path(instance_id, old_snapshot_id);
 
             // Check snapshot and hash files exist.
@@ -275,16 +282,21 @@ impl JsonBackend {
             // In other case - this is erroneous scenario.
             // Either snapshot or hash file got removed.
             else if !snap_old_exists || !hash_old_exists {
-                error!("KVS or hash file not found");
+                error!(
+                    "KVS or hash file not found: instance={}, snapshot={}",
+                    instance_id.0, old_snapshot_id.0
+                );
                 return Err(ErrorCode::IntegrityCorrupted);
             }
 
             // New paths.
             let hash_path_new = self.hash_file_path(instance_id, new_snapshot_id);
-            let snap_name_new = Self::kvs_file_name(instance_id, new_snapshot_id);
             let snap_path_new = self.kvs_file_path(instance_id, new_snapshot_id);
 
-            debug!("Rotating snapshots: {} -> {}", snap_name_old, snap_name_new);
+            debug!(
+                "Rotating snapshots: instance={}, snapshot={} -> {}",
+                instance_id.0, old_snapshot_id.0, new_snapshot_id.0
+            );
 
             fs::rename(hash_path_old, hash_path_new)?;
             fs::rename(snap_path_old, snap_path_new)?;
@@ -300,15 +312,18 @@ impl JsonBackend {
             ext.is_some_and(|ep| ep.to_str().is_some_and(|es| es == extension))
         }
 
-        debug!("Checking KVS file path: {:?}", kvs_path);
+        let kvs_path_str: &str = &kvs_path.to_string_lossy();
+        let hash_path_str: &str = &hash_path.to_string_lossy();
+
+        debug!("Checking KVS file extension: {}", kvs_path_str);
         if !check_extension(kvs_path, "json") {
-            error!("Invalid KVS file path extension: {:?}", kvs_path);
+            error!("Invalid KVS file extension: {}", kvs_path_str);
             return Err(ErrorCode::KvsFileReadError);
         }
 
-        debug!("Checking hash file path: {:?}", hash_path);
+        debug!("Checking hash file extension: {}", hash_path_str);
         if !check_extension(hash_path, "hash") {
-            error!("Invalid hash file path extension: {:?}", hash_path);
+            error!("Invalid hash file extension: {}", hash_path_str);
             return Err(ErrorCode::KvsHashFileReadError);
         }
 
@@ -316,27 +331,29 @@ impl JsonBackend {
     }
 
     pub(super) fn load(kvs_path: &Path, hash_path: &Path) -> Result<KvsMap, ErrorCode> {
+        let kvs_path_str: &str = &kvs_path.to_string_lossy();
+        let hash_path_str: &str = &hash_path.to_string_lossy();
         Self::check_path_extensions(kvs_path, hash_path)?;
 
         // Load KVS file.
-        debug!("Loading KVS file: {:?}", kvs_path);
+        debug!("Loading KVS file: {}", kvs_path_str);
         let json_str = fs::read_to_string(kvs_path).inspect_err(|_| {
-            error!("Failed to load KVS file: {:?}", kvs_path);
+            error!("Failed to load KVS file: {}", kvs_path_str);
         })?;
 
         // Load hash file.
-        debug!("Loading hash file: {:?}", hash_path);
+        debug!("Loading hash file: {}", hash_path_str);
         let hash_bytes = fs::read(hash_path).inspect_err(|_| {
-            error!("Failed to load hash file: {:?}", hash_path);
+            error!("Failed to load hash file: {}", hash_path_str);
         })?;
 
         // Perform hash check.
         debug!(
-            "Performing hash check, KVS file: {:?}, hash file: {:?}",
-            kvs_path, hash_path
+            "Performing KVS hash check, KVS file: {}, hash file: {}",
+            kvs_path_str, hash_path_str
         );
         if hash_bytes.len() != 4 {
-            error!("Invalid hash length: {:?}", hash_path);
+            error!("Invalid hash length: {}", hash_path_str);
             return Err(ErrorCode::ValidationFailed);
         }
 
@@ -344,29 +361,32 @@ impl JsonBackend {
         let hash_kvs = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
 
         if hash_kvs != file_hash {
-            error!("Hash mismatch, KVS file: {:?}, hash file: {:?}", kvs_path, hash_path);
+            error!(
+                "KVS hash mismatch, KVS file: {}, hash file: {}",
+                kvs_path_str, hash_path_str
+            );
             return Err(ErrorCode::ValidationFailed);
         }
 
         // Parse KVS from string to `JsonValue`.
-        debug!("Parsing KVS file: {:?}", kvs_path);
+        debug!("Parsing KVS file: {}", kvs_path_str);
         let json_value = Self::parse(&json_str).inspect_err(|_| {
-            error!("Failed to parse KVS file: {:?}", kvs_path);
+            error!("Failed to parse KVS file: {}", kvs_path_str);
         })?;
 
         // Cast from `JsonValue` to `KvsValue`.
-        debug!("Converting JSON values to KVS values");
+        debug!("Converting JSON values to KVS values: {}", kvs_path_str);
         let kvs_value = KvsValue::try_from(json_value)?;
         if let KvsValue::Object(kvs_map) = kvs_value {
             // Validate keys.
             if let Some(key) = kvs_map.keys().find(|key| !is_key_valid(key)) {
-                error!("Provided key is not valid: {}", key);
+                error!("Provided key is not valid: {}, KVS file: {}", key, kvs_path_str);
                 return Err(ErrorCode::InvalidKey);
             }
 
             Ok(kvs_map)
         } else {
-            error!("Conversion from JSON to KVS failed");
+            error!("Conversion from JSON to KVS failed: {}", kvs_path_str);
             Err(ErrorCode::JsonParserError)
         }
     }
@@ -387,11 +407,7 @@ impl JsonBackend {
         // Remove temporary file left behind by an interrupted write.
         if let Err(e) = fs::remove_file(&tmp_path) {
             if e.kind() != std::io::ErrorKind::NotFound {
-                error!(
-                    "Failed to remove stale temporary file: {:?}, error: {:?}",
-                    tmp_path,
-                    e.to_string()
-                );
+                error!("Failed to remove stale temporary file, error: {:?}", e.to_string());
                 return Err(ErrorCode::PhysicalStorageFailure);
             }
         }
@@ -404,7 +420,7 @@ impl JsonBackend {
             .mode(KVS_FILE_MODE)
             .open(&tmp_path)
             .map_err(|e| {
-                error!("Failed to open file: {:?}, error: {:?}", tmp_path, e.to_string());
+                error!("Failed to open temporary file, error: {:?}", e.to_string());
                 ErrorCode::PhysicalStorageFailure
             })?;
 
@@ -414,16 +430,16 @@ impl JsonBackend {
             #[cfg(not(miri))]
             file.set_permissions(fs::Permissions::from_mode(KVS_FILE_MODE))
                 .map_err(|_| {
-                    error!("Failed to set file permissions: {:?}", tmp_path);
+                    error!("Failed to set temporary file permissions");
                     ErrorCode::PhysicalStorageFailure
                 })?;
 
             file.write_all(data).map_err(|e| {
-                error!("Failed to write to file: {:?}, error: {:?}", tmp_path, e.to_string());
+                error!("Failed to write to temporary file, error: {:?}", e.to_string());
                 ErrorCode::PhysicalStorageFailure
             })?;
             file.sync_data().map_err(|e| {
-                error!("Failed to sync file: {:?}, error: {:?}", tmp_path, e.to_string());
+                error!("Failed to sync temporary file, error: {:?}", e.to_string());
                 ErrorCode::PhysicalStorageFailure
             })
         })();
@@ -442,7 +458,7 @@ impl JsonBackend {
     /// Rename is atomic - file is either old or new.
     fn commit_temp_file(tmp_path: &Path, path: &Path) -> Result<(), ErrorCode> {
         fs::rename(tmp_path, path).map_err(|e| {
-            error!("Failed to replace file: {:?}, error: {:?}", path, e.to_string());
+            error!("Failed to replace file, error: {:?}", e.to_string());
             let _ = fs::remove_file(tmp_path);
             ErrorCode::PhysicalStorageFailure
         })
@@ -457,38 +473,40 @@ impl JsonBackend {
         fs::File::open(dir)
             .and_then(|dir_file| dir_file.sync_all())
             .map_err(|e| {
-                error!("Failed to sync directory: {:?}, error: {:?}", dir, e.to_string());
+                error!("Failed to sync parent directory, error: {:?}", e.to_string());
                 ErrorCode::PhysicalStorageFailure
             })
     }
 
     pub(super) fn save(kvs_map: &KvsMap, kvs_path: &Path, hash_path: &Path) -> Result<(), ErrorCode> {
+        let kvs_path_str: &str = &kvs_path.to_string_lossy();
+        let hash_path_str: &str = &hash_path.to_string_lossy();
         Self::check_path_extensions(kvs_path, hash_path)?;
 
         // Cast from `KvsValue` to `JsonValue`.
-        debug!("Converting KVS values to JSON values");
+        debug!("Converting KVS values to JSON values: {}", kvs_path_str);
         let kvs_value = KvsValue::Object(kvs_map.clone());
         let json_value = JsonValue::try_from(kvs_value)?;
 
         // Stringify `JsonValue` and save to temporary KVS file.
-        debug!("Stringifying KVS file: {:?}", kvs_path);
+        debug!("Stringifying KVS file: {}", kvs_path_str);
         let json_str = Self::stringify(&json_value).inspect_err(|_| {
-            error!("Failed to stringify KVS file content: {:?}", kvs_path);
+            error!("Failed to stringify KVS file content: {}", kvs_path_str);
         })?;
 
-        debug!("Saving KVS file: {:?}", kvs_path);
+        debug!("Saving KVS file: {}", kvs_path_str);
         let kvs_tmp_path = Self::write_temp_file(kvs_path, json_str.as_bytes()).inspect_err(|_| {
-            error!("Failed to save KVS file: {:?}", kvs_path);
+            error!("Failed to save KVS file: {}", kvs_path_str);
         })?;
 
         // Generate hash and save to temporary hash file.
         debug!(
-            "Generating KVS hash, KVS file: {:?}, hash file: {:?}",
-            kvs_path, hash_path
+            "Generating KVS hash, KVS file: {}, hash file: {}",
+            kvs_path_str, hash_path_str
         );
         let hash = adler32::RollingAdler32::from_buffer(json_str.as_bytes()).hash();
         let hash_tmp_path = Self::write_temp_file(hash_path, &hash.to_be_bytes()).inspect_err(|_| {
-            error!("Failed to save hash file: {:?}", hash_path);
+            error!("Failed to save hash file: {}", hash_path_str);
             let _ = fs::remove_file(&kvs_tmp_path);
         })?;
 
@@ -543,26 +561,45 @@ impl JsonBackend {
 
 impl KvsBackend for JsonBackend {
     fn load_kvs(&self, instance_id: InstanceId, snapshot_id: SnapshotId) -> Result<KvsMap, ErrorCode> {
+        debug!(
+            "Loading snapshot: instance={}, snapshot={}",
+            instance_id.0, snapshot_id.0
+        );
         let kvs_path = self.kvs_file_path(instance_id, snapshot_id);
         let hash_path = self.hash_file_path(instance_id, snapshot_id);
-        Self::load(&kvs_path, &hash_path)
+        Self::load(&kvs_path, &hash_path).inspect_err(|e| {
+            error!(
+                "Failed to load snapshot: instance={}, snapshot={}, error={:?}",
+                instance_id.0, snapshot_id.0, e
+            );
+        })
     }
 
     fn load_defaults(&self, instance_id: InstanceId) -> Result<KvsMap, ErrorCode> {
+        debug!("Loading defaults: instance={}", instance_id.0);
         let defaults_path = self.defaults_file_path(instance_id);
         let defaults_hash_path = self.defaults_hash_file_path(instance_id);
-        Self::load(&defaults_path, &defaults_hash_path)
+        Self::load(&defaults_path, &defaults_hash_path).inspect_err(|e| {
+            error!("Failed to load defaults: instance={}, error={:?}", instance_id.0, e);
+        })
     }
 
     fn flush(&self, instance_id: InstanceId, kvs_map: &KvsMap) -> Result<(), ErrorCode> {
         self.snapshot_rotate(instance_id).inspect_err(|e| {
-            error!("Failed to rotate snapshots: {:?}", e);
+            error!("Failed to rotate snapshots: instance={}, error={:?}", instance_id.0, e);
         })?;
         let snapshot_id = SnapshotId(0);
+        debug!(
+            "Saving snapshot: instance={}, snapshot={}",
+            instance_id.0, snapshot_id.0
+        );
         let kvs_path = self.kvs_file_path(instance_id, snapshot_id);
         let hash_path = self.hash_file_path(instance_id, snapshot_id);
         Self::save(kvs_map, &kvs_path, &hash_path).inspect_err(|e| {
-            error!("Failed to save snapshot: {:?}", e);
+            error!(
+                "Failed to save snapshot: instance={}, snapshot={}, error={:?}",
+                instance_id.0, snapshot_id.0, e
+            );
         })?;
         Ok(())
     }
@@ -590,18 +627,22 @@ impl KvsBackend for JsonBackend {
     fn snapshot_restore(&self, instance_id: InstanceId, snapshot_id: SnapshotId) -> Result<KvsMap, ErrorCode> {
         // Fail if the snapshot ID is the current KVS.
         if snapshot_id == SnapshotId(0) {
-            error!("Restoring current KVS snapshot is not allowed");
+            error!(
+                "Restoring current KVS snapshot is not allowed: instance={}",
+                instance_id.0
+            );
             return Err(ErrorCode::InvalidSnapshotId);
         }
 
         if self.snapshot_count(instance_id) < snapshot_id.0 {
-            error!("Unable to restore non-existing snapshot");
+            error!(
+                "Unable to restore non-existing snapshot: instance={}, snapshot={}",
+                instance_id.0, snapshot_id.0
+            );
             return Err(ErrorCode::InvalidSnapshotId);
         }
 
-        self.load_kvs(instance_id, snapshot_id).inspect_err(|e| {
-            error!("Failed to load snapshot: {:?}", e);
-        })
+        self.load_kvs(instance_id, snapshot_id)
     }
 }
 

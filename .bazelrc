@@ -35,7 +35,6 @@ build --incompatible_strict_action_env
 
 # Persistency-specific settings
 build --sandbox_writable_path=/var/tmp
-build --@score_baselibs//score/log_rust:safety_level=qm
 build --@score_logging//score/mw/log/flags:KRemote_Logging=False
 # Miri toolchain for //score/kvs/rust_kvs:unit_tests_miri*.
 # It has its own toolchain type, so it doesn't compete with the ferrocene toolchain registered in score_toolchain.bazelrc.
