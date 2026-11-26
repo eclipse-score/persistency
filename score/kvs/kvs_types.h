@@ -67,9 +67,9 @@ struct InstanceId
     /// @brief Constructs an instance identifier.
     ///
     /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(InstanceId(0))`.
-    /// @param id Numeric value of the identifier.
+    /// @param value Numeric value of the identifier.
     // codeql::misra_deviation_next_line(kvs-id-implicit-ctor)
-    InstanceId(std::size_t id) noexcept : id{id} {}
+    InstanceId(std::size_t value) noexcept : id{value} {}
 
     /// Numeric value of the identifier.
     std::size_t id;
@@ -82,9 +82,9 @@ struct SnapshotId
     /// @brief Constructs a snapshot identifier.
     ///
     /// Not explicit to allow implicit construction, e.g. `function(0)` instead of `function(SnapshotId(0))`.
-    /// @param id Numeric value of the identifier.
+    /// @param value Numeric value of the identifier.
     // codeql::misra_deviation_next_line(kvs-id-implicit-ctor)
-    SnapshotId(std::size_t id) noexcept : id{id} {}
+    SnapshotId(std::size_t value) noexcept : id{value} {}
 
     /// Numeric value of the identifier.
     std::size_t id;
