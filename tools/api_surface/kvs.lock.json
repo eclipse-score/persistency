@@ -1,0 +1,1279 @@
+{
+  "target": "//score/kvs",
+  "symbols": [],
+  "undocumented_symbols": [
+    {
+      "name": "ErrorCode",
+      "qualified_name": "score::kvs::ErrorCode",
+      "kind": "enum",
+      "signature": "enum class ErrorCode"
+    },
+    {
+      "name": "kUnmappedError",
+      "qualified_name": "score::kvs::ErrorCode::kUnmappedError",
+      "kind": "enum_value",
+      "signature": "kUnmappedError"
+    },
+    {
+      "name": "kFileNotFound",
+      "qualified_name": "score::kvs::ErrorCode::kFileNotFound",
+      "kind": "enum_value",
+      "signature": "kFileNotFound"
+    },
+    {
+      "name": "kKvsFileReadError",
+      "qualified_name": "score::kvs::ErrorCode::kKvsFileReadError",
+      "kind": "enum_value",
+      "signature": "kKvsFileReadError"
+    },
+    {
+      "name": "kKvsHashFileReadError",
+      "qualified_name": "score::kvs::ErrorCode::kKvsHashFileReadError",
+      "kind": "enum_value",
+      "signature": "kKvsHashFileReadError"
+    },
+    {
+      "name": "kJsonParserError",
+      "qualified_name": "score::kvs::ErrorCode::kJsonParserError",
+      "kind": "enum_value",
+      "signature": "kJsonParserError"
+    },
+    {
+      "name": "kJsonGeneratorError",
+      "qualified_name": "score::kvs::ErrorCode::kJsonGeneratorError",
+      "kind": "enum_value",
+      "signature": "kJsonGeneratorError"
+    },
+    {
+      "name": "kPhysicalStorageFailure",
+      "qualified_name": "score::kvs::ErrorCode::kPhysicalStorageFailure",
+      "kind": "enum_value",
+      "signature": "kPhysicalStorageFailure"
+    },
+    {
+      "name": "kIntegrityCorrupted",
+      "qualified_name": "score::kvs::ErrorCode::kIntegrityCorrupted",
+      "kind": "enum_value",
+      "signature": "kIntegrityCorrupted"
+    },
+    {
+      "name": "kValidationFailed",
+      "qualified_name": "score::kvs::ErrorCode::kValidationFailed",
+      "kind": "enum_value",
+      "signature": "kValidationFailed"
+    },
+    {
+      "name": "kEncryptionFailed",
+      "qualified_name": "score::kvs::ErrorCode::kEncryptionFailed",
+      "kind": "enum_value",
+      "signature": "kEncryptionFailed"
+    },
+    {
+      "name": "kResourceBusy",
+      "qualified_name": "score::kvs::ErrorCode::kResourceBusy",
+      "kind": "enum_value",
+      "signature": "kResourceBusy"
+    },
+    {
+      "name": "kOutOfStorageSpace",
+      "qualified_name": "score::kvs::ErrorCode::kOutOfStorageSpace",
+      "kind": "enum_value",
+      "signature": "kOutOfStorageSpace"
+    },
+    {
+      "name": "kQuotaExceeded",
+      "qualified_name": "score::kvs::ErrorCode::kQuotaExceeded",
+      "kind": "enum_value",
+      "signature": "kQuotaExceeded"
+    },
+    {
+      "name": "kAuthenticationFailed",
+      "qualified_name": "score::kvs::ErrorCode::kAuthenticationFailed",
+      "kind": "enum_value",
+      "signature": "kAuthenticationFailed"
+    },
+    {
+      "name": "kKeyNotFound",
+      "qualified_name": "score::kvs::ErrorCode::kKeyNotFound",
+      "kind": "enum_value",
+      "signature": "kKeyNotFound"
+    },
+    {
+      "name": "kSerializationFailed",
+      "qualified_name": "score::kvs::ErrorCode::kSerializationFailed",
+      "kind": "enum_value",
+      "signature": "kSerializationFailed"
+    },
+    {
+      "name": "kInvalidSnapshotId",
+      "qualified_name": "score::kvs::ErrorCode::kInvalidSnapshotId",
+      "kind": "enum_value",
+      "signature": "kInvalidSnapshotId"
+    },
+    {
+      "name": "kConversionFailed",
+      "qualified_name": "score::kvs::ErrorCode::kConversionFailed",
+      "kind": "enum_value",
+      "signature": "kConversionFailed"
+    },
+    {
+      "name": "kInvalidValueType",
+      "qualified_name": "score::kvs::ErrorCode::kInvalidValueType",
+      "kind": "enum_value",
+      "signature": "kInvalidValueType"
+    },
+    {
+      "name": "kInvalidKey",
+      "qualified_name": "score::kvs::ErrorCode::kInvalidKey",
+      "kind": "enum_value",
+      "signature": "kInvalidKey"
+    },
+    {
+      "name": "kInstanceParametersMismatch",
+      "qualified_name": "score::kvs::ErrorCode::kInstanceParametersMismatch",
+      "kind": "enum_value",
+      "signature": "kInstanceParametersMismatch"
+    },
+    {
+      "name": "kInvalidInstanceId",
+      "qualified_name": "score::kvs::ErrorCode::kInvalidInstanceId",
+      "kind": "enum_value",
+      "signature": "kInvalidInstanceId"
+    },
+    {
+      "name": "UnmappedError",
+      "qualified_name": "score::kvs::ErrorCode::UnmappedError",
+      "kind": "enum_value",
+      "signature": "UnmappedError [[deprecated]]"
+    },
+    {
+      "name": "FileNotFound",
+      "qualified_name": "score::kvs::ErrorCode::FileNotFound",
+      "kind": "enum_value",
+      "signature": "FileNotFound [[deprecated]]"
+    },
+    {
+      "name": "KvsFileReadError",
+      "qualified_name": "score::kvs::ErrorCode::KvsFileReadError",
+      "kind": "enum_value",
+      "signature": "KvsFileReadError [[deprecated]]"
+    },
+    {
+      "name": "KvsHashFileReadError",
+      "qualified_name": "score::kvs::ErrorCode::KvsHashFileReadError",
+      "kind": "enum_value",
+      "signature": "KvsHashFileReadError [[deprecated]]"
+    },
+    {
+      "name": "JsonParserError",
+      "qualified_name": "score::kvs::ErrorCode::JsonParserError",
+      "kind": "enum_value",
+      "signature": "JsonParserError [[deprecated]]"
+    },
+    {
+      "name": "JsonGeneratorError",
+      "qualified_name": "score::kvs::ErrorCode::JsonGeneratorError",
+      "kind": "enum_value",
+      "signature": "JsonGeneratorError [[deprecated]]"
+    },
+    {
+      "name": "PhysicalStorageFailure",
+      "qualified_name": "score::kvs::ErrorCode::PhysicalStorageFailure",
+      "kind": "enum_value",
+      "signature": "PhysicalStorageFailure [[deprecated]]"
+    },
+    {
+      "name": "IntegrityCorrupted",
+      "qualified_name": "score::kvs::ErrorCode::IntegrityCorrupted",
+      "kind": "enum_value",
+      "signature": "IntegrityCorrupted [[deprecated]]"
+    },
+    {
+      "name": "ValidationFailed",
+      "qualified_name": "score::kvs::ErrorCode::ValidationFailed",
+      "kind": "enum_value",
+      "signature": "ValidationFailed [[deprecated]]"
+    },
+    {
+      "name": "EncryptionFailed",
+      "qualified_name": "score::kvs::ErrorCode::EncryptionFailed",
+      "kind": "enum_value",
+      "signature": "EncryptionFailed [[deprecated]]"
+    },
+    {
+      "name": "ResourceBusy",
+      "qualified_name": "score::kvs::ErrorCode::ResourceBusy",
+      "kind": "enum_value",
+      "signature": "ResourceBusy [[deprecated]]"
+    },
+    {
+      "name": "OutOfStorageSpace",
+      "qualified_name": "score::kvs::ErrorCode::OutOfStorageSpace",
+      "kind": "enum_value",
+      "signature": "OutOfStorageSpace [[deprecated]]"
+    },
+    {
+      "name": "QuotaExceeded",
+      "qualified_name": "score::kvs::ErrorCode::QuotaExceeded",
+      "kind": "enum_value",
+      "signature": "QuotaExceeded [[deprecated]]"
+    },
+    {
+      "name": "AuthenticationFailed",
+      "qualified_name": "score::kvs::ErrorCode::AuthenticationFailed",
+      "kind": "enum_value",
+      "signature": "AuthenticationFailed [[deprecated]]"
+    },
+    {
+      "name": "KeyNotFound",
+      "qualified_name": "score::kvs::ErrorCode::KeyNotFound",
+      "kind": "enum_value",
+      "signature": "KeyNotFound [[deprecated]]"
+    },
+    {
+      "name": "SerializationFailed",
+      "qualified_name": "score::kvs::ErrorCode::SerializationFailed",
+      "kind": "enum_value",
+      "signature": "SerializationFailed [[deprecated]]"
+    },
+    {
+      "name": "InvalidSnapshotId",
+      "qualified_name": "score::kvs::ErrorCode::InvalidSnapshotId",
+      "kind": "enum_value",
+      "signature": "InvalidSnapshotId [[deprecated]]"
+    },
+    {
+      "name": "ConversionFailed",
+      "qualified_name": "score::kvs::ErrorCode::ConversionFailed",
+      "kind": "enum_value",
+      "signature": "ConversionFailed [[deprecated]]"
+    },
+    {
+      "name": "InvalidValueType",
+      "qualified_name": "score::kvs::ErrorCode::InvalidValueType",
+      "kind": "enum_value",
+      "signature": "InvalidValueType [[deprecated]]"
+    },
+    {
+      "name": "InvalidKey",
+      "qualified_name": "score::kvs::ErrorCode::InvalidKey",
+      "kind": "enum_value",
+      "signature": "InvalidKey [[deprecated]]"
+    },
+    {
+      "name": "KvsErrorDomain",
+      "qualified_name": "score::kvs::KvsErrorDomain",
+      "kind": "class",
+      "signature": "class KvsErrorDomain"
+    },
+    {
+      "name": "MessageFor",
+      "qualified_name": "score::kvs::KvsErrorDomain::MessageFor",
+      "kind": "method",
+      "signature": "MessageFor : std::string_view (const score::result::ErrorCode &) const noexcept"
+    },
+    {
+      "name": "MakeError",
+      "qualified_name": "score::kvs::MakeError",
+      "kind": "function",
+      "signature": "MakeError : score::result::Error (const ErrorCode, const std::string_view) noexcept"
+    },
+    {
+      "name": "ErrorHpp",
+      "qualified_name": "score::kvs::deprecated_headers::ErrorHpp",
+      "kind": "type_alias",
+      "signature": "using ErrorHpp = int [[deprecated]]"
+    },
+    {
+      "name": "Kvs",
+      "qualified_name": "score::kvs::Kvs",
+      "kind": "class",
+      "signature": "class Kvs"
+    },
+    {
+      "name": "BuilderKey",
+      "qualified_name": "score::kvs::Kvs::BuilderKey::BuilderKey",
+      "kind": "constructor",
+      "signature": "constexpr BuilderKey : void () noexcept"
+    },
+    {
+      "name": "Kvs",
+      "qualified_name": "score::kvs::Kvs::Kvs",
+      "kind": "constructor",
+      "signature": "Kvs : void (BuilderKey, const KvsOpenParameters &) noexcept"
+    },
+    {
+      "name": "Reset",
+      "qualified_name": "score::kvs::Kvs::Reset",
+      "kind": "method",
+      "signature": "Reset : score::Result<void> () noexcept"
+    },
+    {
+      "name": "GetAllKeys",
+      "qualified_name": "score::kvs::Kvs::GetAllKeys",
+      "kind": "method",
+      "signature": "GetAllKeys : score::Result<std::vector<std::string>> () const noexcept"
+    },
+    {
+      "name": "KeyExists",
+      "qualified_name": "score::kvs::Kvs::KeyExists",
+      "kind": "method",
+      "signature": "KeyExists : score::Result<bool> (const std::string_view) const noexcept"
+    },
+    {
+      "name": "GetValue",
+      "qualified_name": "score::kvs::Kvs::GetValue",
+      "kind": "method",
+      "signature": "GetValue : score::Result<KvsValue> (const std::string_view) const noexcept"
+    },
+    {
+      "name": "GetDefaultValue",
+      "qualified_name": "score::kvs::Kvs::GetDefaultValue",
+      "kind": "method",
+      "signature": "GetDefaultValue : score::Result<KvsValue> (const std::string_view) const noexcept"
+    },
+    {
+      "name": "SetValueToDefault",
+      "qualified_name": "score::kvs::Kvs::SetValueToDefault",
+      "kind": "method",
+      "signature": "SetValueToDefault : score::Result<void> (const std::string_view) noexcept"
+    },
+    {
+      "name": "IsValueDefault",
+      "qualified_name": "score::kvs::Kvs::IsValueDefault",
+      "kind": "method",
+      "signature": "IsValueDefault : score::Result<bool> (const std::string_view) const noexcept"
+    },
+    {
+      "name": "SetValue",
+      "qualified_name": "score::kvs::Kvs::SetValue",
+      "kind": "method",
+      "signature": "SetValue : score::Result<void> (const std::string_view, const KvsValue &) noexcept"
+    },
+    {
+      "name": "RemoveKey",
+      "qualified_name": "score::kvs::Kvs::RemoveKey",
+      "kind": "method",
+      "signature": "RemoveKey : score::Result<void> (const std::string_view) noexcept"
+    },
+    {
+      "name": "RemoveAllKeys",
+      "qualified_name": "score::kvs::Kvs::RemoveAllKeys",
+      "kind": "method",
+      "signature": "RemoveAllKeys : score::Result<void> () noexcept"
+    },
+    {
+      "name": "DiscardPendingChanges",
+      "qualified_name": "score::kvs::Kvs::DiscardPendingChanges",
+      "kind": "method",
+      "signature": "DiscardPendingChanges : score::Result<void> () noexcept"
+    },
+    {
+      "name": "Flush",
+      "qualified_name": "score::kvs::Kvs::Flush",
+      "kind": "method",
+      "signature": "Flush : score::Result<void> () noexcept"
+    },
+    {
+      "name": "SnapshotCount",
+      "qualified_name": "score::kvs::Kvs::SnapshotCount",
+      "kind": "method",
+      "signature": "SnapshotCount : score::Result<size_t> () const noexcept"
+    },
+    {
+      "name": "SnapshotMaxCount",
+      "qualified_name": "score::kvs::Kvs::SnapshotMaxCount",
+      "kind": "method",
+      "signature": "SnapshotMaxCount : size_t () const noexcept"
+    },
+    {
+      "name": "SnapshotRestore",
+      "qualified_name": "score::kvs::Kvs::SnapshotRestore",
+      "kind": "method",
+      "signature": "SnapshotRestore : score::Result<void> (const SnapshotId &) noexcept"
+    },
+    {
+      "name": "KvsFilePath",
+      "qualified_name": "score::kvs::Kvs::KvsFilePath",
+      "kind": "method",
+      "signature": "KvsFilePath : score::Result<score::filesystem::Path> (const SnapshotId &) const noexcept"
+    },
+    {
+      "name": "HashFilePath",
+      "qualified_name": "score::kvs::Kvs::HashFilePath",
+      "kind": "method",
+      "signature": "HashFilePath : score::Result<score::filesystem::Path> (const SnapshotId &) const noexcept"
+    },
+    {
+      "name": "GetStorageFileSize",
+      "qualified_name": "score::kvs::Kvs::GetStorageFileSize",
+      "kind": "method",
+      "signature": "GetStorageFileSize : score::Result<size_t> () const noexcept"
+    },
+    {
+      "name": "CalculatePotentialSize",
+      "qualified_name": "score::kvs::Kvs::CalculatePotentialSize",
+      "kind": "method",
+      "signature": "CalculatePotentialSize : score::Result<size_t> () const noexcept"
+    },
+    {
+      "name": "reset",
+      "qualified_name": "score::kvs::Kvs::reset",
+      "kind": "method",
+      "signature": "reset : score::Result<void> () noexcept [[deprecated]]"
+    },
+    {
+      "name": "get_all_keys",
+      "qualified_name": "score::kvs::Kvs::get_all_keys",
+      "kind": "method",
+      "signature": "get_all_keys : score::Result<std::vector<std::string>> () const noexcept [[deprecated]]"
+    },
+    {
+      "name": "key_exists",
+      "qualified_name": "score::kvs::Kvs::key_exists",
+      "kind": "method",
+      "signature": "key_exists : score::Result<bool> (const std::string_view) const noexcept [[deprecated]]"
+    },
+    {
+      "name": "get_value",
+      "qualified_name": "score::kvs::Kvs::get_value",
+      "kind": "method",
+      "signature": "get_value : score::Result<KvsValue> (const std::string_view) const noexcept [[deprecated]]"
+    },
+    {
+      "name": "get_default_value",
+      "qualified_name": "score::kvs::Kvs::get_default_value",
+      "kind": "method",
+      "signature": "get_default_value : score::Result<KvsValue> (const std::string_view) const noexcept [[deprecated]]"
+    },
+    {
+      "name": "is_value_default",
+      "qualified_name": "score::kvs::Kvs::is_value_default",
+      "kind": "method",
+      "signature": "is_value_default : score::Result<bool> (const std::string_view) const noexcept [[deprecated]]"
+    },
+    {
+      "name": "set_value",
+      "qualified_name": "score::kvs::Kvs::set_value",
+      "kind": "method",
+      "signature": "set_value : score::Result<void> (const std::string_view, const KvsValue &) noexcept [[deprecated]]"
+    },
+    {
+      "name": "remove_key",
+      "qualified_name": "score::kvs::Kvs::remove_key",
+      "kind": "method",
+      "signature": "remove_key : score::Result<void> (const std::string_view) noexcept [[deprecated]]"
+    },
+    {
+      "name": "remove_all_keys",
+      "qualified_name": "score::kvs::Kvs::remove_all_keys",
+      "kind": "method",
+      "signature": "remove_all_keys : score::Result<void> () noexcept [[deprecated]]"
+    },
+    {
+      "name": "discard_pending_changes",
+      "qualified_name": "score::kvs::Kvs::discard_pending_changes",
+      "kind": "method",
+      "signature": "discard_pending_changes : score::Result<void> () noexcept [[deprecated]]"
+    },
+    {
+      "name": "flush",
+      "qualified_name": "score::kvs::Kvs::flush",
+      "kind": "method",
+      "signature": "flush : score::Result<void> () noexcept [[deprecated]]"
+    },
+    {
+      "name": "snapshot_count",
+      "qualified_name": "score::kvs::Kvs::snapshot_count",
+      "kind": "method",
+      "signature": "snapshot_count : score::Result<size_t> () const noexcept [[deprecated]]"
+    },
+    {
+      "name": "snapshot_max_count",
+      "qualified_name": "score::kvs::Kvs::snapshot_max_count",
+      "kind": "method",
+      "signature": "snapshot_max_count : size_t () const noexcept [[deprecated]]"
+    },
+    {
+      "name": "snapshot_restore",
+      "qualified_name": "score::kvs::Kvs::snapshot_restore",
+      "kind": "method",
+      "signature": "snapshot_restore : score::Result<void> (const SnapshotId &) noexcept [[deprecated]]"
+    },
+    {
+      "name": "get_kvs_filename",
+      "qualified_name": "score::kvs::Kvs::get_kvs_filename",
+      "kind": "method",
+      "signature": "get_kvs_filename : score::Result<score::filesystem::Path> (const SnapshotId &) const noexcept [[deprecated]]"
+    },
+    {
+      "name": "get_hash_filename",
+      "qualified_name": "score::kvs::Kvs::get_hash_filename",
+      "kind": "method",
+      "signature": "get_hash_filename : score::Result<score::filesystem::Path> (const SnapshotId &) const noexcept [[deprecated]]"
+    },
+    {
+      "name": "get_storage_file_size",
+      "qualified_name": "score::kvs::Kvs::get_storage_file_size",
+      "kind": "method",
+      "signature": "get_storage_file_size : score::Result<size_t> () const noexcept [[deprecated]]"
+    },
+    {
+      "name": "calculate_potential_size",
+      "qualified_name": "score::kvs::Kvs::calculate_potential_size",
+      "kind": "method",
+      "signature": "calculate_potential_size : score::Result<size_t> () const noexcept [[deprecated]]"
+    },
+    {
+      "name": "KvsHpp",
+      "qualified_name": "score::kvs::deprecated_headers::KvsHpp",
+      "kind": "type_alias",
+      "signature": "using KvsHpp = int [[deprecated]]"
+    },
+    {
+      "name": "KvsBuilder",
+      "qualified_name": "score::kvs::KvsBuilder",
+      "kind": "class",
+      "signature": "class KvsBuilder"
+    },
+    {
+      "name": "KvsBuilder",
+      "qualified_name": "score::kvs::KvsBuilder::KvsBuilder",
+      "kind": "constructor",
+      "signature": "KvsBuilder : void (const InstanceId &) noexcept"
+    },
+    {
+      "name": "Snapshot",
+      "qualified_name": "score::kvs::KvsBuilder::Snapshot",
+      "kind": "method",
+      "signature": "Snapshot : KvsBuilder &(const SnapshotId &) noexcept"
+    },
+    {
+      "name": "Defaults",
+      "qualified_name": "score::kvs::KvsBuilder::Defaults",
+      "kind": "method",
+      "signature": "Defaults : KvsBuilder &(const KvsDefaults &) noexcept"
+    },
+    {
+      "name": "KvsLoad",
+      "qualified_name": "score::kvs::KvsBuilder::KvsLoad",
+      "kind": "method",
+      "signature": "KvsLoad : KvsBuilder &(const score::kvs::KvsLoad &) noexcept"
+    },
+    {
+      "name": "WorkingDir",
+      "qualified_name": "score::kvs::KvsBuilder::WorkingDir",
+      "kind": "method",
+      "signature": "WorkingDir : KvsBuilder &(const std::string &) noexcept"
+    },
+    {
+      "name": "MaxStorageBytes",
+      "qualified_name": "score::kvs::KvsBuilder::MaxStorageBytes",
+      "kind": "method",
+      "signature": "MaxStorageBytes : KvsBuilder &(const std::optional<size_t> &) noexcept"
+    },
+    {
+      "name": "SnapshotMaxCount",
+      "qualified_name": "score::kvs::KvsBuilder::SnapshotMaxCount",
+      "kind": "method",
+      "signature": "SnapshotMaxCount : KvsBuilder &(const std::size_t) noexcept"
+    },
+    {
+      "name": "Build",
+      "qualified_name": "score::kvs::KvsBuilder::Build",
+      "kind": "method",
+      "signature": "Build : score::Result<std::shared_ptr<Kvs>> () const noexcept"
+    },
+    {
+      "name": "snapshot",
+      "qualified_name": "score::kvs::KvsBuilder::snapshot",
+      "kind": "method",
+      "signature": "snapshot : KvsBuilder &(const SnapshotId &) noexcept [[deprecated]]"
+    },
+    {
+      "name": "need_defaults_flag",
+      "qualified_name": "score::kvs::KvsBuilder::need_defaults_flag",
+      "kind": "method",
+      "signature": "need_defaults_flag : KvsBuilder &(const KvsDefaults &) noexcept [[deprecated]]"
+    },
+    {
+      "name": "need_kvs_flag",
+      "qualified_name": "score::kvs::KvsBuilder::need_kvs_flag",
+      "kind": "method",
+      "signature": "need_kvs_flag : KvsBuilder &(const score::kvs::KvsLoad &) noexcept [[deprecated]]"
+    },
+    {
+      "name": "dir",
+      "qualified_name": "score::kvs::KvsBuilder::dir",
+      "kind": "method",
+      "signature": "dir : KvsBuilder &(const std::string &) noexcept [[deprecated]]"
+    },
+    {
+      "name": "max_storage_bytes",
+      "qualified_name": "score::kvs::KvsBuilder::max_storage_bytes",
+      "kind": "method",
+      "signature": "max_storage_bytes : KvsBuilder &(const std::optional<size_t> &) noexcept [[deprecated]]"
+    },
+    {
+      "name": "snapshot_max_count",
+      "qualified_name": "score::kvs::KvsBuilder::snapshot_max_count",
+      "kind": "method",
+      "signature": "snapshot_max_count : KvsBuilder &(const std::size_t) noexcept [[deprecated]]"
+    },
+    {
+      "name": "build",
+      "qualified_name": "score::kvs::KvsBuilder::build",
+      "kind": "method",
+      "signature": "build : score::Result<std::shared_ptr<Kvs>> () const noexcept [[deprecated]]"
+    },
+    {
+      "name": "Unregister",
+      "qualified_name": "score::kvs::Unregister",
+      "kind": "function",
+      "signature": "Unregister : score::Result<void> (const InstanceId &) noexcept"
+    },
+    {
+      "name": "kMaxKeyLengthBytes",
+      "qualified_name": "score::kvs::kMaxKeyLengthBytes",
+      "kind": "variable",
+      "signature": "constexpr kMaxKeyLengthBytes : const std::size_t"
+    },
+    {
+      "name": "KVS_MAX_KEY_LENGTH_BYTES",
+      "qualified_name": "score::kvs::KVS_MAX_KEY_LENGTH_BYTES",
+      "kind": "variable",
+      "signature": "constexpr KVS_MAX_KEY_LENGTH_BYTES : const std::size_t [[deprecated]]"
+    },
+    {
+      "name": "kMaxSnapshotsUpperBound",
+      "qualified_name": "score::kvs::kMaxSnapshotsUpperBound",
+      "kind": "variable",
+      "signature": "constexpr kMaxSnapshotsUpperBound : const std::size_t"
+    },
+    {
+      "name": "KVS_MAX_SNAPSHOTS_UPPER_BOUND",
+      "qualified_name": "score::kvs::KVS_MAX_SNAPSHOTS_UPPER_BOUND",
+      "kind": "variable",
+      "signature": "constexpr KVS_MAX_SNAPSHOTS_UPPER_BOUND : const std::size_t [[deprecated]]"
+    },
+    {
+      "name": "kDefaultMaxSnapshots",
+      "qualified_name": "score::kvs::kDefaultMaxSnapshots",
+      "kind": "variable",
+      "signature": "constexpr kDefaultMaxSnapshots : const std::size_t"
+    },
+    {
+      "name": "KVS_DEFAULT_MAX_SNAPSHOTS",
+      "qualified_name": "score::kvs::KVS_DEFAULT_MAX_SNAPSHOTS",
+      "kind": "variable",
+      "signature": "constexpr KVS_DEFAULT_MAX_SNAPSHOTS : const std::size_t [[deprecated]]"
+    },
+    {
+      "name": "kMaxInstanceCount",
+      "qualified_name": "score::kvs::kMaxInstanceCount",
+      "kind": "variable",
+      "signature": "constexpr kMaxInstanceCount : const std::size_t"
+    },
+    {
+      "name": "InstanceId",
+      "qualified_name": "score::kvs::InstanceId",
+      "kind": "struct",
+      "signature": "struct InstanceId"
+    },
+    {
+      "name": "InstanceId",
+      "qualified_name": "score::kvs::InstanceId::InstanceId",
+      "kind": "constructor",
+      "signature": "InstanceId : void (std::size_t) noexcept"
+    },
+    {
+      "name": "id",
+      "qualified_name": "score::kvs::InstanceId::id",
+      "kind": "field",
+      "signature": "id"
+    },
+    {
+      "name": "SnapshotId",
+      "qualified_name": "score::kvs::SnapshotId",
+      "kind": "struct",
+      "signature": "struct SnapshotId"
+    },
+    {
+      "name": "SnapshotId",
+      "qualified_name": "score::kvs::SnapshotId::SnapshotId",
+      "kind": "constructor",
+      "signature": "SnapshotId : void (std::size_t) noexcept"
+    },
+    {
+      "name": "id",
+      "qualified_name": "score::kvs::SnapshotId::id",
+      "kind": "field",
+      "signature": "id"
+    },
+    {
+      "name": "OpenJsonNeedFile",
+      "qualified_name": "score::kvs::OpenJsonNeedFile",
+      "kind": "enum",
+      "signature": "enum class OpenJsonNeedFile"
+    },
+    {
+      "name": "kRequired",
+      "qualified_name": "score::kvs::OpenJsonNeedFile::kRequired",
+      "kind": "enum_value",
+      "signature": "kRequired"
+    },
+    {
+      "name": "kOptional",
+      "qualified_name": "score::kvs::OpenJsonNeedFile::kOptional",
+      "kind": "enum_value",
+      "signature": "kOptional"
+    },
+    {
+      "name": "Required",
+      "qualified_name": "score::kvs::OpenJsonNeedFile::Required",
+      "kind": "enum_value",
+      "signature": "Required [[deprecated]]"
+    },
+    {
+      "name": "Optional",
+      "qualified_name": "score::kvs::OpenJsonNeedFile::Optional",
+      "kind": "enum_value",
+      "signature": "Optional [[deprecated]]"
+    },
+    {
+      "name": "KvsDefaults",
+      "qualified_name": "score::kvs::KvsDefaults",
+      "kind": "enum",
+      "signature": "enum class KvsDefaults"
+    },
+    {
+      "name": "kRequired",
+      "qualified_name": "score::kvs::KvsDefaults::kRequired",
+      "kind": "enum_value",
+      "signature": "kRequired"
+    },
+    {
+      "name": "kOptional",
+      "qualified_name": "score::kvs::KvsDefaults::kOptional",
+      "kind": "enum_value",
+      "signature": "kOptional"
+    },
+    {
+      "name": "kIgnored",
+      "qualified_name": "score::kvs::KvsDefaults::kIgnored",
+      "kind": "enum_value",
+      "signature": "kIgnored"
+    },
+    {
+      "name": "Required",
+      "qualified_name": "score::kvs::KvsDefaults::Required",
+      "kind": "enum_value",
+      "signature": "Required [[deprecated]]"
+    },
+    {
+      "name": "Optional",
+      "qualified_name": "score::kvs::KvsDefaults::Optional",
+      "kind": "enum_value",
+      "signature": "Optional [[deprecated]]"
+    },
+    {
+      "name": "Ignored",
+      "qualified_name": "score::kvs::KvsDefaults::Ignored",
+      "kind": "enum_value",
+      "signature": "Ignored [[deprecated]]"
+    },
+    {
+      "name": "OpenNeedDefaults",
+      "qualified_name": "score::kvs::OpenNeedDefaults",
+      "kind": "type_alias",
+      "signature": "using OpenNeedDefaults = KvsDefaults [[deprecated]]"
+    },
+    {
+      "name": "Ignored",
+      "qualified_name": "score::kvs::OpenNeedDefaults::Ignored",
+      "kind": "enum_value",
+      "signature": "Ignored"
+    },
+    {
+      "name": "Optional",
+      "qualified_name": "score::kvs::OpenNeedDefaults::Optional",
+      "kind": "enum_value",
+      "signature": "Optional"
+    },
+    {
+      "name": "Required",
+      "qualified_name": "score::kvs::OpenNeedDefaults::Required",
+      "kind": "enum_value",
+      "signature": "Required"
+    },
+    {
+      "name": "kIgnored",
+      "qualified_name": "score::kvs::OpenNeedDefaults::kIgnored",
+      "kind": "enum_value",
+      "signature": "kIgnored"
+    },
+    {
+      "name": "kOptional",
+      "qualified_name": "score::kvs::OpenNeedDefaults::kOptional",
+      "kind": "enum_value",
+      "signature": "kOptional"
+    },
+    {
+      "name": "kRequired",
+      "qualified_name": "score::kvs::OpenNeedDefaults::kRequired",
+      "kind": "enum_value",
+      "signature": "kRequired"
+    },
+    {
+      "name": "KvsLoad",
+      "qualified_name": "score::kvs::KvsLoad",
+      "kind": "enum",
+      "signature": "enum class KvsLoad"
+    },
+    {
+      "name": "kRequired",
+      "qualified_name": "score::kvs::KvsLoad::kRequired",
+      "kind": "enum_value",
+      "signature": "kRequired"
+    },
+    {
+      "name": "kOptional",
+      "qualified_name": "score::kvs::KvsLoad::kOptional",
+      "kind": "enum_value",
+      "signature": "kOptional"
+    },
+    {
+      "name": "kIgnored",
+      "qualified_name": "score::kvs::KvsLoad::kIgnored",
+      "kind": "enum_value",
+      "signature": "kIgnored"
+    },
+    {
+      "name": "Required",
+      "qualified_name": "score::kvs::KvsLoad::Required",
+      "kind": "enum_value",
+      "signature": "Required [[deprecated]]"
+    },
+    {
+      "name": "Optional",
+      "qualified_name": "score::kvs::KvsLoad::Optional",
+      "kind": "enum_value",
+      "signature": "Optional [[deprecated]]"
+    },
+    {
+      "name": "Ignored",
+      "qualified_name": "score::kvs::KvsLoad::Ignored",
+      "kind": "enum_value",
+      "signature": "Ignored [[deprecated]]"
+    },
+    {
+      "name": "OpenNeedKvs",
+      "qualified_name": "score::kvs::OpenNeedKvs",
+      "kind": "type_alias",
+      "signature": "using OpenNeedKvs = KvsLoad [[deprecated]]"
+    },
+    {
+      "name": "Ignored",
+      "qualified_name": "score::kvs::OpenNeedKvs::Ignored",
+      "kind": "enum_value",
+      "signature": "Ignored"
+    },
+    {
+      "name": "Optional",
+      "qualified_name": "score::kvs::OpenNeedKvs::Optional",
+      "kind": "enum_value",
+      "signature": "Optional"
+    },
+    {
+      "name": "Required",
+      "qualified_name": "score::kvs::OpenNeedKvs::Required",
+      "kind": "enum_value",
+      "signature": "Required"
+    },
+    {
+      "name": "kIgnored",
+      "qualified_name": "score::kvs::OpenNeedKvs::kIgnored",
+      "kind": "enum_value",
+      "signature": "kIgnored"
+    },
+    {
+      "name": "kOptional",
+      "qualified_name": "score::kvs::OpenNeedKvs::kOptional",
+      "kind": "enum_value",
+      "signature": "kOptional"
+    },
+    {
+      "name": "kRequired",
+      "qualified_name": "score::kvs::OpenNeedKvs::kRequired",
+      "kind": "enum_value",
+      "signature": "kRequired"
+    },
+    {
+      "name": "KvsOpenParameters",
+      "qualified_name": "score::kvs::KvsOpenParameters",
+      "kind": "struct",
+      "signature": "struct KvsOpenParameters"
+    },
+    {
+      "name": "KvsOpenParameters",
+      "qualified_name": "score::kvs::KvsOpenParameters::KvsOpenParameters",
+      "kind": "constructor",
+      "signature": "KvsOpenParameters : void (const std::size_t)"
+    },
+    {
+      "name": "instance_id",
+      "qualified_name": "score::kvs::KvsOpenParameters::instance_id",
+      "kind": "field",
+      "signature": "instance_id"
+    },
+    {
+      "name": "snapshot_id",
+      "qualified_name": "score::kvs::KvsOpenParameters::snapshot_id",
+      "kind": "field",
+      "signature": "snapshot_id"
+    },
+    {
+      "name": "current_load_policy",
+      "qualified_name": "score::kvs::KvsOpenParameters::current_load_policy",
+      "kind": "field",
+      "signature": "current_load_policy"
+    },
+    {
+      "name": "default_load_policy",
+      "qualified_name": "score::kvs::KvsOpenParameters::default_load_policy",
+      "kind": "field",
+      "signature": "default_load_policy"
+    },
+    {
+      "name": "working_dir",
+      "qualified_name": "score::kvs::KvsOpenParameters::working_dir",
+      "kind": "field",
+      "signature": "working_dir"
+    },
+    {
+      "name": "storage_quota",
+      "qualified_name": "score::kvs::KvsOpenParameters::storage_quota",
+      "kind": "field",
+      "signature": "storage_quota"
+    },
+    {
+      "name": "snapshot_count_limit",
+      "qualified_name": "score::kvs::KvsOpenParameters::snapshot_count_limit",
+      "kind": "field",
+      "signature": "snapshot_count_limit"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue",
+      "kind": "class",
+      "signature": "class KvsValue"
+    },
+    {
+      "name": "Array",
+      "qualified_name": "score::kvs::KvsValue::Array",
+      "kind": "type_alias",
+      "signature": "using Array = std::vector<KvsValue>"
+    },
+    {
+      "name": "Object",
+      "qualified_name": "score::kvs::KvsValue::Object",
+      "kind": "type_alias",
+      "signature": "using Object = std::vector<std::pair<std::string, KvsValue>>"
+    },
+    {
+      "name": "ValueVariant",
+      "qualified_name": "score::kvs::KvsValue::ValueVariant",
+      "kind": "type_alias",
+      "signature": "using ValueVariant = std::variant<int32_t, uint32_t, int64_t, uint64_t, double, bool, std::string, std::nullptr_t, Array, Object>"
+    },
+    {
+      "name": "Type",
+      "qualified_name": "score::kvs::KvsValue::Type",
+      "kind": "enum",
+      "signature": "enum class Type"
+    },
+    {
+      "name": "kI32",
+      "qualified_name": "score::kvs::KvsValue::Type::kI32",
+      "kind": "enum_value",
+      "signature": "kI32"
+    },
+    {
+      "name": "kU32",
+      "qualified_name": "score::kvs::KvsValue::Type::kU32",
+      "kind": "enum_value",
+      "signature": "kU32"
+    },
+    {
+      "name": "kI64",
+      "qualified_name": "score::kvs::KvsValue::Type::kI64",
+      "kind": "enum_value",
+      "signature": "kI64"
+    },
+    {
+      "name": "kU64",
+      "qualified_name": "score::kvs::KvsValue::Type::kU64",
+      "kind": "enum_value",
+      "signature": "kU64"
+    },
+    {
+      "name": "kF64",
+      "qualified_name": "score::kvs::KvsValue::Type::kF64",
+      "kind": "enum_value",
+      "signature": "kF64"
+    },
+    {
+      "name": "kBoolean",
+      "qualified_name": "score::kvs::KvsValue::Type::kBoolean",
+      "kind": "enum_value",
+      "signature": "kBoolean"
+    },
+    {
+      "name": "kString",
+      "qualified_name": "score::kvs::KvsValue::Type::kString",
+      "kind": "enum_value",
+      "signature": "kString"
+    },
+    {
+      "name": "kNull",
+      "qualified_name": "score::kvs::KvsValue::Type::kNull",
+      "kind": "enum_value",
+      "signature": "kNull"
+    },
+    {
+      "name": "kArray",
+      "qualified_name": "score::kvs::KvsValue::Type::kArray",
+      "kind": "enum_value",
+      "signature": "kArray"
+    },
+    {
+      "name": "kObject",
+      "qualified_name": "score::kvs::KvsValue::Type::kObject",
+      "kind": "enum_value",
+      "signature": "kObject"
+    },
+    {
+      "name": "i32",
+      "qualified_name": "score::kvs::KvsValue::Type::i32",
+      "kind": "enum_value",
+      "signature": "i32 [[deprecated]]"
+    },
+    {
+      "name": "u32",
+      "qualified_name": "score::kvs::KvsValue::Type::u32",
+      "kind": "enum_value",
+      "signature": "u32 [[deprecated]]"
+    },
+    {
+      "name": "i64",
+      "qualified_name": "score::kvs::KvsValue::Type::i64",
+      "kind": "enum_value",
+      "signature": "i64 [[deprecated]]"
+    },
+    {
+      "name": "u64",
+      "qualified_name": "score::kvs::KvsValue::Type::u64",
+      "kind": "enum_value",
+      "signature": "u64 [[deprecated]]"
+    },
+    {
+      "name": "f64",
+      "qualified_name": "score::kvs::KvsValue::Type::f64",
+      "kind": "enum_value",
+      "signature": "f64 [[deprecated]]"
+    },
+    {
+      "name": "Boolean",
+      "qualified_name": "score::kvs::KvsValue::Type::Boolean",
+      "kind": "enum_value",
+      "signature": "Boolean [[deprecated]]"
+    },
+    {
+      "name": "String",
+      "qualified_name": "score::kvs::KvsValue::Type::String",
+      "kind": "enum_value",
+      "signature": "String [[deprecated]]"
+    },
+    {
+      "name": "Null",
+      "qualified_name": "score::kvs::KvsValue::Type::Null",
+      "kind": "enum_value",
+      "signature": "Null [[deprecated]]"
+    },
+    {
+      "name": "Array",
+      "qualified_name": "score::kvs::KvsValue::Type::Array",
+      "kind": "enum_value",
+      "signature": "Array [[deprecated]]"
+    },
+    {
+      "name": "Object",
+      "qualified_name": "score::kvs::KvsValue::Type::Object",
+      "kind": "enum_value",
+      "signature": "Object [[deprecated]]"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (int32_t) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (uint32_t) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (int64_t) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (uint64_t) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (double) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (bool) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (const char *) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (const std::string &) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (std::nullptr_t) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (const Array &) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (Array &&) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (const Object &) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (Object &&) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (const std::unordered_map<std::string, KvsValue> &) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (const KvsValue &) noexcept"
+    },
+    {
+      "name": "KvsValue",
+      "qualified_name": "score::kvs::KvsValue::KvsValue",
+      "kind": "constructor",
+      "signature": "KvsValue : void (KvsValue &&) noexcept"
+    },
+    {
+      "name": "~KvsValue",
+      "qualified_name": "score::kvs::KvsValue::~KvsValue",
+      "kind": "destructor",
+      "signature": "~KvsValue : void () noexcept"
+    },
+    {
+      "name": "operator=",
+      "qualified_name": "score::kvs::KvsValue::operator=",
+      "kind": "method",
+      "signature": "operator= : KvsValue &(const KvsValue &) & noexcept"
+    },
+    {
+      "name": "operator=",
+      "qualified_name": "score::kvs::KvsValue::operator=",
+      "kind": "method",
+      "signature": "operator= : KvsValue &(KvsValue &&) & noexcept"
+    },
+    {
+      "name": "GetType",
+      "qualified_name": "score::kvs::KvsValue::GetType",
+      "kind": "method",
+      "signature": "GetType : Type () const noexcept"
+    },
+    {
+      "name": "GetValue",
+      "qualified_name": "score::kvs::KvsValue::GetValue",
+      "kind": "method",
+      "signature": "GetValue : const ValueVariant &() const & noexcept"
+    },
+    {
+      "name": "GetValue",
+      "qualified_name": "score::kvs::KvsValue::GetValue",
+      "kind": "method",
+      "signature": "GetValue : ValueVariant () && noexcept"
+    },
+    {
+      "name": "getType",
+      "qualified_name": "score::kvs::KvsValue::getType",
+      "kind": "method",
+      "signature": "getType : Type () const noexcept [[deprecated]]"
+    },
+    {
+      "name": "getValue",
+      "qualified_name": "score::kvs::KvsValue::getValue",
+      "kind": "method",
+      "signature": "getValue : const ValueVariant &() const noexcept [[deprecated]]"
+    },
+    {
+      "name": "KvsMap",
+      "qualified_name": "score::kvs::KvsMap",
+      "kind": "type_alias",
+      "signature": "using KvsMap = std::unordered_map<std::string, KvsValue>"
+    },
+    {
+      "name": "KvsBuilderHpp",
+      "qualified_name": "score::kvs::deprecated_headers::KvsBuilderHpp",
+      "kind": "type_alias",
+      "signature": "using KvsBuilderHpp = int [[deprecated]]"
+    },
+    {
+      "name": "KvsValueHpp",
+      "qualified_name": "score::kvs::deprecated_headers::KvsValueHpp",
+      "kind": "type_alias",
+      "signature": "using KvsValueHpp = int [[deprecated]]"
+    }
+  ],
+  "version": "1"
+}

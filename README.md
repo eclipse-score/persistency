@@ -79,6 +79,10 @@ bazel build --config=score-linux-x86_64 -- //...
 > The x86_64 VM uses KVM when it is available.
 > The old names `per-x86_64-linux`, `per-x86_64-qnx` and `per-arm64-qnx` still work as deprecated aliases.
 
+## C++ API stability
+
+See the [checker documentation](https://github.com/eclipse-score/tooling/tree/main/api_surface) for usage and baseline updates. Persistency's target is `//tools/api_surface:check`; use `--config=score-linux-x86_64`.
+
 ## Run
 
 List all runnable targets:

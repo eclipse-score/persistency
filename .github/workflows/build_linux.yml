@@ -70,6 +70,12 @@ jobs:
         working-directory: ${{ matrix.working-directory }}
         run: |
           bazel test --config=${{ matrix.bazel-config }} ${{ matrix.bazel-flags }} ${{ matrix.bazel-test-extra-flags }} -- ${{ matrix.bazel-test-target }}
+      - name: Check C++ API surface
+        if: matrix.bazel-config == 'score-linux-x86_64'
+        # TODO: Remove report-only mode after the introductory period.
+        continue-on-error: true
+        run: |
+          bazel test --config=score-linux-x86_64 --lockfile_mode=error //tools/api_surface:check
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
