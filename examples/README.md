@@ -138,15 +138,6 @@ int main()
         return 1;
     }
 
-    // Release the application handle before unregistering the instance.
-    kvs.reset();
-    auto unregister_res{Unregister(instance_id)};
-    if (!unregister_res)
-    {
-        std::cerr << "Failed to unregister KVS" << std::endl;
-        return 1;
-    }
-
     return 0;
 }
 ```
