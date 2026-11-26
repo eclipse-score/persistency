@@ -98,9 +98,9 @@ uint32_t Adler32(const std::string& data)
     const uint32_t mod{65521U};
     uint32_t a{1U};
     uint32_t b{0U};
-    for (unsigned char c : data)
+    for (const char c : data)
     {
-        a = (a + c) % mod;
+        a = (a + static_cast<unsigned char>(c)) % mod;
         b = (b + a) % mod;
     }
     return (b << 16) | a;
@@ -175,10 +175,10 @@ void Store(const std::string& file_path, const std::string& hash_path, const std
     std::ofstream hash_file{hash_path, std::ios::binary};
     if (hash_file.is_open())
     {
-        hash_file.put((data_hash >> 24) & 0xFF);
-        hash_file.put((data_hash >> 16) & 0xFF);
-        hash_file.put((data_hash >> 8) & 0xFF);
-        hash_file.put(data_hash & 0xFF);
+        hash_file.put(static_cast<char>((data_hash >> 24U) & 0xFFU));
+        hash_file.put(static_cast<char>((data_hash >> 16U) & 0xFFU));
+        hash_file.put(static_cast<char>((data_hash >> 8U) & 0xFFU));
+        hash_file.put(static_cast<char>(data_hash & 0xFFU));
         hash_file.close();
     }
 }

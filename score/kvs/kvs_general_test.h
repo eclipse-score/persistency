@@ -49,10 +49,7 @@ void SetPermissions(const std::string& path, score::filesystem::Perms permission
 std::size_t FileSize(const std::string& path);
 }  // namespace filesystem_test
 
-inline void PrepareKvs(const std::string& dir,
-                       const std::string& prefix,
-                       const std::size_t instance_id,
-                       const std::size_t snapshot_id)
+inline void PrepareKvs(const std::string&, const std::string&, const std::size_t, const std::size_t)
 {
     // Do nothing, end of recursion.
 }

@@ -15,7 +15,7 @@
 # would defeat the `-w` and `-Wno-error` opt-outs of third-party code. Only levels belong here;
 # a REPO.bazel travels with the sources, so `warnings_as_errors` stays in .bazelrc.
 repo(features = [
-    "minimal_warnings",
+    "strict_warnings",
 ])
 
 # `ignore_directories()` keeps Bazel's convenience symlinks and Cargo's build directory out of package lookup and `glob()`.

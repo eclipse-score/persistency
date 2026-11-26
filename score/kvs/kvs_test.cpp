@@ -991,9 +991,9 @@ TEST(kvs_is_value_default, is_value_default)
 
     // Check default value.
     {
-        auto default_result{kvs->IsValueDefault("default")};
-        ASSERT_TRUE(default_result);
-        ASSERT_TRUE(default_result.value());
+        auto is_default_result{kvs->IsValueDefault("default")};
+        ASSERT_TRUE(is_default_result);
+        ASSERT_TRUE(is_default_result.value());
     }
 
     // Check key not found.
@@ -2039,7 +2039,7 @@ TEST(kvs_snapshot_restore, snapshot_restore_success)
     })"};
     // Create hash data for json_data.
     std::ofstream out{kInstancePrefix + "_1.json", std::ios::binary};
-    out.write(json_data.data(), json_data.size());
+    out.write(json_data.data(), static_cast<std::streamsize>(json_data.size()));
     out.close();
     uint32_t hash{Adler32(json_data)};
     std::array<uint8_t, 4> hash_bytes{uint8_t((hash >> 24) & 0xFF),
@@ -2507,7 +2507,7 @@ TEST(kvs_discard_pending_changes, discard_reports_corrupted_storage)
     // Corrupt the hash of the persisted file after opening.
     std::fstream corrupt_hash_file{kKvsPrefix + ".hash", std::ios::in | std::ios::out | std::ios::binary};
     corrupt_hash_file.seekp(0);
-    corrupt_hash_file.put(0xFF);
+    corrupt_hash_file.put(static_cast<char>(0xFFU));
     corrupt_hash_file.close();
 
     auto result{kvs.value()->DiscardPendingChanges()};

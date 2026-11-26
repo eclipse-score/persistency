@@ -50,8 +50,7 @@ void InfoLog(const std::string& key,
              const std::string& value,
              const std::string& value_json)
 {
-    TRACING_INFO(
-        kTargetName, std::make_pair(std::string("key"), key_value), std::make_pair(std::string("value"), value_json));
+    TRACING_INFO(kTargetName, std::make_pair(key, key_value), std::make_pair(value, value_json));
 }
 
 template <typename T>
