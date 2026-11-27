@@ -30,7 +30,7 @@ jobs:
     # same-repository PRs without approval ||
     if: >-
       (github.event_name == 'merge_group') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/license-check.yml@ace627933d0924894a3d066254f25d099732612e # main branch (2026-11-19)
+    uses: eclipse-score/cicd-workflows/.github/workflows/license-check.yml@32d0b258660d17e749a41760d4e40f3991bec0a2 # main (2026-11-27)
     with:
       runner-labels: ${{ vars.runner_labels_ghub24_standard_x64 || '"ubuntu-24.04"' }}
       repo-url: "${{ github.server_url }}/${{ github.repository }}"

@@ -51,7 +51,7 @@ jobs:
             test-targets: "//:cit_tests"
     # Fork PRs require approval in the workflow-approval environment (bazel.yml default).
     # Internal PRs run automatically.
-    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # main branch (2026-11-17)
+    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@32d0b258660d17e749a41760d4e40f3991bec0a2 # main (2026-11-27)
     permissions:
       contents: read
     with:

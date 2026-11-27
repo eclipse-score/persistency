@@ -19,7 +19,7 @@ on:
 
 jobs:
   common:
-    uses: eclipse-score/cicd-workflows/.github/workflows/on-pr.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # main branch (2026-11-17)
+    uses: eclipse-score/cicd-workflows/.github/workflows/on-pr.yml@32d0b258660d17e749a41760d4e40f3991bec0a2 # main (2026-11-27)
     with:
       runner-labels: ${{ vars.runner_labels_ghub24_standard_x64 || '"ubuntu-24.04"' }}
       require-bzlmod-lock: true
