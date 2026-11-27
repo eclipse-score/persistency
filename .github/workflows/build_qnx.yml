@@ -67,6 +67,7 @@ jobs:
       disk-cleanup-level: 4
       artifact-name: qnx-testlogs-${{ matrix.name }}-${{ github.run_attempt }}
     secrets:
+      github-token: ${{ secrets.SCORE_BOT_QNX_PKG_PAT }}
       qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
       qnx-user: ${{ secrets.SCORE_QNX_USER }}
       qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}
