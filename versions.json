@@ -1,7 +1,8 @@
 [
   {
     "version": "main",
-    "url": "https://eclipse-score.github.io/persistency/main/"
+    "url": "https://eclipse-score.github.io/persistency/main/",
+    "name": "main (bfd3d6a)"
   },
   {
     "version": "pr-434",
