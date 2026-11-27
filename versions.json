@@ -112,5 +112,10 @@
     "version": "pr-787",
     "url": "https://eclipse-score.github.io/persistency/pr-787/",
     "name": "pr-787 (447ece7)"
+  },
+  {
+    "version": "pr-788",
+    "url": "https://eclipse-score.github.io/persistency/pr-788/",
+    "name": "pr-788 (6d213e7)"
   }
 ]
