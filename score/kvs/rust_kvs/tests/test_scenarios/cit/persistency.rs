@@ -258,6 +258,72 @@ impl Scenario for RecoverFromSnapshot {
     }
 }
 
+/// Flush three times, then make a flush fail with NaN.
+///
+/// Log the files before the failed flush as "storage_before".
+/// If set rejects NaN, log "set_non_finite_error" and end.
+/// Log the flush error as "flush_error" and the files after the flush as "storage_after".
+/// Then for input "after_failure": "end" ends, "replace" sets "non_finite" to 4 and flushes again.
+struct FailedFlush;
+
+impl Scenario for FailedFlush {
+    fn name(&self) -> &str {
+        "failed_flush"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
+        let after_failure = v["after_failure"]
+            .as_str()
+            .expect("Failed to parse \"after_failure\" field");
+        let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
+        let dir = params.dir.clone().expect("Working directory must be set");
+        let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+
+        // Successful flushes create the current storage and the snapshots.
+        kvs.set_value("kept", 1).expect("Failed to set kept");
+        kvs.set_value("overwritten", 1).expect("Failed to set overwritten");
+        kvs.set_value("removed", 1).expect("Failed to set removed");
+        for generation in 1..=3 {
+            kvs.set_value("generation", generation)
+                .expect("Failed to set generation");
+            kvs.flush().expect("Failed to flush");
+        }
+        info!(storage_before = storage_fingerprints(&dir));
+
+        // Valid changes in the failed flush.
+        kvs.set_value("overwritten", 2).expect("Failed to set overwritten");
+        kvs.remove_key("removed").expect("Failed to remove removed");
+        kvs.set_value("added", 3).expect("Failed to set added");
+
+        // NaN makes the flush fail.
+        // comp_req__kvs__value_data_types requires set to reject NaN.
+        if let Err(e) = kvs.set_value("non_finite", f64::NAN) {
+            info!(set_non_finite_error = format!("{e:?}"));
+            return Ok(());
+        }
+
+        let flush_result = kvs.flush();
+        info!(storage_after = storage_fingerprints(&dir));
+        match flush_result {
+            Ok(()) => {
+                info!(flush = "succeeded");
+                return Ok(());
+            },
+            Err(e) => info!(flush_error = format!("{e:?}")),
+        }
+
+        match after_failure {
+            "end" => return Ok(()),
+            "replace" => kvs.set_value("non_finite", 4).expect("Failed to set non_finite"),
+            other => panic!("Unknown after_failure: {other}"),
+        }
+        kvs.flush().expect("Failed to flush after the failed flush");
+
+        Ok(())
+    }
+}
+
 pub fn persistency_group() -> Box<dyn ScenarioGroup> {
     Box::new(ScenarioGroupImpl::new(
         "persistency",
@@ -269,6 +335,7 @@ pub fn persistency_group() -> Box<dyn ScenarioGroup> {
             Box::new(ValuesAfterRestore),
             Box::new(FlushValueTypes),
             Box::new(RecoverFromSnapshot),
+            Box::new(FailedFlush),
         ],
         vec![],
     ))

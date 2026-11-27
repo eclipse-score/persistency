@@ -23,6 +23,7 @@
 #include <fstream>
 #include <functional>
 #include <iterator>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -111,6 +112,15 @@ void LogLoadError(const score::Result<void>& result)
     if (!result)
     {
         TRACING_INFO(kTargetName, std::pair{std::string{"load_error"}, std::string{result.error().Message()}});
+    }
+}
+
+/// @brief Throws if the operation failed.
+void Check(const std::string& operation, const score::Result<void>& result)
+{
+    if (!result)
+    {
+        throw std::runtime_error{"Failed to " + operation + ": " + std::string{result.error().Message()}};
     }
 }
 }  // namespace
@@ -256,14 +266,6 @@ class FlushValueTypes final : public Scenario
         const auto flush_count{object.at("flush_count").As<std::int32_t>().value()};
         auto kvs{KvsInstance(KvsParameters::FromValue(object))};
 
-        // Throws if the operation failed.
-        const auto check{[](const std::string& operation, const score::Result<void>& result) {
-            if (!result)
-            {
-                throw std::runtime_error{"Failed to " + operation + ": " + std::string{result.error().Message()}};
-            }
-        }};
-
         const std::vector<std::pair<std::string, KvsValue>> values{
             {"u8", KvsValue{std::uint8_t{123U}}},
             {"u16", KvsValue{std::uint16_t{12345U}}},
@@ -293,13 +295,13 @@ class FlushValueTypes final : public Scenario
         };
         for (const auto& [key, value] : values)
         {
-            check("set " + key, kvs->SetValue(key, value));
+            Check("set " + key, kvs->SetValue(key, value));
         }
 
         for (std::int32_t generation{1}; generation <= flush_count; ++generation)
         {
-            check("set generation", kvs->SetValue("generation", KvsValue{generation}));
-            check("flush", kvs->Flush());
+            Check("set generation", kvs->SetValue("generation", KvsValue{generation}));
+            Check("flush", kvs->Flush());
         }
     }
 };
@@ -353,6 +355,78 @@ class RecoverFromSnapshot final : public Scenario
     }
 };
 
+/// @brief Flushes three times, then makes a flush fail with NaN.
+///
+/// Logs the files before the failed flush as "storage_before".
+/// If set rejects NaN, logs "set_non_finite_error" and ends.
+/// Logs the flush error as "flush_error" and the files after the flush as "storage_after".
+/// Then for input "after_failure": "end" ends, "replace" sets "non_finite" to 4 and flushes again.
+class FailedFlush final : public Scenario
+{
+  public:
+    ~FailedFlush() final = default;
+
+    std::string name() const final
+    {
+        return "failed_flush";
+    }
+
+    void run(const std::string& input) const final
+    {
+        const auto object{ParseInput(input)};
+        const std::string after_failure{object.at("after_failure").As<std::string>().value().get()};
+        const auto params{KvsParameters::FromValue(object)};
+        const auto dir{params.dir.value()};
+        auto kvs{KvsInstance(params)};
+
+        // Successful flushes create the current storage and the snapshots.
+        Check("set kept", kvs->SetValue("kept", KvsValue{1}));
+        Check("set overwritten", kvs->SetValue("overwritten", KvsValue{1}));
+        Check("set removed", kvs->SetValue("removed", KvsValue{1}));
+        for (std::int32_t generation{1}; generation <= 3; ++generation)
+        {
+            Check("set generation", kvs->SetValue("generation", KvsValue{generation}));
+            Check("flush", kvs->Flush());
+        }
+        TRACING_INFO(kTargetName, std::pair{std::string{"storage_before"}, StorageFingerprints(dir)});
+
+        // Valid changes in the failed flush.
+        Check("set overwritten", kvs->SetValue("overwritten", KvsValue{2}));
+        Check("remove removed", kvs->RemoveKey("removed"));
+        Check("set added", kvs->SetValue("added", KvsValue{3}));
+
+        // NaN makes the flush fail.
+        // comp_req__kvs__value_data_types requires set to reject NaN.
+        const auto set_result{kvs->SetValue("non_finite", KvsValue{std::numeric_limits<double>::quiet_NaN()})};
+        if (!set_result)
+        {
+            TRACING_INFO(kTargetName,
+                         std::pair{std::string{"set_non_finite_error"}, std::string{set_result.error().Message()}});
+            return;
+        }
+
+        const auto flush_result{kvs->Flush()};
+        TRACING_INFO(kTargetName, std::pair{std::string{"storage_after"}, StorageFingerprints(dir)});
+        if (flush_result)
+        {
+            TRACING_INFO(kTargetName, std::pair{std::string{"flush"}, std::string{"succeeded"}});
+            return;
+        }
+        TRACING_INFO(kTargetName, std::pair{std::string{"flush_error"}, std::string{flush_result.error().Message()}});
+
+        if (after_failure == "end")
+        {
+            return;
+        }
+        if (after_failure != "replace")
+        {
+            throw std::runtime_error{"Unknown after_failure: " + after_failure};
+        }
+        Check("set non_finite", kvs->SetValue("non_finite", KvsValue{4}));
+        Check("flush after the failed flush", kvs->Flush());
+    }
+};
+
 ScenarioGroup::Ptr PersistencyGroup()
 {
     return ScenarioGroup::Ptr{new ScenarioGroupImpl{"persistency",
@@ -361,6 +435,7 @@ ScenarioGroup::Ptr PersistencyGroup()
                                                      std::make_shared<ValuesAfterRestore>(),
                                                      std::make_shared<ValuesAfterDiscard>(),
                                                      std::make_shared<FlushValueTypes>(),
-                                                     std::make_shared<RecoverFromSnapshot>()},
+                                                     std::make_shared<RecoverFromSnapshot>(),
+                                                     std::make_shared<FailedFlush>()},
                                                     {}}};
 }
