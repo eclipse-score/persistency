@@ -32,10 +32,10 @@ struct KvsParameters
     static KvsParameters FromValue(const score::json::Object& object);
 
     score::kvs::InstanceId instance_id;
-    std::optional<score::kvs::KvsDefaults> defaults;
-    std::optional<score::kvs::KvsLoad> kvs_load;
-    std::optional<std::string> dir;
-    std::optional<size_t> snapshot_max_count;
+    std::optional<score::kvs::KvsDefaults> defaults{};
+    std::optional<score::kvs::KvsLoad> kvs_load{};
+    std::optional<std::string> dir{};
+    std::optional<size_t> snapshot_max_count{};
 };
 
 #endif  // SCORE_KVS_TESTS_TEST_SCENARIOS_HELPERS_KVS_PARAMETERS_H
