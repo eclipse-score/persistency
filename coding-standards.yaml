@@ -75,11 +75,11 @@ deviations:
   - rule-id: "RULE-7-0-2"
     query-id: "cpp/misra/no-implicit-bool-conversion"
     code-identifier: "kvs-bool-ref-load"
-    scope: "Lines in score/kvs/kvs.cpp and score/kvs/internal/kvs_helper.cpp that read a bool through a reference, or test a Result inside the ObjectToAny template."
+    scope: "Lines that read a bool through a reference or test a condition whose type is dependent on a template parameter."
     justification: >-
       False positive. The flagged expressions already have type bool or are contextual conversions through an explicit operator bool.
       The query does not strip references, so reading a `const bool&` is reported as a conversion to bool.
-      Inside the ObjectToAny template it reports the dependent types as `unknown`.
+      Inside templates it reports the dependent types as `unknown`.
   - rule-id: "RULE-15-1-3"
     query-id: "cpp/misra/non-explicit-conversion-member"
     code-identifier: "kvs-id-implicit-ctor"
@@ -91,7 +91,8 @@ deviations:
     code-identifier: "kvs-special-members"
     scope: "The classes KvsValue, InstanceId, SnapshotId and KvsErrorDomain in score/kvs/kvs_value.h, score/kvs/kvs_types.h and score/kvs/error.h."
     justification: >-
-      KvsValue declares its copy and move operations noexcept. The audit also flags implicit destructors for these types, which do not need custom implementations.
+      KvsValue declares its copy and move operations noexcept.
+      The audit also flags implicit destructors for these types, which do not need custom implementations.
   - rule-id: "RULE-8-2-6"
     query-id: "cpp/misra/int-to-pointer-cast-prohibited"
     code-identifier: "kvs-write-byte-pointer"
@@ -114,6 +115,22 @@ deviations:
     scope: "The SCORE_LANGUAGE_FUTURECPP_PRECONDITION_PRD_MESSAGE call in score/kvs/kvs_value.cpp."
     justification: >-
       The identifier `__PRETTY_FUNCTION__` comes from the expansion of the baselibs precondition macro, not from KVS code.
+  - rule-id: "RULE-23-11-1"
+    query-id: "cpp/misra/use-smart-ptr-factory-functions"
+    code-identifier: "kvs-builder-new"
+    scope: "The construction of the shared Kvs instance in KvsBuilder::Build in score/kvs/kvs_builder.cpp."
+    justification: >-
+      The constructor of Kvs is private so that only KvsBuilder creates instances, and std::make_shared cannot call it.
+      The new-expression is the only argument of the std::shared_ptr constructor, so no other evaluation can throw before ownership passes to it.
+      Build() is noexcept, so a failed allocation terminates and cannot leak.
+  - rule-id: "RULE-21-6-2"
+    query-id: "cpp/misra/dynamic-memory-managed-manually"
+    code-identifier: "kvs-builder-new"
+    scope: "The construction of the shared Kvs instance in KvsBuilder::Build in score/kvs/kvs_builder.cpp."
+    justification: >-
+      The constructor of Kvs is private so that only KvsBuilder creates instances, and std::make_shared cannot call it.
+      The result of the new-expression passes directly to the std::shared_ptr constructor, which manages the memory from then on.
+      No code deletes the object manually.
 
 # Guideline recategorizations: the rule is not checked anywhere in the repo.
 guideline-recategorizations:

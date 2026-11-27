@@ -73,11 +73,15 @@ bazel build --config=score-linux-x86_64 -- //...
 > Building without an explicit `--config` (e.g. `score-linux-x86_64`, `score-qnx-x86_64`, `score-qnx-aarch64`) is not supported.
 > The config `score-linux-aarch64` is supported too.
 > Its tests need `qemu-user`.
-> The QNX configs need QNX SDP credentials (`SCORE_QNX_USER`, `SCORE_QNX_PASSWORD`) and a QNX license.
+> The QNX configs need GitHub package download access and a QNX license; see [QNX SDK access](#qnx-sdk-access).
 > Run the QNX unit tests with `run-under-qnx-x86_64` or `run-under-qnx-aarch64`.
 > These configs run the tests in a QEMU VM and need `qemu-system-x86_64` or `qemu-system-aarch64`.
 > The x86_64 VM uses KVM when it is available.
 > The old names `per-x86_64-linux`, `per-x86_64-qnx` and `per-arm64-qnx` still work as deprecated aliases.
+
+### QNX SDK access
+
+Default SDP packages from version 8.0.5 onward additionally require a GitHub token for downloads; see [QNX package authentication](https://github.com/eclipse-score/bazel_cpp_toolchains/blob/v1.1.0/docs/consumers/qnx_authentication.md#private-github-release-assets) for access and token setup. A valid QNX license is still required.
 
 ## Run
 

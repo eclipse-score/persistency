@@ -19,10 +19,10 @@ bazel_dep(name = "rules_rust", version = "0.68.2-score")
 
 # External dependencies for production (alphabetically sorted)
 bazel_dep(name = "score_baselibs", version = "0.2.19")
-bazel_dep(name = "score_crates", version = "0.0.15")
+bazel_dep(name = "score_crates", version = "0.0.16")
 bazel_dep(name = "score_docs_as_code", version = "9.1.1")
-bazel_dep(name = "score_logging", version = "0.2.7")
-bazel_dep(name = "score_platform", version = "0.7.6")
+bazel_dep(name = "score_logging", version = "0.2.8")
+bazel_dep(name = "score_platform", version = "0.7.7")
 bazel_dep(name = "score_process_description", version = "2.2.5")
 bazel_dep(name = "score_test_scenarios", version = "0.5.0")
 bazel_dep(name = "score_tooling", version = "3.1.0")
@@ -44,7 +44,7 @@ bazel_dep(name = "score_itf", version = "0.7.0", dev_dependency = True)
 bazel_dep(name = "score_qnx_unit_tests", version = "0.3.0", dev_dependency = True)
 bazel_dep(name = "score_sbom", version = "0.1.1", dev_dependency = True)
 bazel_dep(name = "score_rust_policies", version = "0.0.5", dev_dependency = True)
-bazel_dep(name = "score_tools", version = "0.0.4", dev_dependency = True)
+bazel_dep(name = "score_tools", version = "0.0.5", dev_dependency = True)
 
 # Python toolchain configuration
 PYTHON_VERSION = "3.12"
@@ -64,14 +64,14 @@ pip.parse(
 use_repo(pip, "pip_score_persistency_venv_test")
 
 # Toolchain dependencies.
-bazel_dep(name = "score_bazel_cpp_toolchains", version = "1.0.5", dev_dependency = True)
+bazel_dep(name = "score_bazel_cpp_toolchains", version = "1.1.0", dev_dependency = True)
 
 bazel_dep(name = "score_bazel_platforms", version = "1.3.0")
 bazel_dep(name = "platforms", version = "1.1.0")
 
 bazel_dep(name = "score_toolchains_rust", version = "0.10.1", dev_dependency = True)
-bazel_dep(name = "score_rules_imagefs", version = "0.2.0", dev_dependency = True)
-bazel_dep(name = "score_cpp_policies", version = "0.1.2", dev_dependency = True)
+bazel_dep(name = "score_rules_imagefs", version = "0.2.1", dev_dependency = True)
+bazel_dep(name = "score_cpp_policies", version = "0.1.3", dev_dependency = True)
 
 # C++ toolchain configuration
 # score_bazel_cpp_toolchains 1.0.0 removed its built-in warning features; inject them instead.
@@ -82,18 +82,21 @@ WARNING_FEATURES = [
     "@score_cpp_policies//warnings/gcc/features:warnings_as_errors",
 ]
 
-# Same for the sanitizer features. UBSan needs a compiler-specific variant on top of the base.
-SANITIZER_FEATURES = [
-    "@score_cpp_policies//sanitizers/features:debug_symbols",
+# S-CORE Sanitizer Features
+# These features are shared by GCC and Clang. The toolchain adds its own
+# UBSan variant, which implies the base feature and supplies the correct link flags.
+_SANITIZER_FEATURES = [
     "@score_cpp_policies//sanitizers/features:asan",
-    "@score_cpp_policies//sanitizers/features:ubsan_base",
+    "@score_cpp_policies//sanitizers/features:debug_symbols",
     "@score_cpp_policies//sanitizers/features:lsan",
     "@score_cpp_policies//sanitizers/features:tsan",
+    "@score_cpp_policies//sanitizers/features:ubsan_base",
 ]
+# end S-CORE Sanitizer Features
 
-GCC_SANITIZER_FEATURES = SANITIZER_FEATURES + ["@score_cpp_policies//sanitizers/features:ubsan_gcc"]
+GCC_SANITIZER_FEATURES = _SANITIZER_FEATURES + ["@score_cpp_policies//sanitizers/features:ubsan_gcc"]
 
-LLVM_SANITIZER_FEATURES = SANITIZER_FEATURES + ["@score_cpp_policies//sanitizers/features:ubsan_clang"]
+LLVM_SANITIZER_FEATURES = _SANITIZER_FEATURES + ["@score_cpp_policies//sanitizers/features:ubsan_clang"]
 
 # Linux C++ toolchains.
 gcc = use_extension("@score_bazel_cpp_toolchains//extensions:gcc.bzl", "gcc", dev_dependency = True)
@@ -118,7 +121,7 @@ gcc.toolchain(
 gcc.toolchain(
     name = "score_qcc_x86_64_toolchain",
     extra_known_features = WARNING_FEATURES + GCC_SANITIZER_FEATURES,
-    sdp_version = "8.0.4",
+    sdp_version = "8.0.5",
     target_cpu = "x86_64",
     target_os = "qnx",
     use_default_package = True,
@@ -127,7 +130,7 @@ gcc.toolchain(
 gcc.toolchain(
     name = "score_qcc_aarch64_toolchain",
     extra_known_features = WARNING_FEATURES + GCC_SANITIZER_FEATURES,
-    sdp_version = "8.0.4",
+    sdp_version = "8.0.5",
     target_cpu = "aarch64",
     target_os = "qnx",
     use_default_package = True,
@@ -135,19 +138,18 @@ gcc.toolchain(
 )
 use_repo(
     gcc,
+    "qnx_sdp_8_0_5_pkg",
     "score_gcc_aarch64_toolchain",
     "score_gcc_x86_64_toolchain",
     "score_qcc_aarch64_toolchain",
-    "score_qcc_aarch64_toolchain_pkg",
     "score_qcc_x86_64_toolchain",
-    "score_qcc_x86_64_toolchain_pkg",
 )
 
 # QNX image toolchains.
 imagefs = use_extension("@score_rules_imagefs//extensions:imagefs.bzl", "imagefs", dev_dependency = True)
 imagefs.toolchain(
     name = "score_qnx_aarch64_ifs_toolchain",
-    sdp_to_import = "@score_qcc_aarch64_toolchain_pkg",
+    sdp_to_import = "@qnx_sdp_8_0_5_pkg",
     sdp_version = "8.0.0",
     target_cpu = "aarch64",
     target_os = "qnx",
@@ -155,7 +157,7 @@ imagefs.toolchain(
 )
 imagefs.toolchain(
     name = "score_qnx_x86_64_ifs_toolchain",
-    sdp_to_import = "@score_qcc_x86_64_toolchain_pkg",
+    sdp_to_import = "@qnx_sdp_8_0_5_pkg",
     sdp_version = "8.0.0",
     target_cpu = "x86_64",
     target_os = "qnx",

@@ -21,17 +21,32 @@ pub type KvsMap = HashMap<String, KvsValue>;
 /// Key-value-storage value
 #[derive(Clone, Debug, PartialEq, ScoreDebug)]
 pub enum KvsValue {
-    /// 32-bit signed integer
-    I32(i32),
+    /// 8-bit unsigned integer
+    U8(u8),
+
+    /// 16-bit unsigned integer
+    U16(u16),
 
     /// 32-bit unsigned integer
     U32(u32),
 
+    /// 64-bit unsigned integer
+    U64(u64),
+
+    /// 8-bit signed integer
+    I8(i8),
+
+    /// 16-bit signed integer
+    I16(i16),
+
+    /// 32-bit signed integer
+    I32(i32),
+
     /// 64-bit signed integer
     I64(i64),
 
-    /// 64-bit unsigned integer
-    U64(u64),
+    /// 32-bit float
+    F32(f32),
 
     /// 64-bit float
     F64(f64),
@@ -64,10 +79,15 @@ macro_rules! impl_from_t_for_kvs_value {
     };
 }
 
-impl_from_t_for_kvs_value!(i32, I32);
+impl_from_t_for_kvs_value!(u8, U8);
+impl_from_t_for_kvs_value!(u16, U16);
 impl_from_t_for_kvs_value!(u32, U32);
-impl_from_t_for_kvs_value!(i64, I64);
 impl_from_t_for_kvs_value!(u64, U64);
+impl_from_t_for_kvs_value!(i8, I8);
+impl_from_t_for_kvs_value!(i16, I16);
+impl_from_t_for_kvs_value!(i32, I32);
+impl_from_t_for_kvs_value!(i64, I64);
+impl_from_t_for_kvs_value!(f32, F32);
 impl_from_t_for_kvs_value!(f64, F64);
 impl_from_t_for_kvs_value!(bool, Boolean);
 impl_from_t_for_kvs_value!(String, String);
@@ -103,10 +123,15 @@ macro_rules! impl_tryfrom_kvs_value_to_t {
     };
 }
 
-impl_tryfrom_kvs_value_to_t!(i32, I32);
+impl_tryfrom_kvs_value_to_t!(u8, U8);
+impl_tryfrom_kvs_value_to_t!(u16, U16);
 impl_tryfrom_kvs_value_to_t!(u32, U32);
-impl_tryfrom_kvs_value_to_t!(i64, I64);
 impl_tryfrom_kvs_value_to_t!(u64, U64);
+impl_tryfrom_kvs_value_to_t!(i8, I8);
+impl_tryfrom_kvs_value_to_t!(i16, I16);
+impl_tryfrom_kvs_value_to_t!(i32, I32);
+impl_tryfrom_kvs_value_to_t!(i64, I64);
+impl_tryfrom_kvs_value_to_t!(f32, F32);
 impl_tryfrom_kvs_value_to_t!(f64, F64);
 impl_tryfrom_kvs_value_to_t!(bool, Boolean);
 impl_tryfrom_kvs_value_to_t!(String, String);
@@ -146,11 +171,16 @@ macro_rules! impl_kvs_get_inner_value {
         }
     };
 }
-impl_kvs_get_inner_value!(f64, F64);
-impl_kvs_get_inner_value!(i32, I32);
+impl_kvs_get_inner_value!(u8, U8);
+impl_kvs_get_inner_value!(u16, U16);
 impl_kvs_get_inner_value!(u32, U32);
-impl_kvs_get_inner_value!(i64, I64);
 impl_kvs_get_inner_value!(u64, U64);
+impl_kvs_get_inner_value!(i8, I8);
+impl_kvs_get_inner_value!(i16, I16);
+impl_kvs_get_inner_value!(i32, I32);
+impl_kvs_get_inner_value!(i64, I64);
+impl_kvs_get_inner_value!(f32, F32);
+impl_kvs_get_inner_value!(f64, F64);
 impl_kvs_get_inner_value!(bool, Boolean);
 impl_kvs_get_inner_value!(String, String);
 impl_kvs_get_inner_value!(Vec<KvsValue>, Array);
@@ -311,6 +341,52 @@ mod kvs_value_tests {
         let v = KvsValue::from(true);
         assert!(v.get::<f64>().is_none());
     }
+
+    macro_rules! numeric_value_tests {
+        ($mod_name:ident, $t:ty, $variant:ident, $value:expr, $other:expr) => {
+            mod $mod_name {
+                use crate::kvs_value::KvsValue;
+
+                #[test]
+                fn test_from_ok() {
+                    let v = KvsValue::from($value);
+                    assert!(matches!(v, KvsValue::$variant(x) if x == $value));
+                }
+
+                #[test]
+                fn test_tryfrom_ok() {
+                    let v = KvsValue::from($value);
+                    assert_eq!(<$t>::try_from(&v).unwrap(), $value);
+                }
+
+                #[test]
+                fn test_tryfrom_invalid_type() {
+                    let v = KvsValue::from($other);
+                    let err = <$t>::try_from(&v).unwrap_err();
+                    assert_eq!(err, format!("KvsValue is not a {}", stringify!($t)));
+                }
+
+                #[test]
+                fn test_get_ok() {
+                    let v = KvsValue::from($value);
+                    assert_eq!(*v.get::<$t>().unwrap(), $value);
+                }
+
+                #[test]
+                fn test_get_invalid_type() {
+                    let v = KvsValue::from($other);
+                    assert!(v.get::<$t>().is_none());
+                }
+            }
+        };
+    }
+
+    // Other value is a neighbouring numeric type, so no implicit widening is accepted.
+    numeric_value_tests!(u8_tests, u8, U8, 123u8, 123u16);
+    numeric_value_tests!(u16_tests, u16, U16, 12345u16, 12345u32);
+    numeric_value_tests!(i8_tests, i8, I8, -123i8, -123i16);
+    numeric_value_tests!(i16_tests, i16, I16, -12345i16, -12345i32);
+    numeric_value_tests!(f32_tests, f32, F32, 12.5f32, 12.5f64);
 
     #[test]
     fn test_bool_from_ok() {

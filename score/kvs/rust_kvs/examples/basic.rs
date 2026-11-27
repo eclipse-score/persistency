@@ -77,10 +77,15 @@ fn main() -> Result<(), ErrorCode> {
             for key in kvs.get_all_keys()? {
                 let value = kvs.get_value(&key)?;
                 let value_type = match value {
-                    KvsValue::I32(_) => "I32",
+                    KvsValue::U8(_) => "U8",
+                    KvsValue::U16(_) => "U16",
                     KvsValue::U32(_) => "U32",
-                    KvsValue::I64(_) => "I64",
                     KvsValue::U64(_) => "U64",
+                    KvsValue::I8(_) => "I8",
+                    KvsValue::I16(_) => "I16",
+                    KvsValue::I32(_) => "I32",
+                    KvsValue::I64(_) => "I64",
+                    KvsValue::F32(_) => "F32",
                     KvsValue::F64(_) => "F64",
                     KvsValue::Boolean(_) => "Boolean",
                     KvsValue::String(_) => "String",

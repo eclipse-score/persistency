@@ -13,6 +13,7 @@
 import json
 import re
 import shlex
+from collections.abc import Generator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -26,6 +27,7 @@ from common import (
     read_file_on_target,
     run_named_scenario,
     stored_values,
+    temp_dir_common,
 )
 from score.itf.plugins.core import Target
 from test_properties import add_test_properties
@@ -69,10 +71,15 @@ FLUSH_COUNT = 4
 # Key-value pairs that the 'flush_value_types' scenario sets before the first flush, one per value type, in the KVS
 # file format (type-tagged values). The string value and the last key hold characters that JSON must escape.
 TYPED_VALUES = {
-    "i32": {"t": "i32", "v": -321},
+    "u8": {"t": "u8", "v": 123},
+    "u16": {"t": "u16", "v": 12345},
     "u32": {"t": "u32", "v": 1234},
-    "i64": {"t": "i64", "v": -123456789012},
     "u64": {"t": "u64", "v": 123456789012},
+    "i8": {"t": "i8", "v": -123},
+    "i16": {"t": "i16", "v": -12345},
+    "i32": {"t": "i32", "v": -321},
+    "i64": {"t": "i64", "v": -123456789012},
+    "f32": {"t": "f32", "v": 12.5},
     "f64": {"t": "f64", "v": -5432.1},
     "bool": {"t": "bool", "v": True},
     "null": {"t": "null", "v": None},
@@ -101,6 +108,22 @@ TYPED_VALUES = {
 # Data file of the current KVS storage and of snapshot 1.
 CURRENT_DATA_FILE = f"kvs_{INSTANCE_ID}_0.json"
 SNAPSHOT_DATA_FILE = f"kvs_{INSTANCE_ID}_1.json"
+
+# Flush error for NaN: C++ prints the ErrorCode message, Rust the ErrorCode name.
+NON_FINITE_FLUSH_ERRORS = {"cpp": "JSON generator error", "rust": "JsonGeneratorError"}
+
+# Key-value pairs of the last flush before the failed flush in the 'failed_flush' scenario.
+PERSISTED_VALUES = {"kept": 1, "overwritten": 1, "removed": 1, "generation": 3}
+
+# Key-value pairs that a new process loads after the 'failed_flush' scenario, per "after_failure" value.
+# "replace" sets "non_finite" to 4 and flushes after the failed flush.
+VALUES_AFTER_FAILED_FLUSH = {
+    "end": PERSISTED_VALUES,
+    "replace": {"kept": 1, "overwritten": 2, "added": 3, "generation": 3, "non_finite": 4},
+}
+
+# Known Rust defect, ticket pending.
+RUST_FLUSH_ROTATES_BEFORE_SERIALIZE = "Rust flush rotates the snapshot files before it serializes the data"
 
 
 def kvs_parameters(temp_dir: Path, **extra: Any) -> dict[str, Any]:
@@ -258,7 +281,9 @@ class TestStorageFilesFormatAndChecksum(CommonScenario):
         Steps:
         1. Create an empty working folder on the target and start the scenario program.
         2. Open the KVS (key-value store) with this folder as its storage, with the default of 3 snapshots.
-        3. Set one key per value type: "i32", "u32", "i64", "u64", "f64", "bool", "null", "str", "arr" and "obj".
+        3. Set one key per value type: "i8", "u8", "i16", "u16", "i32", "u32", "i64", "u64", "f32", "f64", "bool",
+           "null", "str", "arr" and "obj". The "f32" value is exactly representable, so both implementations write
+           the same number.
            The string holds a quote, a backslash, a slash, a newline, a tab, the control character 0x01 and the
            non-ASCII letter "ä". The array holds a value of several types, an empty string, an empty array and an
            empty object. The object holds a nested object. Also set the key `quote" backslash\\` to an I32 value.
@@ -325,3 +350,128 @@ class TestStorageFilesFormatAndChecksum(CommonScenario):
             data = read_file_on_target(target, temp_dir / name)
             checksum = adler32(data).to_bytes(length=4, byteorder="big")
             assert read_file_on_target(target, temp_dir / hash_name) == checksum, name
+
+
+def check_flush_failed(version: str, results: ScenarioResult, logs_info_level: LogContainer) -> None:
+    """
+    Precondition: the scenario ends without an error, set of NaN succeeds, flush fails with the JSON generator error.
+    """
+    assert results.return_code == ResultCode.SUCCESS, results.stderr
+    set_error = logs_info_level.find_log("set_non_finite_error")
+    assert set_error is None, (
+        f"precondition: set rejected NaN ({set_error.set_non_finite_error}), as comp_req__kvs__value_data_types "
+        "requires, so this test needs another way to make a flush fail"
+    )
+    flush_error = logs_info_level.find_log("flush_error")
+    assert flush_error is not None, "precondition: the flush with a non-finite value did not fail"
+    assert flush_error.flush_error == NON_FINITE_FLUSH_ERRORS[version], (
+        "precondition: the flush with a non-finite value did not fail with the JSON generator error"
+    )
+
+
+@add_test_properties(
+    partially_verifies=["comp_req__kvs__reset_resistant_write", "comp_req__kvs__atomic_store"],
+    test_type="fault-injection",
+    derivation_technique="requirements-analysis",
+)
+@pytest.mark.parametrize("after_failure", ["end", "replace"], scope="class")
+class TestFailedFlushKeepsPersistedData(CommonScenario):
+    """
+    Verifies that a failed flush keeps all persisted data and the next successful flush persists all changes.
+    NaN makes the flush fail.
+    Not covered: a reset or a storage error during the write.
+    set should reject NaN (comp_req__kvs__value_data_types).
+    When it does, this test needs another way to make the flush fail.
+    """
+
+    @pytest.fixture(scope="class")
+    def temp_dir(self, target: Target, version: str, after_failure: str) -> Generator[Path, None, None]:
+        # Own working directory per case, because each case flushes its own storage files.
+        yield from temp_dir_common(target, self.__class__.__name__, version, after_failure)
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.persistency.failed_flush"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path, after_failure: str) -> dict[str, Any]:
+        return {**kvs_parameters(temp_dir), "after_failure": after_failure}
+
+    def test_storage_files_unchanged(
+        self, request: pytest.FixtureRequest, version: str, results: ScenarioResult, logs_info_level: LogContainer
+    ):
+        """
+        Checks that the failed flush changes no storage file.
+
+        Steps:
+        1. Open the KVS in an empty folder on the target.
+        2. Set "kept", "overwritten" and "removed" to 1, then flush three times with "generation" = 1, 2 and 3.
+        3. Log the files with their fingerprints.
+        4. Set "overwritten" to 2, remove "removed", set "added" to 3 and "non_finite" to NaN, then flush.
+        5. Log the files again and compare the storage files "kvs_1_<n>.json" and "kvs_1_<n>.hash" with step 3.
+
+        Expected result:
+        - Precondition: set of NaN succeeds, flush fails with the JSON generator error.
+        - Before the failed flush, "kvs_1_0" and "kvs_1_1" exist with their hash files.
+        - After the failed flush, the same storage files exist with the same fingerprints.
+
+        Known Rust defect: flush rotates snapshots before it serializes, so a failed flush loses kvs_1_0.
+        Rust cases are strict xfail.
+        """
+        check_flush_failed(version, results, logs_info_level)
+        storage_file = re.compile(rf"kvs_{INSTANCE_ID}_\d+\.(json|hash)")
+        before_log = logs_info_level.find_log("storage_before")
+        assert before_log is not None, "the files before the failed flush were not logged"
+        before = {
+            name: fingerprint
+            for name, fingerprint in parse_storage(before_log.storage_before).items()
+            if storage_file.fullmatch(name)
+        }
+        after_log = logs_info_level.find_log("storage_after")
+        assert after_log is not None, "the files after the failed flush were not logged"
+        after = {
+            name: fingerprint
+            for name, fingerprint in parse_storage(after_log.storage_after).items()
+            if storage_file.fullmatch(name)
+        }
+        assert {*STORAGE, SNAPSHOT_DATA_FILE, f"kvs_{INSTANCE_ID}_1.hash"} <= before.keys(), f"storage before: {before}"
+        if version == "rust":
+            request.applymarker(pytest.mark.xfail(strict=True, reason=RUST_FLUSH_ROTATES_BEFORE_SERIALIZE))
+        assert after == before, "storage files changed by the failed flush"
+
+    def test_values_loaded_after_restart(
+        self,
+        request: pytest.FixtureRequest,
+        target: Target,
+        target_path: Path,
+        temp_dir: Path,
+        execution_timeout: float,
+        version: str,
+        after_failure: str,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+    ):
+        """
+        Checks that a new process loads the data of the last successful flush.
+
+        Steps:
+        1. Run steps 1 to 4 of "test_storage_files_unchanged".
+        2. Only for case "replace": set "non_finite" to 4 and flush.
+        3. In a new process, open the KVS with load mode Required and log all key-value pairs.
+
+        Expected result:
+        - Precondition: set of NaN succeeds, flush fails with the JSON generator error.
+        - "end": the new process loads the data from before the failed flush.
+        - "replace": the new process loads all changes of the failed flush and "non_finite" = 4.
+
+        Known Rust defect: flush rotates snapshots before it serializes, so a failed flush loses kvs_1_0.
+        The Rust "end" case is strict xfail.
+        """
+        check_flush_failed(version, results, logs_info_level)
+
+        config = kvs_parameters(temp_dir, kvs_load="required")
+        restart = run_named_scenario(target, target_path, "cit.persistency.stored_values", config, execution_timeout)
+        if (after_failure, version) == ("end", "rust"):
+            request.applymarker(pytest.mark.xfail(strict=True, reason=RUST_FLUSH_ROTATES_BEFORE_SERIALIZE))
+        assert restart.return_code == ResultCode.SUCCESS, restart.stderr
+        assert stored_values(restart, target_path) == VALUES_AFTER_FAILED_FLUSH[after_failure]

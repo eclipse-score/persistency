@@ -24,9 +24,9 @@ Overview
    :labels: not valid, valid but not tested, valid and tested
    :colors: red,yellow, green
 
-   type == 'comp_req' and status == 'invalid'
-   type == 'comp_req' and testlink == '' and (status == 'valid' or status == 'invalid')
-   type == 'comp_req' and testlink != '' and (status == 'valid' or status == 'invalid')
+   type == 'comp_req' and not is_external and status == 'invalid'
+   type == 'comp_req' and not is_external and testlink == '' and (status == 'valid' or status == 'invalid')
+   type == 'comp_req' and not is_external and testlink != '' and (status == 'valid' or status == 'invalid')
 
 In Detail
 ---------
@@ -40,8 +40,8 @@ In Detail
          :labels: not valid, valid
          :colors: red, orange, green
 
-         type == 'comp_req' and status == 'invalid'
-         type == 'comp_req' and status == 'valid'
+         type == 'comp_req' and not is_external and status == 'invalid'
+         type == 'comp_req' and not is_external and status == 'valid'
 
    .. grid-item-card::
 
@@ -49,8 +49,8 @@ In Detail
          :labels: no codelink, with codelink
          :colors: red, green
 
-         type == 'comp_req' and source_code_link == ''
-         type == 'comp_req' and source_code_link != ''
+         type == 'comp_req' and not is_external and source_code_link == ''
+         type == 'comp_req' and not is_external and source_code_link != ''
 
    .. grid-item-card::
 
