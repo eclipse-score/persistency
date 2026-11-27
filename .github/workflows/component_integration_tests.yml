@@ -12,14 +12,9 @@
 # *******************************************************************************
 name: Component Integration Tests
 
+# Called by docs.yml, which needs the test report.
+# docs.yml runs on every PR and merge group, so this workflow has no triggers of its own.
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-  push:
-    branches:
-      - main
-  merge_group:
-    types: [checks_requested]
   workflow_call:
     outputs:
       artifact-name:
@@ -28,10 +23,11 @@ on:
 
 jobs:
   component-integration-tests:
-    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # main (2026-11-11)
+    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@32d0b258660d17e749a41760d4e40f3991bec0a2 # main (2026-11-27)
     permissions:
       contents: read
     with:
+      runner-labels: ${{ vars.runner_labels_ghub24_standard_x64 || '"ubuntu-24.04"' }}
       test-targets: //:cit_tests
       bazel-configs: score-linux-x86_64
       cache-key: component-integration-tests

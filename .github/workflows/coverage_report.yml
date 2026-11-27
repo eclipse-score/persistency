@@ -13,14 +13,9 @@
 name: Code Coverage
 permissions:
   contents: read
+# pr.yml calls this workflow on pull requests and merge groups.
+# release.yml and cache-maintenance.yml also call it.
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-  push:
-    branches:
-      - main
-  merge_group:
-    types: [checks_requested]
   workflow_call:
     outputs:
       artifact-name:
@@ -29,7 +24,7 @@ on:
   workflow_dispatch:
 jobs:
   coverage-report:
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
     env:
       ARTIFACT_NAME: ${{ github.event.repository.name }}_coverage_report
     outputs:
@@ -48,7 +43,7 @@ jobs:
         with:
           disk-cache-key: ${{ github.job }}
       # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@d8f1ca7808fe21b755ef3277d3581a1d57dec15f # main branch (2026-10-12)
+      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@200452cc1decd28b69bf2c3ccc56b5a06e529522 # main (2026-11-25)
       - name: Check coverage scope completeness
         run: ./.github/tools/check_coverage_scope.sh
       # The kvs_tool ITF tests run their binaries in a Docker container.

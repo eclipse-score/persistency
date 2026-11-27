@@ -13,11 +13,12 @@
 
 name: License check preparation
 
+# pr.yml calls this workflow on pull requests and merge groups.
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-  merge_group:
-    types: [checks_requested]
+  workflow_call:
+    secrets:
+      ECLIPSE_GITLAB_API_TOKEN:
+        required: false
 
 permissions:
   pull-requests: write
@@ -29,8 +30,9 @@ jobs:
     # same-repository PRs without approval ||
     if: >-
       (github.event_name == 'merge_group') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
-    uses: eclipse-score/cicd-workflows/.github/workflows/license-check.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/license-check.yml@32d0b258660d17e749a41760d4e40f3991bec0a2 # main (2026-11-27)
     with:
+      runner-labels: ${{ vars.runner_labels_ghub24_standard_x64 || '"ubuntu-24.04"' }}
       repo-url: "${{ github.server_url }}/${{ github.repository }}"
       bazel-target: "run --lockfile_mode=error //tools:license-check"
     secrets:

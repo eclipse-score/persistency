@@ -43,10 +43,39 @@ jobs:
 
   docs:
     needs: [cit-tests] # Test reports are needed for traceability links
-    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # v0.0.3-47-g6bcfd5d
+    uses: eclipse-score/cicd-workflows/.github/workflows/docs.yml@32d0b258660d17e749a41760d4e40f3991bec0a2 # main (2026-11-27)
     permissions:
       contents: read
     with:
+      runner-labels: ${{ vars.runner_labels_ghub24_standard_x64 || '"ubuntu-24.04"' }}
       bazel-target: "--lockfile_mode=error //:docs"
       retention-days: 3
       tests-report-artifact: ${{ needs.cit-tests.outputs.artifact-name }}
+
+  docs-mergeable:
+    name: Docs mergeable
+    needs: [cit-tests, docs]
+    # Runs even after failures and cancellations, so it can report them.
+    # Only PRs and merge groups need the result.
+    if: ${{ always() && (github.event_name == 'pull_request' || github.event_name == 'merge_group') }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
+    permissions: {}
+    timeout-minutes: 5
+    steps:
+      - name: Check job results
+        env:
+          # These jobs must succeed.
+          # No skip is intended.
+          REQUIRED: >-
+            cit-tests=${{ needs.cit-tests.result }}
+            docs=${{ needs.docs.result }}
+        run: |
+          set -euo pipefail
+          status=0
+          for job in ${REQUIRED}; do
+            if [[ "${job#*=}" != "success" ]]; then
+              echo "::error::${job%%=*} must succeed, but its result is ${job#*=}."
+              status=1
+            fi
+          done
+          exit "${status}"

@@ -12,22 +12,18 @@
 # *******************************************************************************
 name: Lint
 
+# pr.yml calls this workflow on pull requests and merge groups.
+# release.yml and cache-maintenance.yml also call it.
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-  push:
-    branches:
-      - main
-  merge_group:
-    types: [checks_requested]
   workflow_call:
 
 jobs:
   lint:
-    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # v0.0.3-43-7e8ea4c
+    uses: eclipse-score/cicd-workflows/.github/workflows/static-analysis.yml@32d0b258660d17e749a41760d4e40f3991bec0a2 # main (2026-11-27)
     permissions:
       contents: read
     with:
+      runner-labels: ${{ vars.runner_labels_ghub24_standard_x64 || '"ubuntu-24.04"' }}
       bazel-targets: "//..."
       bazel-config: "lint"
       bazel-args: "--lockfile_mode=error --@aspect_rules_lint//lint:fail_on_violation=true"

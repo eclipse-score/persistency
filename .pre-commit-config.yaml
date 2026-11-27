@@ -28,3 +28,10 @@ repos:
           # Disable shellcheck and pyflakes for now, to enforce consistent behavior.
           - -shellcheck=
           - -pyflakes=
+          # TODO: Remove once actionlint supports the `queue` key (rhysd/actionlint#654)
+          - -ignore
+          - 'unexpected key "queue" for "concurrency" section'
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.21.0
+    hooks:
+      - id: yamlfmt
