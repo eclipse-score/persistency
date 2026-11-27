@@ -13,15 +13,15 @@
 
 name: Gitlint check
 
+# pr.yml calls this workflow on pull requests.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_call:
 
 jobs:
   lint-commits:
     name: check-commit-messages
     if: github.event.pull_request.user.login != 'dependabot[bot]'
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
     permissions:
       contents: read
     steps:

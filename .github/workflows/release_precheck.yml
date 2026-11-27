@@ -42,7 +42,7 @@ on:
 jobs:
   precheck:
     name: Check release preconditions
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || vars.REPO_RUNNER_LABELS && fromJSON(vars.REPO_RUNNER_LABELS) || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
     permissions:
       contents: read
     steps:
