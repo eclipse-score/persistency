@@ -23,54 +23,43 @@ on:
         value: ${{ jobs.coverage-report.outputs.artifact-name }}
   workflow_dispatch:
 jobs:
-  coverage-report:
+  coverage-scope:
+    name: Coverage scope
     runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
-    env:
-      ARTIFACT_NAME: ${{ github.event.repository.name }}_coverage_report
-    outputs:
-      artifact-name: ${{ env.ARTIFACT_NAME }}
+    permissions:
+      contents: read
     steps:
-      - name: Free up disk space
-        uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
-        with:
-          level: 4
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          lfs: true
       - name: Setup Bazel with shared caching
         uses: eclipse-score/cicd-actions/setup-bazel-cache@d8f1ca7808fe21b755ef3277d3581a1d57dec15f # setup-bazel-cache/v0.2.0
         with:
           disk-cache-key: ${{ github.job }}
-      # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@d8f1ca7808fe21b755ef3277d3581a1d57dec15f # unblock-user-namespace-for-linux-sandbox/v0.0.0
+          # The check runs no actions, so it needs no disk cache.
+          disk-cache-restore: false
+          disk-cache-save: false
+      # The check runs bazel query and cquery only, so it needs no sandbox.
       - name: Check coverage scope completeness
         run: ./.github/tools/check_coverage_scope.sh
+
+  coverage-report:
+    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # main branch (2026-11-17)
+    permissions:
+      contents: read
+    with:
+      runner-labels: ${{ vars.runner_labels_ghub24_standard_x64 || '"ubuntu-24.04"' }}
+      test-command: coverage
+      bazel-configs: llvm_cov
       # The kvs_tool ITF tests run their binaries in a Docker container.
       # Coverage data from the container never reaches Bazel, so they are excluded.
-      - name: Run Bazel coverage (LLVM, C++ + Rust)
-        run: |
-          set -euo pipefail
-          bazel coverage --lockfile_mode=error --config=llvm_cov --build_tests_only -- \
-            //score/... -//score/kvs/rust_kvs_tool/tests/...
-      - name: Generate HTML coverage report
-        env:
-          # Report-only during the introduction phase.
-          # Raise it stepwise toward 100 (effective coverage with justifications).
-          # Then drop the env to use the default of 100.
-          COVERAGE_THRESHOLD: "0"
-        run: |
-          set -euo pipefail
-          bazel run --lockfile_mode=error @score_coverage//:generate_coverage_html -- \
-            --yaml tools/coverage/coverage_justifications.yaml \
-            --testlogs-subdir score \
-            --archive-dir coverage_artifact
-      # upload-artifact zips its input itself.
-      # So --archive-dir assembles an unzipped tree.
-      - name: Upload coverage artifacts
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: coverage_artifact/
-          include-hidden-files: true
-          retention-days: 10
+      test-targets: //score/... -//score/kvs/rust_kvs_tool/tests/...
+      test-args: --build_tests_only
+      coverage-justifications: tools/coverage/coverage_justifications.yaml
+      # Report-only during the introduction phase.
+      # Raise it stepwise toward 100 (effective coverage with justifications).
+      # Then drop the input to use the default of 100.
+      coverage-threshold: 0
+      cache-key: coverage-report
+      disk-cleanup-level: 4
+      artifact-name: ${{ github.event.repository.name }}_coverage_report
+      retention-days: 10

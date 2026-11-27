@@ -32,25 +32,19 @@ jobs:
           channel="$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)"
           test -n "${channel}"
           echo "channel=${channel}" >> "${GITHUB_OUTPUT}"
-      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch (2026-10-16)
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
         with:
           toolchain: ${{ steps.rust-toolchain.outputs.channel }}
       - name: Cargo build
         run: cargo build
   miri:
     name: Miri (Bazel)
-    runs-on: ${{ vars.runner_labels_ghub24_standard_x64 && fromJSON(vars.runner_labels_ghub24_standard_x64) || 'ubuntu-24.04' }}
+    uses: eclipse-score/cicd-workflows/.github/workflows/bazel.yml@200f97be787848974e55d1f4ef5615efbaa97ff8 # main branch (2026-11-17)
     permissions:
       contents: read
-    steps:
-      - uses: eclipse-score/more-disk-space@beee38c3b4426a7c43fdfeb2495d1af812179c3e # v1.3.0
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Setup Bazel with shared caching
-        uses: eclipse-score/cicd-actions/setup-bazel-cache@d8f1ca7808fe21b755ef3277d3581a1d57dec15f # setup-bazel-cache/v0.2.0
-        with:
-          disk-cache-key: ${{ github.job }}
-      # Needs bazel on PATH: the action resolves `bazel info install_base`.
-      - uses: eclipse-score/cicd-actions/unblock-user-namespace-for-linux-sandbox@d8f1ca7808fe21b755ef3277d3581a1d57dec15f # unblock-user-namespace-for-linux-sandbox/v0.0.0
-      - name: Bazel miri tests
-        run: |
-          bazel test --lockfile_mode=error --config=score-linux-x86_64 //:miri_tests
+    with:
+      runner-labels: ${{ vars.runner_labels_ghub24_standard_x64 || '"ubuntu-24.04"' }}
+      bazel-configs: score-linux-x86_64
+      test-targets: //:miri_tests
+      cache-key: miri
+      artifact-name: miri-testlogs-${{ github.run_attempt }}
