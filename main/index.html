@@ -744,7 +744,7 @@ The integration of the module into a Bazel project is described in <code class="
 <p>Building without an explicit <code class="docutils literal notranslate"><span class="pre">--config</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">score-linux-x86_64</span></code>, <code class="docutils literal notranslate"><span class="pre">score-qnx-x86_64</span></code>, <code class="docutils literal notranslate"><span class="pre">score-qnx-aarch64</span></code>) is not supported.
 The config <code class="docutils literal notranslate"><span class="pre">score-linux-aarch64</span></code> is supported too.
 Its tests need <code class="docutils literal notranslate"><span class="pre">qemu-user</span></code>.
-The QNX configs need QNX SDP credentials (<code class="docutils literal notranslate"><span class="pre">SCORE_QNX_USER</span></code>, <code class="docutils literal notranslate"><span class="pre">SCORE_QNX_PASSWORD</span></code>) and a QNX license.
+The QNX configs need GitHub package download access and a QNX license; see <a class="reference external" href="https://github.com/eclipse-score/persistency/blob/main/README.md#qnx-sdk-access">QNX SDK access</a> for setup.
 Run the QNX unit tests with <code class="docutils literal notranslate"><span class="pre">run-under-qnx-x86_64</span></code> or <code class="docutils literal notranslate"><span class="pre">run-under-qnx-aarch64</span></code>.
 These configs run the tests in a QEMU VM and need <code class="docutils literal notranslate"><span class="pre">qemu-system-x86_64</span></code> or <code class="docutils literal notranslate"><span class="pre">qemu-system-aarch64</span></code>.
 The x86_64 VM uses KVM when it is available.
