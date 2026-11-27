@@ -239,8 +239,9 @@ pub struct JsonBackend {
 impl ScoreDebug for JsonBackend {
     fn fmt(&self, f: score_log::fmt::Writer, spec: &score_log::fmt::FormatSpec) -> score_log::fmt::Result {
         score_log::fmt::DebugStruct::new(f, spec, "JsonBackend")
+            .field("working_dir", &self.working_dir.to_string_lossy().as_ref())
             .field("snapshot_max_count", &self.snapshot_max_count)
-            .finish_non_exhaustive()
+            .finish()
     }
 }
 
@@ -284,7 +285,7 @@ impl JsonBackend {
             else if !snap_old_exists || !hash_old_exists {
                 error!(
                     "KVS or hash file not found: instance={}, snapshot={}",
-                    instance_id.0, old_snapshot_id.0
+                    instance_id, old_snapshot_id
                 );
                 return Err(ErrorCode::IntegrityCorrupted);
             }
@@ -295,7 +296,7 @@ impl JsonBackend {
 
             debug!(
                 "Rotating snapshots: instance={}, snapshot={} -> {}",
-                instance_id.0, old_snapshot_id.0, new_snapshot_id.0
+                instance_id, old_snapshot_id, new_snapshot_id
             );
 
             fs::rename(hash_path_old, hash_path_new)?;
@@ -403,11 +404,16 @@ impl JsonBackend {
     fn write_temp_file(path: &Path, data: &[u8]) -> Result<PathBuf, ErrorCode> {
         const KVS_FILE_MODE: u32 = 0o640;
         let tmp_path = Self::temp_file_path(path);
+        let tmp_path_str: &str = &tmp_path.to_string_lossy();
 
         // Remove temporary file left behind by an interrupted write.
         if let Err(e) = fs::remove_file(&tmp_path) {
             if e.kind() != std::io::ErrorKind::NotFound {
-                error!("Failed to remove stale temporary file, error: {:?}", e.to_string());
+                error!(
+                    "Failed to remove stale temporary file: {}, error: {:?}",
+                    tmp_path_str,
+                    e.to_string()
+                );
                 return Err(ErrorCode::PhysicalStorageFailure);
             }
         }
@@ -420,7 +426,11 @@ impl JsonBackend {
             .mode(KVS_FILE_MODE)
             .open(&tmp_path)
             .map_err(|e| {
-                error!("Failed to open temporary file, error: {:?}", e.to_string());
+                error!(
+                    "Failed to open temporary file: {}, error: {:?}",
+                    tmp_path_str,
+                    e.to_string()
+                );
                 ErrorCode::PhysicalStorageFailure
             })?;
 
@@ -430,16 +440,24 @@ impl JsonBackend {
             #[cfg(not(miri))]
             file.set_permissions(fs::Permissions::from_mode(KVS_FILE_MODE))
                 .map_err(|_| {
-                    error!("Failed to set temporary file permissions");
+                    error!("Failed to set temporary file permissions: {}", tmp_path_str);
                     ErrorCode::PhysicalStorageFailure
                 })?;
 
             file.write_all(data).map_err(|e| {
-                error!("Failed to write to temporary file, error: {:?}", e.to_string());
+                error!(
+                    "Failed to write to temporary file: {}, error: {:?}",
+                    tmp_path_str,
+                    e.to_string()
+                );
                 ErrorCode::PhysicalStorageFailure
             })?;
             file.sync_data().map_err(|e| {
-                error!("Failed to sync temporary file, error: {:?}", e.to_string());
+                error!(
+                    "Failed to sync temporary file: {}, error: {:?}",
+                    tmp_path_str,
+                    e.to_string()
+                );
                 ErrorCode::PhysicalStorageFailure
             })
         })();
@@ -458,7 +476,11 @@ impl JsonBackend {
     /// Rename is atomic - file is either old or new.
     fn commit_temp_file(tmp_path: &Path, path: &Path) -> Result<(), ErrorCode> {
         fs::rename(tmp_path, path).map_err(|e| {
-            error!("Failed to replace file, error: {:?}", e.to_string());
+            error!(
+                "Failed to replace file: {}, error: {:?}",
+                path.to_string_lossy().as_ref(),
+                e.to_string()
+            );
             let _ = fs::remove_file(tmp_path);
             ErrorCode::PhysicalStorageFailure
         })
@@ -473,7 +495,11 @@ impl JsonBackend {
         fs::File::open(dir)
             .and_then(|dir_file| dir_file.sync_all())
             .map_err(|e| {
-                error!("Failed to sync parent directory, error: {:?}", e.to_string());
+                error!(
+                    "Failed to sync parent directory: {}, error: {:?}",
+                    dir.to_string_lossy().as_ref(),
+                    e.to_string()
+                );
                 ErrorCode::PhysicalStorageFailure
             })
     }
@@ -561,44 +587,38 @@ impl JsonBackend {
 
 impl KvsBackend for JsonBackend {
     fn load_kvs(&self, instance_id: InstanceId, snapshot_id: SnapshotId) -> Result<KvsMap, ErrorCode> {
-        debug!(
-            "Loading snapshot: instance={}, snapshot={}",
-            instance_id.0, snapshot_id.0
-        );
+        debug!("Loading snapshot: instance={}, snapshot={}", instance_id, snapshot_id);
         let kvs_path = self.kvs_file_path(instance_id, snapshot_id);
         let hash_path = self.hash_file_path(instance_id, snapshot_id);
         Self::load(&kvs_path, &hash_path).inspect_err(|e| {
             error!(
                 "Failed to load snapshot: instance={}, snapshot={}, error={:?}",
-                instance_id.0, snapshot_id.0, e
+                instance_id, snapshot_id, e
             );
         })
     }
 
     fn load_defaults(&self, instance_id: InstanceId) -> Result<KvsMap, ErrorCode> {
-        debug!("Loading defaults: instance={}", instance_id.0);
+        debug!("Loading defaults: instance={}", instance_id);
         let defaults_path = self.defaults_file_path(instance_id);
         let defaults_hash_path = self.defaults_hash_file_path(instance_id);
         Self::load(&defaults_path, &defaults_hash_path).inspect_err(|e| {
-            error!("Failed to load defaults: instance={}, error={:?}", instance_id.0, e);
+            error!("Failed to load defaults: instance={}, error={:?}", instance_id, e);
         })
     }
 
     fn flush(&self, instance_id: InstanceId, kvs_map: &KvsMap) -> Result<(), ErrorCode> {
         self.snapshot_rotate(instance_id).inspect_err(|e| {
-            error!("Failed to rotate snapshots: instance={}, error={:?}", instance_id.0, e);
+            error!("Failed to rotate snapshots: instance={}, error={:?}", instance_id, e);
         })?;
         let snapshot_id = SnapshotId(0);
-        debug!(
-            "Saving snapshot: instance={}, snapshot={}",
-            instance_id.0, snapshot_id.0
-        );
+        debug!("Saving snapshot: instance={}, snapshot={}", instance_id, snapshot_id);
         let kvs_path = self.kvs_file_path(instance_id, snapshot_id);
         let hash_path = self.hash_file_path(instance_id, snapshot_id);
         Self::save(kvs_map, &kvs_path, &hash_path).inspect_err(|e| {
             error!(
                 "Failed to save snapshot: instance={}, snapshot={}, error={:?}",
-                instance_id.0, snapshot_id.0, e
+                instance_id, snapshot_id, e
             );
         })?;
         Ok(())
@@ -629,7 +649,7 @@ impl KvsBackend for JsonBackend {
         if snapshot_id == SnapshotId(0) {
             error!(
                 "Restoring current KVS snapshot is not allowed: instance={}",
-                instance_id.0
+                instance_id
             );
             return Err(ErrorCode::InvalidSnapshotId);
         }
@@ -637,7 +657,7 @@ impl KvsBackend for JsonBackend {
         if self.snapshot_count(instance_id) < snapshot_id.0 {
             error!(
                 "Unable to restore non-existing snapshot: instance={}, snapshot={}",
-                instance_id.0, snapshot_id.0
+                instance_id, snapshot_id
             );
             return Err(ErrorCode::InvalidSnapshotId);
         }
