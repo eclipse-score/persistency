@@ -497,7 +497,7 @@
                   
   <section id="persistency-user-manual">
 <span id="id1"></span><h1>Persistency User Manual<a class="headerlink" href="#persistency-user-manual" title="Link to this heading">#</a></h1>
-<div class="need_container docutils container" id="SNCB-59318eb3">
+<div class="need_container docutils container" id="SNCB-5c5ca5f7">
 <div class="pst-scrollable-table-container"><table class="need needs_grid_complex needs_layout_score needs_style_none needs_type_document table" id="doc__persistency_user_manual">
 <tbody>
 <tr class="head row-odd"><td class="head_left" colspan="2"><div class="needs_head_left line-block">
@@ -565,6 +565,9 @@ application developers. It refers to the sources of the information instead of r
 <h1>Module Configuration Details<a class="headerlink" href="#module-configuration-details" title="Link to this heading">#</a></h1>
 <p>A KVS instance is configured via <code class="docutils literal notranslate"><span class="pre">KvsBuilder</span></code> (C++ and Rust), see <a class="reference internal" href="#api-reference">API Reference</a>. The behavior of the
 component, including its configuration, is specified in <a class="reference internal" href="../../components/kvs/requirements/requirements.html#doc__kvs_requirements" title="doc__kvs_requirements"><em class="xref need">KVS Requirements (doc__kvs_requirements)</em></a>.</p>
+<p>In C++, a negative zero <code class="docutils literal notranslate"><span class="pre">f32</span></code> or <code class="docutils literal notranslate"><span class="pre">f64</span></code> value is loaded as positive zero after a flush.
+The JSON library writes negative zero as <code class="docutils literal notranslate"><span class="pre">-0</span></code> and parses that text as an integer, which has no sign.
+For the same reason, C++ rejects <code class="docutils literal notranslate"><span class="pre">-0</span></code> for an unsigned type tag, while Rust accepts it as <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <section id="configuration-effects">
 <h2>Configuration Effects<a class="headerlink" href="#configuration-effects" title="Link to this heading">#</a></h2>
 <p>Loading, flushing and snapshot handling are shown in the dynamic architecture of
