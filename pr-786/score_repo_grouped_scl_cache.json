@@ -900,7 +900,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_data_files_are_json[rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 279,
+              "line": 293,
               "need": "comp_req__kvs__pers_data_csum",
               "verify_type": "fully",
               "result": "passed",
@@ -909,7 +909,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_hash_files_hold_checksum[rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 326,
+              "line": 340,
               "need": "comp_req__kvs__pers_data_csum",
               "verify_type": "fully",
               "result": "passed",
@@ -936,7 +936,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_data_files_are_json[cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 279,
+              "line": 293,
               "need": "comp_req__kvs__pers_data_csum",
               "verify_type": "fully",
               "result": "passed",
@@ -945,7 +945,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_hash_files_hold_checksum[cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 326,
+              "line": 340,
               "need": "comp_req__kvs__pers_data_csum",
               "verify_type": "fully",
               "result": "passed",
@@ -5960,7 +5960,7 @@
             {
               "name": "TestExplicitFlush__test_storage_written_only_at_flush[rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 189,
+              "line": 203,
               "need": "comp_req__kvs__explicit_flush",
               "verify_type": "fully",
               "result": "passed",
@@ -5969,7 +5969,7 @@
             {
               "name": "TestExplicitFlush__test_flushed_state_loaded_after_restart[rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 233,
+              "line": 247,
               "need": "comp_req__kvs__explicit_flush",
               "verify_type": "fully",
               "result": "passed",
@@ -6302,7 +6302,7 @@
             {
               "name": "TestExplicitFlush__test_storage_written_only_at_flush[cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 189,
+              "line": 203,
               "need": "comp_req__kvs__explicit_flush",
               "verify_type": "fully",
               "result": "passed",
@@ -6311,7 +6311,7 @@
             {
               "name": "TestExplicitFlush__test_flushed_state_loaded_after_restart[cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 233,
+              "line": 247,
               "need": "comp_req__kvs__explicit_flush",
               "verify_type": "fully",
               "result": "passed",
@@ -12292,7 +12292,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_data_files_are_json[rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 279,
+              "line": 293,
               "need": "comp_req__kvs__value_serialize",
               "verify_type": "partially",
               "result": "passed",
@@ -12301,7 +12301,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_hash_files_hold_checksum[rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 326,
+              "line": 340,
               "need": "comp_req__kvs__value_serialize",
               "verify_type": "partially",
               "result": "passed",
@@ -12310,7 +12310,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_data_files_are_json[cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 279,
+              "line": 293,
               "need": "comp_req__kvs__value_serialize",
               "verify_type": "partially",
               "result": "passed",
@@ -12319,7 +12319,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_hash_files_hold_checksum[cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 326,
+              "line": 340,
               "need": "comp_req__kvs__value_serialize",
               "verify_type": "partially",
               "result": "passed",
@@ -12336,7 +12336,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_data_files_are_json[rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 279,
+              "line": 293,
               "need": "comp_req__kvs__pers_data_store_fmt",
               "verify_type": "fully",
               "result": "passed",
@@ -12345,7 +12345,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_hash_files_hold_checksum[rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 326,
+              "line": 340,
               "need": "comp_req__kvs__pers_data_store_fmt",
               "verify_type": "fully",
               "result": "passed",
@@ -12354,7 +12354,7 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_data_files_are_json[cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 279,
+              "line": 293,
               "need": "comp_req__kvs__pers_data_store_fmt",
               "verify_type": "fully",
               "result": "passed",
@@ -12363,8 +12363,70 @@
             {
               "name": "TestStorageFilesFormatAndChecksum__test_hash_files_hold_checksum[cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 326,
+              "line": 340,
               "need": "comp_req__kvs__pers_data_store_fmt",
+              "verify_type": "fully",
+              "result": "passed",
+              "result_text": ""
+            }
+          ]
+        }
+      },
+      {
+        "need": "comp_req__kvs__storage_file_permissions",
+        "links": {
+          "CodeLinks": [],
+          "TestLinks": [
+            {
+              "name": "TestStorageFilePermissions__test_storage_files_have_mode_640[0000-rust]",
+              "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
+              "line": 417,
+              "need": "comp_req__kvs__storage_file_permissions",
+              "verify_type": "fully",
+              "result": "passed",
+              "result_text": ""
+            },
+            {
+              "name": "TestStorageFilePermissions__test_storage_files_have_mode_640[0077-rust]",
+              "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
+              "line": 417,
+              "need": "comp_req__kvs__storage_file_permissions",
+              "verify_type": "fully",
+              "result": "passed",
+              "result_text": ""
+            },
+            {
+              "name": "TestStorageFilePermissions__test_storage_files_have_mode_640[0777-rust]",
+              "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
+              "line": 417,
+              "need": "comp_req__kvs__storage_file_permissions",
+              "verify_type": "fully",
+              "result": "passed",
+              "result_text": ""
+            },
+            {
+              "name": "TestStorageFilePermissions__test_storage_files_have_mode_640[0000-cpp]",
+              "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
+              "line": 417,
+              "need": "comp_req__kvs__storage_file_permissions",
+              "verify_type": "fully",
+              "result": "passed",
+              "result_text": ""
+            },
+            {
+              "name": "TestStorageFilePermissions__test_storage_files_have_mode_640[0077-cpp]",
+              "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
+              "line": 417,
+              "need": "comp_req__kvs__storage_file_permissions",
+              "verify_type": "fully",
+              "result": "passed",
+              "result_text": ""
+            },
+            {
+              "name": "TestStorageFilePermissions__test_storage_files_have_mode_640[0777-cpp]",
+              "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
+              "line": 417,
+              "need": "comp_req__kvs__storage_file_permissions",
               "verify_type": "fully",
               "result": "passed",
               "result_text": ""
@@ -12380,7 +12442,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_storage_files_unchanged[end-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 402,
+              "line": 499,
               "need": "comp_req__kvs__reset_resistant_write",
               "verify_type": "partially",
               "result": "skipped",
@@ -12389,7 +12451,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_values_loaded_after_restart[end-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 444,
+              "line": 541,
               "need": "comp_req__kvs__reset_resistant_write",
               "verify_type": "partially",
               "result": "skipped",
@@ -12398,7 +12460,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_storage_files_unchanged[replace-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 402,
+              "line": 499,
               "need": "comp_req__kvs__reset_resistant_write",
               "verify_type": "partially",
               "result": "skipped",
@@ -12407,7 +12469,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_values_loaded_after_restart[replace-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 444,
+              "line": 541,
               "need": "comp_req__kvs__reset_resistant_write",
               "verify_type": "partially",
               "result": "passed",
@@ -12416,7 +12478,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_storage_files_unchanged[end-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 402,
+              "line": 499,
               "need": "comp_req__kvs__reset_resistant_write",
               "verify_type": "partially",
               "result": "passed",
@@ -12425,7 +12487,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_values_loaded_after_restart[end-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 444,
+              "line": 541,
               "need": "comp_req__kvs__reset_resistant_write",
               "verify_type": "partially",
               "result": "passed",
@@ -12434,7 +12496,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_storage_files_unchanged[replace-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 402,
+              "line": 499,
               "need": "comp_req__kvs__reset_resistant_write",
               "verify_type": "partially",
               "result": "passed",
@@ -12443,7 +12505,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_values_loaded_after_restart[replace-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 444,
+              "line": 541,
               "need": "comp_req__kvs__reset_resistant_write",
               "verify_type": "partially",
               "result": "passed",
@@ -12460,7 +12522,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_storage_files_unchanged[end-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 402,
+              "line": 499,
               "need": "comp_req__kvs__atomic_store",
               "verify_type": "partially",
               "result": "skipped",
@@ -12469,7 +12531,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_values_loaded_after_restart[end-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 444,
+              "line": 541,
               "need": "comp_req__kvs__atomic_store",
               "verify_type": "partially",
               "result": "skipped",
@@ -12478,7 +12540,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_storage_files_unchanged[replace-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 402,
+              "line": 499,
               "need": "comp_req__kvs__atomic_store",
               "verify_type": "partially",
               "result": "skipped",
@@ -12487,7 +12549,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_values_loaded_after_restart[replace-rust]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 444,
+              "line": 541,
               "need": "comp_req__kvs__atomic_store",
               "verify_type": "partially",
               "result": "passed",
@@ -12496,7 +12558,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_storage_files_unchanged[end-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 402,
+              "line": 499,
               "need": "comp_req__kvs__atomic_store",
               "verify_type": "partially",
               "result": "passed",
@@ -12505,7 +12567,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_values_loaded_after_restart[end-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 444,
+              "line": 541,
               "need": "comp_req__kvs__atomic_store",
               "verify_type": "partially",
               "result": "passed",
@@ -12514,7 +12576,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_storage_files_unchanged[replace-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 402,
+              "line": 499,
               "need": "comp_req__kvs__atomic_store",
               "verify_type": "partially",
               "result": "passed",
@@ -12523,7 +12585,7 @@
             {
               "name": "TestFailedFlushKeepsPersistedData__test_values_loaded_after_restart[replace-cpp]",
               "file": "score/kvs/tests/test_cases/tests/test_cit_persistency.py",
-              "line": 444,
+              "line": 541,
               "need": "comp_req__kvs__atomic_store",
               "verify_type": "partially",
               "result": "passed",
