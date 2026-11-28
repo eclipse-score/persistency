@@ -24,6 +24,7 @@ from common import (
     CommonScenario,
     ResultCode,
     execute_checked,
+    file_exists,
     read_file_on_target,
     run_named_scenario,
     scenario_command,
@@ -110,6 +111,9 @@ TYPED_VALUES = {
 # Data file of the current KVS storage and of snapshot 1.
 CURRENT_DATA_FILE = f"kvs_{INSTANCE_ID}_0.json"
 SNAPSHOT_DATA_FILE = f"kvs_{INSTANCE_ID}_1.json"
+
+# Flushes of the data file tests: more than the 3 snapshots kept by default.
+DATA_FILES_FLUSH_COUNT = 4
 
 # Leftover temp files of the current storage, planted with a wider mode.
 STALE_TEMP_FILES = [f"kvs_{INSTANCE_ID}_0.json.tmp", f"kvs_{INSTANCE_ID}_0.hash.tmp"]
@@ -364,6 +368,138 @@ class TestStorageFilesFormatAndChecksum(CommonScenario):
             data = read_file_on_target(target, temp_dir / name)
             checksum = adler32(data).to_bytes(length=4, byteorder="big")
             assert read_file_on_target(target, temp_dir / hash_name) == checksum, name
+
+
+@add_test_properties(
+    partially_verifies=["comp_req__kvs__pers_data_store_bnd"],
+    test_type="requirements-based",
+    derivation_technique="requirements-analysis",
+)
+class TestDataPersistedInFiles(CommonScenario):
+    """
+    Verifies that flush persists the data in regular files in the working folder.
+    Each data and hash file, the current one and each snapshot, is a regular file.
+    A new process loads the data from the current data file.
+    Not covered: which system calls write the files.
+    """
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.snapshots.count"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path) -> dict[str, Any]:
+        return {**kvs_parameters(temp_dir), "count": DATA_FILES_FLUSH_COUNT}
+
+    def test_data_loaded_from_files(
+        self,
+        target: Target,
+        target_path: Path,
+        temp_dir: Path,
+        execution_timeout: float,
+        results: ScenarioResult,
+    ):
+        """
+        Checks that flush writes regular files, and a new process loads the current data file.
+
+        Steps:
+        1. Open the KVS in an empty folder, set "counter" to 0, 1, 2 and 3, and flush after each set.
+        2. Check the type of each data and hash file "kvs_1_<n>.json" and "kvs_1_<n>.hash".
+        3. Copy "kvs_1_0.json" and "kvs_1_0.hash" to "kvs_2_0.json" and "kvs_2_0.hash".
+        4. In a new process, open KVS instance 2 with load mode Required and log all key-value pairs.
+
+        Expected result:
+        - "kvs_1_0" and "kvs_1_1" exist, and each data and hash file is a regular file.
+        - Instance 2 loads exactly "counter" = 3, the value of the last flush.
+        """
+        assert results.return_code == ResultCode.SUCCESS, results.stderr
+        names = execute_checked(target, f"ls {shlex.quote(str(temp_dir))}").split()
+        storage = [name for name in names if re.fullmatch(rf"kvs_{INSTANCE_ID}_\d+\.(json|hash)", name)]
+        assert {*STORAGE, SNAPSHOT_DATA_FILE, f"kvs_{INSTANCE_ID}_1.hash"}.issubset(storage), f"files: {names}"
+        not_regular = [name for name in storage if not file_exists(target, temp_dir / name)]
+        assert not_regular == [], "storage files that are not regular files"
+
+        # Instance 2 was never flushed, so the copied files are its only data.
+        execute_checked(
+            target,
+            f"cd {shlex.quote(str(temp_dir))} && cp kvs_{INSTANCE_ID}_0.json kvs_2_0.json"
+            f" && cp kvs_{INSTANCE_ID}_0.hash kvs_2_0.hash",
+        )
+        config = {"kvs_parameters": {"instance_id": 2, "dir": str(temp_dir), "kvs_load": "required"}}
+        restart = run_named_scenario(target, target_path, "cit.persistency.stored_values", config, execution_timeout)
+        assert restart.return_code == ResultCode.SUCCESS, restart.stderr
+        assert stored_values(restart, target_path) == {"counter": DATA_FILES_FLUSH_COUNT - 1}
+
+
+@add_test_properties(
+    fully_verifies=["comp_req__kvs__pers_data_version", "comp_req__kvs__pers_data_schema"],
+    test_type="requirements-based",
+    derivation_technique="requirements-analysis",
+)
+class TestSchemaVersionField(CommonScenario):
+    """
+    Verifies that each data file that flush writes has a schema version: the current one and each snapshot.
+    The version is a dedicated top-level field, apart from the key-value payload.
+    A version field is a top-level member whose name contains "version", with a number or non-empty string value.
+    Not covered: the default-values file, which the KVS does not write.
+    """
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.snapshots.count"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, temp_dir: Path) -> dict[str, Any]:
+        return {**kvs_parameters(temp_dir), "count": DATA_FILES_FLUSH_COUNT}
+
+    def test_schema_version_field(
+        self, request: pytest.FixtureRequest, target: Target, temp_dir: Path, results: ScenarioResult
+    ):
+        """
+        Checks that each data file has a schema version as a dedicated top-level field.
+
+        Steps:
+        1. Open the KVS in an empty folder, set "counter" to 0, 1, 2 and 3, and flush after each set.
+        2. Download every data file "kvs_1_<n>.json" and parse it as JSON.
+        3. Look for a version field among the top-level members of each file.
+
+        Expected result:
+        - "kvs_1_0.json" and "kvs_1_1.json" exist, and each data file is a JSON object.
+        - The payload key "counter" is not a top-level member.
+        - Each data file has a version field.
+
+        Known defect: the data files have no schema version (eclipse-score/persistency#440).
+        Both implementations are strict xfail.
+        """
+        assert results.return_code == ResultCode.SUCCESS, results.stderr
+        names = execute_checked(target, f"ls {shlex.quote(str(temp_dir))}").split()
+        data_files = {
+            name: json.loads(read_file_on_target(target, temp_dir / name).decode("utf-8"))
+            for name in names
+            if re.fullmatch(rf"kvs_{INSTANCE_ID}_\d+\.json", name)
+        }
+        assert {CURRENT_DATA_FILE, SNAPSHOT_DATA_FILE}.issubset(data_files), f"files: {names}"
+        not_object = [name for name, content in data_files.items() if not isinstance(content, dict)]
+        assert not_object == [], "data files that are not JSON objects"
+        mixed = [name for name, content in data_files.items() if "counter" in content]
+        assert mixed == [], "data files with a key-value pair at the top level"
+
+        # Known defect, eclipse-score/persistency#440.
+        request.applymarker(
+            pytest.mark.xfail(strict=True, reason="Data files have no schema version (eclipse-score/persistency#440)")
+        )
+        without_version = [
+            name
+            for name, content in data_files.items()
+            if not any(
+                "version" in member.lower()
+                and isinstance(value, (int, float, str))
+                and not isinstance(value, bool)
+                and value != ""
+                for member, value in content.items()
+            )
+        ]
+        assert without_version == [], "data files without a schema version field"
 
 
 @add_test_properties(
