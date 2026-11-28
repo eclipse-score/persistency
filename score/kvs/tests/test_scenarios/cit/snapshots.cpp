@@ -19,6 +19,9 @@
 #include "score/kvs/kvs_builder.h"
 #include <tracing.hpp>
 
+#include <cstdint>
+#include <variant>
+
 using namespace score::kvs;
 using namespace score::json;
 
@@ -214,6 +217,51 @@ class SnapshotRestore final : public Scenario
     }
 };
 
+/// @brief Opens the KVS and restores each snapshot of the input field "snapshot_ids" in turn.
+///
+/// After each restore, logs "snapshot_id" and "restore".
+/// "restore" is "Ok(<n>)" with the U64 value n of key "slot", or "Err(<error message>)".
+class SnapshotRestoreByIndex final : public Scenario
+{
+  public:
+    ~SnapshotRestoreByIndex() final = default;
+
+    std::string name() const final
+    {
+        return "restore_by_index";
+    }
+
+    void run(const std::string& input) const final
+    {
+        const auto obj{GetObject(input)};
+        const auto& snapshot_ids{obj.at("snapshot_ids").As<List>().value().get()};
+        const auto kvs{KvsInstance(KvsParameters::FromValue(obj))};
+
+        for (const auto& snapshot_id_value : snapshot_ids)
+        {
+            const auto snapshot_id{snapshot_id_value.As<std::size_t>().value()};
+            const auto restore_result{kvs->SnapshotRestore(SnapshotId{snapshot_id})};
+            std::string restore{};
+            if (restore_result)
+            {
+                const auto slot_result{kvs->GetValue("slot")};
+                if (!slot_result)
+                {
+                    throw std::runtime_error{"Failed to read slot: " + std::string{slot_result.error().Message()}};
+                }
+                restore = "Ok(" + std::to_string(std::get<std::uint64_t>(slot_result.value().GetValue())) + ")";
+            }
+            else
+            {
+                restore = "Err(" + std::string{restore_result.error().Message()} + ")";
+            }
+            TRACING_INFO(kTargetName,
+                         std::pair{std::string{"snapshot_id"}, snapshot_id},
+                         std::pair{std::string{"restore"}, restore});
+        }
+    }
+};
+
 class SnapshotPaths final : public Scenario
 {
   public:
@@ -267,6 +315,7 @@ ScenarioGroup::Ptr SnapshotsGroup()
                                                     {std::make_shared<SnapshotCount>(),
                                                      std::make_shared<SnapshotMaxCount>(),
                                                      std::make_shared<SnapshotRestore>(),
+                                                     std::make_shared<SnapshotRestoreByIndex>(),
                                                      std::make_shared<SnapshotPaths>()},
                                                     {}}};
 }

@@ -206,12 +206,8 @@ class TestOpenByKvsLoadMode(CommonScenario):
         - "loaded" cases ("required" and "optional" with "valid"): the program ends without an error and logs
           exactly "stored" = 1, so intact storage files written by the test are loaded.
 
-        Known defect: Rust reports a missing hash file as "FileNotFound", the same error as for a missing data file,
-        which means "no storage". So for "hash_missing", "optional" opens an empty KVS instead of reporting an error.
-        For "required", the open fails as it should, and only the error is expected to differ: "FileNotFound" instead
-        of "KvsHashFileReadError". These two Rust cases are marked as expected failures (strict xfail): "optional"
-        from the check that the open fails, "required" only at the check of the error, so the check that its open
-        fails still runs. Each turns into a test failure once it passes.
+        Known defect (eclipse-score/persistency#770): Rust treats a data file without its hash file as "no storage".
+        Rust "hash_missing" cases are strict xfail: "optional" at the open check, "required" at the error check.
         """
         logged = {log.key: log.value for log in logs_info_level.get_logs("key")}
         if expected == "error":
@@ -220,7 +216,7 @@ class TestOpenByKvsLoadMode(CommonScenario):
                     pytest.mark.xfail(
                         strict=True,
                         reason="Rust Optional opens an empty KVS for an existing data file without a hash file, while "
-                        "comp_req__kvs__open_need_kvs_behavior requires an error",
+                        "comp_req__kvs__open_need_kvs_behavior requires an error (eclipse-score/persistency#770)",
                     )
                 )
             assert results.return_code == ResultCode.PANIC, f"expected the open to fail, logged values: {logged}"
@@ -229,7 +225,7 @@ class TestOpenByKvsLoadMode(CommonScenario):
                     pytest.mark.xfail(
                         strict=True,
                         reason="Rust reports FileNotFound, the code for a missing data file, instead of "
-                        "KvsHashFileReadError for a missing hash file",
+                        "KvsHashFileReadError for a missing hash file (eclipse-score/persistency#770)",
                     )
                 )
             assert f"Failed to create KVS instance: {OPEN_ERRORS[storage][version]}" in results.stderr
@@ -548,9 +544,8 @@ class TestRecoveryBySnapshotRestore(CommonScenario):
             match or the hash file is too short. C++ "Validation failed", Rust "ValidationFailed".
           - "hash_missing": the hash file cannot be read. C++ "KVS hash file read error", Rust "KvsHashFileReadError".
 
-        Known defect: Rust reports a missing hash file as "FileNotFound", the error for a missing data file. The Rust
-        "hash_missing" cases are marked as expected failures (strict xfail) at the check of the error, after the check
-        that the open fails. They turn into test failures once they pass.
+        Known defect (eclipse-score/persistency#770): Rust reports a missing hash file as "FileNotFound".
+        The Rust "hash_missing" cases are strict xfail at the error check, after the open-fails check.
         """
         assert results.return_code == ResultCode.SUCCESS, results.stderr
         open_error = logs_info_level.find_log("open_error")
@@ -560,7 +555,7 @@ class TestRecoveryBySnapshotRestore(CommonScenario):
                 pytest.mark.xfail(
                     strict=True,
                     reason="Rust reports FileNotFound, the code for a missing data file, instead of "
-                    "KvsHashFileReadError for a missing hash file",
+                    "KvsHashFileReadError for a missing hash file (eclipse-score/persistency#770)",
                 )
             )
         assert open_error.open_error == f"Failed to create KVS instance: {OPEN_ERRORS[storage][version]}"

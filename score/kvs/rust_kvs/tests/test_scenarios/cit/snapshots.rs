@@ -104,6 +104,36 @@ impl Scenario for SnapshotRestore {
     }
 }
 
+/// Open the KVS and restore each snapshot of the input field "snapshot_ids" in turn.
+///
+/// After each restore, log "snapshot_id" and "restore".
+/// "restore" is "Ok(<n>)" with the U64 value n of key "slot", or "Err(<error>)".
+struct SnapshotRestoreByIndex;
+
+impl Scenario for SnapshotRestoreByIndex {
+    fn name(&self) -> &str {
+        "restore_by_index"
+    }
+
+    fn run(&self, input: &str) -> Result<(), String> {
+        let v: Value = serde_json::from_str(input).expect("Failed to parse input string");
+        let snapshot_ids: Vec<usize> =
+            serde_json::from_value(v["snapshot_ids"].clone()).expect("Failed to parse \"snapshot_ids\" field");
+        let params = KvsParameters::from_value(&v).expect("Failed to parse parameters");
+        let kvs = kvs_instance(params).expect("Failed to create KVS instance");
+
+        for snapshot_id in snapshot_ids {
+            let restore = match kvs.snapshot_restore(SnapshotId(snapshot_id)) {
+                Ok(()) => format!("Ok({})", kvs.get_value_as::<u64>("slot").expect("Failed to read slot")),
+                Err(e) => format!("Err({e:?})"),
+            };
+            info!(snapshot_id, restore);
+        }
+
+        Ok(())
+    }
+}
+
 struct SnapshotPaths;
 
 impl Scenario for SnapshotPaths {
@@ -148,6 +178,7 @@ pub fn snapshots_group() -> Box<dyn ScenarioGroup> {
             Box::new(SnapshotCount),
             Box::new(SnapshotMaxCount),
             Box::new(SnapshotRestore),
+            Box::new(SnapshotRestoreByIndex),
             Box::new(SnapshotPaths),
         ],
         vec![],

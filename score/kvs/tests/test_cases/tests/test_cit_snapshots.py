@@ -10,17 +10,22 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
+import json
 from collections.abc import Generator
 from pathlib import Path
 from typing import Any
+from zlib import adler32
 
 import pytest
-from common import CommonScenario, ResultCode, path_exists, temp_dir_common
+from common import CommonScenario, ResultCode, path_exists, temp_dir_common, write_file_on_target
 from score.itf.plugins.core import Target
 from test_properties import add_test_properties
 from testing_utils import LogContainer, ScenarioResult
 
 pytestmark = pytest.mark.parametrize("version", ["rust", "cpp"], scope="class")
+
+# Slot indices to restore: 2**32 + 1 becomes 1 if cut to 32 bits.
+RESTORED_SLOT_INDICES = [0, 1, 2, 3, 4, 2**32 + 1]
 
 
 class MaxSnapshotsScenario(CommonScenario):
@@ -250,6 +255,106 @@ class TestSnapshotRestoreNonexistent(CommonScenario):
         result_log = logs_info_level.find_log("result")
         assert result_log is not None
         assert result_log.result == "Err(InvalidSnapshotId)"
+
+
+@add_test_properties(
+    partially_verifies=[
+        "comp_req__kvs__snapshot_id_api",
+        "comp_req__kvs__snapshot_slot_index_vali",
+        "comp_req__kvs__snapshot_restore_api",
+    ],
+    test_type="interface-test",
+    derivation_technique="boundary-values",
+)
+@pytest.mark.parametrize("snapshot_max_count", [1, 3, 4], scope="class")
+class TestSnapshotRestoreBySlotIndex(MaxSnapshotsScenario):
+    """
+    Verifies that snapshot restore selects a slot by its one-based index 1 to 3.
+    It rejects index 0, an index above 3 and an index above snapshot_max_count.
+    Every index has a valid snapshot file, so only the index can cause an error.
+    snapshot_max_count 4 checks that the range stays 1 to 3 when the maximum is higher.
+    Not covered: the missing create, remove and slot query APIs.
+    """
+
+    @pytest.fixture(scope="class")
+    def scenario_name(self) -> str:
+        return "cit.snapshots.restore_by_index"
+
+    @pytest.fixture(scope="class")
+    def test_config(self, target: Target, temp_dir: Path, snapshot_max_count: int) -> dict[str, Any]:
+        """
+        Write the current storage and one valid snapshot file per index, each with "slot" = its index.
+        """
+        for index in RESTORED_SLOT_INDICES:
+            data = json.dumps({"t": "obj", "v": {"slot": {"t": "u64", "v": index}}}).encode()
+            write_file_on_target(target, temp_dir / f"kvs_1_{index}.json", data)
+            write_file_on_target(target, temp_dir / f"kvs_1_{index}.hash", adler32(data).to_bytes(4, "big"))
+        return {
+            "kvs_parameters": {
+                "instance_id": 1,
+                "dir": str(temp_dir),
+                "kvs_load": "required",
+                "snapshot_max_count": snapshot_max_count,
+            },
+            "snapshot_ids": RESTORED_SLOT_INDICES,
+        }
+
+    def test_index_in_range_restores_its_slot(
+        self, results: ScenarioResult, logs_info_level: LogContainer, snapshot_max_count: int
+    ):
+        """
+        Checks that each index from 1 to snapshot_max_count, at most 3, restores its own slot.
+
+        Steps:
+        1. Write a valid "kvs_1_<n>.json" and its hash file with "slot" = n, for n = 0 to 4 and 2**32 + 1.
+        2. Open the KVS with load mode Required and the snapshot_max_count of the case.
+        3. Restore each index n in turn.
+        4. After each restore, log the error or the value of "slot".
+
+        Expected result:
+        - Index 1 to snapshot_max_count, at most 3: no error, and "slot" = index.
+        """
+        assert results.return_code == ResultCode.SUCCESS, results.stderr
+        restored = {log.snapshot_id: log.restore for log in logs_info_level.get_logs("snapshot_id")}
+        assert restored.keys() == set(RESTORED_SLOT_INDICES), f"precondition: every index restored once: {restored}"
+        in_range = range(1, min(snapshot_max_count, 3) + 1)
+        assert {i: restored[i] for i in in_range} == {i: f"Ok({i})" for i in in_range}
+
+    def test_index_out_of_range_is_rejected(
+        self,
+        request: pytest.FixtureRequest,
+        version: str,
+        results: ScenarioResult,
+        logs_info_level: LogContainer,
+        snapshot_max_count: int,
+    ):
+        """
+        Checks that restore returns an error for each index outside 1 to 3 or above snapshot_max_count.
+
+        Steps:
+        1. Run steps 1 to 4 of "test_index_in_range_restores_its_slot".
+
+        Expected result:
+        - Index 0, 4 and 2**32 + 1: an error.
+        - Index 2 and 3 with snapshot_max_count 1: an error.
+
+        Known Rust defect (eclipse-score/persistency#416): Rust restores index 4 when snapshot_max_count is 4.
+        The Rust case with snapshot_max_count 4 is strict xfail.
+        """
+        assert results.return_code == ResultCode.SUCCESS, results.stderr
+        restored = {log.snapshot_id: log.restore for log in logs_info_level.get_logs("snapshot_id")}
+        assert restored.keys() == set(RESTORED_SLOT_INDICES), f"precondition: every index restored once: {restored}"
+        in_range = range(1, min(snapshot_max_count, 3) + 1)
+        accepted = {i: r for i, r in restored.items() if i not in in_range and not r.startswith("Err(")}
+        if (version, snapshot_max_count) == ("rust", 4):
+            # Known Rust defect, eclipse-score/persistency#416.
+            request.applymarker(
+                pytest.mark.xfail(
+                    strict=True,
+                    reason="Rust accepts index 4 when snapshot_max_count is above 3 (eclipse-score/persistency#416)",
+                )
+            )
+        assert accepted == {}, "index must be rejected"
 
 
 @add_test_properties(

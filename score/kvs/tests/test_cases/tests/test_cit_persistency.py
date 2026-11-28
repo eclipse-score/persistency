@@ -136,8 +136,10 @@ VALUES_AFTER_FAILED_FLUSH = {
     "replace": {"kept": 1, "overwritten": 2, "added": 3, "generation": 3, "non_finite": 4},
 }
 
-# Known Rust defect, ticket pending.
-RUST_FLUSH_ROTATES_BEFORE_SERIALIZE = "Rust flush rotates the snapshot files before it serializes the data"
+# Known Rust defect, eclipse-score/persistency#771.
+RUST_FLUSH_ROTATES_BEFORE_SERIALIZE = (
+    "Rust flush rotates the snapshot files before it serializes the data (eclipse-score/persistency#771)"
+)
 
 
 def kvs_parameters(temp_dir: Path, **extra: Any) -> dict[str, Any]:
@@ -477,7 +479,7 @@ class TestFailedFlushKeepsPersistedData(CommonScenario):
     Verifies that a failed flush keeps all persisted data and the next successful flush persists all changes.
     NaN makes the flush fail.
     Not covered: a reset or a storage error during the write.
-    set should reject NaN (comp_req__kvs__value_data_types).
+    set should reject NaN (comp_req__kvs__value_data_types, eclipse-score/persistency#757).
     When it does, this test needs another way to make the flush fail.
     """
 
@@ -513,7 +515,7 @@ class TestFailedFlushKeepsPersistedData(CommonScenario):
         - After the failed flush, the same storage files exist with the same fingerprints.
 
         Known Rust defect: flush rotates snapshots before it serializes, so a failed flush loses kvs_1_0.
-        Rust cases are strict xfail.
+        Rust cases are strict xfail (eclipse-score/persistency#771).
         """
         check_flush_failed(version, results, logs_info_level)
         storage_file = re.compile(rf"kvs_{INSTANCE_ID}_\d+\.(json|hash)")
@@ -562,7 +564,7 @@ class TestFailedFlushKeepsPersistedData(CommonScenario):
         - "replace": the new process loads all changes of the failed flush and "non_finite" = 4.
 
         Known Rust defect: flush rotates snapshots before it serializes, so a failed flush loses kvs_1_0.
-        The Rust "end" case is strict xfail.
+        The Rust "end" case is strict xfail (eclipse-score/persistency#771).
         """
         check_flush_failed(version, results, logs_info_level)
 
